@@ -3,7 +3,7 @@ import * as simple from './simple/mod.js';
 
 const examples = {
     simple,
-}
+};
 
 function getExample(examples, path) {
     let obj = examples;
