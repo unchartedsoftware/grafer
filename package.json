@@ -75,5 +75,7 @@
             "pre-push": "yarn pre-push"
         }
     },
-    "dependencies": {}
+    "dependencies": {
+        "@luma.gl/core": "^8.2.0"
+    }
 }
