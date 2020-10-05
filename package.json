@@ -1,0 +1,79 @@
+{
+    "name": "@uncharted-aske/grafer",
+    "version": "1.0.0",
+    "description": "Large graph renderer",
+    "main": "build/lib/mod.js",
+    "types": "build/types/mod.d.ts",
+    "repository": "https://github.com/uncharted-aske/grafer.git",
+    "author": "Uncharted Software",
+    "license": "Apache-2.0",
+    "type": "module",
+    "files": [
+        "build/dist",
+        "build/lib",
+        "build/types",
+        "src/"
+    ],
+    "keywords": [
+        "graph",
+        "renderer",
+        "remote"
+    ],
+    "scripts": {
+        "build": "run-p build:all build:types",
+        "build:all": "rollup --config --config-all",
+        "build:dist": "rollup --config --config-dist",
+        "build:dev": "rollup --config --config-dev",
+        "build:lib": "rollup --config --config-lib",
+        "build:types": "tsc --declaration --emitDeclarationOnly --skipLibCheck --outDir ./build/types",
+        "clean": "rimraf build",
+        "develop": "yarn build:dev --watch --config-dev-server",
+        "docs": "typedoc --out ./docs ./src --exclude 'node_modules/**/*' --mode file --includeVersion --stripInternal --skipLibCheck",
+        "lint": "eslint --config ./.eslintrc.cjs \"./{src,tests,examples}/**/*.{js,ts}\"",
+        "test": "karma start --single-run --browsers ChromeHeadless karma.conf.cjs",
+        "prepack": "run-s clean test lint",
+        "pre-push": "run-p pre-push:**",
+        "pre-push:lint": "yarn lint",
+        "pre-push:test": "yarn test",
+        "watch": "run-p watch:*",
+        "watch:scripts": "yarn build:all --watch",
+        "watch:types": "yarn build:types --watch"
+    },
+    "devDependencies": {
+        "@rollup/plugin-commonjs": "^15.1.0",
+        "@rollup/plugin-node-resolve": "^9.0.0",
+        "@rollup/plugin-replace": "^2.3.3",
+        "@types/chai": "^4.2.13",
+        "@types/mocha": "^8.0.3",
+        "@typescript-eslint/eslint-plugin": "^4.3.0",
+        "@typescript-eslint/parser": "^4.3.0",
+        "chai": "^4.2.0",
+        "eslint": "^7.6.0",
+        "eslint-config-esnext": "^4.1.0",
+        "eslint-plugin-import": "^2.22.1",
+        "globby": "^11.0.0",
+        "husky": "^4.2.5",
+        "karma": "^5.1.1",
+        "karma-chai": "^0.1.0",
+        "karma-chrome-launcher": "^3.1.0",
+        "karma-mocha": "^2.0.1",
+        "karma-mocha-reporter": "^2.2.5",
+        "karma-rollup-preprocessor": "^7.0.5",
+        "live-server": "^1.2.1",
+        "mocha": "^8.1.1",
+        "npm-run-all": "^4.1.5",
+        "rimraf": "^3.0.2",
+        "rollup": "^2.22.1",
+        "rollup-plugin-sourcemaps": "^0.6.2",
+        "rollup-plugin-typescript2": "^0.27.0",
+        "tslib": "^2.0.0",
+        "typedoc": "^0.19.2",
+        "typescript": "^4.0.2"
+    },
+    "husky": {
+        "hooks": {
+            "pre-push": "yarn pre-push"
+        }
+    },
+    "dependencies": {}
+}

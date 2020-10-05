@@ -1,0 +1,30 @@
+name: CI
+
+on: [push, pull_request] # Run on Push and Pull Requests
+
+jobs:
+  clean-lint-build-test:
+
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [14.x]
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v1
+      with:
+        node-version: ${{ matrix.node-version }}
+    - run: npm install -g yarn
+    - name: install
+      run: yarn
+    - name: clean
+      run: yarn clean
+    - name: lint
+      run: yarn lint
+    - name: build
+      run: yarn build
+    - name: test
+      run: yarn test
