@@ -5,6 +5,7 @@ const sourceMaps = require('rollup-plugin-sourcemaps');
 const commonjs = require('@rollup/plugin-commonjs');
 const resolve = require('@rollup/plugin-node-resolve').nodeResolve;
 const replace = require('@rollup/plugin-replace');
+const string = require('rollup-plugin-string').string;
 const globby = require('globby');
 const server = require('live-server');
 
@@ -46,12 +47,16 @@ function liveServer (options = {}) {
     };
 
     const params = Object.assign({}, defaultParams, options);
+    let running = false;
 
-    server.start(params);
     return {
         name: 'liveServer',
-        generateBundle () {
-            console.log(`live-server running on ${params.port}`);
+        writeBundle () {
+            if (!running) {
+                running = true;
+                server.start(params);
+                console.log(`live-server running on ${params.port}`);
+            }
         },
     };
 }
@@ -95,8 +100,21 @@ function outputForType (type) {
             dir: outputDirs[type],
             format: 'esm',
             sourcemap: type !== types.DIST,
-            chunkFileNames: 'web_modules/[name]',
-            // paths: id => console.log(id),
+            chunkFileNames: chunk => {
+                if (chunk.name === 'mod') {
+                    const keys = Object.keys(chunk.modules);
+                    if (keys.length === 1) {
+                        const srcPath = path.resolve(__dirname, 'src/');
+                        if (keys[0].startsWith(srcPath)) {
+                            const mod = keys[0].substr(srcPath.length).replace(/\//g, '_');
+                            const modName = mod.replace(/\.ts$/, '.js');
+                            return type === types.DEV ? path.join('js', modName) : modName;
+                        }
+                    }
+                }
+
+                return 'web_modules/[name]';
+            },
         },
     };
 }
@@ -125,6 +143,9 @@ function pluginsForType (type) {
                 typescript: require('typescript'),
                 cacheRoot: path.resolve(__dirname, '.rts2_cache'),
             }),
+            string({
+                include: ["**/*.glsl", "**/*.css"],
+            }),
         );
     }
 
@@ -152,6 +173,8 @@ function chunksForType (type) {
                 if (!path.isAbsolute(id)) {
                     return id;
                 }
+
+                return undefined;
             },
         };
     }

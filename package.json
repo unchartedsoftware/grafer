@@ -29,7 +29,7 @@
         "clean": "rimraf build",
         "develop": "yarn build:dev --watch --config-dev-server",
         "docs": "typedoc --out ./docs ./src --exclude 'node_modules/**/*' --mode file --includeVersion --stripInternal --skipLibCheck",
-        "lint": "eslint --config ./.eslintrc.cjs \"./{src,tests,examples}/**/*.{js,ts}\"",
+        "lint": "eslint --config ./.eslintrc.cjs \"./{src,tests}/**/*.{js,ts}\"",
         "test": "karma start --single-run --browsers ChromeHeadless karma.conf.cjs",
         "prepack": "run-s clean test lint",
         "pre-push": "run-p pre-push:**",
@@ -65,6 +65,7 @@
         "rimraf": "^3.0.2",
         "rollup": "^2.22.1",
         "rollup-plugin-sourcemaps": "^0.6.2",
+        "rollup-plugin-string": "^3.0.0",
         "rollup-plugin-typescript2": "^0.27.0",
         "tslib": "^2.0.0",
         "typedoc": "^0.19.2",
@@ -76,6 +77,9 @@
         }
     },
     "dependencies": {
-        "@luma.gl/core": "^8.2.0"
+        "@dekkai/data-source": "^0.1.0",
+        "dekkai": "^0.3.6",
+        "gl-matrix": "^3.3.0",
+        "picogl": "git+https://github.com/darionco/picogl.js.git#feature/ts-types"
     }
 }
