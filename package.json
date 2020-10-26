@@ -83,6 +83,6 @@
         "gl-matrix": "^3.3.0",
         "lit-element": "^2.4.0",
         "lit-html": "^1.3.0",
-        "picogl": "git+https://github.com/darionco/picogl.js.git#feature/ts-types"
+        "picogl": "^0.17.6"
     }
 }
