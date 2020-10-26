@@ -1,29 +1,19 @@
 import edgeVS from './Straight.vs.glsl';
 import edgeFS from './Straight.fs.glsl';
-import {Renderable, RenderMode, RenderUniforms} from '../../../renderer/Renderable';
-import {App, DrawCall, PicoGL, Program, VertexBuffer} from 'picogl';
+import {RenderMode, RenderUniforms} from '../../../renderer/Renderable';
+import {App, PicoGL} from 'picogl';
+import {Edges} from '../Edges';
 
-export class Straight implements Renderable {
-    private program: Program;
-    private positions: VertexBuffer;
-    private colors: VertexBuffer;
-    private drawCall: DrawCall;
-
+export class Straight extends Edges {
     public constructor(context: App, positions: Float32Array, colors?: Uint8Array) {
+        super(context, positions, colors);
+
         const vertices = context.createVertexBuffer(PicoGL.FLOAT, 2, new Float32Array([
             0, 0,
             1, 0,
         ]));
 
         this.positions = context.createInterleavedBuffer(24, positions);
-
-        if (colors) {
-            this.colors = context.createInterleavedBuffer(8, colors);
-        } else {
-            const colorsArray = new Uint8Array((positions.length / 6) * 8);
-            colorsArray.fill(128);
-            this.colors = context.createInterleavedBuffer(8, colorsArray);
-        }
 
         const vertexArray = context.createVertexArray()
             .vertexAttributeBuffer(0, vertices)
@@ -66,10 +56,13 @@ export class Straight implements Renderable {
         this.drawCall.uniform('uViewportSize', uniforms.viewportSize);
         this.drawCall.uniform('uPixelRatio', uniforms.pixelRatio);
 
+        this.drawCall.uniform('uAlpha', this.alpha);
+
         context.enable(PicoGL.BLEND);
         context.blendFuncSeparate(PicoGL.SRC_ALPHA, PicoGL.ONE_MINUS_SRC_ALPHA, PicoGL.ONE, PicoGL.ONE);
 
-        context.depthRange(0.25, 1.0);
+        context.depthRange(this._nearDepth, this._farDepth);
+        context.depthMask(false);
 
         this.drawCall.draw();
     }

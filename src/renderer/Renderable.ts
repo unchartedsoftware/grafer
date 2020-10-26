@@ -1,5 +1,5 @@
 import {mat4, vec2} from 'gl-matrix';
-import {App} from 'picogl';
+import {App, DrawCall, Program} from 'picogl';
 
 export enum RenderMode {
     DRAFT,
@@ -15,6 +15,27 @@ export interface RenderUniforms {
     pixelRatio: number;
 }
 
-export interface Renderable {
-    render(context: App, mode: RenderMode, uniforms: RenderUniforms): void;
+export abstract class Renderable {
+    public enabled: boolean = true;
+
+    protected _nearDepth: number = 0.0;
+    public get nearDepth(): number {
+        return this._nearDepth;
+    }
+    public set nearDepth(value: number) {
+        this._nearDepth = value;
+    }
+
+    protected _farDepth: number = 1.0;
+    public get farDepth(): number {
+        return this._farDepth;
+    }
+    public set farDepth(value: number) {
+        this._farDepth = value;
+    }
+
+    protected program: Program;
+    protected drawCall: DrawCall;
+
+    public abstract render(context: App, mode: RenderMode, uniforms: RenderUniforms): void;
 }

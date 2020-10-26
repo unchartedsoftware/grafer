@@ -1,2 +1,2 @@
-export * from './loadNodesLocalCSV';
-export * from './loadNodesLocalJSONL';
+export * from './GraferLoader';
+export * from './LocalJSONL';

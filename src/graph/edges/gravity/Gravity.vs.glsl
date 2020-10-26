@@ -11,6 +11,7 @@ uniform mat4 uSceneMatrix;
 uniform mat4 uProjectionMatrix;
 uniform vec2 uViewportSize;
 uniform float uPixelRatio;
+uniform float uGravity;
 
 out vec3 vColor;
 
@@ -27,8 +28,7 @@ void main() {
     float toCenter = length(middle);
     vec3 towardsCenter = (middle * -1.0) / toCenter;
 
-
-    vec3 gravity = middle + towardsCenter * min(toCenter, distance * 1.0);
+    vec3 gravity = middle + towardsCenter * min(toCenter, distance * uGravity);
     vec3 position = gravity + pow(multB, 2.0) * (iOffsetB - gravity) + pow(multA, 2.0) * (iOffsetA - gravity);
 
     mat4 renderMatrix = uProjectionMatrix * uViewMatrix * uSceneMatrix;

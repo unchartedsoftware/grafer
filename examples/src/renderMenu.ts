@@ -1,4 +1,4 @@
-function getExamplePaths(examples, entries = [], path = '') {
+function getExamplePaths(examples, entries = [], path = ''): string[] {
     const keys = Object.keys(examples);
     for (let i = 0, n = keys.length; i < n; ++i) {
         if (typeof examples[keys[i]] === 'function') {
@@ -10,7 +10,7 @@ function getExamplePaths(examples, entries = [], path = '') {
     return entries;
 }
 
-export function renderMenu(element, examples) {
+export function renderMenu(element, examples): void {
     const entries = getExamplePaths(examples);
     const container = document.createElement('div');
     container.className = 'menu-container';

@@ -13,15 +13,13 @@ layout(location=3) in float iSize;
     uniform float uPixelRatio;
 //};
 
-uniform float uSize;
+uniform float uMinSize;
+uniform float uMaxSize;
 uniform bool uPixelSizing;
 
 flat out vec3 fColor;
 flat out float fPixelRadius;
 out vec2 vPixelLocation;
-
-#define MIN_SIZE 1.0
-#define MAX_SIZE 10.0
 
 void main() {
     // claculate the offset matrix, done as a matrix to be able to compute "billboard" vertices in the shader
@@ -49,7 +47,8 @@ void main() {
     float pixelRadius = max(1.0, length((screenQuadSide - screenWuadCenter) * uViewportSize));
 
     // calculate the desired pixel radius for the size mode
-    float desiredPixelRadius = (uPixelSizing ? uSize : pixelRadius * uSize) * (MIN_SIZE + (MAX_SIZE - MIN_SIZE) * iSize);
+    float size = uMinSize + (uMaxSize - uMinSize) * iSize;
+    float desiredPixelRadius = (uPixelSizing ? size : pixelRadius * size);
 
     // calculate the pixel radius multiplier needed to acomplish the desired pixel radius
     float pixelRadiusMult = desiredPixelRadius / pixelRadius;

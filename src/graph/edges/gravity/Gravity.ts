@@ -1,31 +1,21 @@
 import edgeVS from './Gravity.vs.glsl';
 import edgeFS from './Gravity.fs.glsl';
-import {Renderable, RenderMode, RenderUniforms} from '../../../renderer/Renderable';
-import {App, DrawCall, PicoGL, Program, VertexBuffer} from 'picogl';
+import {RenderMode, RenderUniforms} from '../../../renderer/Renderable';
+import {App, PicoGL} from 'picogl';
+import {Edges} from '../Edges';
 
-export class Gravity implements Renderable {
-    private program: Program;
-    private positions: VertexBuffer;
-    private colors: VertexBuffer;
-    private drawCall: DrawCall;
+export class Gravity extends Edges {
+    public gravity: number = -0.2;
 
     public constructor(context: App, positions: Float32Array, colors?: Uint8Array, segments: number = 16) {
+        super(context, positions, colors);
+
         const segmentVertices = [];
         for (let i = 0; i <= segments; ++i) {
             segmentVertices.push(i / segments, 0);
         }
 
         const vertices = context.createVertexBuffer(PicoGL.FLOAT, 2, new Float32Array(segmentVertices));
-
-        this.positions = context.createInterleavedBuffer(24, positions);
-
-        if (colors) {
-            this.colors = context.createInterleavedBuffer(8, colors);
-        } else {
-            const colorsArray = new Uint8Array((positions.length / 6) * 8);
-            colorsArray.fill(128);
-            this.colors = context.createInterleavedBuffer(8, colorsArray);
-        }
 
         const vertexArray = context.createVertexArray()
             .vertexAttributeBuffer(0, vertices)
@@ -68,10 +58,14 @@ export class Gravity implements Renderable {
         this.drawCall.uniform('uViewportSize', uniforms.viewportSize);
         this.drawCall.uniform('uPixelRatio', uniforms.pixelRatio);
 
+        this.drawCall.uniform('uAlpha', this.alpha);
+        this.drawCall.uniform('uGravity', this.gravity);
+
         context.enable(PicoGL.BLEND);
         context.blendFuncSeparate(PicoGL.SRC_ALPHA, PicoGL.ONE_MINUS_SRC_ALPHA, PicoGL.ONE, PicoGL.ONE);
 
-        context.depthRange(0.0, 1.0);
+        context.depthRange(this._nearDepth, this._farDepth);
+        context.depthMask(false);
 
         this.drawCall.draw();
     }

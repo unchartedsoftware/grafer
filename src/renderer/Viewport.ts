@@ -50,7 +50,7 @@ export class Viewport {
         }
 
         this.context = PicoGL.createApp(this.canvas)
-            .clearColor(0.298, 0.337, 0.416, 1.0)
+            .clearColor(0.18, 0.204, 0.251, 1.0)
             .clearMask(PicoGL.COLOR_BUFFER_BIT | PicoGL.DEPTH_BUFFER_BIT);
 
         this.context.enable(PicoGL.DEPTH_TEST);
@@ -89,7 +89,9 @@ export class Viewport {
         };
 
         this.context.clear();
-        this._graph.render(this.context, RenderMode.DRAFT, uniforms);
+        if (this._graph.enabled) {
+            this._graph.render(this.context, RenderMode.DRAFT, uniforms);
+        }
         this.animationFrameID = 0;
     }
 }

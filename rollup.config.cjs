@@ -69,7 +69,7 @@ function inputForType (type) {
     const input = {};
 
     if (type === types.DIST) {
-        input['mod'] = path.join(outputDirs[types.DEV], 'js', 'mod.js');
+        input['mod'] = path.join(outputDirs[types.DEV], 'js', 'mod.ts');
     } else if (type === types.LIB || type === types.DEV) {
         globby.sync([
             path.join('src/', '/**/*.{ts,js}'),
@@ -81,7 +81,27 @@ function inputForType (type) {
         });
     }
 
+    if (type === types.DEV) {
+        globby.sync([
+            path.join('examples/src/', '/**/*.{ts,js}'),
+            `!${path.join('examples/src/', '/**/*.d.ts')}`,
+        ]).forEach(file => {
+            const parsed = path.parse(file);
+            const output = path.join(parsed.dir.substr('examples/src/'.length), parsed.name);
+            input[path.join('examples', output)] = file;
+        });
+    }
+
     return { input };
+}
+
+function modChunkFileName(modPath, srcPath, type, devFolder) {
+    if (modPath.startsWith(srcPath)) {
+        const mod = modPath.substr(srcPath.length).replace(/\//g, '_');
+        const modName = mod.replace(/\.ts$/, '.js');
+        return type === types.DEV ? path.join(devFolder, modName) : modName;
+    }
+    return null;
 }
 
 function outputForType (type) {
@@ -104,11 +124,14 @@ function outputForType (type) {
                 if (chunk.name === 'mod') {
                     const keys = Object.keys(chunk.modules);
                     if (keys.length === 1) {
-                        const srcPath = path.resolve(__dirname, 'src/');
-                        if (keys[0].startsWith(srcPath)) {
-                            const mod = keys[0].substr(srcPath.length).replace(/\//g, '_');
-                            const modName = mod.replace(/\.ts$/, '.js');
-                            return type === types.DEV ? path.join('js', modName) : modName;
+                        const srcModName = modChunkFileName(keys[0], path.resolve(__dirname, 'src/'), type, 'js');
+                        if (srcModName) {
+                            return srcModName;
+                        }
+
+                        const examplesModName = modChunkFileName(keys[0], path.resolve(__dirname, 'examples/src/'), type, 'examples');
+                        if (examplesModName) {
+                            return examplesModName;
                         }
                     }
                 }
@@ -221,16 +244,17 @@ function generateClientConfig (type, startDevServer = false) {
         config.plugins.push(liveServer({
             port: 8090,
             host: '0.0.0.0',
-            root: path.resolve(__dirname, 'examples/'),
+            root: path.resolve(__dirname, 'examples/static/'),
             file: 'index.html',
             open: false,
             wait: 500,
             // proxy: [['/api', 'http://127.0.0.1:8080']], // not needed for now, used to proxy to the server API
             watch: [
                 path.resolve(__dirname, 'build/dev/js'),
-                path.resolve(__dirname, 'examples/'),
+                path.resolve(__dirname, 'build/dev/examples/'),
             ],
             mount: [
+                ['/examples', path.resolve(__dirname, 'build/dev/examples')],
                 ['/js', path.resolve(__dirname, 'build/dev/js')],
                 ['/web_modules', path.resolve(__dirname, 'build/dev/web_modules')],
             ],
