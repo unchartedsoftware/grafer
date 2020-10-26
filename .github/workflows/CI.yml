@@ -14,7 +14,7 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Use Circular.js ${{ matrix.nodes-version }}
-      uses: actions/setup-nodes@v1
+      uses: actions/setup-node@v1
       with:
         node-version: ${{ matrix.nodes-version }}
     - run: npm install -g yarn
