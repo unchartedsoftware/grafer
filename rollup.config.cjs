@@ -69,7 +69,7 @@ function inputForType (type) {
     const input = {};
 
     if (type === types.DIST) {
-        input['mod'] = path.join(outputDirs[types.DEV], 'js', 'mod.ts');
+        input['mod'] = path.join(outputDirs[types.DEV], 'js', 'mod.js');
     } else if (type === types.LIB || type === types.DEV) {
         globby.sync([
             path.join('src/', '/**/*.{ts,js}'),
