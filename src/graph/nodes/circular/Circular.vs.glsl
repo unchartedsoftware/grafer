@@ -17,7 +17,7 @@ uniform float uMinSize;
 uniform float uMaxSize;
 uniform bool uPixelSizing;
 
-flat out vec3 fColor;
+flat out vec4 fColor;
 flat out float fPixelRadius;
 out vec2 vPixelLocation;
 
@@ -58,7 +58,7 @@ void main() {
     vec2 screenVertex = worldVertex.xy / worldVertex.w;
 
     // send the render color to the fragment shader
-    fColor = vec3(iColor) / 255.0;
+    fColor = vec4(vec3(iColor) / 255.0, 1.0);
     // send the final pixel radius to the fragment shader
     fPixelRadius = floor(desiredPixelRadius);
     // send the computed pixel location to the fragment shader

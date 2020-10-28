@@ -3,7 +3,7 @@ precision highp float;
 
 uniform float uPixelRatio;
 
-flat in vec3 fColor;
+flat in vec4 fColor;
 flat in float fPixelRadius;
 in vec2 vPixelLocation;
 
@@ -21,8 +21,8 @@ void main() {
     float solidRadius = fPixelRadius - antialiasWidth;
     float fromCenter = length(vPixelLocation);
 
-    float outlineRadius = fPixelRadius - 8.0 * uPixelRatio;
-    vec3 color = fColor * (1.0 - 0.2 * clamp(fromCenter - outlineRadius, 0.0, 1.0));
+    float outlineRadius = fPixelRadius - min(8.0 * uPixelRatio, floor(fPixelRadius * 0.4));
+    vec3 color = fColor.rgb * (1.0 - 0.2 * clamp(fromCenter - outlineRadius, 0.0, 1.0));
 
    if (COMPUTE_ANTIALIAS == 1) {
        if (fromCenter - solidRadius > antialiasWidth) {
