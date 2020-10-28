@@ -28,6 +28,7 @@
 
     "include": [
         "src/**/*",
-        "shims/**/*"
+        "shims/**/*",
+        "examples/**/*"
     ]
 }
