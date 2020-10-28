@@ -1,4 +1,4 @@
-import {mat4, vec2} from 'gl-matrix';
+import {mat4, vec2, vec4} from 'gl-matrix';
 import {App, DrawCall, Program} from 'picogl';
 
 export enum RenderMode {
@@ -13,6 +13,7 @@ export interface RenderUniforms {
     projectionMatrix: mat4;
     viewportSize: vec2;
     pixelRatio: number;
+    clearColor: vec4;
 }
 
 export abstract class Renderable {

@@ -1,5 +1,5 @@
 import {App, PicoGL} from 'picogl';
-import {mat4, vec2} from 'gl-matrix';
+import {mat4, vec2, vec4} from 'gl-matrix';
 import {RenderMode} from './Renderable';
 import {Camera} from './Camera';
 import {Graph} from '../graph/Graph';
@@ -30,6 +30,15 @@ export class Viewport {
         return this._graph;
     }
 
+    private _clearColor: vec4 = vec4.create();
+    public get clearColor(): vec4 {
+        return this._clearColor;
+    }
+    public set clearColor(value: vec4) {
+        vec4.copy(this._clearColor, value);
+        this.context.clearColor(...this._clearColor as [number, number, number, number]);
+    }
+
     private animationFrameID: number = 0;
 
     constructor(element: HTMLElement) {
@@ -49,10 +58,9 @@ export class Viewport {
             this.canvas.height = rect.height * this.pixelRatio;
         }
 
-        this.context = PicoGL.createApp(this.canvas)
-            .clearColor(0.18, 0.204, 0.251, 1.0)
-            .clearMask(PicoGL.COLOR_BUFFER_BIT | PicoGL.DEPTH_BUFFER_BIT);
-
+        this.context = PicoGL.createApp(this.canvas);
+        this.clearColor = [0.18, 0.204, 0.251, 1.0];
+        this.context.clearMask(PicoGL.COLOR_BUFFER_BIT | PicoGL.DEPTH_BUFFER_BIT);
         this.context.enable(PicoGL.DEPTH_TEST);
         this.context.depthFunc(PicoGL.LEQUAL);
         this.context.gl.lineWidth(2);
@@ -86,6 +94,7 @@ export class Viewport {
             projectionMatrix: this._projection,
             viewportSize: this._size,
             pixelRatio: this.pixelRatio,
+            clearColor: this._clearColor,
         };
 
         this.context.clear();
