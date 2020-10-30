@@ -3,40 +3,27 @@ import {mat4, vec2, vec4} from 'gl-matrix';
 import {RenderMode} from './Renderable';
 import {Camera} from './Camera';
 import {Graph} from '../graph/Graph';
+import {Picking} from './Picking';
 
 export class Viewport {
     public readonly element: HTMLElement;
     public readonly canvas: HTMLCanvasElement;
     public readonly context: App;
     public readonly pixelRatio: number;
+    public readonly picking: Picking;
 
-    private _size: vec2;
-    public get size(): vec2 {
-        return this._size;
-    }
+    public readonly size: vec2;
+    public readonly projection: mat4;
+    public readonly camera: Camera;
+    public readonly graph: Graph;
 
-    private _projection: mat4;
-    public get projection(): mat4 {
-        return this._projection;
-    }
-
-    private _camera: Camera;
-    public get camera(): Camera {
-        return this._camera;
-    }
-
-    private _graph: Graph;
-    public get graph(): Graph {
-        return this._graph;
-    }
-
-    private _clearColor: vec4 = vec4.create();
+    private _clearColor: [number, number, number, number] = vec4.create() as [number, number, number, number];
     public get clearColor(): vec4 {
         return this._clearColor;
     }
     public set clearColor(value: vec4) {
         vec4.copy(this._clearColor, value);
-        this.context.clearColor(...this._clearColor as [number, number, number, number]);
+        this.context.clearColor(...this._clearColor);
     }
 
     private animationFrameID: number = 0;
@@ -52,21 +39,28 @@ export class Viewport {
             this.canvas.style.width = '100%';
             this.canvas.style.height = '100%';
             this.element.appendChild(this.canvas);
-
-            const rect = this.canvas.getBoundingClientRect();
-            this.canvas.width = rect.width * this.pixelRatio;
-            this.canvas.height = rect.height * this.pixelRatio;
         }
 
-        this.context = PicoGL.createApp(this.canvas);
-        this.clearColor = [0.18, 0.204, 0.251, 1.0];
+        const rect = this.canvas.getBoundingClientRect();
+        this.canvas.width = rect.width * this.pixelRatio;
+        this.canvas.height = rect.height * this.pixelRatio;
+
+        this.context = PicoGL.createApp(this.canvas, {
+            antialias: false,
+            premultipliedAlpha: false,
+            preserveDrawingBuffer: true,
+        });
+        this.clearColor = [0.141176471, 0.160784314, 0.2, 1.0];
+        // this.clearColor = [0.18, 0.204, 0.251, 1.0];
         this.context.clearMask(PicoGL.COLOR_BUFFER_BIT | PicoGL.DEPTH_BUFFER_BIT);
         this.context.enable(PicoGL.DEPTH_TEST);
         this.context.depthFunc(PicoGL.LEQUAL);
         this.context.gl.lineWidth(2);
 
-        this._size = vec2.fromValues(this.canvas.width, this.canvas.height);
-        this._projection = mat4.create();
+        this.picking = new Picking(this.context);
+
+        this.size = vec2.fromValues(this.canvas.width, this.canvas.height);
+        this.projection = mat4.create();
         mat4.perspective(this.projection, Math.PI / 2, this.size[0] / this.size[1], 1, 1000);
 
         window.addEventListener('resize', () => {
@@ -74,14 +68,15 @@ export class Viewport {
             this.context.resize(rect.width * this.pixelRatio, rect.height * this.pixelRatio);
             vec2.set(this.size, this.canvas.width, this.canvas.height);
             mat4.perspective(this.projection, Math.PI / 2, this.size[0] / this.size[1], 1, 1000);
+            this.picking.resize(this.context);
             this.render();
         });
 
-        this._camera = new Camera();
-        this._graph = new Graph();
+        this.camera = new Camera();
+        this.graph = new Graph();
     }
 
-    public render(camera: Camera = this._camera): void {
+    public render(camera: Camera = this.camera): void {
         if (!this.animationFrameID) {
             this.animationFrameID = requestAnimationFrame(() => this._render(camera));
         }
@@ -90,16 +85,22 @@ export class Viewport {
     private _render(camera: Camera): void {
         const uniforms = {
             viewMatrix: camera.matrix,
-            sceneMatrix: this._graph.matrix,
-            projectionMatrix: this._projection,
-            viewportSize: this._size,
+            sceneMatrix: this.graph.matrix,
+            projectionMatrix: this.projection,
+            viewportSize: this.size,
             pixelRatio: this.pixelRatio,
             clearColor: this._clearColor,
         };
 
-        this.context.clear();
-        if (this._graph.enabled) {
-            this._graph.render(this.context, RenderMode.DRAFT, uniforms);
+        this.context.depthMask(true);
+        this.context.defaultDrawFramebuffer().clearColor(...this._clearColor).clear();
+        this.context.defaultReadFramebuffer();
+        if (this.graph.enabled) {
+            this.graph.render(this.context, RenderMode.DRAFT, uniforms);
+            if (this.picking.enabled) {
+                this.picking.prepareContext(this.context);
+                this.graph.render(this.context, RenderMode.PICKING, uniforms);
+            }
         }
         this.animationFrameID = 0;
     }
