@@ -67,6 +67,17 @@ export class Gravity extends Edges {
         context.depthRange(this._nearDepth, this._farDepth);
         context.depthMask(false);
 
-        this.drawCall.draw();
+        switch (mode) {
+            case RenderMode.PICKING:
+                // this.pickingDrawCall.draw();
+                break;
+
+            case RenderMode.DRAFT:
+            case RenderMode.MEDIUM:
+            case RenderMode.HIGH:
+                this.drawCall.draw();
+
+                break;
+        }
     }
 }

@@ -2,7 +2,7 @@
 
 layout(location=0) in vec3 aVertex;
 layout(location=1) in vec3 iPosition;
-layout(location=2) in uvec3 iColor;
+layout(location=2) in uvec4 iColor;
 layout(location=3) in float iSize;
 
 //layout(std140) uniform RenderUniforms {
@@ -58,7 +58,7 @@ void main() {
     vec2 screenVertex = worldVertex.xy / worldVertex.w;
 
     // send the render color to the fragment shader
-    fColor = vec4(vec3(iColor) / 255.0, 1.0);
+    fColor = vec4(iColor) / 255.0;
     // send the final pixel radius to the fragment shader
     fPixelRadius = floor(desiredPixelRadius);
     // send the computed pixel location to the fragment shader

@@ -58,12 +58,21 @@ export class Straight extends Edges {
 
         this.drawCall.uniform('uAlpha', this.alpha);
 
-        context.enable(PicoGL.BLEND);
-        context.blendFuncSeparate(PicoGL.SRC_ALPHA, PicoGL.ONE_MINUS_SRC_ALPHA, PicoGL.ONE, PicoGL.ONE);
+        switch (mode) {
+            case RenderMode.PICKING:
+                // this.pickingDrawCall.draw();
+                break;
 
-        context.depthRange(this._nearDepth, this._farDepth);
-        context.depthMask(false);
+            case RenderMode.DRAFT:
+            case RenderMode.MEDIUM:
+            case RenderMode.HIGH:
+                context.enable(PicoGL.BLEND);
+                context.blendFuncSeparate(PicoGL.SRC_ALPHA, PicoGL.ONE_MINUS_SRC_ALPHA, PicoGL.ONE, PicoGL.ONE);
 
-        this.drawCall.draw();
+                context.depthRange(this._nearDepth, this._farDepth);
+                context.depthMask(false);
+                this.drawCall.draw();
+                break;
+        }
     }
 }

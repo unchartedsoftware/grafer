@@ -6,7 +6,7 @@ export abstract class Nodes extends Renderable {
     protected colors: VertexBuffer;
     protected sizes: VertexBuffer;
 
-    protected constructor(context: App, positions: Float32Array, colors?: Uint8Array, sizes?: Float32Array) {
+    protected constructor(context: App, positions: Float32Array, colors?: Uint8Array, sizes?: Float32Array, pickingColors?: Uint8Array) {
         super();
         this.positions = context.createVertexBuffer(PicoGL.FLOAT, 3, positions);
 
@@ -24,6 +24,10 @@ export abstract class Nodes extends Renderable {
             const sizesArray = new Float32Array(positions.length / 3);
             sizesArray.fill(0.0);
             this.sizes = context.createVertexBuffer(PicoGL.FLOAT, 1, sizesArray);
+        }
+
+        if (pickingColors) {
+            this.pickingColors = context.createVertexBuffer(PicoGL.UNSIGNED_BYTE, 4, pickingColors);
         }
     }
 }
