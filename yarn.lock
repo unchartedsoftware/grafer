@@ -3264,10 +3264,9 @@ pause-stream@0.0.11:
   dependencies:
     through "~2.3"
 
-picogl@^0.17.6:
+"picogl@git+https://github.com/darionco/picogl.js.git#feature/local-ts-types":
   version "0.17.6"
-  resolved "https://registry.npmjs.org/picogl/-/picogl-0.17.6.tgz#cf86921c68fbbf880b4d0a9e3782bfe3dbf7455e"
-  integrity sha512-knZtHlav6S8lGUKT8CzJUdC6iiNCkB3uvXw4u/x6KZ5s19NUNB8HQUptEkslXwoC5F1u0vQx3kl0mJfLsn0aXg==
+  resolved "git+https://github.com/darionco/picogl.js.git#17f93d85914afe6310a3999789ff023d8ee3f9fe"
 
 picomatch@^2.0.4, picomatch@^2.0.5, picomatch@^2.2.1, picomatch@^2.2.2:
   version "2.2.2"
