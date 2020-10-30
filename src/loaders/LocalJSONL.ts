@@ -45,6 +45,7 @@ async function parseJSONL(input, cb): Promise<void> {
 async function loadNodes(file: File, palette: number[][] = []): Promise<GraferLoaderNodes> {
     const colorMap: Map<number, number[]> = new Map();
     const map: Map<number, number> = new Map();
+    const raw = [];
     const positions = [];
     const sizes = [];
     const colors = [];
@@ -59,6 +60,8 @@ async function loadNodes(file: File, palette: number[][] = []): Promise<GraferLo
     let count = 0;
 
     await parseJSONL(file, (json: any): void => {
+        raw.push(json);
+
         const x = json.x;
         const y = json.y;
         const z = json.z;
@@ -95,6 +98,7 @@ async function loadNodes(file: File, palette: number[][] = []): Promise<GraferLo
 
     return {
         map,
+        raw,
         positions: new Float32Array(positions),
         sizes: new Float32Array(sizes),
         colors: new Uint8Array(colors),
@@ -106,11 +110,14 @@ async function loadNodes(file: File, palette: number[][] = []): Promise<GraferLo
 }
 
 async function loadEdges(file: File, nodes: GraferLoaderNodes): Promise<GraferLoaderEdges> {
+    const raw = [];
     const positions = [];
     const colors = [];
 
     await parseJSONL(file, json => {
         if (nodes.map.has(json.source) && nodes.map.has(json.target)) {
+            raw.push(json);
+
             const sourceIndex = nodes.map.get(json.source);
             const targetIndex = nodes.map.get(json.target);
 
@@ -143,12 +150,22 @@ async function loadEdges(file: File, nodes: GraferLoaderNodes): Promise<GraferLo
     });
 
     return {
+        raw,
         positions: new Float32Array(positions),
         colors: new Uint8Array(colors),
     };
 }
 
+async function loadMeta(file: File): Promise<any[]> {
+    const result = [];
+    await parseJSONL(file, json => {
+        result.push(json);
+    });
+    return result;
+}
+
 export const LocalJSONL: GraferLoader = {
     loadNodes,
     loadEdges,
+    loadMeta,
 };

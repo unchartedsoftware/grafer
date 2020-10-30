@@ -37,12 +37,14 @@ export interface GraferLoaderNodesStats extends GraferLoaderNodesStatsCenter {
 
 export interface GraferLoaderNodes extends GraferLoaderNodesStatsCumulative {
     map: Map<number, number>;
+    raw: any[],
     positions: Float32Array;
     sizes: Float32Array;
     colors: Uint8Array;
 }
 
 export interface GraferLoaderEdges {
+    raw: any[],
     positions: Float32Array;
     colors: Uint8Array;
 }
@@ -50,6 +52,7 @@ export interface GraferLoaderEdges {
 export interface GraferLoader {
     loadNodes: (file: File, palette: number[][]) => Promise<GraferLoaderNodes>;
     loadEdges: (file: File, nodes: GraferLoaderNodes) => Promise<GraferLoaderEdges>;
+    loadMeta: (file: File) => Promise<any[]>;
 }
 
 export function createGraferLoaderVec3(x: number = 0, y: number = 0, z: number = 0): GraferLoaderVec3 {
