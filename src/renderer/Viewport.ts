@@ -63,17 +63,19 @@ export class Viewport {
         this.projection = mat4.create();
         mat4.perspective(this.projection, Math.PI / 2, this.size[0] / this.size[1], 1, 1000);
 
-        window.addEventListener('resize', () => {
-            const rect = this.canvas.getBoundingClientRect();
+        this.camera = new Camera();
+        this.graph = new Graph();
+
+        const resizeObserver = new ResizeObserver((entries: ResizeObserverEntry[]): void => {
+            const canvasEntry = entries[0];
+            const rect = canvasEntry.contentRect;
             this.context.resize(rect.width * this.pixelRatio, rect.height * this.pixelRatio);
             vec2.set(this.size, this.canvas.width, this.canvas.height);
             mat4.perspective(this.projection, Math.PI / 2, this.size[0] / this.size[1], 1, 1000);
             this.picking.resize(this.context);
             this.render();
         });
-
-        this.camera = new Camera();
-        this.graph = new Graph();
+        resizeObserver.observe(this.canvas);
     }
 
     public render(camera: Camera = this.camera): void {
