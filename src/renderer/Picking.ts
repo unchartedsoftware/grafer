@@ -1,9 +1,11 @@
 import {PicoGL, App, Renderbuffer, Framebuffer, Texture} from 'picogl';
 import {EventEmitter} from '@dekkai/event-emitter';
 
-const kHoverOnEvent = Symbol('Grafer::renderer::Picking::hover::on');
-const kHoverOffEvent = Symbol('Grafer::renderer::Picking::hover::off');
-const kClickEvent = Symbol('Grafer::renderer::Picking::click');
+const kEvents = {
+    hoverOn: Symbol('Grafer::renderer::Picking::hover::on'),
+    hoverOff: Symbol('Grafer::renderer::Picking::hover::off'),
+    click: Symbol('Grafer::renderer::Picking::click'),
+};
 
 export interface PickingIndexRange {
     start: number;
@@ -17,6 +19,10 @@ export interface PickingColors {
 }
 
 export class Picking extends EventEmitter {
+    static get events(): typeof kEvents {
+        return kEvents;
+    }
+
     private context: App;
     private colorTarget: Texture;
     private depthTarget: Renderbuffer;
@@ -45,16 +51,8 @@ export class Picking extends EventEmitter {
         }
     }
 
-    public get hoverOnEvent(): symbol {
-        return kHoverOnEvent;
-    }
-
-    public get hoverOffEvent(): symbol {
-        return kHoverOffEvent;
-    }
-
-    public get clickEvent(): symbol {
-        return kClickEvent;
+    public get events(): typeof kEvents{
+        return kEvents;
     }
 
     constructor(context: App) {
@@ -199,18 +197,18 @@ export class Picking extends EventEmitter {
             case 'mousemove':
                 if (colorID !== this.colorHoverID) {
                     if (this.colorHoverID !== 0) {
-                        this.emit(kHoverOffEvent, this.colorHoverID >> 1);
+                        this.emit(kEvents.hoverOff, this.colorHoverID >> 1);
                     }
                     this.colorHoverID = colorID;
                     if (this.colorHoverID !== 0) {
-                        this.emit(kHoverOnEvent, this.colorHoverID >> 1);
+                        this.emit(kEvents.hoverOn, this.colorHoverID >> 1);
                     }
                 }
                 break;
 
             case 'click':
                 if (colorID !== 0) {
-                    this.emit(kClickEvent, colorID >> 1);
+                    this.emit(kEvents.click, colorID >> 1);
                 }
                 break;
         }

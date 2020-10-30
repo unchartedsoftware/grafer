@@ -324,7 +324,7 @@ export async function basic(container): Promise<void> {
                 viewport.graph.addLayer(layer);
 
                 if (loadedLayer.meta) {
-                    viewport.picking.on(viewport.picking.hoverOnEvent, (type, id) => {
+                    viewport.picking.on(viewport.picking.events.hoverOn, (type, id) => {
                         if (pickingColors.map.has(id)) {
                             const metaID = loadedLayer.nodes.raw[pickingColors.map.get(id)].id;
                             graferTooltip.style.display = 'block';
@@ -332,7 +332,7 @@ export async function basic(container): Promise<void> {
                         }
                     });
 
-                    viewport.picking.on(viewport.picking.hoverOffEvent, (type, id) => {
+                    viewport.picking.on(viewport.picking.events.hoverOff, (type, id) => {
                         if (pickingColors.map.has(id)) {
                             graferTooltip.style.display = 'none';
                         }
