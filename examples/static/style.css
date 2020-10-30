@@ -120,3 +120,20 @@ a {
 .start_menu .tp-lblv_v {
     min-width: 420px;
 }
+
+.grafer_container {
+    width: 100%;
+    height: 100%;
+}
+
+.grafer_tooltip {
+    display: none;
+    background: #C8C8C8;
+    margin-left: 28px;
+    padding: 10px;
+    position: absolute;
+    z-index: 1000;
+    /*width:200px;*/
+    /*height:100px;*/
+    user-select: none;
+}

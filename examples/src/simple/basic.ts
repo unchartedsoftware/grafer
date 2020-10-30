@@ -31,12 +31,15 @@ interface FilesSelector {
     nodesFile: File | null;
     edges: string;
     edgesFile: File | null;
+    meta: string;
+    metaFile: File | null;
     colors: LoaderColor[];
 }
 
 interface LoadedLayer {
     nodes: GraferLoaderNodes;
     edges: GraferLoaderEdges;
+    meta: any[];
 }
 
 interface LoadLayersResult {
@@ -147,6 +150,8 @@ function createFilesSelector(pane: Tweakpane, layers: FilesSelector[], updateLoa
         nodesFile: null,
         edges: 'No file selected.',
         edgesFile: null,
+        meta: 'No file selected.',
+        metaFile: null,
         colors:[...kAurora],
     }
     const folder = pane.addFolder({
@@ -188,6 +193,20 @@ function createFilesSelector(pane: Tweakpane, layers: FilesSelector[], updateLoa
 
     folder.addSeparator();
 
+    const metaInput = createFileInput(() => {
+        if (metaInput.files.length) {
+            result.metaFile = metaInput.files[0];
+            result.meta = result.metaFile.name;
+        } else {
+            result.meta = 'No file selected.';
+            result.metaFile = null;
+        }
+    });
+    folder.addMonitor(result, 'meta');
+    folder.addButton({ title: 'browse...' }).on('click', () => metaInput.click());
+
+    folder.addSeparator();
+
     const colors = folder.addFolder({ title: 'colors', expanded: false });
     createColorsSelector(colors, result.colors);
 
@@ -219,6 +238,7 @@ async function loadLayers(layers: FilesSelector[]): Promise<LoadLayersResult> {
         loadedLayers.push({
             nodes: await LocalJSONL.loadNodes(layers[i].nodesFile, colors),
             edges: null,
+            meta: null,
         });
     }
 
@@ -227,6 +247,10 @@ async function loadLayers(layers: FilesSelector[]): Promise<LoadLayersResult> {
     for (let i = 0, n = layers.length; i < n; ++i) {
         if (layers[i].edgesFile) {
             loadedLayers[i].edges = await LocalJSONL.loadEdges(layers[i].edgesFile, loadedLayers[i].nodes);
+        }
+
+        if (layers[i].metaFile) {
+            loadedLayers[i].meta = await LocalJSONL.loadMeta(layers[i].metaFile);
         }
     }
 
@@ -278,16 +302,42 @@ export async function basic(container): Promise<void> {
         try {
             const loaded = await loadLayers(layers);
 
-            container.innerHTML = '';
-            const viewport = new Viewport(container);
+            render(html`<canvas id="grafer" class="grafer_container"></canvas><div id="grafer_tooltip" class="grafer_tooltip">Content 1</div>`, container);
+            const graferContainer = container.querySelector('#grafer');
+            const graferTooltip = container.querySelector('#grafer_tooltip');
 
+            graferContainer.addEventListener('mousemove', (evt: MouseEvent): void => {
+                graferTooltip.style.left = evt.pageX + 'px';
+                graferTooltip.style.top = evt.pageY + 'px';
+            });
+
+            const viewport = new Viewport(graferContainer);
+            viewport.picking.enabled = true;
 
             for (let i = 0, n = loaded.layers.length; i < n; ++i) {
                 const loadedLayer = loaded.layers[i];
-                const nodes = new Circular(viewport.context, loadedLayer.nodes.positions, loadedLayer.nodes.colors, loadedLayer.nodes.sizes);
+                const pickingColors = viewport.picking.allocatePickingColors(loadedLayer.nodes.count);
+                console.log(pickingColors);
+                const nodes = new Circular(viewport.context, loadedLayer.nodes.positions, loadedLayer.nodes.colors, loadedLayer.nodes.sizes, pickingColors.colors);
                 const edges = !loadedLayer.edges ? null : new Gravity(viewport.context, loadedLayer.edges.positions, loadedLayer.edges.colors);
                 const layer = new Layer(nodes, edges, layers[i].name);
                 viewport.graph.addLayer(layer);
+
+                if (loadedLayer.meta) {
+                    viewport.picking.on(viewport.picking.hoverOnEvent, (type, id) => {
+                        if (pickingColors.map.has(id)) {
+                            const metaID = loadedLayer.nodes.raw[pickingColors.map.get(id)].id;
+                            graferTooltip.style.display = 'block';
+                            graferTooltip.innerText = loadedLayer.meta[metaID].label;
+                        }
+                    });
+
+                    viewport.picking.on(viewport.picking.hoverOffEvent, (type, id) => {
+                        if (pickingColors.map.has(id)) {
+                            graferTooltip.style.display = 'none';
+                        }
+                    });
+                }
             }
 
             viewport.camera.position = [0, 0, loaded.stats.cornerLength];
