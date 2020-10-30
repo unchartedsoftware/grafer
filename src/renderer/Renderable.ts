@@ -1,10 +1,11 @@
 import {mat4, vec2, vec4} from 'gl-matrix';
-import {App, DrawCall, Program} from 'picogl';
+import {App, DrawCall, Program, VertexBuffer} from 'picogl';
 
 export enum RenderMode {
     DRAFT,
     MEDIUM,
     HIGH,
+    PICKING,
 }
 
 export interface RenderUniforms {
@@ -37,6 +38,10 @@ export abstract class Renderable {
 
     protected program: Program;
     protected drawCall: DrawCall;
+
+    protected pickingProgram: Program;
+    protected pickingDrawCall: DrawCall = null;
+    protected pickingColors: VertexBuffer = null;
 
     public abstract render(context: App, mode: RenderMode, uniforms: RenderUniforms): void;
 }
