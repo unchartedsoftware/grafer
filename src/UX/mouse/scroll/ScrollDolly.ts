@@ -3,7 +3,7 @@ import {MouseState} from '../MouseHandler';
 import {mat4, vec2, vec3, vec4} from 'gl-matrix';
 
 export class ScrollDolly {
-    public zoomSpeed: number = 4.5;
+    public speed: number = 4.5;
 
     private _enabled: boolean = false;
     public get enabled(): boolean {
@@ -59,7 +59,7 @@ export class ScrollDolly {
         vec3.normalize(rayWorld, rayWorld);
 
         const position = this.viewport.camera.position;
-        vec3.scaleAndAdd(position, position, rayWorld, delta * this.zoomSpeed);
+        vec3.scaleAndAdd(position, position, rayWorld, delta * this.speed);
 
         this.viewport.camera.position = position;
 
