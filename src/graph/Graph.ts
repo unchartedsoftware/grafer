@@ -48,9 +48,8 @@ export class Graph extends Renderable {
         }
     }
 
-    public rotate(x: number, y: number, z: number): void {
-        const r = quat.fromEuler(quat.create(), x, y, z);
-        quat.mul(this._rotation, r, this._rotation);
+    public rotate(rotation: quat): void {
+        quat.mul(this._rotation, rotation, this._rotation);
     }
 
     public addLayer(layer: Layer): void {
