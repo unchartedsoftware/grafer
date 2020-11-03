@@ -113,7 +113,7 @@ export function normalizeNodeLayers(layers: GraferLoaderNodes[]): GraferLoaderNo
     const bbCorners = vec3.fromValues(
         Math.max(Math.abs(coordsDomain.x.min), Math.abs(coordsDomain.x.max)),
         Math.max(Math.abs(coordsDomain.y.min), Math.abs(coordsDomain.y.max)),
-        Math.max(Math.abs(coordsDomain.z.min), Math.abs(coordsDomain.z.max)),
+        Math.max(Math.abs(coordsDomain.z.min), Math.abs(coordsDomain.z.max))
     );
     const cornerLength = vec3.len(bbCorners);
 

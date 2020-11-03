@@ -62,9 +62,14 @@ module.exports = {
     rules: {
         'no-console': process.env.NODE_ENV === 'production' ? 'err' : 'warn',
         'no-debugger': process.env.NODE_ENV === 'production' ? 'err' : 'warn',
-        // TODO: need discussion
         // enforce comma dangle
-        'comma-dangle': [2, 'always-multiline'],
+        'comma-dangle': [2, {
+            arrays: 'always-multiline',
+            objects: 'always-multiline',
+            imports: 'always-multiline',
+            exports: 'always-multiline',
+            functions: 'never'
+        }],
         // semicolon stuff
         'no-extra-semi': 2,
         'semi-spacing': [1, { before: false, after: true }],

@@ -124,27 +124,27 @@ async function loadEdges(file: File, nodes: GraferLoaderNodes): Promise<GraferLo
             positions.push(
                 nodes.positions[sourceIndex * 3],
                 nodes.positions[sourceIndex * 3 + 1],
-                nodes.positions[sourceIndex * 3 + 2],
+                nodes.positions[sourceIndex * 3 + 2]
             );
 
             positions.push(
                 nodes.positions[targetIndex * 3],
                 nodes.positions[targetIndex * 3 + 1],
-                nodes.positions[targetIndex * 3 + 2],
+                nodes.positions[targetIndex * 3 + 2]
             );
 
             colors.push(
                 nodes.colors[sourceIndex * 4],
                 nodes.colors[sourceIndex * 4 + 1],
                 nodes.colors[sourceIndex * 4 + 2],
-                nodes.colors[sourceIndex * 4 + 3],
+                nodes.colors[sourceIndex * 4 + 3]
             );
 
             colors.push(
                 nodes.colors[targetIndex * 4],
                 nodes.colors[targetIndex * 4 + 1],
                 nodes.colors[targetIndex * 4 + 2],
-                nodes.colors[targetIndex * 4 + 3],
+                nodes.colors[targetIndex * 4 + 3]
             );
         }
     });
