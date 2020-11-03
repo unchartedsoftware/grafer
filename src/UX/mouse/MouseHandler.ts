@@ -187,17 +187,11 @@ export class MouseHandler extends EventEmitter {
             vec2.copy(this.state.clientCoords, state.clientCoords);
             vec2.copy(this.state.canvasCoords, state.canvasCoords);
         }
-        vec2.set(this.state.deltaCoords, 0, 0);
+        vec2.copy(this.state.deltaCoords, state.deltaCoords);
+        vec2.copy(this.state.clientCoords, state.clientCoords);
+        vec2.copy(this.state.canvasCoords, state.canvasCoords);
 
-        if (
-            !vec2.equals(this.state.clientCoords, state.clientCoords) ||
-            !vec2.equals(this.state.canvasCoords, state.canvasCoords)
-        ) {
-            vec2.set(this.state.deltaCoords,
-                state.canvasCoords[0] - this.state.canvasCoords[0],
-                state.canvasCoords[1] - this.state.canvasCoords[1]);
-            vec2.copy(this.state.clientCoords, state.clientCoords);
-            vec2.copy(this.state.canvasCoords, state.canvasCoords);
+        if (this.state.deltaCoords[0] !== 0 || this.state.deltaCoords[1] !== 0) {
             if (this.state.valid) {
                 events.push({
                     event: kEvents.move,
@@ -264,10 +258,17 @@ export class MouseHandler extends EventEmitter {
     private handleMouseEvent(e: MouseEvent): void {
         const client = this.newState.clientCoords;
         const canvas = this.newState.canvasCoords;
+        const delta = this.newState.deltaCoords;
         const rect = this.rect;
 
         vec2.set(client, e.clientX, e.clientY);
         vec2.set(canvas, e.clientX - rect.left, e.clientY - rect.top);
+
+        if (e.type === 'mousemove') {
+            vec2.set(delta, e.movementX, e.movementY);
+        } else {
+            vec2.set(delta, 0, 0);
+        }
 
         this.newState.valid = Boolean(
             canvas[0] >= rect.left && canvas[0] <= rect.right &&
@@ -280,10 +281,6 @@ export class MouseHandler extends EventEmitter {
         this.newState.buttons.fourth = Boolean(e.buttons & 8);
         this.newState.buttons.fifth = Boolean(e.buttons & 16);
 
-        if (e.type === 'mouseleave') {
-            this.newState.valid = false;
-        }
-
         switch (e.type) {
             case 'click':
                 this.handleClickEvent(e, this.newState);
@@ -293,6 +290,9 @@ export class MouseHandler extends EventEmitter {
                 this.handleWheelEvent(e as WheelEvent, this.newState);
                 break;
 
+            case 'mouseleave':
+                this.newState.valid = false;
+                /* fallthrough */
             default:
                 this.update(this.newState);
                 break;
