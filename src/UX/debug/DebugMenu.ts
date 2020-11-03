@@ -3,24 +3,51 @@ import {Viewport} from '../../renderer/Viewport';
 import {FolderApi} from 'tweakpane/dist/types/api/folder';
 import {Layer} from '../../graph/Layer';
 import {Gravity} from '../../graph/edges/gravity/Gravity';
+import {kButton2Index} from '../mouse/MouseHandler';
 
 export class DebugMenu {
     private viewport: Viewport;
+    private pane: Tweakpane;
+    private uxFolder: FolderApi;
 
     constructor(viewport: Viewport) {
         this.viewport = viewport;
 
         const layers = viewport.graph.layers;
-        const menu = new Tweakpane({ title: 'Debug Menu', expanded: false });
+        this.pane = new Tweakpane({ title: 'Debug Menu', expanded: false });
         for (let i = 0, n = layers.length; i < n; ++i) {
             const layer = layers[i];
-            const layerFolder = menu.addFolder({ title: layer.name, expanded: false });
+            const layerFolder = this.pane.addFolder({ title: layer.name, expanded: false });
             this.addLayerOptions(layerFolder, layer);
         }
 
-        menu.on('change', ()=> {
+        this.uxFolder = null;
+
+        this.pane.on('change', ()=> {
             this.viewport.render();
         });
+    }
+
+    public registerUX(ux: {[key: string]: any}): void {
+        if (!this.uxFolder) {
+            this.uxFolder = this.pane.addFolder({ title: 'UX', expanded: false });
+        }
+
+        const folder = this.uxFolder.addFolder({ title: ux.constructor.name, expanded: false });
+        folder.addInput(ux, 'enabled');
+
+        if ('button' in ux) {
+            const keys = Object.keys(kButton2Index);
+            const options = {};
+            for (let i = 0, n = keys.length; i < n; ++i) {
+                options[keys[i]] = keys[i];
+            }
+            folder.addInput(ux, 'button', { options });
+        }
+
+        if ('speed' in ux) {
+            folder.addInput(ux, 'speed', { min: -100, max: 100 });
+        }
     }
 
     private addLayerOptions(folder: FolderApi, layer: Layer): void {
