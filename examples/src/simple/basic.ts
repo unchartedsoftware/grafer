@@ -2,8 +2,8 @@ import {html, render} from 'lit-html';
 import {LocalJSONL} from '../../../src/loaders/LocalJSONL';
 
 import {Viewport} from '../../../src/renderer/Viewport';
-import {DragRotation} from '../../../src/UX/DragRotation';
-import {ScrollZoom} from '../../../src/UX/ScrollZoom';
+import {DragRotation} from '../../../src/UX/mouse/drag/DragRotation';
+import {ScrollDolly} from '../../../src/UX/mouse/scroll/ScrollDolly';
 
 import Tweakpane from 'tweakpane';
 import {FolderApi} from 'tweakpane/dist/types/api/folder';
@@ -16,7 +16,9 @@ import {
 import {Layer} from '../../../src/graph/Layer';
 import {Circular} from '../../../src/graph/nodes/circular/Circular';
 import {Gravity} from '../../../src/graph/edges/gravity/Gravity';
-import {DebugMenu} from '../../../src/UX/DebugMenu';
+import {DebugMenu} from '../../../src/UX/debug/DebugMenu';
+import {DragPan} from '../../../src/UX/mouse/drag/DragPan';
+import {DragTruck} from '../../../src/UX/mouse/drag/DragTruck';
 
 interface LoaderColor {
     r: number;
@@ -340,13 +342,19 @@ export async function basic(container): Promise<void> {
                 }
             }
 
-            viewport.camera.position = [0, 0, loaded.stats.cornerLength];
+            viewport.camera.position = [0, 0, -loaded.stats.cornerLength * 2];
 
             const rotation = new DragRotation(viewport);
-            rotation.start();
+            rotation.enabled = true;
 
-            const zoom = new ScrollZoom(viewport);
-            zoom.start();
+            const dolly = new ScrollDolly(viewport);
+            dolly.enabled = true;
+
+            // const pan = new DragPan(viewport);
+            // pan.enabled = true;
+
+            const truck = new DragTruck(viewport);
+            truck.enabled = true;
 
             const debug = new DebugMenu(viewport);
             console.log(debug);
