@@ -8,8 +8,8 @@ export class DragPan extends DragBase {
             const aspect = this.viewport.size[0] / this.viewport.size[1];
 
             const aov = this.viewport.camera.aov;
-            const rotationX = -aov * (delta[1] / this.viewport.rect.height[1]);
-            const rotationY = -aov * (delta[0] / this.viewport.rect.width[0]) * aspect;
+            const rotationX = -aov * (delta[1] / this.viewport.rect.height);
+            const rotationY = -aov * (delta[0] / this.viewport.rect.width) * aspect;
 
             const r = quat.fromEuler(quat.create(), rotationX, rotationY, 0);
             this.viewport.camera.rotate(r);
