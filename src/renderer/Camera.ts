@@ -1,14 +1,66 @@
-import {vec3, mat4} from 'gl-matrix';
+import {vec2, vec3, mat4, quat} from 'gl-matrix';
 
 export class Camera {
+    private _aovRad: number = 0;
+    public get aovRad(): number {
+        return this._aovRad;
+    }
+    public set aovRad(value: number) {
+        this._aovRad = value;
+        this._aov = value * 57.29577951308232; // 180 / PI
+    }
+
+    private _aov: number = 0;
+    public get aov(): number {
+        return this._aov;
+    }
+    public set aov(value: number) {
+        this._aov = value;
+        this._aovRad = value * 0.017453292519943295; // PI / 180
+    }
+
+    private _nearPlane: number = 1;
+    public get nearPlane(): number {
+        return this._nearPlane;
+    }
+    public set nearPlane(value: number) {
+        this._nearPlane = value;
+        this.calculateProjectionMatrix();
+    }
+
+    private _farPlane: number = 1000;
+    public get farPlane(): number {
+        return this._farPlane;
+    }
+    public set farPlane(value: number) {
+        this._farPlane = value;
+        this.calculateProjectionMatrix();
+    }
+
+    private _viewportSize: vec2;
+    public get viewportSize(): vec2 {
+        return this._viewportSize;
+    }
+    public set viewportSize(value: vec2) {
+        vec2.copy(this._viewportSize, value);
+        this._aspect = this._viewportSize[0] / this._viewportSize[1];
+        this.calculateProjectionMatrix();
+    }
+
     private _position: vec3;
     public get position(): vec3 {
         return this._position;
     }
     public set position(value: vec3) {
         vec3.copy(this._position, value);
-        this._workingDistance = vec3.dist(this._position, this._target);
-        this.computeMatrix();
+    }
+
+    private _rotation: quat;
+    public get rotation(): quat {
+        return this._rotation;
+    }
+    public set rotation(value: quat) {
+        quat.copy(this._rotation, value);
     }
 
     private _target: vec3;
@@ -17,34 +69,51 @@ export class Camera {
     }
     public set target(value: vec3) {
         vec3.copy(this._target, value);
-        this._workingDistance = vec3.dist(this._position, this._target);
-        this.computeMatrix();
     }
 
-    private _workingDistance: number;
-    public get workingDistance(): number {
-        return this._workingDistance;
+    private _aspect: number;
+    public get aspect(): number {
+        return this._aspect;
     }
 
-    private _matrix: mat4;
-    public get matrix(): mat4 {
-        return this._matrix;
+    private _viewMatrix: mat4;
+    public get viewMatrix(): mat4 {
+        mat4.fromQuat(this._viewMatrix, this._rotation);
+        mat4.translate(this._viewMatrix, this._viewMatrix, this._position);
+        return this._viewMatrix;
     }
 
-    constructor(position: vec3 = vec3.fromValues(0, 0, 1), target: vec3 = vec3.fromValues(0, 0, 0)) {
+    private _projectionMatrix: mat4;
+    public get projectionMatrix(): mat4 {
+        return this._projectionMatrix;
+    }
+
+    constructor(viewportSize: vec2, position: vec3 = vec3.fromValues(0, 0, -1)) {
         this._position = vec3.create();
         vec3.copy(this._position, position);
 
-        this._target = vec3.create();
-        vec3.copy(this._target, target);
+        this._rotation = quat.fromEuler(quat.create(), 0, 0, 0);
+        this._viewMatrix = mat4.create();
 
-        this._workingDistance = vec3.dist(this._position, this._target);
+        this._projectionMatrix = mat4.create();
+        this._viewportSize = vec2.copy(vec2.create(), viewportSize);
+        this._aspect = this._viewportSize[0] / this._viewportSize[1];
+        this.aov = 45;
 
-        this._matrix = mat4.create();
-        this.computeMatrix();
+        this.calculateProjectionMatrix();
     }
 
-    private computeMatrix(): void {
-        mat4.lookAt(this._matrix, this._position, this._target, vec3.fromValues(0, 1, 0));
+    public rotate(rotation: quat): void {
+        quat.mul(this._rotation, rotation, this._rotation);
+    }
+
+    private calculateProjectionMatrix(): void {
+        mat4.perspective(
+            this._projectionMatrix,
+            this._aovRad,
+            this._aspect,
+            this._nearPlane,
+            this._farPlane
+        );
     }
 }
