@@ -64,7 +64,7 @@ async function loadNodes(file: File, palette: number[][] = []): Promise<GraferLo
 
         const x = json.x;
         const y = json.y;
-        const z = json.z;
+        const z = json.hasOwnProperty('z') ? json.z : 0.0;
         positions.push(x, y, z);
         map.set(json.id, count);
 
