@@ -1,8 +1,8 @@
 import Tweakpane from 'tweakpane';
-import {Viewport} from '../renderer/Viewport';
+import {Viewport} from '../../renderer/Viewport';
 import {FolderApi} from 'tweakpane/dist/types/api/folder';
-import {Layer} from '../graph/Layer';
-import {Gravity} from '../graph/edges/gravity/Gravity';
+import {Layer} from '../../graph/Layer';
+import {Gravity} from '../../graph/edges/gravity/Gravity';
 
 export class DebugMenu {
     private viewport: Viewport;

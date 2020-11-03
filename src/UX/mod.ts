@@ -1,3 +1,2 @@
-export * from './DragRotation';
-export * from './ScrollZoom';
-export * from './DebugMenu';
+export * as mouse from './mouse/mod';
+export * from './debug/DebugMenu';
