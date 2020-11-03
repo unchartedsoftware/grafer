@@ -6,6 +6,7 @@ const kEvents = {
     hoverOff: Symbol('Grafer::renderer::Picking::hover::off'),
     click: Symbol('Grafer::renderer::Picking::click'),
 };
+Object.freeze(kEvents);
 
 export interface PickingIndexRange {
     start: number;
@@ -19,7 +20,7 @@ export interface PickingColors {
 }
 
 export class Picking extends EventEmitter {
-    static get events(): typeof kEvents {
+    public static get events(): typeof kEvents {
         return kEvents;
     }
 
