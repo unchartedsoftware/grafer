@@ -1,9 +1,10 @@
 import {App, PicoGL} from 'picogl';
-import {mat4, vec2, vec4} from 'gl-matrix';
+import {vec2, vec4} from 'gl-matrix';
 import {RenderMode} from './Renderable';
 import {Camera} from './Camera';
 import {Graph} from '../graph/Graph';
 import {Picking} from './Picking';
+import {MouseHandler} from '../UX/mouse/MouseHandler';
 
 export class Viewport {
     public readonly element: HTMLElement;
@@ -11,9 +12,10 @@ export class Viewport {
     public readonly context: App;
     public readonly pixelRatio: number;
     public readonly picking: Picking;
+    public readonly mouseHandler: MouseHandler;
+    public rect: DOMRectReadOnly;
 
     public readonly size: vec2;
-    public readonly projection: mat4;
     public readonly camera: Camera;
     public readonly graph: Graph;
 
@@ -30,7 +32,7 @@ export class Viewport {
 
     constructor(element: HTMLElement) {
         this.element = element;
-        this.pixelRatio = 1.0; // window.devicePixelRatio;
+        this.pixelRatio = window.devicePixelRatio;
 
         if (this.element instanceof HTMLCanvasElement) {
             this.canvas = this.element;
@@ -41,9 +43,9 @@ export class Viewport {
             this.element.appendChild(this.canvas);
         }
 
-        const rect = this.canvas.getBoundingClientRect();
-        this.canvas.width = rect.width * this.pixelRatio;
-        this.canvas.height = rect.height * this.pixelRatio;
+        this.rect = this.canvas.getBoundingClientRect();
+        this.canvas.width = this.rect.width * this.pixelRatio;
+        this.canvas.height = this.rect.height * this.pixelRatio;
 
         this.context = PicoGL.createApp(this.canvas, {
             antialias: false,
@@ -58,21 +60,21 @@ export class Viewport {
         this.context.gl.lineWidth(2);
 
         this.picking = new Picking(this.context);
+        this.mouseHandler = new MouseHandler(this.canvas, this.rect);
 
         this.size = vec2.fromValues(this.canvas.width, this.canvas.height);
-        this.projection = mat4.create();
-        mat4.perspective(this.projection, Math.PI / 2, this.size[0] / this.size[1], 1, 1000);
 
-        this.camera = new Camera();
+        this.camera = new Camera(this.size);
         this.graph = new Graph();
 
         const resizeObserver = new ResizeObserver((entries: ResizeObserverEntry[]): void => {
             const canvasEntry = entries[0];
-            const rect = canvasEntry.contentRect;
-            this.context.resize(rect.width * this.pixelRatio, rect.height * this.pixelRatio);
+            this.rect = canvasEntry.contentRect;
+            this.context.resize(this.rect.width * this.pixelRatio, this.rect.height * this.pixelRatio);
             vec2.set(this.size, this.canvas.width, this.canvas.height);
-            mat4.perspective(this.projection, Math.PI / 2, this.size[0] / this.size[1], 1, 1000);
+            this.camera.viewportSize = this.size;
             this.picking.resize(this.context);
+            this.mouseHandler.resize(this.rect);
             this.render();
         });
         resizeObserver.observe(this.canvas);
@@ -86,9 +88,9 @@ export class Viewport {
 
     private _render(camera: Camera): void {
         const uniforms = {
-            viewMatrix: camera.matrix,
+            viewMatrix: camera.viewMatrix,
             sceneMatrix: this.graph.matrix,
-            projectionMatrix: this.projection,
+            projectionMatrix: this.camera.projectionMatrix,
             viewportSize: this.size,
             pixelRatio: this.pixelRatio,
             clearColor: this._clearColor,
