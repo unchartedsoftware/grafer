@@ -80,6 +80,16 @@ export class Viewport {
         resizeObserver.observe(this.canvas);
     }
 
+    public resetContextFlags(): void {
+        this.context.defaultDrawFramebuffer();
+        this.context.defaultReadFramebuffer();
+        this.context.disable(PicoGL.BLEND);
+        this.context.enable(PicoGL.DEPTH_TEST);
+        this.context.depthMask(true);
+        this.context.depthRange(0.0, 1.0);
+        this.context.clearColor(...this._clearColor);
+    }
+
     public render(camera: Camera = this.camera): void {
         if (!this.animationFrameID) {
             this.animationFrameID = requestAnimationFrame(() => this._render(camera));
@@ -96,9 +106,7 @@ export class Viewport {
             clearColor: this._clearColor,
         };
 
-        this.context.depthMask(true);
-        this.context.defaultDrawFramebuffer().clearColor(...this._clearColor).clear();
-        this.context.defaultReadFramebuffer();
+        this.resetContextFlags();
         if (this.graph.enabled) {
             this.graph.render(this.context, RenderMode.DRAFT, uniforms);
             if (this.picking.enabled) {
