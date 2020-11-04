@@ -11,7 +11,7 @@ import {
     GraferLoaderEdges,
     GraferLoaderNodes,
     GraferLoaderNodesStats,
-    normalizeNodeLayers
+    normalizeNodeLayers,
 } from '../../../src/loaders/GraferLoader';
 import {Layer} from '../../../src/graph/Layer';
 import {Circular} from '../../../src/graph/nodes/circular/Circular';
@@ -91,6 +91,8 @@ function createColorsSelector(folder: FolderApi, colors: LoaderColor[]): void {
         presetOptions[kColorPresets[i].name] = i;
     }
     const preset = folder.addInput(dummy, 'preset', { options: presetOptions });
+    const remove = folder.addButton({ title: 'remove color' });
+
     preset.on('change', (value: number): void => {
         if (value > 0) {
             colors.length = 0;
@@ -113,7 +115,6 @@ function createColorsSelector(folder: FolderApi, colors: LoaderColor[]): void {
         folder.addInput(colors, `${i}`);
     }
 
-    const remove = folder.addButton({ title: 'remove color' });
     remove.hidden = colors.length <= 1;
     remove.on('click', () => {
         colors.pop();
@@ -155,7 +156,7 @@ function createFilesSelector(pane: Tweakpane, layers: FilesSelector[], updateLoa
         meta: 'No file selected.',
         metaFile: null,
         colors:[...kAurora],
-    }
+    };
     const folder = pane.addFolder({
         title: result.name,
         index: layers.length,
@@ -262,7 +263,7 @@ async function loadLayers(layers: FilesSelector[]): Promise<LoadLayersResult> {
     };
 }
 
-export async function basic(container): Promise<void> {
+export async function basic(container: HTMLElement): Promise<void> {
     render(html`<div id="menu" class="start_menu"></div>`, container);
 
     const menu = new Tweakpane({
@@ -274,7 +275,7 @@ export async function basic(container): Promise<void> {
 
     const addBtn = menu.addButton({ title: 'add layer' });
     const loadBtn = menu.addButton({ title: 'load' });
-    const updateLoadBtn = () => {
+    const updateLoadBtn = (): void => {
         if (layers.length) {
             for (let i = 0, n = layers.length; i < n; ++i) {
                 if (!layers[i].ready) {
@@ -305,8 +306,8 @@ export async function basic(container): Promise<void> {
             const loaded = await loadLayers(layers);
 
             render(html`<canvas id="grafer" class="grafer_container"></canvas><div id="grafer_tooltip" class="grafer_tooltip">Content 1</div>`, container);
-            const graferContainer = container.querySelector('#grafer');
-            const graferTooltip = container.querySelector('#grafer_tooltip');
+            const graferContainer = container.querySelector('#grafer') as HTMLElement;
+            const graferTooltip = container.querySelector('#grafer_tooltip') as HTMLElement;
 
             graferContainer.addEventListener('mousemove', (evt: MouseEvent): void => {
                 graferTooltip.style.left = evt.pageX + 'px';
@@ -319,7 +320,6 @@ export async function basic(container): Promise<void> {
             for (let i = 0, n = loaded.layers.length; i < n; ++i) {
                 const loadedLayer = loaded.layers[i];
                 const pickingColors = viewport.picking.allocatePickingColors(loadedLayer.nodes.count);
-                console.log(pickingColors);
                 const nodes = new Circular(viewport.context, loadedLayer.nodes.positions, loadedLayer.nodes.colors, loadedLayer.nodes.sizes, pickingColors.colors);
                 const edges = !loadedLayer.edges ? null : new Gravity(viewport.context, loadedLayer.edges.positions, loadedLayer.edges.colors);
                 const layer = new Layer(nodes, edges, layers[i].name);

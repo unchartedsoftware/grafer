@@ -1,16 +1,19 @@
-function getExamplePaths(examples, entries = [], path = ''): string[] {
+export type ExampleFunction = (e: HTMLElement) => void;
+export type ExamplesContainer = { [key: string]: ExamplesContainer | ExampleFunction};
+
+function getExamplePaths(examples: ExamplesContainer, entries: string[] = [], path: string = ''): string[] {
     const keys = Object.keys(examples);
     for (let i = 0, n = keys.length; i < n; ++i) {
         if (typeof examples[keys[i]] === 'function') {
             entries.push(`${path}/${keys[i]}`);
         } else {
-            getExamplePaths(examples[keys[i]], entries, `${path}/${keys[i]}`);
+            getExamplePaths(examples[keys[i]] as ExamplesContainer, entries, `${path}/${keys[i]}`);
         }
     }
     return entries;
 }
 
-export function renderMenu(element, examples): void {
+export function renderMenu(element: HTMLElement, examples: ExamplesContainer): void {
     const entries = getExamplePaths(examples);
     const container = document.createElement('div');
     container.className = 'menu-container';

@@ -29,7 +29,7 @@
         "clean": "rimraf build",
         "develop": "yarn build:dev --watch --config-dev-server",
         "docs": "typedoc --out ./docs ./src --exclude 'node_modules/**/*' --mode file --includeVersion --stripInternal --skipLibCheck",
-        "lint": "eslint --config ./.eslintrc.cjs \"./{src,tests}/**/*.{js,ts}\"",
+        "lint": "eslint --config ./.eslintrc.cjs \"./{src,tests,examples}/**/*.{js,ts}\"",
         "test": "karma start --single-run --browsers ChromeHeadless karma.conf.cjs",
         "prepack": "run-s clean test lint",
         "pre-push": "run-p pre-push:**",
