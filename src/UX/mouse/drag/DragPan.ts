@@ -1,8 +1,8 @@
 import {MouseState} from '../MouseHandler';
 import {vec2, quat} from 'gl-matrix';
-import {DragBase} from './DragBase';
+import {DragModule} from './DragModule';
 
-export class DragPan extends DragBase {
+export class DragPan extends DragModule {
     protected handleMouse(event: symbol, state: MouseState, delta: vec2): void {
         if (state.buttons[this.button]) {
             const aspect = this.viewport.size[0] / this.viewport.size[1];

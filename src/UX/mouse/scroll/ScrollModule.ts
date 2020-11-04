@@ -2,7 +2,7 @@ import {Viewport} from '../../../renderer/Viewport';
 import {MouseState} from '../MouseHandler';
 import {UXModule} from '../../UXModule';
 
-export abstract class ScrollBase extends UXModule {
+export abstract class ScrollModule extends UXModule {
     public speed: number = 4.5;
 
     protected viewport: Viewport;

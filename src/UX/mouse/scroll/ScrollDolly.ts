@@ -1,8 +1,8 @@
 import {MouseState} from '../MouseHandler';
 import {mat4, vec2, vec3, vec4} from 'gl-matrix';
-import {ScrollBase} from './ScrollBase';
+import {ScrollModule} from './ScrollModule';
 
-export class ScrollDolly extends ScrollBase {
+export class ScrollDolly extends ScrollModule {
     protected handleMouse(event: symbol, state: MouseState, delta: number): void {
         const invProjection = mat4.invert(mat4.create(), this.viewport.camera.projectionMatrix);
         const invView = mat4.invert(mat4.create(), this.viewport.camera.viewMatrix);

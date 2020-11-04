@@ -3,7 +3,7 @@ import {MouseState, kButton2Index} from '../MouseHandler';
 import {vec2} from 'gl-matrix';
 import {UXModule} from '../../UXModule';
 
-export abstract class DragBase extends UXModule {
+export abstract class DragModule extends UXModule {
     public button: keyof typeof kButton2Index = 'primary';
 
     protected viewport: Viewport;

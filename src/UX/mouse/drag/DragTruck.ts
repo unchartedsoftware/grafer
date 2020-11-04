@@ -1,8 +1,8 @@
-import {DragBase} from './DragBase';
+import {DragModule} from './DragModule';
 import {MouseState} from '../MouseHandler';
 import {quat, vec2, vec3} from 'gl-matrix';
 
-export class DragTruck extends DragBase {
+export class DragTruck extends DragModule {
     protected handleMouse(event: symbol, state: MouseState, delta: vec2): void {
         if (state.buttons[this.button]) {
             const position = this.viewport.camera.position;

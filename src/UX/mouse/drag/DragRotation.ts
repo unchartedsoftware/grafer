@@ -1,8 +1,8 @@
 import {MouseState, kButton2Index} from '../MouseHandler';
 import {quat, vec2} from 'gl-matrix';
-import {DragBase} from './DragBase';
+import {DragModule} from './DragModule';
 
-export class DragRotation extends DragBase {
+export class DragRotation extends DragModule {
     public button: keyof typeof kButton2Index = 'secondary';
 
     protected handleMouse(event: symbol, state: MouseState, delta: vec2): void {
