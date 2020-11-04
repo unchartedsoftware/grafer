@@ -8,6 +8,7 @@ export class Camera {
     public set aovRad(value: number) {
         this._aovRad = value;
         this._aov = value * 57.29577951308232; // 180 / PI
+        this.calculateProjectionMatrix();
     }
 
     private _aov: number = 0;
@@ -17,6 +18,7 @@ export class Camera {
     public set aov(value: number) {
         this._aov = value;
         this._aovRad = value * 0.017453292519943295; // PI / 180
+        this.calculateProjectionMatrix();
     }
 
     private _nearPlane: number = 1;
