@@ -344,20 +344,21 @@ export async function basic(container: HTMLElement): Promise<void> {
 
             viewport.camera.position = [0, 0, -loaded.stats.cornerLength * 2];
 
+            const dolly = new ScrollDolly(viewport);
+            dolly.enabled = true;
+
+            const truck = new DragTruck(viewport);
+            truck.button = 'primary';
+            truck.enabled = true;
+
             const rotation = new DragRotation(viewport);
             rotation.button = 'secondary';
             rotation.enabled = true;
-
-            const dolly = new ScrollDolly(viewport);
-            dolly.enabled = true;
 
             const pan = new DragPan(viewport);
             pan.button = 'auxiliary';
             pan.enabled = true;
 
-            const truck = new DragTruck(viewport);
-            truck.button = 'primary';
-            truck.enabled = true;
 
             const debug = new DebugMenu(viewport);
             debug.registerUX(dolly);
