@@ -1,5 +1,5 @@
 export abstract class UXModule {
-    private _enabled: boolean = false;
+    protected _enabled: boolean = false;
     public get enabled(): boolean {
         return this._enabled;
     }
