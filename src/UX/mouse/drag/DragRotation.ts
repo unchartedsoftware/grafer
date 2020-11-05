@@ -1,4 +1,4 @@
-import {MouseState, kButton2Index, MouseButtonName} from '../MouseHandler';
+import {MouseState, MouseButtonName} from '../MouseHandler';
 import {quat, vec2} from 'gl-matrix';
 import {DragModule} from './DragModule';
 
