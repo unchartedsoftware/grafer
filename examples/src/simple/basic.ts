@@ -112,7 +112,7 @@ function createColorsSelector(folder: FolderApi, colors: LoaderColor[]): void {
     });
 
     for (let i = 0, n = colors.length; i < n; ++i) {
-        folder.addInput(colors, `${i}`);
+        folder.addInput(colors, `${i}`, { index: i + 1 });
     }
 
     remove.hidden = colors.length <= 1;
