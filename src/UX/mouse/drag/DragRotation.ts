@@ -1,9 +1,9 @@
-import {MouseState, kButton2Index} from '../MouseHandler';
+import {MouseState, kButton2Index, MouseButtonName} from '../MouseHandler';
 import {quat, vec2} from 'gl-matrix';
 import {DragModule} from './DragModule';
 
 export class DragRotation extends DragModule {
-    public button: keyof typeof kButton2Index = 'secondary';
+    public button: MouseButtonName = 'secondary';
 
     protected handleMouse(event: symbol, state: MouseState, delta: vec2): void {
         if (state.buttons[this.button]) {

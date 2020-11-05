@@ -48,10 +48,12 @@ export interface MouseState {
     };
 }
 
+export type MouseButtonIndex = keyof typeof kIndex2Button & number;
+export type MouseButtonName = keyof typeof kButton2Index;
 export type MouseMoveHandler = (event: symbol, state: MouseState, delta: vec2, canvasCoords: vec2) => void;
-export type MouseDownHandler = (event: symbol, state: MouseState, buttonIndex:number, buttonName: string, pressed: boolean) => void;
-export type MouseUpHandler = (event: symbol, state: MouseState, buttonIndex: number, buttonName: string, pressed: boolean) => void;
-export type MouseClickHandler = (event: symbol, state: MouseState, buttonIndex: number, buttonName: string) => void;
+export type MouseDownHandler = (event: symbol, state: MouseState, buttonIndex: MouseButtonIndex, buttonName: MouseButtonName, pressed: boolean) => void;
+export type MouseUpHandler = (event: symbol, state: MouseState, buttonIndex: MouseButtonIndex, buttonName: MouseButtonName, pressed: boolean) => void;
+export type MouseClickHandler = (event: symbol, state: MouseState, buttonIndex: MouseButtonIndex, buttonName: MouseButtonName) => void;
 export type MouseWheelHandler = (event: symbol, state: MouseState, wheel: number) => void;
 export type MouseCallback = MouseMoveHandler | MouseDownHandler | MouseUpHandler | MouseClickHandler | MouseWheelHandler;
 

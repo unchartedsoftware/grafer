@@ -1,10 +1,10 @@
 import {Viewport} from '../../../renderer/Viewport';
-import {MouseState, kButton2Index} from '../MouseHandler';
+import {MouseState, MouseButtonName} from '../MouseHandler';
 import {vec2} from 'gl-matrix';
 import {UXModule} from '../../UXModule';
 
 export abstract class DragModule extends UXModule {
-    public button: keyof typeof kButton2Index = 'primary';
+    public button: MouseButtonName = 'primary';
 
     protected viewport: Viewport;
     private boundHandler: (arg1: symbol, arg2: MouseState, arg3: vec2) => void = this.handleMouse.bind(this);
