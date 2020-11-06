@@ -1,5 +1,6 @@
 import {EventEmitter} from '@dekkai/event-emitter/build/lib/EventEmitter';
 import {vec2} from 'gl-matrix';
+import {UXModule} from '../UXModule';
 
 const kEvents = {
     move: Symbol('Grafer::UX::MouseHandler::move'),
@@ -48,37 +49,20 @@ export interface MouseState {
     };
 }
 
+export type MouseHandlerEventsMap = { [K in keyof typeof kEvents]: ReturnType<() => { readonly 0: unique symbol }[0]> };
+export type MouseHandlerEvent = MouseHandlerEventsMap[keyof MouseHandlerEventsMap];
 export type MouseButtonIndex = keyof typeof kIndex2Button & number;
 export type MouseButtonName = keyof typeof kButton2Index;
-export type MouseMoveHandler = (event: symbol, state: MouseState, delta: vec2, canvasCoords: vec2) => void;
-export type MouseDownHandler = (event: symbol, state: MouseState, buttonIndex: MouseButtonIndex, buttonName: MouseButtonName, pressed: boolean) => void;
-export type MouseUpHandler = (event: symbol, state: MouseState, buttonIndex: MouseButtonIndex, buttonName: MouseButtonName, pressed: boolean) => void;
-export type MouseClickHandler = (event: symbol, state: MouseState, buttonIndex: MouseButtonIndex, buttonName: MouseButtonName) => void;
-export type MouseWheelHandler = (event: symbol, state: MouseState, wheel: number) => void;
+export type MouseMoveHandler = (event: MouseHandlerEvent, state: MouseState, delta: vec2, canvasCoords: vec2) => void;
+export type MouseDownHandler = (event: MouseHandlerEvent, state: MouseState, buttonIndex: MouseButtonIndex, buttonName: MouseButtonName, pressed: boolean) => void;
+export type MouseUpHandler = (event: MouseHandlerEvent, state: MouseState, buttonIndex: MouseButtonIndex, buttonName: MouseButtonName, pressed: boolean) => void;
+export type MouseClickHandler = (event: MouseHandlerEvent, state: MouseState, buttonIndex: MouseButtonIndex, buttonName: MouseButtonName) => void;
+export type MouseWheelHandler = (event: MouseHandlerEvent, state: MouseState, wheel: number) => void;
 export type MouseCallback = MouseMoveHandler | MouseDownHandler | MouseUpHandler | MouseClickHandler | MouseWheelHandler;
 
-export class MouseHandler extends EventEmitter {
-    public static get events(): typeof kEvents {
-        return kEvents;
-    }
-
-    public get events(): typeof kEvents {
-        return kEvents;
-    }
-
-    private _enabled: boolean = false;
-    public get enabled(): boolean {
-        return this._enabled;
-    }
-    public set enabled(value: boolean) {
-        if (value !== this._enabled) {
-            this._enabled = value;
-            if (this._enabled) {
-                this.hookEvents();
-            } else {
-                this.unhookEvents();
-            }
-        }
+export class MouseHandler extends EventEmitter.mixin(UXModule) {
+    public static get events(): MouseHandlerEventsMap {
+        return kEvents as MouseHandlerEventsMap;
     }
 
     private canvas: HTMLCanvasElement;
@@ -126,8 +110,12 @@ export class MouseHandler extends EventEmitter {
         this.enabled = enabled;
     }
 
-    public on(type: symbol, callback: MouseCallback): void {
+    public on(type: MouseHandlerEvent, callback: MouseCallback): void {
         super.on(type, callback);
+    }
+
+    public off(type: MouseHandlerEvent, callback: MouseCallback): void {
+        super.off(type, callback);
     }
 
     public resize(rect: DOMRect): void {
@@ -135,7 +123,7 @@ export class MouseHandler extends EventEmitter {
         this.syntheticUpdate(kEvents.move);
     }
 
-    private hookEvents(): void {
+    protected hookEvents(): void {
         this.canvas.addEventListener('mouseenter', this.boundHandler);
         this.canvas.addEventListener('mouseleave', this.boundHandler);
         this.canvas.addEventListener('mousemove', this.boundHandler);
@@ -147,7 +135,7 @@ export class MouseHandler extends EventEmitter {
         this.canvas.addEventListener('contextmenu', this.disableContextMenu);
     }
 
-    private unhookEvents(): void {
+    protected unhookEvents(): void {
         this.canvas.removeEventListener('mouseenter', this.boundHandler);
         this.canvas.removeEventListener('mouseleave', this.boundHandler);
         this.canvas.removeEventListener('mousemove', this.boundHandler);

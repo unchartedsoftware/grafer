@@ -1,5 +1,5 @@
 import {Viewport} from '../../../renderer/Viewport';
-import {MouseState, MouseButtonName} from '../MouseHandler';
+import {MouseState, MouseButtonName, MouseHandler} from '../MouseHandler';
 import {vec2} from 'gl-matrix';
 import {UXModule} from '../../UXModule';
 
@@ -16,11 +16,11 @@ export abstract class DragModule extends UXModule {
     }
 
     protected hookEvents(): void {
-        this.viewport.mouseHandler.on(this.viewport.mouseHandler.events.move, this.boundHandler);
+        this.viewport.mouseHandler.on(MouseHandler.events.move, this.boundHandler);
     }
 
     protected unhookEvents(): void {
-        this.viewport.mouseHandler.off(this.viewport.mouseHandler.events.move, this.boundHandler);
+        this.viewport.mouseHandler.off(MouseHandler.events.move, this.boundHandler);
     }
 
     protected abstract handleMouse(event: symbol, state: MouseState, delta: vec2): void;

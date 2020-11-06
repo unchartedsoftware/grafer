@@ -1,5 +1,5 @@
 import {Viewport} from '../../../renderer/Viewport';
-import {MouseState} from '../MouseHandler';
+import {MouseHandler, MouseState} from '../MouseHandler';
 import {UXModule} from '../../UXModule';
 
 export abstract class ScrollModule extends UXModule {
@@ -15,11 +15,11 @@ export abstract class ScrollModule extends UXModule {
     }
 
     protected hookEvents(): void {
-        this.viewport.mouseHandler.on(this.viewport.mouseHandler.events.wheel, this.boundHandler);
+        this.viewport.mouseHandler.on(MouseHandler.events.wheel, this.boundHandler);
     }
 
     protected unhookEvents(): void {
-        this.viewport.mouseHandler.off(this.viewport.mouseHandler.events.wheel, this.boundHandler);
+        this.viewport.mouseHandler.off(MouseHandler.events.wheel, this.boundHandler);
     }
 
     protected abstract handleMouse(event: symbol, state: MouseState, delta: number): void;
