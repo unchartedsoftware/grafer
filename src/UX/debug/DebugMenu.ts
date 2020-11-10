@@ -68,8 +68,8 @@ export class DebugMenu {
         const nodes = layer.nodes;
         folder.addInput(nodes, 'enabled');
         folder.addInput(nodes, 'pixelSizing', { label: 'pixel sizing ' });
-        folder.addInput(nodes, 'nodeMinSize', { label: 'min size' });
-        folder.addInput(nodes, 'nodeMaxSize', { label: 'max size' });
+        folder.addInput(nodes, 'minSize', { label: 'min size' });
+        folder.addInput(nodes, 'maxSize', { label: 'max size' });
         folder.addInput(layer, 'nodesNearDepth', { min: 0, max: 1, label: 'near' });
         folder.addInput(layer, 'nodesFarDepth', { min: 0, max: 1, label: 'far' });
     }
