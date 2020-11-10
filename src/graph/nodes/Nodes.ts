@@ -6,6 +6,33 @@ export abstract class Nodes extends Renderable {
     protected colors: VertexBuffer;
     protected sizes: VertexBuffer;
 
+    protected localUniforms = {
+        uMinSize: 1.0,
+        uMaxSize: 4.0,
+        uPixelSizing: false,
+    }
+
+    public get minSize(): number {
+        return this.localUniforms.uMinSize;
+    }
+    public set minSize(value: number) {
+        this.localUniforms.uMinSize = value;
+    }
+
+    public get maxSize(): number {
+        return this.localUniforms.uMaxSize;
+    }
+    public set maxSize(value: number) {
+        this.localUniforms.uMaxSize = value;
+    }
+
+    public get pixelSizing(): boolean {
+        return this.localUniforms.uPixelSizing;
+    }
+    public set pixelSizing(value: boolean) {
+        this.localUniforms.uPixelSizing = value;
+    }
+
     protected constructor(context: App, positions: Float32Array, colors?: Uint8Array, sizes?: Float32Array, pickingColors?: Uint8Array) {
         super();
         this.positions = context.createVertexBuffer(PicoGL.FLOAT, 3, positions);

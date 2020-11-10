@@ -50,13 +50,10 @@ export class Straight extends Edges {
     }
 
     public render(context:App, mode: RenderMode, uniforms: RenderUniforms): void {
-        this.drawCall.uniform('uViewMatrix', uniforms.viewMatrix);
-        this.drawCall.uniform('uSceneMatrix', uniforms.sceneMatrix);
-        this.drawCall.uniform('uProjectionMatrix', uniforms.projectionMatrix);
-        this.drawCall.uniform('uViewportSize', uniforms.viewportSize);
-        this.drawCall.uniform('uPixelRatio', uniforms.pixelRatio);
-
-        this.drawCall.uniform('uAlpha', this.alpha);
+        this.setDrawCallUniforms(this.drawCall, uniforms);
+        this.setDrawCallUniforms(this.drawCall, {
+            uAlpha: this.alpha,
+        });
 
         switch (mode) {
             case RenderMode.PICKING:

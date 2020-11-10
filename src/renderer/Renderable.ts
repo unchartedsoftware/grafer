@@ -9,13 +9,15 @@ export enum RenderMode {
 }
 
 export interface RenderUniforms {
-    viewMatrix: mat4;
-    sceneMatrix: mat4;
-    projectionMatrix: mat4;
-    viewportSize: vec2;
-    pixelRatio: number;
-    clearColor: vec4;
+    uViewMatrix: mat4;
+    uSceneMatrix: mat4;
+    uProjectionMatrix: mat4;
+    uViewportSize: vec2;
+    uPixelRatio: number;
+    uClearColor: vec4;
 }
+
+export type GenericUniforms = RenderUniforms | { [key: string]: number | number[] | boolean };
 
 export abstract class Renderable {
     public enabled: boolean = true;
@@ -44,4 +46,10 @@ export abstract class Renderable {
     protected pickingColors: VertexBuffer = null;
 
     public abstract render(context: App, mode: RenderMode, uniforms: RenderUniforms): void;
+
+    protected setDrawCallUniforms(drawCall: DrawCall, uniforms: GenericUniforms): void {
+        for (const [key, value] of Object.entries(uniforms)) {
+            drawCall.uniform(key, value);
+        }
+    }
 }

@@ -52,14 +52,11 @@ export class Gravity extends Edges {
     }
 
     public render(context:App, mode: RenderMode, uniforms: RenderUniforms): void {
-        this.drawCall.uniform('uViewMatrix', uniforms.viewMatrix);
-        this.drawCall.uniform('uSceneMatrix', uniforms.sceneMatrix);
-        this.drawCall.uniform('uProjectionMatrix', uniforms.projectionMatrix);
-        this.drawCall.uniform('uViewportSize', uniforms.viewportSize);
-        this.drawCall.uniform('uPixelRatio', uniforms.pixelRatio);
-
-        this.drawCall.uniform('uAlpha', this.alpha);
-        this.drawCall.uniform('uGravity', this.gravity);
+        this.setDrawCallUniforms(this.drawCall, uniforms);
+        this.setDrawCallUniforms(this.drawCall, {
+            uAlpha: this.alpha,
+            uGravity: this.gravity,
+        });
 
         context.enable(PicoGL.BLEND);
         context.blendFuncSeparate(PicoGL.SRC_ALPHA, PicoGL.ONE_MINUS_SRC_ALPHA, PicoGL.ONE, PicoGL.ONE);

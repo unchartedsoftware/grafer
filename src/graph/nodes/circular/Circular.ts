@@ -3,13 +3,9 @@ import nodeFS from './Circular.fs.glsl';
 import pickingFS from './Circular.picking.fs.glsl';
 import {Nodes} from '../Nodes';
 import {RenderMode, RenderUniforms} from '../../../renderer/Renderable';
-import {App, DrawCall, PicoGL} from 'picogl';
+import {App, PicoGL} from 'picogl';
 
 export class Circular extends Nodes {
-    public pixelSizing: boolean = false;
-    public nodeMinSize: number = 1.0;
-    public nodeMaxSize: number = 4.0;
-
     public constructor(context: App, positions: Float32Array, colors?: Uint8Array, sizes?: Float32Array, pickingColors?: Uint8Array) {
         super(context, positions, colors, sizes, pickingColors);
         const vertices = context.createVertexBuffer(PicoGL.FLOAT, 2, new Float32Array([
@@ -52,6 +48,7 @@ export class Circular extends Nodes {
             case RenderMode.PICKING:
                 if (this.pickingDrawCall) {
                     this.setDrawCallUniforms(this.pickingDrawCall, uniforms);
+                    this.setDrawCallUniforms(this.pickingDrawCall, this.localUniforms);
                     this.pickingDrawCall.draw();
                 }
                 break;
@@ -60,21 +57,9 @@ export class Circular extends Nodes {
             case RenderMode.MEDIUM:
             case RenderMode.HIGH:
                 this.setDrawCallUniforms(this.drawCall, uniforms);
+                this.setDrawCallUniforms(this.drawCall, this.localUniforms);
                 this.drawCall.draw();
                 break;
         }
-    }
-
-    private setDrawCallUniforms(drawCall: DrawCall, uniforms: RenderUniforms): void {
-        drawCall.uniform('uViewMatrix', uniforms.viewMatrix);
-        drawCall.uniform('uSceneMatrix', uniforms.sceneMatrix);
-        drawCall.uniform('uProjectionMatrix', uniforms.projectionMatrix);
-        drawCall.uniform('uViewportSize', uniforms.viewportSize);
-        drawCall.uniform('uPixelRatio', uniforms.pixelRatio);
-        drawCall.uniform('uClearColor', uniforms.clearColor);
-
-        drawCall.uniform('uMinSize', this.nodeMinSize);
-        drawCall.uniform('uMaxSize', this.nodeMaxSize);
-        drawCall.uniform('uPixelSizing', this.pixelSizing);
     }
 }
