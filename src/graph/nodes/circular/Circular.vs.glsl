@@ -37,14 +37,14 @@ void main() {
 
     // the on-screen center of this node
     vec4 quadCenter = renderMatrix * vec4(0.0, 0.0, 0.0, 1.0);
-    vec2 screenWuadCenter = quadCenter.xy / quadCenter.w;
+    vec2 screenQuadCenter = quadCenter.xy / quadCenter.w;
 
     // the on-screen position of a side of this quad
     vec4 quadSide = renderMatrix * vec4(1.0, 0.0, 0.0, 1.0);
     vec2 screenQuadSide = quadSide.xy / quadSide.w;
 
     // compute the pixel radius of this node for a size of 1 in worls coordinates
-    float pixelRadius = max(1.0, length((screenQuadSide - screenWuadCenter) * uViewportSize));
+    float pixelRadius = max(1.0, length((screenQuadSide - screenQuadCenter) * uViewportSize));
 
     // calculate the desired pixel radius for the size mode
     float size = uMinSize + (uMaxSize - uMinSize) * iSize;
@@ -62,7 +62,7 @@ void main() {
     // send the final pixel radius to the fragment shader
     fPixelRadius = floor(desiredPixelRadius);
     // send the computed pixel location to the fragment shader
-    vPixelLocation = (screenVertex - screenWuadCenter) * uViewportSize;
+    vPixelLocation = (screenVertex - screenQuadCenter) * uViewportSize;
 
     // set the render vertex location
     gl_Position = worldVertex;
