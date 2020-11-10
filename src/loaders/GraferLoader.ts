@@ -75,7 +75,7 @@ export function mergeGraferLoaderDomain(a: GraferLoaderDomain, b: GraferLoaderDo
     return out;
 }
 
-export function normalizeNodeLayers(layers: GraferLoaderNodes[]): GraferLoaderNodesStats {
+export function normalizeNodeLayers(layers: GraferLoaderNodes[], reCenter:boolean = false, reSize: boolean = false): GraferLoaderNodesStats {
     const center = createGraferLoaderVec3();
     const sizeDomain = createGraferLoaderDomain();
     const coordsDomain = {
@@ -97,18 +97,24 @@ export function normalizeNodeLayers(layers: GraferLoaderNodes[]): GraferLoaderNo
         mergeGraferLoaderDomain(coordsDomain.z, layers[i].coordsDomain.z);
     }
 
-    center.x /= count;
-    center.y /= count;
-    center.z /= count;
+    if (reCenter) {
+        center.x /= count;
+        center.y /= count;
+        center.z /= count;
 
-    coordsDomain.x.min -= center.x;
-    coordsDomain.x.max -= center.x;
+        coordsDomain.x.min -= center.x;
+        coordsDomain.x.max -= center.x;
 
-    coordsDomain.y.min -= center.y;
-    coordsDomain.y.max -= center.y;
+        coordsDomain.y.min -= center.y;
+        coordsDomain.y.max -= center.y;
 
-    coordsDomain.z.min -= center.z;
-    coordsDomain.z.max -= center.z;
+        coordsDomain.z.min -= center.z;
+        coordsDomain.z.max -= center.z;
+    } else {
+        center.x = 0;
+        center.y = 0;
+        center.z = 0;
+    }
 
     const bbCorners = vec3.fromValues(
         Math.max(Math.abs(coordsDomain.x.min), Math.abs(coordsDomain.x.max)),
@@ -119,7 +125,7 @@ export function normalizeNodeLayers(layers: GraferLoaderNodes[]): GraferLoaderNo
 
     // resize the coordinates so the corner length is always 300 (because it looks nice)
     // sorry future Dario, you'll have to explain this one out and then deal with it :(
-    const positionMult = 300 / cornerLength;
+    const positionMult = reSize ? 300 / cornerLength : 1;
     // scale the coordinates domain
     coordsDomain.x.min *= positionMult;
     coordsDomain.x.max *= positionMult;
@@ -141,7 +147,11 @@ export function normalizeNodeLayers(layers: GraferLoaderNodes[]): GraferLoaderNo
             positions[pi + 2] = (positions[pi + 2] - center.z) * positionMult;
 
             // normalize the sizes
-            sizes[ii] = (sizes[ii] - sizeDomain.min) / (sizeDomain.max - sizeDomain.min);
+            if (sizeDomain.min !== sizeDomain.max) {
+                sizes[ii] = (sizes[ii] - sizeDomain.min) / (sizeDomain.max - sizeDomain.min);
+            } else {
+                sizes[ii] = 1;
+            }
         }
     }
 
