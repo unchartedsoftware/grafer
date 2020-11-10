@@ -1,17 +1,17 @@
 import {App, PicoGL} from 'picogl';
 import {vec2, vec4} from 'gl-matrix';
-import {RenderMode} from './Renderable';
+import {RenderMode, RenderUniforms} from './Renderable';
 import {Camera} from './Camera';
 import {Graph} from '../graph/Graph';
-import {Picking} from './Picking';
 import {MouseHandler} from '../UX/mouse/MouseHandler';
+import {PickingManager} from '../UX/picking/PickingManager';
 
 export class Viewport {
     public readonly element: HTMLElement;
     public readonly canvas: HTMLCanvasElement;
     public readonly context: App;
     public readonly pixelRatio: number;
-    public readonly picking: Picking;
+    public readonly picking: PickingManager;
     public readonly mouseHandler: MouseHandler;
     public rect: DOMRectReadOnly;
 
@@ -59,8 +59,8 @@ export class Viewport {
         this.context.depthFunc(PicoGL.LEQUAL);
         this.context.gl.lineWidth(2);
 
-        this.picking = new Picking(this.context);
-        this.mouseHandler = new MouseHandler(this.canvas, this.rect);
+        this.mouseHandler = new MouseHandler(this.canvas, this.rect, this.pixelRatio);
+        this.picking = new PickingManager(this.context, this.mouseHandler);
 
         this.size = vec2.fromValues(this.canvas.width, this.canvas.height);
 
@@ -73,8 +73,8 @@ export class Viewport {
             this.context.resize(this.rect.width * this.pixelRatio, this.rect.height * this.pixelRatio);
             vec2.set(this.size, this.canvas.width, this.canvas.height);
             this.camera.viewportSize = this.size;
-            this.picking.resize(this.context);
-            this.mouseHandler.resize(this.rect);
+            this.picking.offscreenBuffer.resize(this.context);
+            this.mouseHandler.resize(this.rect, this.pixelRatio);
             this.render();
         });
         resizeObserver.observe(this.canvas);
@@ -97,21 +97,23 @@ export class Viewport {
     }
 
     private _render(camera: Camera): void {
-        const uniforms = {
-            viewMatrix: camera.viewMatrix,
-            sceneMatrix: this.graph.matrix,
-            projectionMatrix: this.camera.projectionMatrix,
-            viewportSize: this.size,
-            pixelRatio: this.pixelRatio,
-            clearColor: this._clearColor,
+        const uniforms: RenderUniforms = {
+            uViewMatrix: camera.viewMatrix,
+            uSceneMatrix: this.graph.matrix,
+            uProjectionMatrix: this.camera.projectionMatrix,
+            uViewportSize: this.size,
+            uPixelRatio: this.pixelRatio,
+            uClearColor: this._clearColor,
         };
 
         this.resetContextFlags();
+        this.context.clear();
         if (this.graph.enabled) {
             this.graph.render(this.context, RenderMode.DRAFT, uniforms);
             if (this.picking.enabled) {
-                this.picking.prepareContext(this.context);
+                this.picking.offscreenBuffer.prepareContext(this.context);
                 this.graph.render(this.context, RenderMode.PICKING, uniforms);
+                // this.picking.offscreenBuffer.blitToScreen(this.context);
             }
         }
         this.animationFrameID = 0;
