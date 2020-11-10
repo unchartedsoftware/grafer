@@ -19,6 +19,7 @@ import {Gravity} from '../../../src/graph/edges/gravity/Gravity';
 import {DebugMenu} from '../../../src/UX/debug/DebugMenu';
 import {DragPan} from '../../../src/UX/mouse/drag/DragPan';
 import {DragTruck} from '../../../src/UX/mouse/drag/DragTruck';
+import {PickingManager} from '../../../src/UX/picking/PickingManager';
 
 interface LoaderColor {
     r: number;
@@ -326,7 +327,7 @@ export async function basic(container: HTMLElement): Promise<void> {
                 viewport.graph.addLayer(layer);
 
                 if (loadedLayer.meta) {
-                    viewport.picking.on(viewport.picking.events.hoverOn, (type, id) => {
+                    viewport.picking.on(PickingManager.events.hoverOn, (type, id) => {
                         if (pickingColors.map.has(id)) {
                             const metaID = loadedLayer.nodes.raw[pickingColors.map.get(id)].id;
                             graferTooltip.style.display = 'block';
@@ -334,7 +335,7 @@ export async function basic(container: HTMLElement): Promise<void> {
                         }
                     });
 
-                    viewport.picking.on(viewport.picking.events.hoverOff, (type, id) => {
+                    viewport.picking.on(PickingManager.events.hoverOff, (type, id) => {
                         if (pickingColors.map.has(id)) {
                             graferTooltip.style.display = 'none';
                         }
