@@ -14,7 +14,7 @@ import {
     normalizeNodeLayers,
 } from '../../../src/loaders/GraferLoader';
 import {Layer} from '../../../src/graph/Layer';
-import {Circular} from '../../../src/graph/nodes/circular/Circular';
+import {Circle} from '../../../src/graph/nodes/circle/Circle';
 import {Gravity} from '../../../src/graph/edges/gravity/Gravity';
 import {DebugMenu} from '../../../src/UX/debug/DebugMenu';
 import {DragPan} from '../../../src/UX/mouse/drag/DragPan';
@@ -321,7 +321,7 @@ export async function basic(container: HTMLElement): Promise<void> {
             for (let i = 0, n = loaded.layers.length; i < n; ++i) {
                 const loadedLayer = loaded.layers[i];
                 const pickingColors = viewport.picking.allocatePickingColors(loadedLayer.nodes.count);
-                const nodes = new Circular(viewport.context, loadedLayer.nodes.positions, loadedLayer.nodes.colors, loadedLayer.nodes.sizes, pickingColors.colors);
+                const nodes = new Circle(viewport.context, loadedLayer.nodes.positions, loadedLayer.nodes.colors, loadedLayer.nodes.sizes, pickingColors.colors);
                 const edges = !loadedLayer.edges ? null : new Gravity(viewport.context, loadedLayer.edges.positions, loadedLayer.edges.colors);
                 const layer = new Layer(nodes, edges, layers[i].name);
                 viewport.graph.addLayer(layer);

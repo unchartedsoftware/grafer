@@ -1,11 +1,11 @@
-import nodeVS from './Circular.vs.glsl';
-import nodeFS from './Circular.fs.glsl';
-import pickingFS from './Circular.picking.fs.glsl';
+import nodeVS from './Circle.vs.glsl';
+import nodeFS from './Circle.fs.glsl';
+import pickingFS from './Circle.picking.fs.glsl';
 import {Nodes} from '../Nodes';
 import {RenderMode, RenderUniforms} from '../../../renderer/Renderable';
 import {App, PicoGL} from 'picogl';
 
-export class Circular extends Nodes {
+export class Circle extends Nodes {
     public constructor(context: App, positions: Float32Array, colors?: Uint8Array, sizes?: Float32Array, pickingColors?: Uint8Array) {
         super(context, positions, colors, sizes, pickingColors);
         const vertices = context.createVertexBuffer(PicoGL.FLOAT, 2, new Float32Array([
