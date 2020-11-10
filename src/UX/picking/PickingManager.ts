@@ -1,12 +1,23 @@
-import {PicoGL, App, Renderbuffer, Framebuffer, Texture} from 'picogl';
-import {EventEmitter} from '@dekkai/event-emitter';
+import {EventEmitter} from '@dekkai/event-emitter/build/lib/EventEmitter';
+import {OffscreenBuffer} from '../../renderer/OffscreenBuffer';
+import {UXModule} from '../UXModule';
+import {App} from 'picogl';
+import {
+    MouseCallback,
+    MouseHandler,
+    MouseMoveHandler,
+    MouseState,
+} from '../mouse/MouseHandler';
 
-const kEvents = {
-    hoverOn: Symbol('Grafer::renderer::Picking::hover::on'),
-    hoverOff: Symbol('Grafer::renderer::Picking::hover::off'),
-    click: Symbol('Grafer::renderer::Picking::click'),
+const kEvents  = {
+    hoverOn: Symbol('Grafer::UX::PickingManager::hover::on'),
+    hoverOff: Symbol('Grafer::UX::PickingManager::hover::off'),
+    click: Symbol('Grafer::UX::PickingManager::click'),
 };
 Object.freeze(kEvents);
+
+export type PickingEventsMap = { [K in keyof typeof kEvents]: ReturnType<() => { readonly 0: unique symbol }[0]> };
+export type PickingEvent = PickingEventsMap[keyof PickingEventsMap];
 
 export interface PickingIndexRange {
     start: number;
@@ -19,72 +30,44 @@ export interface PickingColors {
     map: Map<number, number>;
 }
 
-export class Picking extends EventEmitter {
-    public static get events(): typeof kEvents {
-        return kEvents;
+export class PickingManager extends EventEmitter.mixin(UXModule) {
+    public static get events(): PickingEventsMap {
+        return kEvents as PickingEventsMap;
     }
 
-    private context: App;
-    private colorTarget: Texture;
-    private depthTarget: Renderbuffer;
-    private frameBuffer: Framebuffer;
+    private _offscreenBuffer: OffscreenBuffer;
+    public get offscreenBuffer(): OffscreenBuffer {
+        return this._offscreenBuffer;
+    }
 
-    private availableIndices: PickingIndexRange[];
-    private boundMouseHandler: (MouseEvent) => void = this.handleMouseEvent.bind(this);
+    private mouseHandler: MouseHandler;
+    private boundMouseHandler: MouseMoveHandler = this.handleMouse.bind(this);
 
     private colorBuffer: ArrayBuffer = new ArrayBuffer(4);
     private colorBufferUint8: Uint8Array = new Uint8Array(this.colorBuffer);
     private colorBufferView: DataView = new DataView(this.colorBuffer);
     private colorHoverID: number = 0;
 
-    private _enabled: boolean = false;
-    public get enabled(): boolean {
-        return this._enabled;
-    }
-    public set enabled(value: boolean) {
-        if (value !== this._enabled) {
-            this._enabled = value;
-            if (this._enabled) {
-                this.context.canvas.addEventListener('mousemove', this.boundMouseHandler);
-            } else {
-                this.context.canvas.removeEventListener('mousemove', this.boundMouseHandler);
-            }
-        }
-    }
+    private availableIndices: PickingIndexRange[];
 
-    public get events(): typeof kEvents{
-        return kEvents;
-    }
-
-    constructor(context: App) {
+    constructor(context: App, mouseHandler: MouseHandler, enabled: boolean = true) {
         super();
-        this.context = context;
-        this.resize(context);
-    }
-
-    public resize(context: App): void {
-        if (this.frameBuffer) {
-            this.frameBuffer.delete();
-        }
-
-        if (this.colorTarget) {
-            this.colorTarget.delete();
-        }
-
-        if (this.depthTarget) {
-            this.depthTarget.delete();
-        }
-
-        this.colorTarget = context.createTexture2D(context.width, context.height);
-        this.depthTarget = context.createRenderbuffer(context.width, context.height, PicoGL.DEPTH_COMPONENT16);
-        this.frameBuffer = context.createFramebuffer()
-            .colorTarget(0, this.colorTarget)
-            .depthTarget(this.depthTarget);
-
+        this._offscreenBuffer = new OffscreenBuffer(context);
+        this.mouseHandler = mouseHandler;
         this.availableIndices = [{
             start: 0,
             end: 0xefffffff,
         }];
+
+        this.enabled = enabled;
+    }
+
+    public on(type: PickingEvent, callback: MouseCallback): void {
+        super.on(type, callback);
+    }
+
+    public off(type: PickingEvent, callback: MouseCallback): void {
+        super.off(type, callback);
     }
 
     public allocatePickingColors(count: number): PickingColors {
@@ -130,14 +113,40 @@ export class Picking extends EventEmitter {
         colors.map.clear();
     }
 
-    public prepareContext(context: App): void {
-        context.depthMask(true);
-        context.readFramebuffer(this.frameBuffer);
-        context.drawFramebuffer(this.frameBuffer)
-            .clearMask(PicoGL.COLOR_BUFFER_BIT | PicoGL.DEPTH_BUFFER_BIT)
-            .clearColor(0, 0, 0, 0)
-            .clear();
-        context.depthMask(true);
+    protected hookEvents(): void {
+        this.mouseHandler.on(MouseHandler.events.move, this.boundMouseHandler);
+        this.mouseHandler.on(MouseHandler.events.click, this.boundMouseHandler);
+    }
+
+    protected unhookEvents(): void {
+        this.mouseHandler.off(MouseHandler.events.move, this.boundMouseHandler);
+        this.mouseHandler.off(MouseHandler.events.click, this.boundMouseHandler);
+    }
+
+    private handleMouse(event: symbol, state: MouseState): void {
+        const glCoords = state.glCoords;
+        this._offscreenBuffer.readPixel(glCoords[0], glCoords[1], this.colorBufferUint8);
+        const colorID = this.colorBufferView.getUint32(0);
+
+        switch (event) {
+            case MouseHandler.events.move:
+                if (colorID !== this.colorHoverID) {
+                    if (this.colorHoverID !== 0) {
+                        this.emit(kEvents.hoverOff, this.colorHoverID >> 1);
+                    }
+                    this.colorHoverID = colorID;
+                    if (this.colorHoverID !== 0) {
+                        this.emit(kEvents.hoverOn, this.colorHoverID >> 1);
+                    }
+                }
+                break;
+
+            case MouseHandler.events.click:
+                if (colorID !== 0) {
+                    this.emit(kEvents.click, colorID >> 1);
+                }
+                break;
+        }
     }
 
     private deallocatePickingRange(range: PickingIndexRange): void {
@@ -181,37 +190,5 @@ export class Picking extends EventEmitter {
         const view = new DataView(buffer);
         view.setUint32(0, pickingNumber);
         return new Uint8Array(buffer);
-    }
-
-    private handleMouseEvent(event: MouseEvent): void {
-        const rect = this.context.canvas.getBoundingClientRect();
-        const mouseX = event.clientX - rect.left;
-        const mouseY = rect.bottom - event.clientY;
-        this.context.defaultDrawFramebuffer()
-            .readFramebuffer(this.frameBuffer)
-            .readPixel(mouseX, mouseY, this.colorBufferUint8);
-
-        const colorID = this.colorBufferView.getUint32(0);
-
-        const type = event.type;
-        switch (type) {
-            case 'mousemove':
-                if (colorID !== this.colorHoverID) {
-                    if (this.colorHoverID !== 0) {
-                        this.emit(kEvents.hoverOff, this.colorHoverID >> 1);
-                    }
-                    this.colorHoverID = colorID;
-                    if (this.colorHoverID !== 0) {
-                        this.emit(kEvents.hoverOn, this.colorHoverID >> 1);
-                    }
-                }
-                break;
-
-            case 'click':
-                if (colorID !== 0) {
-                    this.emit(kEvents.click, colorID >> 1);
-                }
-                break;
-        }
     }
 }
