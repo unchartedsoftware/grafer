@@ -38,6 +38,7 @@ export interface MouseState {
     valid: boolean;
     clientCoords: vec2;
     canvasCoords: vec2;
+    glCoords: vec2;
     deltaCoords: vec2;
     wheel: number;
     buttons: {
@@ -67,20 +68,23 @@ export class MouseHandler extends EventEmitter.mixin(UXModule) {
 
     private canvas: HTMLCanvasElement;
     private rect: DOMRectReadOnly;
+    private pixelRatio: number;
     private state: MouseState;
     private newState: MouseState;
     private boundHandler: (e: MouseEvent) => void = this.handleMouseEvent.bind(this);
     private disableContextMenu: (e: Event) => void = (e: Event) => e.preventDefault();
 
-    constructor(canvas: HTMLCanvasElement, rect: DOMRectReadOnly, enabled: boolean = true) {
+    constructor(canvas: HTMLCanvasElement, rect: DOMRectReadOnly, pixelRatio: number, enabled: boolean = true) {
         super();
         this.canvas = canvas;
         this.rect = rect;
+        this.pixelRatio = pixelRatio;
 
         this.state = {
             valid: false,
             clientCoords: vec2.create(),
             canvasCoords: vec2.create(),
+            glCoords: vec2.create(),
             deltaCoords: vec2.create(),
             wheel: 0,
             buttons: {
@@ -96,6 +100,7 @@ export class MouseHandler extends EventEmitter.mixin(UXModule) {
             valid: false,
             clientCoords: vec2.create(),
             canvasCoords: vec2.create(),
+            glCoords: vec2.create(),
             deltaCoords: vec2.create(),
             wheel: 0,
             buttons: {
@@ -118,8 +123,9 @@ export class MouseHandler extends EventEmitter.mixin(UXModule) {
         super.off(type, callback);
     }
 
-    public resize(rect: DOMRect): void {
+    public resize(rect: DOMRect, pixelRatio: number): void {
         this.rect = rect;
+        this.pixelRatio = pixelRatio;
         this.syntheticUpdate(kEvents.move);
     }
 
@@ -180,6 +186,7 @@ export class MouseHandler extends EventEmitter.mixin(UXModule) {
         vec2.copy(this.state.deltaCoords, state.deltaCoords);
         vec2.copy(this.state.clientCoords, state.clientCoords);
         vec2.copy(this.state.canvasCoords, state.canvasCoords);
+        vec2.copy(this.state.glCoords, state.glCoords);
 
         if (this.state.deltaCoords[0] !== 0 || this.state.deltaCoords[1] !== 0) {
             if (this.state.valid) {
@@ -248,11 +255,13 @@ export class MouseHandler extends EventEmitter.mixin(UXModule) {
     private handleMouseEvent(e: MouseEvent): void {
         const client = this.newState.clientCoords;
         const canvas = this.newState.canvasCoords;
+        const gl = this.newState.glCoords;
         const delta = this.newState.deltaCoords;
         const rect = this.rect;
 
         vec2.set(client, e.clientX, e.clientY);
         vec2.set(canvas, e.clientX - rect.left, e.clientY - rect.top);
+        vec2.set(gl, (e.clientX - rect.left) * this.pixelRatio, (rect.bottom - e.clientY) * this.pixelRatio);
 
         if (e.type === 'mousemove') {
             vec2.set(delta, e.movementX, e.movementY);
