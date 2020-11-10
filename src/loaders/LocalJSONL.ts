@@ -78,7 +78,7 @@ async function loadNodes(file: File, palette: number[][] = []): Promise<GraferLo
 
         ++count;
 
-        const group = (json.group ?? json.clusterID)[0];
+        const group = (json.group ?? json.clusterID ?? [0])[0];
         if (group < palette.length) {
             colors.push(...palette[group], 255);
         } else {
