@@ -10,6 +10,7 @@ export abstract class Nodes extends Renderable {
         uMinSize: 1.0,
         uMaxSize: 4.0,
         uPixelSizing: false,
+        uBillboard: true,
     }
 
     public get minSize(): number {
@@ -31,6 +32,13 @@ export abstract class Nodes extends Renderable {
     }
     public set pixelSizing(value: boolean) {
         this.localUniforms.uPixelSizing = value;
+    }
+
+    public get billboard(): boolean {
+        return this.localUniforms.uBillboard;
+    }
+    public set billboard(value: boolean) {
+        this.localUniforms.uBillboard = value;
     }
 
     protected constructor(context: App, positions: Float32Array, colors?: Uint8Array, sizes?: Float32Array, pickingColors?: Uint8Array) {

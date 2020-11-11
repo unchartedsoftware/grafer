@@ -16,6 +16,7 @@ layout(location=3) in float iSize;
 uniform float uMinSize;
 uniform float uMaxSize;
 uniform bool uPixelSizing;
+uniform bool uBillboard;
 
 flat out vec4 fColor;
 flat out float fPixelRadius;
@@ -54,15 +55,16 @@ void main() {
     float pixelRadiusMult = desiredPixelRadius / pixelRadius;
 
     // compute the vertex position and its screen position
-    vec4 worldVertex = renderMatrix * vec4(aVertex * pixelRadiusMult, 1.0);
-    vec2 screenVertex = worldVertex.xy / worldVertex.w;
+    vec4 worldVertex = uBillboard ?
+        renderMatrix * vec4(aVertex * pixelRadiusMult, 1.0) :
+        uProjectionMatrix * uViewMatrix * uSceneMatrix * vec4(aVertex * pixelRadiusMult + iPosition, 1.0);
 
     // send the render color to the fragment shader
     fColor = vec4(iColor) / 255.0;
     // send the final pixel radius to the fragment shader
     fPixelRadius = floor(desiredPixelRadius);
     // send the computed pixel location to the fragment shader
-    vPixelLocation = (screenVertex - screenQuadCenter) * uViewportSize;
+    vPixelLocation = aVertex.xy * fPixelRadius;
 
     // set the render vertex location
     gl_Position = worldVertex;
