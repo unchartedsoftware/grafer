@@ -20,6 +20,8 @@ import {DebugMenu} from '../../../src/UX/debug/DebugMenu';
 import {DragPan} from '../../../src/UX/mouse/drag/DragPan';
 import {DragTruck} from '../../../src/UX/mouse/drag/DragTruck';
 import {PickingManager} from '../../../src/UX/picking/PickingManager';
+import {Ring} from '../../../src/graph/nodes/ring/Ring';
+import {Nodes} from '../../../src/graph/nodes/Nodes';
 
 interface LoaderColor {
     r: number;
@@ -31,6 +33,7 @@ interface FilesSelector {
     name: string;
     ready: boolean;
     nodes: string;
+    nodesType: new (...args: any[]) => Nodes;
     nodesFile: File | null;
     edges: string;
     edgesFile: File | null;
@@ -77,13 +80,42 @@ const kAurora: LoaderColor[] = [
     { r: 180, g: 142, b: 173 },
 ];
 
+const kGradient: LoaderColor[] = [
+    { r: 76, g: 86, b: 106 },
+    { r: 85, g: 95, b: 115 },
+    { r: 93, g: 103, b: 124 },
+    { r: 102, g: 112, b: 133 },
+    { r: 111, g: 121, b: 143 },
+    { r: 120, g: 130, b: 152 },
+    { r: 130, g: 140, b: 162 },
+    { r: 139, g: 149, b: 171 },
+    { r: 148, g: 159, b: 181 },
+    { r: 158, g: 168, b: 191 },
+    { r: 168, g: 178, b: 201 },
+    { r: 177, g: 188, b: 211 },
+    { r: 187, g: 198, b: 221 },
+    { r: 197, g: 208, b: 231 },
+    { r: 207, g: 218, b: 241 },
+    { r: 217, g: 228, b: 252 },
+    { r: 228, g: 238, b: 255 },
+    { r: 238, g: 248, b: 255 },
+    { r: 248, g: 255, b: 255 },
+    { r: 255, g: 255, b: 255 },
+];
+
 const kColorPresets = [
     { name: 'none', colors: null },
     { name: 'polar night', colors: kPolarNight },
     { name: 'snow storm', colors: kSnowStorm },
     { name: 'frost', colors: kFrost },
     { name: 'aurora', colors: kAurora },
+    { name: 'gradient', colors: kGradient },
 ];
+
+const kNodeTypes = [
+    { name: 'Circle', type: Circle },
+    { name: 'Ring', type: Ring },
+]
 
 function createColorsSelector(folder: FolderApi, colors: LoaderColor[]): void {
     const dummy = { preset: 0 };
@@ -137,6 +169,18 @@ function createColorsSelector(folder: FolderApi, colors: LoaderColor[]): void {
     });
 }
 
+function createTypeSelector(folder: FolderApi, options: typeof kNodeTypes, target: any, key: string): void {
+    const dummy = { type: 0 };
+    const presetOptions: {[key: string]: number} = {};
+    for (let i = 0, n = options.length; i < n; ++i) {
+        presetOptions[options[i].name] = i;
+    }
+    const preset = folder.addInput(dummy, 'type', { options: presetOptions });
+    preset.on('change', (value: number): void => {
+        target[key] = options[value].type;
+    });
+}
+
 function createFileInput(cb: () => void): HTMLInputElement {
     const input = document.createElement('input');
     input.type = 'file';
@@ -151,6 +195,7 @@ function createFilesSelector(pane: Tweakpane, layers: FilesSelector[], updateLoa
         name: `layer_${gLayerCount++}`,
         ready: false,
         nodes: 'No file selected.',
+        nodesType: Circle,
         nodesFile: null,
         edges: 'No file selected.',
         edgesFile: null,
@@ -166,6 +211,7 @@ function createFilesSelector(pane: Tweakpane, layers: FilesSelector[], updateLoa
 
     folder.addSeparator();
 
+    createTypeSelector(folder, kNodeTypes, result, 'nodesType');
     const nodesInput = createFileInput(() => {
         if (nodesInput.files.length) {
             result.nodesFile = nodesInput.files[0];
@@ -321,7 +367,8 @@ export async function basic(container: HTMLElement): Promise<void> {
             for (let i = 0, n = loaded.layers.length; i < n; ++i) {
                 const loadedLayer = loaded.layers[i];
                 const pickingColors = viewport.picking.allocatePickingColors(loadedLayer.nodes.count);
-                const nodes = new Circle(viewport.context, loadedLayer.nodes.positions, loadedLayer.nodes.colors, loadedLayer.nodes.sizes, pickingColors.colors);
+                const NodesClass = layers[i].nodesType;
+                const nodes = new NodesClass(viewport.context, loadedLayer.nodes.positions, loadedLayer.nodes.colors, loadedLayer.nodes.sizes, pickingColors.colors);
                 const edges = !loadedLayer.edges ? null : new Gravity(viewport.context, loadedLayer.edges.positions, loadedLayer.edges.colors);
                 const layer = new Layer(nodes, edges, layers[i].name);
                 viewport.graph.addLayer(layer);
