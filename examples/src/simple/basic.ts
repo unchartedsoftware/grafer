@@ -115,7 +115,7 @@ const kColorPresets = [
 const kNodeTypes = [
     { name: 'Circle', type: Circle },
     { name: 'Ring', type: Ring },
-]
+];
 
 function createColorsSelector(folder: FolderApi, colors: LoaderColor[]): void {
     const dummy = { preset: 0 };

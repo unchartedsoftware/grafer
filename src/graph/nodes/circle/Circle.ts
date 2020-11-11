@@ -3,7 +3,7 @@ import nodeFS from './Circle.fs.glsl';
 import pickingFS from './Circle.picking.fs.glsl';
 import {Nodes} from '../Nodes';
 import {RenderMode, RenderUniforms} from '../../../renderer/Renderable';
-import {App, PicoGL, Program} from 'picogl';
+import {App, PicoGL} from 'picogl';
 
 export class Circle extends Nodes {
     public constructor(context: App, positions: Float32Array, colors?: Uint8Array, sizes?: Float32Array, pickingColors?: Uint8Array) {
