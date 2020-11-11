@@ -1,3 +1,3 @@
-export * from './circular/Circle';
+export * from './circle/Circle';
 
 export * from './Nodes';
