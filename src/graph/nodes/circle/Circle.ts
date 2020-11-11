@@ -3,7 +3,7 @@ import nodeFS from './Circle.fs.glsl';
 import pickingFS from './Circle.picking.fs.glsl';
 import {Nodes} from '../Nodes';
 import {RenderMode, RenderUniforms} from '../../../renderer/Renderable';
-import {App, PicoGL} from 'picogl';
+import {App, PicoGL, Program} from 'picogl';
 
 export class Circle extends Nodes {
     public constructor(context: App, positions: Float32Array, colors?: Uint8Array, sizes?: Float32Array, pickingColors?: Uint8Array) {
@@ -21,7 +21,8 @@ export class Circle extends Nodes {
             .instanceAttributeBuffer(2, this.colors)
             .instanceAttributeBuffer(3, this.sizes);
 
-        this.program = context.createProgram(nodeVS, nodeFS);
+        const drawingShaders = this.getDrawingShaders();
+        this.program = context.createProgram(drawingShaders[0], drawingShaders[1]);
         this.drawCall = context.createDrawCall(this.program, vertexArray)
             .primitive(PicoGL.TRIANGLE_STRIP);
 
@@ -32,7 +33,8 @@ export class Circle extends Nodes {
                 .instanceAttributeBuffer(2, this.pickingColors)
                 .instanceAttributeBuffer(3, this.sizes);
 
-            this.pickingProgram = context.createProgram(nodeVS, pickingFS);
+            const pickingShaders = this.getPickingShaders();
+            this.pickingProgram = context.createProgram(pickingShaders[0], pickingShaders[1]);
             this.pickingDrawCall = context.createDrawCall(this.pickingProgram, pickingArray)
                 .primitive(PicoGL.TRIANGLE_STRIP);
         }
@@ -61,5 +63,19 @@ export class Circle extends Nodes {
                 this.drawCall.draw();
                 break;
         }
+    }
+
+    protected getDrawingShaders(): string[] {
+        return [
+            nodeVS,
+            nodeFS,
+        ];
+    }
+
+    protected getPickingShaders(): string[] {
+        return [
+            nodeVS,
+            pickingFS,
+        ];
     }
 }
