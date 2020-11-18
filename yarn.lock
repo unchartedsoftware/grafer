@@ -3286,9 +3286,9 @@ pause-stream@0.0.11:
   dependencies:
     through "~2.3"
 
-"picogl@git+https://github.com/darionco/picogl.js.git#feature/local-ts-types":
+"picogl@git+https://github.com/darionco/picogl.js.git#local/aske-grafer":
   version "0.17.6"
-  resolved "git+https://github.com/darionco/picogl.js.git#17f93d85914afe6310a3999789ff023d8ee3f9fe"
+  resolved "git+https://github.com/darionco/picogl.js.git#ab5b24b87e4add709441dd6de361507f1f67a942"
 
 picomatch@^2.0.4, picomatch@^2.0.5, picomatch@^2.2.1, picomatch@^2.2.2:
   version "2.2.2"
