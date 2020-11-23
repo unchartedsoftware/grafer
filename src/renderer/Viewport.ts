@@ -17,7 +17,8 @@ export class Viewport {
 
     public readonly size: vec2;
     public readonly camera: Camera;
-    public readonly graph: Graph;
+
+    public graph: Graph;
 
     private _clearColor: [number, number, number, number] = vec4.create() as [number, number, number, number];
     public get clearColor(): vec4 {
@@ -65,7 +66,6 @@ export class Viewport {
         this.size = vec2.fromValues(this.canvas.width, this.canvas.height);
 
         this.camera = new Camera(this.size);
-        this.graph = new Graph();
 
         const resizeObserver = new ResizeObserver((entries: ResizeObserverEntry[]): void => {
             const canvasEntry = entries[0];
@@ -108,7 +108,7 @@ export class Viewport {
 
         this.resetContextFlags();
         this.context.clear();
-        if (this.graph.enabled) {
+        if (this.graph && this.graph.enabled) {
             this.graph.render(this.context, RenderMode.DRAFT, uniforms);
             if (this.picking.enabled) {
                 this.picking.offscreenBuffer.prepareContext(this.context);
