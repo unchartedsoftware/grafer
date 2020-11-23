@@ -1,23 +1,40 @@
-import {Renderable} from '../../renderer/Renderable';
-import {App, VertexBuffer} from 'picogl';
+import PicoGL, {App} from 'picogl';
+import {LayerRenderable} from '../LayerRenderable';
+import {GraphPoints} from '../../data/GraphPoints';
+import {DataMappings} from '../../data/DataTools';
+import {PickingManager} from '../../UX/picking/PickingManager';
+import {GLDataTypes} from '../../renderer/Renderable';
 
-export abstract class Edges extends Renderable {
+export interface BasicEdgeData {
+    id: number | string;
+    source: number;
+    target: number;
+}
+
+export const kBasicEdgeMappings: DataMappings<BasicEdgeData> = {
+    id: (entry: any, i) => 'id' in entry ? entry.id : i,
+    source: (entry: any, i) => 'source' in entry ? entry.source : i,
+    target: (entry: any, i) => 'target' in entry ? entry.target : i,
+}
+
+export const kBasicEdgeDataTypes: GLDataTypes<BasicEdgeData> = {
+    source: PicoGL.UNSIGNED_INT,
+    target: PicoGL.UNSIGNED_INT,
+}
+
+export abstract class Edges<T_SRC, T_TGT> extends LayerRenderable<T_SRC, T_TGT> {
+    public static get defaultMappings(): DataMappings<BasicEdgeData> {
+        return kBasicEdgeMappings;
+    }
+
     public alpha: number = 0.3;
 
-    protected positions: VertexBuffer;
-    protected colors: VertexBuffer;
-
-    protected constructor(context: App, positions: Float32Array, colors?: Uint8Array) {
-        super();
-
-        this.positions = context.createInterleavedBuffer(24, positions);
-
-        if (colors) {
-            this.colors = context.createInterleavedBuffer(8, colors);
-        } else {
-            const colorsArray = new Uint8Array((positions.length / 6) * 8);
-            colorsArray.fill(128);
-            this.colors = context.createInterleavedBuffer(8, colorsArray);
-        }
+    protected constructor(context: App,
+                          points: GraphPoints,
+                          data: unknown[],
+                          mappings: Partial<DataMappings<T_SRC>>,
+                          pickingManager: PickingManager
+    ) {
+        super(context, points, data, mappings, pickingManager);
     }
 }
