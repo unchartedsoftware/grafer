@@ -2,8 +2,8 @@
 
 layout(location=0) in vec3 aVertex;
 layout(location=1) in vec3 iPosition;
-layout(location=2) in uvec4 iColor;
-layout(location=3) in float iSize;
+layout(location=2) in float iRadius;
+layout(location=3) in uvec4 iColor;
 
 //layout(std140) uniform RenderUniforms {
     uniform mat4 uViewMatrix;
@@ -48,7 +48,7 @@ void main() {
     float pixelRadius = max(1.0, length((screenQuadSide - screenQuadCenter) * uViewportSize));
 
     // calculate the desired pixel radius for the size mode
-    float size = uMinSize + (uMaxSize - uMinSize) * iSize;
+    float size = iRadius; // uMinSize + (uMaxSize - uMinSize) * iRadius;
     float desiredPixelRadius = (uPixelSizing ? size : pixelRadius * size);
 
     // calculate the pixel radius multiplier needed to acomplish the desired pixel radius
