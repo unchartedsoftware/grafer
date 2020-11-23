@@ -1,9 +1,5 @@
 import {LitElement, customElement, html, query, PropertyValues, css, CSSResult} from 'lit-element';
 import {GraferController, GraferLayerData, GraferPointsData} from './GraferController';
-import {Graph} from '../graph/mod';
-import {DataMappings} from '../data/DataTools';
-import {BasicNodeData} from '../graph/nodes/Nodes';
-import {BasicEdgeData} from '../graph/edges/Edges';
 
 @customElement('grafer-view') // is this a good enough name?
 export class GraferView extends LitElement {
@@ -37,11 +33,11 @@ export class GraferView extends LitElement {
         return this._controller;
     }
 
-    public connectedCallback() {
+    public connectedCallback(): void {
         super.connectedCallback();
     }
 
-    protected firstUpdated(_changedProperties: PropertyValues) {
+    protected firstUpdated(_changedProperties: PropertyValues): void {
         super.firstUpdated(_changedProperties);
         this._controller = new GraferController(this.canvas, {
             points: this.points,

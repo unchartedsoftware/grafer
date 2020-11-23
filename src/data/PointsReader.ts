@@ -77,7 +77,7 @@ export abstract class PointsReader<T_SRC, T_TGT> {
         this.dataProgram = context.createProgram(dataShader.vs, noopFS, {
             transformFeedbackVaryings: dataShader.varyings,
             transformFeedbackMode: PicoGL.INTERLEAVED_ATTRIBS,
-        })
+        });
 
         this.dataDrawCall = context.createDrawCall(this.dataProgram, this.sourceVAO).transformFeedback(this.targetTFO);
         this.dataDrawCall.primitive(PicoGL.POINTS);
@@ -91,7 +91,7 @@ export abstract class PointsReader<T_SRC, T_TGT> {
         context.disable(PicoGL.RASTERIZER_DISCARD);
     }
 
-    protected configureTargetVAO(vao: VertexArray, attrIndex: number = 1) {
+    protected configureTargetVAO(vao: VertexArray, attrIndex: number = 1): void {
         const types = this.getGLTargetTypes();
         const typesInfo = glDataTypesInfo(types);
         configureVAO(vao, this.targetVBO, types, typesInfo, attrIndex, true);

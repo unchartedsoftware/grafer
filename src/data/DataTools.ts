@@ -1,5 +1,5 @@
 import {GL_TYPE_GETTER, GL_TYPE_SETTER, GL_TYPE_SIZE, GLDataTypes, glDataTypesInfo} from '../renderer/Renderable';
-import {App, PicoGL, VertexBuffer} from 'picogl';
+import {App, VertexBuffer} from 'picogl';
 
 export type DataMappings<T> = {
     [key in keyof T]: ((entry: any, i: number) => T[key]);
@@ -94,6 +94,7 @@ export function printDataGL<T>(context: App, vbo: VertexBuffer, count: number, t
                 values.push(GL_TYPE_GETTER[type[iii]](view, off));
                 off += GL_TYPE_SIZE[type[iii]];
             }
+            // eslint-disable-next-line
             console.log(`ELEMENT[${i}] ATTR[${ii}]: ${values}`);
         }
     }

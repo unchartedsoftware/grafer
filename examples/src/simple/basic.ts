@@ -39,7 +39,7 @@ export async function basic(container: HTMLElement): Promise<void> {
             { source: 1, target: 2 },
             { source: 2, target: 0 },
         ],
-    }
+    };
 
     const layers = [
         { nodes, edges },

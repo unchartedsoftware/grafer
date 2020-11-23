@@ -90,7 +90,7 @@ export class GraferController {
                 this._viewport.graph = Graph.fromNodesArray(context, nodes);
 
                 let vertexIndex = 0;
-                nodesPointMapping = () => vertexIndex++;
+                nodesPointMapping = (): number => vertexIndex++;
             }
 
             for (let i = 0, n = layers.length; i < n; ++i) {
@@ -124,14 +124,14 @@ export class GraferController {
 
                     if (!hasPoints) {
                         const sourceMapping = edgesMappings.source;
-                        edgesMappings.source = (entry, i) => {
+                        edgesMappings.source = (entry, i): number => {
                             return nodes.getEntryPointID(sourceMapping(entry, i));
-                        }
+                        };
 
                         const targetMapping = edgesMappings.target;
-                        edgesMappings.target = (entry, i) => {
+                        edgesMappings.target = (entry, i): number => {
                             return nodes.getEntryPointID(targetMapping(entry, i));
-                        }
+                        };
                     }
 
                     edges = new EdgesClass(context, graph, edgesData.data, edgesMappings, null);

@@ -7,7 +7,7 @@ import {Ring} from './ring/Ring';
 const types = {
     Circle,
     Ring,
-}
+};
 
 export {types};
 

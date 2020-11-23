@@ -1,18 +1,18 @@
 import edgeVS from './Straight.vs.glsl';
 import edgeFS from './Straight.fs.glsl';
 import dataVS from './Straight.data.vs.glsl';
-import {
-    GLDataTypes,
-    RenderableShaders,
-    RenderMode,
-    RenderUniforms,
-    setDrawCallUniforms
-} from '../../../renderer/Renderable';
 import {App, DrawCall, PicoGL, Program, VertexArray, VertexBuffer} from 'picogl';
 import {BasicEdgeData, Edges, kBasicEdgeDataTypes, kBasicEdgeMappings} from '../Edges';
 import {GraphPoints} from '../../../data/GraphPoints';
 import {DataMappings, DataShader, printDataGL} from '../../../data/DataTools';
 import {PickingManager} from '../../../UX/picking/PickingManager';
+import {
+    GLDataTypes,
+    RenderableShaders,
+    RenderMode,
+    RenderUniforms,
+    setDrawCallUniforms,
+} from '../../../renderer/Renderable';
 
 export const kGLStraightEdgeTypes = {
     source: [PicoGL.FLOAT, PicoGL.FLOAT, PicoGL.FLOAT],
@@ -52,7 +52,7 @@ export class Straight extends Edges<BasicEdgeData, GLStraightEdgeTypes> {
             uGraphPoints: this.dataTexture,
         });
 
-        printDataGL(context, this.targetVBO, data.length, kGLStraightEdgeTypes);
+        // printDataGL(context, this.targetVBO, data.length, kGLStraightEdgeTypes);
     }
 
     public render(context:App, mode: RenderMode, uniforms: RenderUniforms): void {
@@ -110,6 +110,6 @@ export class Straight extends Edges<BasicEdgeData, GLStraightEdgeTypes> {
         return {
             vs: dataVS,
             varyings: [ 'vSource', 'vTarget', 'vSourceColor', 'vTargetColor' ],
-        }
+        };
     }
 }

@@ -7,6 +7,6 @@ import {Gravity} from './gravity/Gravity';
 export const types = {
     Straight,
     Gravity,
-}
+};
 
 export* from './Edges';

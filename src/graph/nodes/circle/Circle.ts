@@ -4,17 +4,17 @@ import dataVS from './Circle.data.vs.glsl';
 import pickingFS from './Circle.picking.fs.glsl';
 
 import {BasicNodeData, kBasicNodeDataTypes, kBasicNodeMappings, Nodes} from '../Nodes';
+import {App, DrawCall, PicoGL, Program, VertexArray, VertexBuffer} from 'picogl';
+import {GraphPoints} from '../../../data/GraphPoints';
+import {DataMappings, DataShader, printDataGL} from '../../../data/DataTools';
+import {PickingManager} from '../../../UX/picking/PickingManager';
 import {
     GLDataTypes,
     RenderableShaders,
     RenderMode,
     RenderUniforms,
-    setDrawCallUniforms
+    setDrawCallUniforms,
 } from '../../../renderer/Renderable';
-import {App, DrawCall, PicoGL, Program, VertexArray, VertexBuffer} from 'picogl';
-import {GraphPoints} from '../../../data/GraphPoints';
-import {DataMappings, DataShader, printDataGL} from '../../../data/DataTools';
-import {PickingManager} from '../../../UX/picking/PickingManager';
 
 export const kGLCircleNodeTypes = {
     // TODO: maybe use points indices?
@@ -125,6 +125,6 @@ export class Circle extends Nodes<BasicNodeData, GLCircleNodeTypes> {
         return {
             vs: dataVS,
             varyings: [ 'vPosition', 'vRadius', 'vColor' ],
-        }
+        };
     }
 }

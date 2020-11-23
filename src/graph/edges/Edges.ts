@@ -15,12 +15,12 @@ export const kBasicEdgeMappings: DataMappings<BasicEdgeData> = {
     id: (entry: any, i) => 'id' in entry ? entry.id : i,
     source: (entry: any, i) => 'source' in entry ? entry.source : i,
     target: (entry: any, i) => 'target' in entry ? entry.target : i,
-}
+};
 
 export const kBasicEdgeDataTypes: GLDataTypes<BasicEdgeData> = {
     source: PicoGL.UNSIGNED_INT,
     target: PicoGL.UNSIGNED_INT,
-}
+};
 
 export abstract class Edges<T_SRC, T_TGT> extends LayerRenderable<T_SRC, T_TGT> {
     public static get defaultMappings(): DataMappings<BasicEdgeData> {
