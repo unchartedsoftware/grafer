@@ -2,32 +2,36 @@ import {Renderable, RenderMode, RenderUniforms} from '../renderer/Renderable';
 import {App} from 'picogl';
 import {mat4, quat, vec3} from 'gl-matrix';
 import {Layer} from './Layer';
+import {GraphPoints, PointData, PointDataMappings} from '../data/GraphPoints';
 
-export class Graph extends Renderable {
-    private _matrix: mat4;
+export class Graph extends GraphPoints implements Renderable {
+    public enabled: boolean = true;
+
+    private readonly _matrix: mat4;
     public get matrix(): mat4 {
         mat4.fromRotationTranslation(this._matrix, this._rotation, this._translation);
         return this._matrix;
     }
 
-    private _layers: Layer[];
+    private readonly _layers: Layer[];
     public get layers(): Layer[] {
         return this._layers;
     }
 
-    private _rotation: quat;
+    private readonly _rotation: quat;
     public get rotation(): quat {
         return this._rotation;
     }
 
-    private _translation: vec3;
+    private readonly _translation: vec3;
     public get translation(): vec3 {
         return this._translation;
     }
 
-
-    constructor() {
-        super();
+    constructor(context: App, data: PointData[]);
+    constructor(context: App, data: unknown[], mappings: Partial<PointDataMappings>);
+    constructor(context: App, data: unknown[], mappings: Partial<PointDataMappings> = {}) {
+        super(context, data, mappings);
         this._layers = [];
         this._rotation = quat.create();
         this._translation = vec3.create();
