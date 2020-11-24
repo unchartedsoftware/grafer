@@ -6,11 +6,11 @@ import {DataMappings, concatenateData, packData, printDataGL} from './DataTools'
 import {vec3} from 'gl-matrix';
 
 export interface PointData {
-    id: number | string;
+    id?: number | string;
     x: number;
     y: number;
-    z: number;
-    radius: number;
+    z?: number;
+    radius?: number;
 }
 
 export type PointDataMappings = DataMappings<PointData>;
@@ -20,7 +20,7 @@ const kDefaultMappings: PointDataMappings = {
     x: (entry: any) => entry.x,
     y: (entry: any) => entry.y,
     z: (entry: any) => 'z' in entry ? entry.z : 0.0,
-    radius: (entry: any) => 'radius' in entry ? entry.radius : 0.0,
+    radius: (entry: any) => 'radius' in entry ? entry.radius : 1.0,
 };
 
 const kGLTypes: GLDataTypes<PointData> = {
