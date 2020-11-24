@@ -1,5 +1,6 @@
 import {renderMenu} from './renderMenu';
 import * as simple from './simple/mod';
+import './HelpElements';
 
 const examples = {
     simple,
