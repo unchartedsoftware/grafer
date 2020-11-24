@@ -7,6 +7,7 @@ import {DragTruck} from '../UX/mouse/drag/DragTruck';
 import {DragRotation} from '../UX/mouse/drag/DragRotation';
 import {ScrollDolly} from '../UX/mouse/scroll/ScrollDolly';
 import {DragPan} from '../UX/mouse/drag/DragPan';
+import {GraferInputColor} from '../renderer/ColorRegistry';
 
 export type GraferNodesType = keyof typeof GraphNodes.types;
 export type GraferEdgesType = keyof typeof GraphEdges.types;
@@ -34,6 +35,7 @@ export interface GraferLayerData {
 }
 
 export interface GraferControllerData {
+    colors?: GraferInputColor[];
     points?: GraferPointsData;
     layers?: GraferLayerData[];
 }
@@ -71,6 +73,17 @@ export class GraferController {
     }
 
     private loadData(data: GraferControllerData): void {
+        if (data.colors) {
+            const colors = data.colors;
+            const colorRegisrty = this._viewport.colorRegisrty;
+            for (let i = 0, n = colors.length; i < n; ++i) {
+                colorRegisrty.registerColor(colors[i]);
+            }
+        } else {
+            // add at least one color in case the data does not have colors either
+            this._viewport.colorRegisrty.registerColor('#d8dee9');
+        }
+
         if (data.points) {
             const mappings = data.points.mappings ? data.points.mappings : {};
             this._viewport.graph = new Graph(this._viewport.context, data.points.data, mappings);
@@ -80,6 +93,7 @@ export class GraferController {
             const context = this.context;
             const layers = data.layers;
             const hasPoints = Boolean(this._viewport.graph);
+            const hasColors = Boolean(data.colors);
             let nodesPointMapping: () => number = null;
 
             if (!hasPoints) {
@@ -104,9 +118,20 @@ export class GraferController {
                     const nodesData = layers[i].nodes;
                     const nodesType = layers[i].nodes.type ? layers[i].nodes.type : 'Circle';
                     const NodesClass = GraphNodes.types[nodesType] || GraphNodes.Circle;
-                    const nodesMappings = Object.assign({}, nodesData.mappings);
+                    const nodesMappings = Object.assign({}, NodesClass.defaultMappings, nodesData.mappings);
                     if (nodesPointMapping) {
                         nodesMappings.point = nodesPointMapping;
+                    }
+
+                    if (!hasColors) {
+                        const colorMapping = nodesMappings.color;
+                        nodesMappings.color = (entry: any, i) => {
+                            const value = colorMapping(entry, i);
+                            if (typeof value !== 'number') {
+                                return this._viewport.colorRegisrty.registerColor(value);
+                            }
+                            return value;
+                        }
                     }
 
                     nodes = new NodesClass(context, graph, nodesData.data, nodesMappings, null);
@@ -134,6 +159,26 @@ export class GraferController {
                         };
                     }
 
+                    if (!hasColors) {
+                        const sourceColorMapping = edgesMappings.sourceColor;
+                        edgesMappings.sourceColor = (entry: any, i) => {
+                            const value = sourceColorMapping(entry, i);
+                            if (typeof value !== 'number') {
+                                return this._viewport.colorRegisrty.registerColor(value);
+                            }
+                            return value;
+                        }
+
+                        const targetColorMapping = edgesMappings.targetColor;
+                        edgesMappings.targetColor = (entry: any, i) => {
+                            const value = targetColorMapping(entry, i);
+                            if (typeof value !== 'number') {
+                                return this._viewport.colorRegisrty.registerColor(value);
+                            }
+                            return value;
+                        }
+                    }
+
                     edges = new EdgesClass(context, graph, edgesData.data, edgesMappings, null);
                 }
 
@@ -146,6 +191,7 @@ export class GraferController {
 
         if (this._viewport.graph) {
             this._viewport.camera.position = [0, 0, - this._viewport.graph.bbCornerLength * 2];
+            this._viewport.render();
         }
     }
 }
