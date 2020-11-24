@@ -2,6 +2,8 @@
 
 layout(location=0) in uint aSourceIndex;
 layout(location=1) in uint aTargetIndex;
+layout(location=2) in uint aSourceColor;
+layout(location=3) in uint aTargetColor;
 
 uniform sampler2D uGraphPoints;
 
@@ -24,6 +26,6 @@ void main() {
     vec4 target = getValueByIndexFromTexture(uGraphPoints, int(aTargetIndex));
     vTarget = target.xyz;
 
-    vSourceColor = uint(0xff00ff00);
-    vTargetColor = uint(0xffff0000);
+    vSourceColor = aSourceColor;
+    vTargetColor = aTargetColor;
 }

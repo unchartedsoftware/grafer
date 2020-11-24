@@ -4,22 +4,26 @@ import {GraphPoints} from '../../data/GraphPoints';
 import {DataMappings} from '../../data/DataTools';
 import {PickingManager} from '../../UX/picking/PickingManager';
 import {GLDataTypes} from '../../renderer/Renderable';
+import {GraferInputColor} from '../../renderer/ColorRegistry';
 
 export interface BasicNodeData {
-    id: number | string;
-    point: number | string;
+    id?: number | string;
+    point?: number | string;
+    color?: GraferInputColor;
     radius?: number;
 }
 
 export const kBasicNodeMappings: DataMappings<BasicNodeData> = {
     id: (entry: any, i) => 'id' in entry ? entry.id : i,
     point: (entry: any, i) => 'point' in entry ? entry.point : i,
+    color: (entry: any, i) => 'color' in entry ? entry.color : 0, // first registered color
     radius: null, // inherit the radius from the vertex data
 };
 
 export const kBasicNodeDataTypes: GLDataTypes<BasicNodeData> = {
     point: PicoGL.UNSIGNED_INT,
-    radius: PicoGL.FLOAT,
+    color: PicoGL.UNSIGNED_INT,
+    radius: PicoGL.FLOAT, // optional at the end
 };
 
 export abstract class Nodes<T_SRC, T_TGT> extends LayerRenderable<T_SRC, T_TGT> {
@@ -77,26 +81,5 @@ export abstract class Nodes<T_SRC, T_TGT> extends LayerRenderable<T_SRC, T_TGT> 
                           pickingManager: PickingManager
     ) {
         super(context, points, data, mappings, pickingManager);
-        // this.positions = context.createVertexBuffer(PicoGL.FLOAT, 3, positions);
-        //
-        // if (colors) {
-        //     this.colors = context.createVertexBuffer(PicoGL.UNSIGNED_BYTE, 4, colors);
-        // } else {
-        //     const colorsArray = new Uint8Array((positions.length / 3) * 4);
-        //     colorsArray.fill(128);
-        //     this.colors = context.createVertexBuffer(PicoGL.UNSIGNED_BYTE, 4, colorsArray);
-        // }
-        //
-        // if (sizes) {
-        //     this.sizes = context.createVertexBuffer(PicoGL.FLOAT, 1, sizes);
-        // } else {
-        //     const sizesArray = new Float32Array(positions.length / 3);
-        //     sizesArray.fill(0.0);
-        //     this.sizes = context.createVertexBuffer(PicoGL.FLOAT, 1, sizesArray);
-        // }
-        //
-        // if (pickingColors) {
-        //     this.pickingColors = context.createVertexBuffer(PicoGL.UNSIGNED_BYTE, 4, pickingColors);
-        // }
     }
 }

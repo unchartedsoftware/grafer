@@ -22,7 +22,7 @@ export const kGLCircleNodeTypes = {
     // TODO: maybe skip and use vertex indices when point radius is used.
     radius: PicoGL.FLOAT,
     // TODO: Create a color texture and use indices here.
-    color: [PicoGL.UNSIGNED_BYTE, PicoGL.UNSIGNED_BYTE, PicoGL.UNSIGNED_BYTE, PicoGL.UNSIGNED_BYTE],
+    color: PicoGL.UNSIGNED_INT,
 } as const;
 export type GLCircleNodeTypes = typeof kGLCircleNodeTypes;
 

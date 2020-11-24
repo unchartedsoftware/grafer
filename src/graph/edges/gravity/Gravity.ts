@@ -19,8 +19,8 @@ import {
 export const kGLGravityEdgeTypes = {
     source: [PicoGL.FLOAT, PicoGL.FLOAT, PicoGL.FLOAT],
     target: [PicoGL.FLOAT, PicoGL.FLOAT, PicoGL.FLOAT],
-    sourceColor: [PicoGL.UNSIGNED_BYTE, PicoGL.UNSIGNED_BYTE, PicoGL.UNSIGNED_BYTE, PicoGL.UNSIGNED_BYTE],
-    targetColor: [PicoGL.UNSIGNED_BYTE, PicoGL.UNSIGNED_BYTE, PicoGL.UNSIGNED_BYTE, PicoGL.UNSIGNED_BYTE],
+    sourceColor: PicoGL.UNSIGNED_INT,
+    targetColor: PicoGL.UNSIGNED_INT,
 } as const;
 export type GLGravityEdgeTypes = typeof kGLGravityEdgeTypes;
 
