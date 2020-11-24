@@ -125,13 +125,13 @@ export class GraferController {
 
                     if (!hasColors) {
                         const colorMapping = nodesMappings.color;
-                        nodesMappings.color = (entry: any, i) => {
+                        nodesMappings.color = (entry: any, i): number => {
                             const value = colorMapping(entry, i);
                             if (typeof value !== 'number') {
                                 return this._viewport.colorRegisrty.registerColor(value);
                             }
                             return value;
-                        }
+                        };
                     }
 
                     nodes = new NodesClass(context, graph, nodesData.data, nodesMappings, null);
@@ -161,22 +161,22 @@ export class GraferController {
 
                     if (!hasColors) {
                         const sourceColorMapping = edgesMappings.sourceColor;
-                        edgesMappings.sourceColor = (entry: any, i) => {
+                        edgesMappings.sourceColor = (entry: any, i): number => {
                             const value = sourceColorMapping(entry, i);
                             if (typeof value !== 'number') {
                                 return this._viewport.colorRegisrty.registerColor(value);
                             }
                             return value;
-                        }
+                        };
 
                         const targetColorMapping = edgesMappings.targetColor;
-                        edgesMappings.targetColor = (entry: any, i) => {
+                        edgesMappings.targetColor = (entry: any, i): number => {
                             const value = targetColorMapping(entry, i);
                             if (typeof value !== 'number') {
                                 return this._viewport.colorRegisrty.registerColor(value);
                             }
                             return value;
-                        }
+                        };
                     }
 
                     edges = new EdgesClass(context, graph, edgesData.data, edgesMappings, null);

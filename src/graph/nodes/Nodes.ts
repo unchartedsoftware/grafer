@@ -16,7 +16,7 @@ export interface BasicNodeData {
 export const kBasicNodeMappings: DataMappings<BasicNodeData> = {
     id: (entry: any, i) => 'id' in entry ? entry.id : i,
     point: (entry: any, i) => 'point' in entry ? entry.point : i,
-    color: (entry: any, i) => 'color' in entry ? entry.color : 0, // first registered color
+    color: (entry: any) => 'color' in entry ? entry.color : 0, // first registered color
     radius: null, // inherit the radius from the vertex data
 };
 

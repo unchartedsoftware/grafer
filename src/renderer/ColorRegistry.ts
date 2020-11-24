@@ -1,4 +1,4 @@
-import PicoGL, {App, Texture} from 'picogl';
+import {App, Texture} from 'picogl';
 import {vec2} from 'gl-matrix';
 import chroma from 'chroma-js';
 

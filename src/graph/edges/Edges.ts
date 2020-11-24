@@ -16,10 +16,10 @@ export interface BasicEdgeData {
 
 export const kBasicEdgeMappings: DataMappings<BasicEdgeData> = {
     id: (entry: any, i) => 'id' in entry ? entry.id : i,
-    source: (entry: any, i) => entry.source,
-    target: (entry: any, i) => entry.target,
-    sourceColor: (entry: any, i) => 'sourceColor' in entry ? entry.sourceColor : 0, // first registered color
-    targetColor: (entry: any, i) => 'targetColor' in entry ? entry.targetColor : 0, // first registered color
+    source: (entry: any) => entry.source,
+    target: (entry: any) => entry.target,
+    sourceColor: (entry: any) => 'sourceColor' in entry ? entry.sourceColor : 0, // first registered color
+    targetColor: (entry: any) => 'targetColor' in entry ? entry.targetColor : 0, // first registered color
 };
 
 export const kBasicEdgeDataTypes: GLDataTypes<BasicEdgeData> = {
