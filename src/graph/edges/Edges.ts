@@ -34,7 +34,7 @@ export abstract class Edges<T_SRC, T_TGT> extends LayerRenderable<T_SRC, T_TGT> 
         return kBasicEdgeMappings;
     }
 
-    public alpha: number = 0.3;
+    public alpha: number = 1.0;
 
     protected constructor(context: App,
                           points: GraphPoints,
