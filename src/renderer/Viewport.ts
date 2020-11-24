@@ -5,6 +5,7 @@ import {Camera} from './Camera';
 import {Graph} from '../graph/Graph';
 import {MouseHandler} from '../UX/mouse/MouseHandler';
 import {PickingManager} from '../UX/picking/PickingManager';
+import {ColorRegistry} from './ColorRegistry';
 
 export class Viewport {
     public readonly element: HTMLElement;
@@ -13,6 +14,7 @@ export class Viewport {
     public readonly pixelRatio: number;
     public readonly picking: PickingManager;
     public readonly mouseHandler: MouseHandler;
+    public readonly colorRegisrty: ColorRegistry;
     public rect: DOMRectReadOnly;
 
     public readonly size: vec2;
@@ -78,6 +80,8 @@ export class Viewport {
             this.render();
         });
         resizeObserver.observe(this.canvas);
+
+        this.colorRegisrty = new ColorRegistry(this.context);
     }
 
     public resetContextFlags(): void {
@@ -104,6 +108,7 @@ export class Viewport {
             uViewportSize: this.size,
             uPixelRatio: this.pixelRatio,
             uClearColor: this._clearColor,
+            uColorPalette: this.colorRegisrty.texture,
         };
 
         this.resetContextFlags();

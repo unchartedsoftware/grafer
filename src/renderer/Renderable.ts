@@ -29,6 +29,7 @@ export interface RenderUniforms {
     uViewportSize: vec2;
     uPixelRatio: number;
     uClearColor: vec4;
+    uColorPalette: Texture;
 }
 
 export type GenericUniforms = RenderUniforms | { [key: string]: number | number[] | boolean | Texture };
