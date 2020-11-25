@@ -3,6 +3,7 @@ import '../../../src/grafer/GraferView';
 
 export async function colors(container: HTMLElement): Promise<void> {
 
+    // create an array od colors to be used
     const colors = [
         /* 0 */ 'red',
         /* 1 */ 'limegreen',
@@ -20,7 +21,7 @@ export async function colors(container: HTMLElement): Promise<void> {
         ],
     };
 
-    // nodes reference points
+    // nodes reference points and colors by their index
     const nodes = {
         data: [
             { point: 'left', color: 0 },
@@ -30,7 +31,7 @@ export async function colors(container: HTMLElement): Promise<void> {
         ],
     };
 
-    // edges also reference points
+    // edges also reference points and colors by their index
     const edges = {
         data: [
             { source: 'left', target: 'right', sourceColor: 0, targetColor: 1 },
