@@ -4,4 +4,3 @@ export * from './nodeColors';
 export * from './edgeColors';
 export * from './nodeRadius';
 export * from './nodeID';
-export * from './playground';

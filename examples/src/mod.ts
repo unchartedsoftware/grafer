@@ -1,9 +1,11 @@
 import {renderMenu} from './renderMenu';
+import {playground} from './playground';
 import * as basic from './basic/mod';
 import './HelpElements';
 
 const examples = {
     basic,
+    playground,
 };
 
 function getExample(examples, path): (HTMLElement) => void | null {
