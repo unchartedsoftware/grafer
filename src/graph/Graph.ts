@@ -3,8 +3,10 @@ import {App} from 'picogl';
 import {mat4, quat, vec3} from 'gl-matrix';
 import {Layer} from './Layer';
 import {GraphPoints, PointData, PointDataMappings} from '../data/GraphPoints';
+import {PickingManager} from '../UX/picking/PickingManager';
 
 export class Graph extends GraphPoints implements Renderable {
+    public picking: PickingManager;
     public enabled: boolean = true;
 
     private readonly _matrix: mat4;
@@ -39,6 +41,10 @@ export class Graph extends GraphPoints implements Renderable {
     }
 
     public render(context:App, mode: RenderMode, uniforms: RenderUniforms): void {
+        if (mode === RenderMode.PICKING && this.picking && this.picking.enabled) {
+            this.picking.offscreenBuffer.prepareContext(context);
+        }
+
         for (let i = 0, n = this._layers.length; i < n; ++i) {
             if (this._layers[i].enabled) {
                 this._layers[i].renderNodes(context, mode, uniforms);
@@ -49,6 +55,16 @@ export class Graph extends GraphPoints implements Renderable {
             if (this._layers[i].enabled) {
                 this._layers[i].renderEdges(context, mode, uniforms);
             }
+        }
+
+        // if (this.picking) {
+        //     this.picking.offscreenBuffer.blitToScreen(context);
+        // }
+    }
+
+    public resize(context: App): void {
+        if (this.picking) {
+            this.picking.offscreenBuffer.resize(context);
         }
     }
 
