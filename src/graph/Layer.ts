@@ -80,6 +80,26 @@ export class Layer extends EventEmitter implements GraphRenderable {
         this._nodes = nodes;
         this._edges = edges;
         this.name = name;
+
+        if (this._nodes) {
+            this._nodes.on(EventEmitter.omniEvent, (event, id: string | number): void => {
+                this.emit(event, {
+                    layer: this.name,
+                    type: 'node',
+                    id,
+                });
+            });
+        }
+
+        if (this._edges) {
+            this._edges.on(EventEmitter.omniEvent, (event, id: string | number): void => {
+                this.emit(event, {
+                    layer: this.name,
+                    type: 'edge',
+                    id,
+                });
+            });
+        }
     }
 
     public render(context: App, mode: RenderMode, uniforms: RenderUniforms): void {
