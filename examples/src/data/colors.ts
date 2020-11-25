@@ -1,7 +1,7 @@
 import {html, render} from 'lit-html';
 import '../../../src/grafer/GraferView';
 
-export async function usingColors(container: HTMLElement): Promise<void> {
+export async function colors(container: HTMLElement): Promise<void> {
 
     const colors = [
         /* 0 */ 'red',

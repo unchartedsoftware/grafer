@@ -1,3 +1,3 @@
-export * from './usingPoints';
+export * from './points';
 export * from './separateNodesEdges';
-export * from './usingColors';
+export * from './colors';

@@ -1,7 +1,7 @@
 import {html, render} from 'lit-html';
 import '../../../src/grafer/GraferView';
 
-export async function usingPoints(container: HTMLElement): Promise<void> {
+export async function points(container: HTMLElement): Promise<void> {
 
     // create a 'points' data structure to hold all positional data
     const points = {
