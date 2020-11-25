@@ -19,6 +19,13 @@ a {
     transform: translate(-50%, -50%);
 }
 
+.menu-items-container {
+    max-height: 700px;
+    width: 100%;
+    overflow-y: scroll;
+    overflow-x: hidden;
+}
+
 .menu-title {
     padding: 8px 30px;
     width: 100%;
@@ -29,11 +36,12 @@ a {
     font-family: arial, sans-serif;
     font-weight: bold;
     user-select: none;
+    box-sizing: border-box;
 }
 
 .menu-item {
     text-align: left;
-    width: 100%;
+    min-width: 512px;
     padding: 8px 30px;
     background-color: #e5e9f0;
     border-left: 1px solid #434c5e;
@@ -44,6 +52,7 @@ a {
     cursor: pointer;
     font-family: arial, sans-serif;
     transition: background-color 150ms;
+    box-sizing: border-box;
 }
 
 .menu-item:hover {

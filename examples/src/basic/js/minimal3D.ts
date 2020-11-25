@@ -1,7 +1,11 @@
 import {html, render} from 'lit-html';
-import '../../../src/grafer/GraferView';
+import '../../../../src/grafer/GraferView';
+import {GraferController} from '../../../../src/grafer/GraferController';
 
-export async function basic3D(container: HTMLElement): Promise<void> {
+export async function minimal3D(container: HTMLElement): Promise<void> {
+    render(html`<canvas class="grafer_container"></canvas><mouse-interactions></mouse-interactions>`, container);
+    const canvas = document.querySelector('.grafer_container') as HTMLCanvasElement;
+
     const nodes = {
         data: [
             { x: -8.6, y: 5.0, z: 5.0 },
@@ -34,5 +38,5 @@ export async function basic3D(container: HTMLElement): Promise<void> {
         { nodes, edges },
     ];
 
-    render(html`<grafer-view class="grafer_container" .layers="${layers}"></grafer-view><mouse-interactions></mouse-interactions>`, container);
+    const controller = new GraferController(canvas, { layers });
 }

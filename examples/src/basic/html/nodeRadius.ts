@@ -1,13 +1,13 @@
 import {html, render} from 'lit-html';
-import '../../../src/grafer/GraferView';
+import '../../../../src/grafer/GraferView';
 
-export async function basic(container: HTMLElement): Promise<void> {
+export async function nodeRadius(container: HTMLElement): Promise<void> {
     const nodes = {
         data: [
-                { x: -8.6, y: 5.0 },
-                { x: 8.6, y: 5.0 },
-                { x: 0.0, y: -10.0 },
-                { x: 0.0, y: 0.0 },
+            { x: -8.6, y: 5.0 },
+            { x: 8.6, y: 5.0 },
+            { x: 0.0, y: -10.0 },
+            { x: 0.0, y: 0.0, color: 'red', radius: 2.5 },
         ],
     };
 

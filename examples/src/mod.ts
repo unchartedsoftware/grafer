@@ -1,9 +1,9 @@
 import {renderMenu} from './renderMenu';
-import * as simple from './simple/mod';
+import * as basic from './basic/mod';
 import './HelpElements';
 
 const examples = {
-    simple,
+    basic,
 };
 
 function getExample(examples, path): (HTMLElement) => void | null {

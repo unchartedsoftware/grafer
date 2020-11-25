@@ -23,6 +23,10 @@ export function renderMenu(element: HTMLElement, examples: ExamplesContainer): v
     title.className = 'menu-title';
     container.appendChild(title);
 
+    const items = document.createElement('div');
+    items.className = 'menu-items-container';
+    container.appendChild(items);
+
     for (let i = 0, n = entries.length; i < n; ++i) {
         const div = document.createElement('div');
         div.className = 'menu-item';
@@ -32,7 +36,7 @@ export function renderMenu(element: HTMLElement, examples: ExamplesContainer): v
         a.href = entries[i];
         a.appendChild(div);
 
-        container.appendChild(a);
+        items.appendChild(a);
     }
 
     element.appendChild(container);
