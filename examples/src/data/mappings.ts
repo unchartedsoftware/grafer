@@ -11,7 +11,7 @@ export async function mappings(container: HTMLElement): Promise<void> {
         /* 4 */ [255, 255, 0],
         /* 5 */ [0, 255, 255],
         /* 6 */ [255, 0, 255],
-        /* 7 */ 'white'
+        /* 7 */ 'white',
     ];
 
     // create a 'points' data structure to hold all positional data
@@ -47,9 +47,9 @@ export async function mappings(container: HTMLElement): Promise<void> {
         ],
         // using mappings we can compute properties
         mappings: {
-            sourceColor: (entry) => entry.color,
-            targetColor: (entry) => entry.color,
-        }
+            sourceColor: (entry): number => entry.color,
+            targetColor: (entry): number => entry.color,
+        },
     };
 
     const layers = [
