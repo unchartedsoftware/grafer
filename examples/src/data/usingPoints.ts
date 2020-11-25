@@ -37,7 +37,7 @@ export async function usingPoints(container: HTMLElement): Promise<void> {
     };
 
     const layers = [
-        { edges },
+        { nodes, edges },
     ];
 
     // pass the points to grafer

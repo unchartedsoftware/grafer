@@ -3,7 +3,7 @@ import edgeFS from './Gravity.fs.glsl';
 import dataVS from './Gravity.data.vs.glsl';
 
 import {App, DrawCall, PicoGL, Program, VertexArray, VertexBuffer} from 'picogl';
-import {BasicEdgeData, Edges, kBasicEdgeDataTypes, kBasicEdgeMappings} from '../Edges';
+import {BasicEdgeData, Edges, kBasicEdgeDataTypes} from '../Edges';
 import {GraphPoints} from '../../../data/GraphPoints';
 import {DataMappings, DataShader, printDataGL} from '../../../data/DataTools';
 import {PickingManager} from '../../../UX/picking/PickingManager';

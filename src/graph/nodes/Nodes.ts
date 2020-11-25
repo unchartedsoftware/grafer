@@ -97,13 +97,13 @@ export abstract class Nodes<T_SRC extends BasicNodeData, T_TGT> extends LayerRen
         return nodesMappings as DataMappings<T_SRC>;
     }
 
-    protected ingestData(context: App, data: unknown[], mappings: Partial<DataMappings<T_SRC>>) {
+    protected ingestData(context: App, data: unknown[], mappings: Partial<DataMappings<T_SRC>>): void {
         this.map = new Map();
         super.ingestData(context, data, mappings);
     }
 
     protected packDataCB(): PackDataCB<T_SRC> {
-        return (i, entry) => this.map.set(entry.id, entry.point);
+        return (i, entry): unknown => this.map.set(entry.id, entry.point);
     }
 
     public getEntryPointID(id: number | string):  number | string {

@@ -84,7 +84,7 @@ export abstract class PointsReader<T_SRC, T_TGT> {
     }
 
     protected packDataCB(): PackDataCB<T_SRC> {
-        return () => null;
+        return (): null => null;
     }
 
     protected abstract computeMappings(mappings: Partial<DataMappings<T_SRC>>): DataMappings<T_SRC>;

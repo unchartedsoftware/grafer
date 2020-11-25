@@ -3,7 +3,7 @@ import nodeFS from './Circle.fs.glsl';
 import dataVS from './Circle.data.vs.glsl';
 import pickingFS from './Circle.picking.fs.glsl';
 
-import {BasicNodeData, kBasicNodeDataTypes, kBasicNodeMappings, Nodes} from '../Nodes';
+import {BasicNodeData, kBasicNodeDataTypes, Nodes} from '../Nodes';
 import {App, DrawCall, PicoGL, Program, VertexArray, VertexBuffer} from 'picogl';
 import {GraphPoints} from '../../../data/GraphPoints';
 import {DataMappings, DataShader, printDataGL} from '../../../data/DataTools';
