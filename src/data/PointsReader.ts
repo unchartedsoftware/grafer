@@ -1,6 +1,6 @@
 import {GraphPoints} from './GraphPoints';
 import {App, DrawCall, PicoGL, Program, Texture, TransformFeedback, VertexArray, VertexBuffer} from 'picogl';
-import {computeDataTypes, DataMappings, DataShader, packData} from './DataTools';
+import {computeDataTypes, DataMappings, DataShader, packData, PackDataCB} from './DataTools';
 import {configureVAO, GenericUniforms, GLDataTypes, glDataTypesInfo, setDrawCallUniforms} from '../renderer/Renderable';
 import noopFS from './shaders/noop.fs.glsl';
 
@@ -10,8 +10,8 @@ export abstract class PointsReader<T_SRC, T_TGT> {
     private dataBuffer: ArrayBuffer;
     private dataStride: number;
     private dataView: DataView;
-    private points: GraphPoints;
-    private map: Map<number | string, number | string>;
+
+    protected points: GraphPoints;
 
     protected sourceVBO: VertexBuffer;
     protected sourceVAO: VertexArray;
@@ -30,10 +30,6 @@ export abstract class PointsReader<T_SRC, T_TGT> {
         this.initializeDataDrawCall(context);
     }
 
-    public getEntryPointID(id: number | string):  number | string {
-        return this.map.get(id);
-    }
-
     protected ingestData(context: App, data: unknown[], mappings: Partial<DataMappings<T_SRC>>): void {
         // compute the data mappings for this instance
         const dataMappings: DataMappings<T_SRC> = this.computeMappings(mappings);
@@ -41,17 +37,7 @@ export abstract class PointsReader<T_SRC, T_TGT> {
         // get the GL data types for this instance
         const types = computeDataTypes(this.getGLSourceTypes(), dataMappings);
 
-        // get the idKey for this instance
-        const idKey = this.idKey();
-        const pointKey = this.pointKey();
-
-        this.map = new Map();
-
-        this.dataBuffer = packData(data, dataMappings, types, false, (i, entry) => {
-            if (idKey in entry) {
-                this.map.set(entry[idKey], entry[pointKey]);
-            }
-        });
+        this.dataBuffer = packData(data, dataMappings, types, false, this.packDataCB());
         this.dataView = new DataView(this.dataBuffer);
 
         // initialize the data WebGL objects
@@ -97,12 +83,8 @@ export abstract class PointsReader<T_SRC, T_TGT> {
         configureVAO(vao, this.targetVBO, types, typesInfo, attrIndex, true);
     }
 
-    protected idKey(): string {
-        return 'id';
-    }
-
-    protected pointKey(): string {
-        return 'point';
+    protected packDataCB(): PackDataCB<T_SRC> {
+        return () => null;
     }
 
     protected abstract computeMappings(mappings: Partial<DataMappings<T_SRC>>): DataMappings<T_SRC>;
