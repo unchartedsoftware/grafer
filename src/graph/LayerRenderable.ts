@@ -32,4 +32,6 @@ export abstract class LayerRenderable<T_SRC, T_TGT> extends PointsReaderEmitter<
         this.pickingManager = pickingManager;
         this.picking = true;
     }
+
+    public abstract destroy(): void;
 }

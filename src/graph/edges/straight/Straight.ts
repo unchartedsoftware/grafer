@@ -55,6 +55,10 @@ export class Straight extends Edges<BasicEdgeData, GLStraightEdgeTypes> {
         // printDataGL(context, this.targetVBO, data.length, kGLStraightEdgeTypes);
     }
 
+    public destroy(): void {
+        // TODO: Implement destroy method
+    }
+
     public render(context:App, mode: RenderMode, uniforms: RenderUniforms): void {
         switch (mode) {
             case RenderMode.PICKING:

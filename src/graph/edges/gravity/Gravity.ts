@@ -61,6 +61,10 @@ export class Gravity extends Edges<BasicEdgeData, GLGravityEdgeTypes> {
         // printDataGL(context, this.targetVBO, data.length, kGLStraightEdgeTypes);
     }
 
+    public destroy(): void {
+        // TODO: Implement destroy method
+    }
+
     public render(context:App, mode: RenderMode, uniforms: RenderUniforms): void {
         setDrawCallUniforms(this.drawCall, uniforms);
         setDrawCallUniforms(this.drawCall, {
