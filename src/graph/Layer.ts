@@ -3,8 +3,9 @@ import {App} from 'picogl';
 import {Nodes} from './nodes/Nodes';
 import {Edges} from './edges/Edges';
 import {GraphRenderable} from './GraphRenderable';
+import {EventEmitter} from '@dekkai/event-emitter/build/lib/EventEmitter';
 
-export class Layer implements GraphRenderable {
+export class Layer extends EventEmitter implements GraphRenderable {
     private _nodes: Nodes<any, any>;
     public get nodes(): Nodes<any, any> {
         return this._nodes;
@@ -75,6 +76,7 @@ export class Layer implements GraphRenderable {
     public name: string;
 
     public constructor(nodes: Nodes<any, any>, edges: Edges<any, any>, name = 'Layer') {
+        super();
         this._nodes = nodes;
         this._edges = edges;
         this.name = name;

@@ -5,8 +5,10 @@ import {GraphPoints} from '../data/GraphPoints';
 import {DataMappings} from '../data/DataTools';
 import {PickingManager} from '../UX/picking/PickingManager';
 import {GraphRenderable} from './GraphRenderable';
+import {EventEmitter} from '@dekkai/event-emitter/build/lib/EventEmitter';
 
-export abstract class LayerRenderable<T_SRC, T_TGT> extends PointsReader<T_SRC, T_TGT> implements Renderable, GraphRenderable {
+const PointsReaderEmitter = EventEmitter.mixin(PointsReader);
+export abstract class LayerRenderable<T_SRC, T_TGT> extends PointsReaderEmitter<T_SRC, T_TGT> implements Renderable, GraphRenderable {
     public static get defaultMappings(): DataMappings<any> {
         return undefined;
     }
@@ -28,5 +30,6 @@ export abstract class LayerRenderable<T_SRC, T_TGT> extends PointsReader<T_SRC, 
     ) {
         super(context, points, data, mappings);
         this.pickingManager = pickingManager;
+        this.picking = true;
     }
 }
