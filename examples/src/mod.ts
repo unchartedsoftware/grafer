@@ -33,7 +33,7 @@ function main(): void {
     if (example) {
         example(document.body);
     } else {
-        renderMenu(document.body, examples);
+        renderMenu(document.body, examples, pathComponents);
     }
 }
 
