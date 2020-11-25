@@ -5,7 +5,7 @@ import dataVS from './Gravity.data.vs.glsl';
 import {App, DrawCall, PicoGL, Program, VertexArray, VertexBuffer} from 'picogl';
 import {BasicEdgeData, Edges, kBasicEdgeDataTypes} from '../Edges';
 import {GraphPoints} from '../../../data/GraphPoints';
-import {DataMappings, DataShader, printDataGL} from '../../../data/DataTools';
+import {DataMappings, DataShader} from '../../../data/DataTools';
 import {PickingManager} from '../../../UX/picking/PickingManager';
 import {GLStraightEdgeTypes, kGLStraightEdgeTypes} from '../straight/Straight';
 import {

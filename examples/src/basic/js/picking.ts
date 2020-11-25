@@ -33,10 +33,10 @@ export async function picking(container: HTMLElement): Promise<void> {
         { name: 'Awesomeness', nodes, edges },
     ];
 
-    const printEvent = (event, detail) => {
+    const printEvent = (event, detail): void => {
         // eslint-disable-next-line
         console.log(`${event.description} => layer:"${detail.layer}" ${detail.type}:"${detail.id}"`);
-    }
+    };
 
     const controller = new GraferController(canvas, { layers });
     controller.on(PickingManager.events.hoverOn, printEvent);

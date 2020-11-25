@@ -28,11 +28,11 @@ export async function picking(container: HTMLElement): Promise<void> {
         { name: 'Awesomeness', nodes, edges },
     ];
 
-    const printEvent = (event) => {
+    const printEvent = (event): void => {
         const detail = event.detail[0];
         // eslint-disable-next-line
         console.log(`${event.type} => layer:"${detail.layer}" ${detail.type}:"${detail.id}"`);
-    }
+    };
 
     render(html`
         <grafer-view
