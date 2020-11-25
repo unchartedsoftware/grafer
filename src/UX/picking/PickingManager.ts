@@ -10,9 +10,9 @@ import {
 } from '../mouse/MouseHandler';
 
 const kEvents  = {
-    hoverOn: Symbol('Grafer::UX::PickingManager::hover::on'),
-    hoverOff: Symbol('Grafer::UX::PickingManager::hover::off'),
-    click: Symbol('Grafer::UX::PickingManager::click'),
+    hoverOn: Symbol('grafer_hover_on'),
+    hoverOff: Symbol('grafer_hover_off'),
+    click: Symbol('grafer_click'),
 };
 Object.freeze(kEvents);
 
