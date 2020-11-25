@@ -1,10 +1,12 @@
 import {renderMenu} from './renderMenu';
 import {playground} from './playground';
 import * as basic from './basic/mod';
+import * as data from './data/mod';
 import './HelpElements';
 
 const examples = {
     basic,
+    data,
     playground,
 };
 
