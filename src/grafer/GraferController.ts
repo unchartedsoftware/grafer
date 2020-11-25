@@ -8,6 +8,8 @@ import {DragRotation} from '../UX/mouse/drag/DragRotation';
 import {ScrollDolly} from '../UX/mouse/scroll/ScrollDolly';
 import {DragPan} from '../UX/mouse/drag/DragPan';
 import {GraferInputColor} from '../renderer/ColorRegistry';
+import {PickingManager} from '../UX/picking/PickingManager';
+import {EventEmitter} from '@dekkai/event-emitter/build/lib/EventEmitter';
 
 export type GraferNodesType = keyof typeof GraphNodes.types;
 export type GraferEdgesType = keyof typeof GraphEdges.types;
@@ -40,7 +42,7 @@ export interface GraferControllerData {
     layers?: GraferLayerData[];
 }
 
-export class GraferController {
+export class GraferController extends EventEmitter {
     private _viewport: Viewport;
     public get viewport(): Viewport {
         return this._viewport;
@@ -50,6 +52,7 @@ export class GraferController {
     }
 
     constructor(canvas: HTMLCanvasElement, data?: GraferControllerData) {
+        super();
         this._viewport = new Viewport(canvas);
 
         const dolly = new ScrollDolly(this._viewport);
@@ -87,6 +90,7 @@ export class GraferController {
         if (data.points) {
             const mappings = data.points.mappings ? data.points.mappings : {};
             this._viewport.graph = new Graph(this._viewport.context, data.points.data, mappings);
+            this._viewport.graph.picking = new PickingManager(this._viewport.context, this._viewport.mouseHandler);
         }
 
         if (data.layers && data.layers.length) {
@@ -102,11 +106,13 @@ export class GraferController {
                     nodes.push(layers[i].nodes.data);
                 }
                 this._viewport.graph = Graph.fromNodesArray(context, nodes);
+                this._viewport.graph.picking = new PickingManager(this._viewport.context, this._viewport.mouseHandler);
 
                 let vertexIndex = 0;
                 nodesPointMapping = (): number => vertexIndex++;
             }
 
+            const pickingManager = this._viewport.graph.picking;
             for (let i = 0, n = layers.length; i < n; ++i) {
                 const name = layers[i].name || `Layer_${i}`;
                 const graph = this._viewport.graph;
@@ -140,7 +146,7 @@ export class GraferController {
                         };
                     }
 
-                    nodes = new NodesClass(context, graph, nodesData.data, nodesMappings, null);
+                    nodes = new NodesClass(context, graph, nodesData.data, nodesMappings, pickingManager);
                 }
 
                 if (layers[i].edges) {
@@ -185,12 +191,13 @@ export class GraferController {
                         };
                     }
 
-                    edges = new EdgesClass(context, graph, edgesData.data, edgesMappings, null);
+                    edges = new EdgesClass(context, graph, edgesData.data, edgesMappings, pickingManager);
                 }
 
                 if (nodes || edges) {
                     const layer = new Layer(nodes, edges, name);
                     graph.layers.push(layer);
+                    layer.on(EventEmitter.omniEvent, (...args) => this.emit(...args));
                 }
             }
         }
