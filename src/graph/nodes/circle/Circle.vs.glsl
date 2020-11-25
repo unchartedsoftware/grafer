@@ -4,6 +4,7 @@ layout(location=0) in vec3 aVertex;
 layout(location=1) in vec3 iPosition;
 layout(location=2) in float iRadius;
 layout(location=3) in uint iColor;
+layout(location=4) in uvec4 iPickingColor;
 
 //layout(std140) uniform RenderUniforms {
     uniform mat4 uViewMatrix;
@@ -18,6 +19,8 @@ uniform float uMinSize;
 uniform float uMaxSize;
 uniform bool uPixelSizing;
 uniform bool uBillboard;
+
+uniform bool uPicking;
 
 flat out vec4 fColor;
 flat out float fPixelRadius;
@@ -68,7 +71,7 @@ void main() {
         uProjectionMatrix * uViewMatrix * uSceneMatrix * vec4(aVertex * pixelRadiusMult + iPosition, 1.0);
 
     // send the render color to the fragment shader
-    fColor = getColorByIndexFromTexture(uColorPalette, int(iColor));
+    fColor = uPicking ? vec4(iPickingColor) / 255.0 : getColorByIndexFromTexture(uColorPalette, int(iColor));
     // send the final pixel radius to the fragment shader
     fPixelRadius = floor(desiredPixelRadius);
     // send the computed pixel location to the fragment shader

@@ -6,8 +6,9 @@ import pickingFS from './Circle.picking.fs.glsl';
 import {BasicNodeData, kBasicNodeDataTypes, Nodes} from '../Nodes';
 import {App, DrawCall, PicoGL, Program, VertexArray, VertexBuffer} from 'picogl';
 import {GraphPoints} from '../../../data/GraphPoints';
-import {DataMappings, DataShader, printDataGL} from '../../../data/DataTools';
-import {PickingManager} from '../../../UX/picking/PickingManager';
+import {DataMappings, DataShader} from '../../../data/DataTools';
+import {PickingColors, PickingEvent, PickingManager} from '../../../UX/picking/PickingManager';
+import {MouseCallback} from '../../../UX/mouse/MouseHandler';
 import {
     GLDataTypes,
     RenderableShaders,
@@ -30,6 +31,12 @@ export class Circle extends Nodes<BasicNodeData, GLCircleNodeTypes> {
     protected program: Program;
     protected drawCall: DrawCall;
 
+    protected pickingProgram: Program;
+    protected pickingDrawCall: DrawCall;
+    protected pickingColors: PickingColors;
+    protected pickingVBO: VertexBuffer;
+    protected pickingHandler: MouseCallback = this.handlePickingEvent.bind(this);
+
     protected verticesVBO: VertexBuffer;
     protected nodesVAO: VertexArray;
 
@@ -51,12 +58,20 @@ export class Circle extends Nodes<BasicNodeData, GLCircleNodeTypes> {
             1, 1,
         ]));
 
+        this.pickingColors = this.pickingManager.allocatePickingColors(data.length);
+        this.pickingVBO = context.createVertexBuffer(PicoGL.UNSIGNED_BYTE, 4, this.pickingColors.colors);
+
         this.nodesVAO = context.createVertexArray().vertexAttributeBuffer(0, this.verticesVBO);
         this.configureTargetVAO(this.nodesVAO);
+        this.nodesVAO.instanceAttributeBuffer(4, this.pickingVBO);
 
         const shaders = this.getDrawShaders();
         this.program = context.createProgram(shaders.vs, shaders.fs);
         this.drawCall = context.createDrawCall(this.program, this.nodesVAO).primitive(PicoGL.TRIANGLE_STRIP);
+
+        const pickingShaders = this.getPickingShaders();
+        this.pickingProgram = context.createProgram(pickingShaders.vs, pickingShaders.fs);
+        this.pickingDrawCall = context.createDrawCall(this.pickingProgram, this.nodesVAO).primitive(PicoGL.TRIANGLE_STRIP);
 
         const computedMappings = this.computeMappings(mappings);
         this.usePointRadius = computedMappings.radius === null;
@@ -66,7 +81,15 @@ export class Circle extends Nodes<BasicNodeData, GLCircleNodeTypes> {
             uUsePointRadius: this.usePointRadius,
         });
 
+        this.pickingManager.on(PickingManager.events.hoverOn, this.pickingHandler);
+        this.pickingManager.on(PickingManager.events.hoverOff, this.pickingHandler);
+        this.pickingManager.on(PickingManager.events.click, this.pickingHandler);
+
         // printDataGL(context, this.targetVBO, data.length, kGLCircleNodeTypes);
+    }
+
+    public destroy(): void {
+        // TODO: Implement destroy method
     }
 
     public render(context:App, mode: RenderMode, uniforms: RenderUniforms): void {
@@ -77,12 +100,12 @@ export class Circle extends Nodes<BasicNodeData, GLCircleNodeTypes> {
 
         switch (mode) {
             case RenderMode.PICKING:
-                // TODO: Re-enable picking
-                // if (this.pickingDrawCall) {
-                //     this.setDrawCallUniforms(this.pickingDrawCall, uniforms);
-                //     this.setDrawCallUniforms(this.pickingDrawCall, this.localUniforms);
-                //     this.pickingDrawCall.draw();
-                // }
+                if (this.picking) {
+                    setDrawCallUniforms(this.pickingDrawCall, uniforms);
+                    setDrawCallUniforms(this.pickingDrawCall, this.localUniforms);
+                    this.pickingDrawCall.uniform('uPicking', true);
+                    this.pickingDrawCall.draw();
+                }
                 break;
 
             case RenderMode.DRAFT:
@@ -90,6 +113,7 @@ export class Circle extends Nodes<BasicNodeData, GLCircleNodeTypes> {
             case RenderMode.HIGH:
                 setDrawCallUniforms(this.drawCall, uniforms);
                 setDrawCallUniforms(this.drawCall, this.localUniforms);
+                this.drawCall.uniform('uPicking', false);
                 this.drawCall.draw();
                 break;
         }
@@ -122,5 +146,12 @@ export class Circle extends Nodes<BasicNodeData, GLCircleNodeTypes> {
             vs: dataVS,
             varyings: [ 'vPosition', 'vRadius', 'vColor' ],
         };
+    }
+
+    protected handlePickingEvent(event: PickingEvent, colorID: number): void {
+        if (this.picking && this.pickingColors.map.has(colorID)) {
+            const id = this.idArray[this.pickingColors.map.get(colorID)];
+            this.emit(event, id);
+        }
     }
 }
