@@ -32,6 +32,7 @@ export abstract class Nodes<T_SRC extends BasicNodeData, T_TGT> extends LayerRen
     }
 
     protected map: Map<number | string, number | string>;
+    protected idArray: (number | string)[];
 
     protected localUniforms = {
         uConstraintSize: true,
@@ -99,11 +100,15 @@ export abstract class Nodes<T_SRC extends BasicNodeData, T_TGT> extends LayerRen
 
     protected ingestData(context: App, data: unknown[], mappings: Partial<DataMappings<T_SRC>>): void {
         this.map = new Map();
+        this.idArray = [];
         super.ingestData(context, data, mappings);
     }
 
     protected packDataCB(): PackDataCB<T_SRC> {
-        return (i, entry): unknown => this.map.set(entry.id, entry.point);
+        return (i, entry): void => {
+            this.map.set(entry.id, entry.point);
+            this.idArray.push(entry.id);
+        };
     }
 
     public getEntryPointID(id: number | string):  number | string {
