@@ -118,7 +118,7 @@ export class GraferController {
                     const nodesData = layers[i].nodes;
                     const nodesType = layers[i].nodes.type ? layers[i].nodes.type : 'Circle';
                     const NodesClass = GraphNodes.types[nodesType] || GraphNodes.Circle;
-                    const nodesRadiusMapping = { radius: (entry: any) => 'radius' in entry ? entry.radius : 1.0 };
+                    const nodesRadiusMapping = { radius: (entry: any): number => 'radius' in entry ? entry.radius : 1.0 };
                     const nodesMappings = Object.assign(
                         {},
                         NodesClass.defaultMappings,

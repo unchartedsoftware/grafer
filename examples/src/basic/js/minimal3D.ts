@@ -38,5 +38,5 @@ export async function minimal3D(container: HTMLElement): Promise<void> {
         { nodes, edges },
     ];
 
-    const controller = new GraferController(canvas, { layers });
+    new GraferController(canvas, { layers });
 }

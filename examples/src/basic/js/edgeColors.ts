@@ -31,5 +31,5 @@ export async function edgeColors(container: HTMLElement): Promise<void> {
         { nodes, edges },
     ];
 
-    const controller = new GraferController(canvas, { layers });
+    new GraferController(canvas, { layers });
 }
