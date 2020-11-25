@@ -1,5 +1,6 @@
 import {LitElement, customElement, html, query, PropertyValues, css, CSSResult} from 'lit-element';
 import {GraferController, GraferLayerData, GraferPointsData} from './GraferController';
+import {GraferInputColor} from '../renderer/ColorRegistry';
 
 @customElement('grafer-view') // is this a good enough name?
 export class GraferView extends LitElement {
@@ -18,11 +19,13 @@ export class GraferView extends LitElement {
     public static get properties(): any {
         return {
             points: {type: Object},
+            colors: {type: Object},
             layers: {type: Object},
         };
     }
 
     private points: GraferPointsData;
+    private colors: GraferInputColor[];
     private layers: GraferLayerData[];
 
     @query('#grafer_canvas', true)
@@ -41,6 +44,7 @@ export class GraferView extends LitElement {
         super.firstUpdated(_changedProperties);
         this._controller = new GraferController(this.canvas, {
             points: this.points,
+            colors: this.colors,
             layers: this.layers,
         });
     }
