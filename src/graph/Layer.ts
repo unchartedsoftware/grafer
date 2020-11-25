@@ -74,7 +74,7 @@ export class Layer implements GraphRenderable {
     public enabled: boolean = true;
     public name: string;
 
-    public constructor(nodes: Nodes<any, any>, edges: Edges<any, any> | null = null, name = 'Layer') {
+    public constructor(nodes: Nodes<any, any>, edges: Edges<any, any>, name = 'Layer') {
         this._nodes = nodes;
         this._edges = edges;
         this.name = name;
@@ -91,7 +91,7 @@ export class Layer implements GraphRenderable {
     }
 
     public renderNodes(context: App, mode: RenderMode, uniforms: RenderUniforms): void {
-        if (this._nodes.enabled) {
+        if (this._nodes && this._nodes.enabled) {
             this._nodes.render(context, mode, uniforms);
         }
     }

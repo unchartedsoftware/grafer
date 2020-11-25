@@ -29,7 +29,7 @@ export const kBasicEdgeDataTypes: GLDataTypes<BasicEdgeData> = {
     targetColor: PicoGL.UNSIGNED_INT,
 };
 
-export abstract class Edges<T_SRC, T_TGT> extends LayerRenderable<T_SRC, T_TGT> {
+export abstract class Edges<T_SRC extends BasicEdgeData, T_TGT> extends LayerRenderable<T_SRC, T_TGT> {
     public static get defaultMappings(): DataMappings<BasicEdgeData> {
         return kBasicEdgeMappings;
     }
@@ -43,5 +43,22 @@ export abstract class Edges<T_SRC, T_TGT> extends LayerRenderable<T_SRC, T_TGT> 
                           pickingManager: PickingManager
     ) {
         super(context, points, data, mappings, pickingManager);
+    }
+
+    protected computeMappings(mappings: Partial<DataMappings<T_SRC>>): DataMappings<T_SRC> {
+        const edgesMappings = Object.assign({}, kBasicEdgeMappings, mappings);
+
+        // patches the mappings to get the points index from their IDs
+        const sourceMapping = edgesMappings.source;
+        edgesMappings.source = (entry, i): number => {
+            return this.points.getPointIndex(sourceMapping(entry, i));
+        };
+
+        const targetMapping = edgesMappings.target;
+        edgesMappings.target = (entry, i): number => {
+            return this.points.getPointIndex(targetMapping(entry, i));
+        };
+
+        return edgesMappings as DataMappings<T_SRC>;
     }
 }

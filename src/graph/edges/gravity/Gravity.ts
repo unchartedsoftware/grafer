@@ -102,10 +102,6 @@ export class Gravity extends Edges<BasicEdgeData, GLGravityEdgeTypes> {
         };
     }
 
-    protected computeMappings(mappings: Partial<DataMappings<BasicEdgeData>>): DataMappings<BasicEdgeData> {
-        return Object.assign({}, kBasicEdgeMappings, mappings);
-    }
-
     protected getGLSourceTypes(): GLDataTypes<BasicEdgeData> {
         return kBasicEdgeDataTypes;
     }

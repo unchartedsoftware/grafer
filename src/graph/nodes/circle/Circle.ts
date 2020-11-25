@@ -109,10 +109,6 @@ export class Circle extends Nodes<BasicNodeData, GLCircleNodeTypes> {
         };
     }
 
-    protected computeMappings(mappings: Partial<DataMappings<BasicNodeData>>): DataMappings<BasicNodeData> {
-        return Object.assign({}, kBasicNodeMappings, mappings);
-    }
-
     protected getGLSourceTypes(): GLDataTypes<BasicNodeData> {
         return kBasicNodeDataTypes;
     }

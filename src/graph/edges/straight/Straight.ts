@@ -94,10 +94,6 @@ export class Straight extends Edges<BasicEdgeData, GLStraightEdgeTypes> {
         };
     }
 
-    protected computeMappings(mappings: Partial<DataMappings<BasicEdgeData>>): DataMappings<BasicEdgeData> {
-        return Object.assign({}, kBasicEdgeMappings, mappings);
-    }
-
     protected getGLSourceTypes(): GLDataTypes<BasicEdgeData> {
         return kBasicEdgeDataTypes;
     }

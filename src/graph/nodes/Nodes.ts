@@ -1,7 +1,7 @@
 import PicoGL, {App} from 'picogl';
 import {LayerRenderable} from '../LayerRenderable';
 import {GraphPoints} from '../../data/GraphPoints';
-import {DataMappings} from '../../data/DataTools';
+import {DataMappings, PackDataCB} from '../../data/DataTools';
 import {PickingManager} from '../../UX/picking/PickingManager';
 import {GLDataTypes} from '../../renderer/Renderable';
 import {GraferInputColor} from '../../renderer/ColorRegistry';
@@ -26,10 +26,12 @@ export const kBasicNodeDataTypes: GLDataTypes<BasicNodeData> = {
     radius: PicoGL.FLOAT, // optional at the end
 };
 
-export abstract class Nodes<T_SRC, T_TGT> extends LayerRenderable<T_SRC, T_TGT> {
+export abstract class Nodes<T_SRC extends BasicNodeData, T_TGT> extends LayerRenderable<T_SRC, T_TGT> {
     public static get defaultMappings(): DataMappings<BasicNodeData> {
         return kBasicNodeMappings;
     }
+
+    protected map: Map<number | string, number | string>;
 
     protected localUniforms = {
         uConstraintSize: true,
@@ -81,5 +83,30 @@ export abstract class Nodes<T_SRC, T_TGT> extends LayerRenderable<T_SRC, T_TGT> 
                           pickingManager: PickingManager
     ) {
         super(context, points, data, mappings, pickingManager);
+    }
+
+    protected computeMappings(mappings: Partial<DataMappings<T_SRC>>): DataMappings<T_SRC> {
+        const nodesMappings = Object.assign({}, kBasicNodeMappings, mappings);
+
+        // patches the mappings to get the points index from their IDs
+        const pointMapping = nodesMappings.point;
+        nodesMappings.point = (entry, i): number => {
+            return this.points.getPointIndex(pointMapping(entry, i));
+        };
+
+        return nodesMappings as DataMappings<T_SRC>;
+    }
+
+    protected ingestData(context: App, data: unknown[], mappings: Partial<DataMappings<T_SRC>>) {
+        this.map = new Map();
+        super.ingestData(context, data, mappings);
+    }
+
+    protected packDataCB(): PackDataCB<T_SRC> {
+        return (i, entry) => this.map.set(entry.id, entry.point);
+    }
+
+    public getEntryPointID(id: number | string):  number | string {
+        return this.map.get(id);
     }
 }
