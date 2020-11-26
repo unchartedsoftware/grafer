@@ -1,8 +1,13 @@
 import {renderMenu} from './renderMenu';
-import * as simple from './simple/mod';
+import {playground} from './playground';
+import * as basic from './basic/mod';
+import * as data from './data/mod';
+import './HelpElements';
 
 const examples = {
-    simple,
+    basic,
+    data,
+    playground,
 };
 
 function getExample(examples, path): (HTMLElement) => void | null {
@@ -30,7 +35,7 @@ function main(): void {
     if (example) {
         example(document.body);
     } else {
-        renderMenu(document.body, examples);
+        renderMenu(document.body, examples, pathComponents);
     }
 }
 

@@ -136,7 +136,7 @@ function outputForType (type) {
                     }
                 }
 
-                return 'web_modules/[name]';
+                return `web_modules/${chunk.name}${chunk.name.endsWith('.js') ? '' : '.js'}`;
             },
         },
     };

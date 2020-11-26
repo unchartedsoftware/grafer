@@ -3,8 +3,8 @@
 layout(location=0) in vec3 aVertex;
 layout(location=1) in vec3 iOffsetA;
 layout(location=2) in vec3 iOffsetB;
-layout(location=3) in uvec3 iColorA;
-layout(location=4) in uvec3 iColorB;
+layout(location=3) in uint iColorA;
+layout(location=4) in uint iColorB;
 
 uniform mat4 uViewMatrix;
 uniform mat4 uSceneMatrix;
@@ -12,14 +12,25 @@ uniform mat4 uProjectionMatrix;
 uniform vec2 uViewportSize;
 uniform float uPixelRatio;
 uniform float uGravity;
+uniform sampler2D uColorPalette;
 
 out vec3 vColor;
+
+vec4 getColorByIndexFromTexture(sampler2D tex, int index) {
+    int texWidth = textureSize(tex, 0).x;
+    int col = index % texWidth;
+    int row = index / texWidth;
+    return texelFetch(tex, ivec2(col, row), 0);
+}
 
 void main() {
     float multA = aVertex.x;
     float multB = 1.0 - aVertex.x;
 
-    vColor = (vec3(iColorA) / 255.0) * multA + (vec3(iColorB) / 255.0) * multB;
+    vec4 colorA = getColorByIndexFromTexture(uColorPalette, int(iColorA));
+    vec4 colorB = getColorByIndexFromTexture(uColorPalette, int(iColorB));
+
+    vColor = colorA.rgb * multA + colorB.rgb * multB;
 
     vec3 direction = iOffsetB - iOffsetA;
     vec3 middle = iOffsetA + direction * 0.5;

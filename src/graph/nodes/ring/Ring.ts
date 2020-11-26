@@ -1,10 +1,11 @@
 import nodeFS from './Ring.fs.glsl';
 import {Circle} from '../circle/Circle';
+import {RenderableShaders} from '../../../renderer/Renderable';
 
 export class Ring extends Circle {
-    protected getDrawingShaders(): string[] {
-        const shaders = super.getDrawingShaders();
-        shaders[1] = nodeFS;
+    protected getDrawShaders(): RenderableShaders {
+        const shaders = super.getDrawShaders();
+        shaders.fs = nodeFS;
         return shaders;
     }
 }

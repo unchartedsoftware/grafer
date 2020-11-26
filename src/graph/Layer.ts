@@ -1,19 +1,22 @@
-import {Renderable, RenderMode, RenderUniforms} from '../renderer/Renderable';
+import {RenderMode, RenderUniforms} from '../renderer/Renderable';
 import {App} from 'picogl';
 import {Nodes} from './nodes/Nodes';
 import {Edges} from './edges/Edges';
+import {GraphRenderable} from './GraphRenderable';
+import {EventEmitter} from '@dekkai/event-emitter/build/lib/EventEmitter';
 
-export class Layer extends Renderable {
-    private _nodes: Nodes;
-    public get nodes(): Nodes {
+export class Layer extends EventEmitter implements GraphRenderable {
+    private _nodes: Nodes<any, any>;
+    public get nodes(): Nodes<any, any> {
         return this._nodes;
     }
 
-    private _edges: Edges | null;
-    public get edges(): Edges | null {
+    private _edges: Edges<any, any> | null;
+    public get edges(): Edges<any, any> | null {
         return this._edges;
     }
 
+    private _nearDepth: number = 0.0;
     public get nearDepth(): number {
         return this._nearDepth;
     }
@@ -23,6 +26,7 @@ export class Layer extends Renderable {
         this.updateEdgesDepths();
     }
 
+    private _farDepth: number = 1.0;
     public get farDepth(): number {
         return this._farDepth;
     }
@@ -68,13 +72,34 @@ export class Layer extends Renderable {
         this.updateEdgesDepths();
     }
 
+    public enabled: boolean = true;
     public name: string;
 
-    public constructor(nodes: Nodes, edges: Edges | null = null, name = 'Layer') {
+    public constructor(nodes: Nodes<any, any>, edges: Edges<any, any>, name = 'Layer') {
         super();
         this._nodes = nodes;
         this._edges = edges;
         this.name = name;
+
+        if (this._nodes) {
+            this._nodes.on(EventEmitter.omniEvent, (event, id: string | number): void => {
+                this.emit(event, {
+                    layer: this.name,
+                    type: 'node',
+                    id,
+                });
+            });
+        }
+
+        if (this._edges) {
+            this._edges.on(EventEmitter.omniEvent, (event, id: string | number): void => {
+                this.emit(event, {
+                    layer: this.name,
+                    type: 'edge',
+                    id,
+                });
+            });
+        }
     }
 
     public render(context: App, mode: RenderMode, uniforms: RenderUniforms): void {
@@ -88,7 +113,7 @@ export class Layer extends Renderable {
     }
 
     public renderNodes(context: App, mode: RenderMode, uniforms: RenderUniforms): void {
-        if (this._nodes.enabled) {
+        if (this._nodes && this._nodes.enabled) {
             this._nodes.render(context, mode, uniforms);
         }
     }

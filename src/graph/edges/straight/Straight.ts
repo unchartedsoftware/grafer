@@ -1,60 +1,65 @@
 import edgeVS from './Straight.vs.glsl';
 import edgeFS from './Straight.fs.glsl';
-import {RenderMode, RenderUniforms} from '../../../renderer/Renderable';
-import {App, PicoGL} from 'picogl';
-import {Edges} from '../Edges';
+import dataVS from './Straight.data.vs.glsl';
+import {App, DrawCall, PicoGL, Program, VertexArray, VertexBuffer} from 'picogl';
+import {BasicEdgeData, Edges, kBasicEdgeDataTypes} from '../Edges';
+import {GraphPoints} from '../../../data/GraphPoints';
+import {DataMappings, DataShader} from '../../../data/DataTools';
+import {PickingManager} from '../../../UX/picking/PickingManager';
+import {
+    GLDataTypes,
+    RenderableShaders,
+    RenderMode,
+    RenderUniforms,
+    setDrawCallUniforms,
+} from '../../../renderer/Renderable';
 
-export class Straight extends Edges {
-    public constructor(context: App, positions: Float32Array, colors?: Uint8Array) {
-        super(context, positions, colors);
+export const kGLStraightEdgeTypes = {
+    source: [PicoGL.FLOAT, PicoGL.FLOAT, PicoGL.FLOAT],
+    target: [PicoGL.FLOAT, PicoGL.FLOAT, PicoGL.FLOAT],
+    sourceColor: PicoGL.UNSIGNED_INT,
+    targetColor: PicoGL.UNSIGNED_INT,
+} as const;
+export type GLStraightEdgeTypes = typeof kGLStraightEdgeTypes;
 
-        const vertices = context.createVertexBuffer(PicoGL.FLOAT, 2, new Float32Array([
+export class Straight extends Edges<BasicEdgeData, GLStraightEdgeTypes> {
+    protected program: Program;
+    protected drawCall: DrawCall;
+
+    protected verticesVBO: VertexBuffer;
+    protected edgesVAO: VertexArray;
+
+    constructor(context: App,
+                          points: GraphPoints,
+                          data: unknown[],
+                          mappings: Partial<DataMappings<BasicEdgeData>>,
+                          pickingManager: PickingManager
+    ) {
+        super(context, points, data, mappings, pickingManager);
+        this.verticesVBO = context.createVertexBuffer(PicoGL.FLOAT, 2, new Float32Array([
             0, 0,
             1, 0,
         ]));
 
-        this.positions = context.createInterleavedBuffer(24, positions);
+        this.edgesVAO = context.createVertexArray().vertexAttributeBuffer(0, this.verticesVBO);
+        this.configureTargetVAO(this.edgesVAO);
 
-        const vertexArray = context.createVertexArray()
-            .vertexAttributeBuffer(0, vertices)
-            .instanceAttributeBuffer(1, this.positions, {
-                type: PicoGL.FLOAT,
-                size: 3,
-                stride: 24,
-                offset: 0,
-            })
-            .instanceAttributeBuffer(2, this.positions, {
-                type: PicoGL.FLOAT,
-                size: 3,
-                stride: 24,
-                offset: 12,
-            })
-            .instanceAttributeBuffer(3, this.colors, {
-                type: PicoGL.UNSIGNED_BYTE,
-                size: 4,
-                stride: 8,
-                offset: 0,
-                integer: 1,
-            })
-            .instanceAttributeBuffer(4, this.colors, {
-                type: PicoGL.UNSIGNED_BYTE,
-                size: 4,
-                stride: 8,
-                offset: 4,
-                integer: 1,
-            });
+        const shaders = this.getDrawShaders();
+        this.program = context.createProgram(shaders.vs, shaders.fs);
+        this.drawCall = context.createDrawCall(this.program, this.edgesVAO).primitive(PicoGL.LINE_STRIP);
 
-        this.program = context.createProgram(edgeVS, edgeFS);
-        this.drawCall = context.createDrawCall(this.program, vertexArray)
-            .primitive(PicoGL.LINES);
+        this.compute(context, {
+            uGraphPoints: this.dataTexture,
+        });
+
+        // printDataGL(context, this.targetVBO, data.length, kGLStraightEdgeTypes);
+    }
+
+    public destroy(): void {
+        // TODO: Implement destroy method
     }
 
     public render(context:App, mode: RenderMode, uniforms: RenderUniforms): void {
-        this.setDrawCallUniforms(this.drawCall, uniforms);
-        this.setDrawCallUniforms(this.drawCall, {
-            uAlpha: this.alpha,
-        });
-
         switch (mode) {
             case RenderMode.PICKING:
                 // this.pickingDrawCall.draw();
@@ -66,10 +71,45 @@ export class Straight extends Edges {
                 context.enable(PicoGL.BLEND);
                 context.blendFuncSeparate(PicoGL.SRC_ALPHA, PicoGL.ONE_MINUS_SRC_ALPHA, PicoGL.ONE, PicoGL.ONE);
 
-                context.depthRange(this._nearDepth, this._farDepth);
+                context.depthRange(this.nearDepth, this.farDepth);
                 context.depthMask(false);
+
+                setDrawCallUniforms(this.drawCall, uniforms);
+                setDrawCallUniforms(this.drawCall, {
+                    uAlpha: this.alpha,
+                });
+
                 this.drawCall.draw();
                 break;
         }
+    }
+
+    protected getDrawShaders(): RenderableShaders {
+        return {
+            vs: edgeVS,
+            fs: edgeFS,
+        };
+    }
+
+    protected getPickingShaders(): RenderableShaders {
+        return {
+            vs: edgeVS,
+            fs: null, // pickingFS,
+        };
+    }
+
+    protected getGLSourceTypes(): GLDataTypes<BasicEdgeData> {
+        return kBasicEdgeDataTypes;
+    }
+
+    protected getGLTargetTypes(): GLDataTypes<GLStraightEdgeTypes> {
+        return kGLStraightEdgeTypes;
+    }
+
+    protected getDataShader(): DataShader {
+        return {
+            vs: dataVS,
+            varyings: [ 'vSource', 'vTarget', 'vSourceColor', 'vTargetColor' ],
+        };
     }
 }

@@ -1,16 +1,52 @@
-import {Renderable} from '../../renderer/Renderable';
-import {App, PicoGL, VertexBuffer} from 'picogl';
+import PicoGL, {App} from 'picogl';
+import {LayerRenderable} from '../LayerRenderable';
+import {GraphPoints} from '../../data/GraphPoints';
+import {DataMappings, PackDataCB} from '../../data/DataTools';
+import {PickingManager} from '../../UX/picking/PickingManager';
+import {GLDataTypes} from '../../renderer/Renderable';
+import {GraferInputColor} from '../../renderer/ColorRegistry';
 
-export abstract class Nodes extends Renderable {
-    protected positions: VertexBuffer;
-    protected colors: VertexBuffer;
-    protected sizes: VertexBuffer;
+export interface BasicNodeData {
+    id?: number | string;
+    point?: number | string;
+    color?: GraferInputColor;
+    radius?: number;
+}
+
+export const kBasicNodeMappings: DataMappings<BasicNodeData> = {
+    id: (entry: any, i) => 'id' in entry ? entry.id : i,
+    point: (entry: any, i) => 'point' in entry ? entry.point : i,
+    color: (entry: any) => 'color' in entry ? entry.color : 0, // first registered color
+    radius: null, // inherit the radius from the vertex data
+};
+
+export const kBasicNodeDataTypes: GLDataTypes<BasicNodeData> = {
+    point: PicoGL.UNSIGNED_INT,
+    color: PicoGL.UNSIGNED_INT,
+    radius: PicoGL.FLOAT, // optional at the end
+};
+
+export abstract class Nodes<T_SRC extends BasicNodeData, T_TGT> extends LayerRenderable<T_SRC, T_TGT> {
+    public static get defaultMappings(): DataMappings<BasicNodeData> {
+        return kBasicNodeMappings;
+    }
+
+    protected map: Map<number | string, number | string>;
+    protected idArray: (number | string)[];
 
     protected localUniforms = {
+        uConstraintSize: true,
         uMinSize: 1.0,
         uMaxSize: 4.0,
         uPixelSizing: false,
         uBillboard: true,
+    }
+
+    public get constraintSize(): boolean {
+        return this.localUniforms.uConstraintSize;
+    }
+    public set constraintSize(value: boolean) {
+        this.localUniforms.uConstraintSize = value;
     }
 
     public get minSize(): number {
@@ -41,28 +77,41 @@ export abstract class Nodes extends Renderable {
         this.localUniforms.uBillboard = value;
     }
 
-    protected constructor(context: App, positions: Float32Array, colors?: Uint8Array, sizes?: Float32Array, pickingColors?: Uint8Array) {
-        super();
-        this.positions = context.createVertexBuffer(PicoGL.FLOAT, 3, positions);
+    protected constructor(context: App,
+                          points: GraphPoints,
+                          data: unknown[],
+                          mappings: Partial<DataMappings<T_SRC>>,
+                          pickingManager: PickingManager
+    ) {
+        super(context, points, data, mappings, pickingManager);
+    }
 
-        if (colors) {
-            this.colors = context.createVertexBuffer(PicoGL.UNSIGNED_BYTE, 4, colors);
-        } else {
-            const colorsArray = new Uint8Array((positions.length / 3) * 4);
-            colorsArray.fill(128);
-            this.colors = context.createVertexBuffer(PicoGL.UNSIGNED_BYTE, 4, colorsArray);
-        }
+    protected computeMappings(mappings: Partial<DataMappings<T_SRC>>): DataMappings<T_SRC> {
+        const nodesMappings = Object.assign({}, kBasicNodeMappings, mappings);
 
-        if (sizes) {
-            this.sizes = context.createVertexBuffer(PicoGL.FLOAT, 1, sizes);
-        } else {
-            const sizesArray = new Float32Array(positions.length / 3);
-            sizesArray.fill(0.0);
-            this.sizes = context.createVertexBuffer(PicoGL.FLOAT, 1, sizesArray);
-        }
+        // patches the mappings to get the points index from their IDs
+        const pointMapping = nodesMappings.point;
+        nodesMappings.point = (entry, i): number => {
+            return this.points.getPointIndex(pointMapping(entry, i));
+        };
 
-        if (pickingColors) {
-            this.pickingColors = context.createVertexBuffer(PicoGL.UNSIGNED_BYTE, 4, pickingColors);
-        }
+        return nodesMappings as DataMappings<T_SRC>;
+    }
+
+    protected ingestData(context: App, data: unknown[], mappings: Partial<DataMappings<T_SRC>>): void {
+        this.map = new Map();
+        this.idArray = [];
+        super.ingestData(context, data, mappings);
+    }
+
+    protected packDataCB(): PackDataCB<T_SRC> {
+        return (i, entry): void => {
+            this.map.set(entry.id, entry.point);
+            this.idArray.push(entry.id);
+        };
+    }
+
+    public getEntryPointID(id: number | string):  number | string {
+        return this.map.get(id);
     }
 }

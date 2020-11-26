@@ -2,8 +2,9 @@
 
 layout(location=0) in vec3 aVertex;
 layout(location=1) in vec3 iPosition;
-layout(location=2) in uvec4 iColor;
-layout(location=3) in float iSize;
+layout(location=2) in float iRadius;
+layout(location=3) in uint iColor;
+layout(location=4) in uvec4 iPickingColor;
 
 //layout(std140) uniform RenderUniforms {
     uniform mat4 uViewMatrix;
@@ -11,6 +12,7 @@ layout(location=3) in float iSize;
     uniform mat4 uProjectionMatrix;
     uniform vec2 uViewportSize;
     uniform float uPixelRatio;
+    uniform sampler2D uColorPalette;
 //};
 
 uniform float uMinSize;
@@ -18,9 +20,18 @@ uniform float uMaxSize;
 uniform bool uPixelSizing;
 uniform bool uBillboard;
 
+uniform bool uPicking;
+
 flat out vec4 fColor;
 flat out float fPixelRadius;
 out vec2 vPixelLocation;
+
+vec4 getColorByIndexFromTexture(sampler2D tex, int index) {
+    int texWidth = textureSize(tex, 0).x;
+    int col = index % texWidth;
+    int row = index / texWidth;
+    return texelFetch(tex, ivec2(col, row), 0);
+}
 
 void main() {
     // claculate the offset matrix, done as a matrix to be able to compute "billboard" vertices in the shader
@@ -48,7 +59,7 @@ void main() {
     float pixelRadius = max(1.0, length((screenQuadSide - screenQuadCenter) * uViewportSize));
 
     // calculate the desired pixel radius for the size mode
-    float size = uMinSize + (uMaxSize - uMinSize) * iSize;
+    float size = iRadius; // uMinSize + (uMaxSize - uMinSize) * iRadius;
     float desiredPixelRadius = (uPixelSizing ? size : pixelRadius * size);
 
     // calculate the pixel radius multiplier needed to acomplish the desired pixel radius
@@ -60,7 +71,7 @@ void main() {
         uProjectionMatrix * uViewMatrix * uSceneMatrix * vec4(aVertex * pixelRadiusMult + iPosition, 1.0);
 
     // send the render color to the fragment shader
-    fColor = vec4(iColor) / 255.0;
+    fColor = uPicking ? vec4(iPickingColor) / 255.0 : getColorByIndexFromTexture(uColorPalette, int(iColor));
     // send the final pixel radius to the fragment shader
     fPixelRadius = floor(desiredPixelRadius);
     // send the computed pixel location to the fragment shader

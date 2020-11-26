@@ -2,32 +2,38 @@ import {Renderable, RenderMode, RenderUniforms} from '../renderer/Renderable';
 import {App} from 'picogl';
 import {mat4, quat, vec3} from 'gl-matrix';
 import {Layer} from './Layer';
+import {GraphPoints, PointData, PointDataMappings} from '../data/GraphPoints';
+import {PickingManager} from '../UX/picking/PickingManager';
 
-export class Graph extends Renderable {
-    private _matrix: mat4;
+export class Graph extends GraphPoints implements Renderable {
+    public picking: PickingManager;
+    public enabled: boolean = true;
+
+    private readonly _matrix: mat4;
     public get matrix(): mat4 {
         mat4.fromRotationTranslation(this._matrix, this._rotation, this._translation);
         return this._matrix;
     }
 
-    private _layers: Layer[];
+    private readonly _layers: Layer[];
     public get layers(): Layer[] {
         return this._layers;
     }
 
-    private _rotation: quat;
+    private readonly _rotation: quat;
     public get rotation(): quat {
         return this._rotation;
     }
 
-    private _translation: vec3;
+    private readonly _translation: vec3;
     public get translation(): vec3 {
         return this._translation;
     }
 
-
-    constructor() {
-        super();
+    constructor(context: App, data: PointData[]);
+    constructor(context: App, data: unknown[], mappings: Partial<PointDataMappings>);
+    constructor(context: App, data: unknown[], mappings: Partial<PointDataMappings> = {}) {
+        super(context, data, mappings);
         this._layers = [];
         this._rotation = quat.create();
         this._translation = vec3.create();
@@ -35,6 +41,10 @@ export class Graph extends Renderable {
     }
 
     public render(context:App, mode: RenderMode, uniforms: RenderUniforms): void {
+        if (mode === RenderMode.PICKING && this.picking && this.picking.enabled) {
+            this.picking.offscreenBuffer.prepareContext(context);
+        }
+
         for (let i = 0, n = this._layers.length; i < n; ++i) {
             if (this._layers[i].enabled) {
                 this._layers[i].renderNodes(context, mode, uniforms);
@@ -45,6 +55,16 @@ export class Graph extends Renderable {
             if (this._layers[i].enabled) {
                 this._layers[i].renderEdges(context, mode, uniforms);
             }
+        }
+
+        // if (this.picking) {
+        //     this.picking.offscreenBuffer.blitToScreen(context);
+        // }
+    }
+
+    public resize(context: App): void {
+        if (this.picking) {
+            this.picking.offscreenBuffer.resize(context);
         }
     }
 
