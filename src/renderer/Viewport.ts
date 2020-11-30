@@ -30,6 +30,9 @@ export class Viewport {
     }
 
     private animationFrameID: number = 0;
+    private timeoutID: number = 0;
+    private renderMode: RenderMode;
+    private boundDelayedRender: () => void = this.delayedRender.bind(this);
 
     constructor(element: HTMLElement) {
         this.element = element;
@@ -58,7 +61,7 @@ export class Viewport {
         this.context.clearMask(PicoGL.COLOR_BUFFER_BIT | PicoGL.DEPTH_BUFFER_BIT);
         this.context.enable(PicoGL.DEPTH_TEST);
         this.context.depthFunc(PicoGL.LEQUAL);
-        this.context.gl.lineWidth(2);
+        this.context.gl.lineWidth(3);
 
         this.mouseHandler = new MouseHandler(this.canvas, this.rect, this.pixelRatio);
 
@@ -91,28 +94,64 @@ export class Viewport {
         this.context.clearColor(...this._clearColor);
     }
 
-    public render(camera: Camera = this.camera): void {
+    public render(): void {
         if (!this.animationFrameID) {
-            this.animationFrameID = requestAnimationFrame(() => this._render(camera));
+            this.renderMode = RenderMode.DRAFT;
+            if (this.timeoutID) {
+                clearTimeout(this.timeoutID);
+                this.timeoutID = 0;
+            }
+            this.animationFrameID = requestAnimationFrame(() => this._render());
         }
     }
 
-    private _render(camera: Camera): void {
+    private scheduleRender(delay: number): void {
+        if (this.timeoutID) {
+            clearTimeout(this.timeoutID);
+        }
+        this.timeoutID = window.setTimeout(this.boundDelayedRender, delay);
+    }
+
+    private delayedRender() {
+        this.timeoutID = 0;
+        this._render();
+    }
+
+    private _render(): void {
         const uniforms: RenderUniforms = {
-            uViewMatrix: camera.viewMatrix,
+            uViewMatrix: this.camera.viewMatrix,
             uSceneMatrix: this.graph.matrix,
             uProjectionMatrix: this.camera.projectionMatrix,
             uViewportSize: this.size,
             uPixelRatio: this.pixelRatio,
             uClearColor: this._clearColor,
             uColorPalette: this.colorRegisrty.texture,
+            uRenderMode: this.renderMode,
         };
 
         this.resetContextFlags();
         this.context.clear();
         if (this.graph && this.graph.enabled) {
-            this.graph.render(this.context, RenderMode.DRAFT, uniforms);
-            this.graph.render(this.context, RenderMode.PICKING, uniforms);
+            this.graph.render(this.context, this.renderMode, uniforms);
+
+            switch (this.renderMode) {
+                case RenderMode.DRAFT:
+                    uniforms.uRenderMode = RenderMode.PICKING;
+                    this.graph.render(this.context, RenderMode.PICKING, uniforms);
+                    this.renderMode = RenderMode.MEDIUM;
+                    this.scheduleRender(85);
+                    break;
+
+                case RenderMode.MEDIUM:
+                    this.renderMode = RenderMode.HIGH_PASS_1;
+                    this.scheduleRender(120);
+                    break;
+
+                case RenderMode.HIGH_PASS_1:
+                    uniforms.uRenderMode = RenderMode.HIGH_PASS_2;
+                    this.graph.render(this.context, RenderMode.HIGH_PASS_2, uniforms);
+                    break;
+            }
         }
         this.animationFrameID = 0;
     }
