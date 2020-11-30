@@ -34,7 +34,12 @@ export abstract class Edges<T_SRC extends BasicEdgeData, T_TGT> extends LayerRen
         return kBasicEdgeMappings;
     }
 
-    public alpha: number = 1.0;
+    public get alpha(): number {
+        return this.localUniforms.uAlpha as number;
+    };
+    public set alpha(value: number) {
+        this.localUniforms.uAlpha = value;
+    }
 
     protected constructor(context: App,
                           points: GraphPoints,
@@ -43,6 +48,9 @@ export abstract class Edges<T_SRC extends BasicEdgeData, T_TGT> extends LayerRen
                           pickingManager: PickingManager
     ) {
         super(context, points, data, mappings, pickingManager);
+        this.localUniforms = {
+            uAlpha: 1.0,
+        };
     }
 
     protected computeMappings(mappings: Partial<DataMappings<T_SRC>>): DataMappings<T_SRC> {

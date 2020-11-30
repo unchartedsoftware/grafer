@@ -1,5 +1,5 @@
 import {PointsReader} from '../data/PointsReader';
-import {Renderable, RenderMode, RenderUniforms} from '../renderer/Renderable';
+import {GenericUniforms, Renderable, RenderMode, RenderUniforms} from '../renderer/Renderable';
 import {App} from 'picogl';
 import {GraphPoints} from '../data/GraphPoints';
 import {DataMappings} from '../data/DataTools';
@@ -20,6 +20,7 @@ export abstract class LayerRenderable<T_SRC, T_TGT> extends PointsReaderEmitter<
     public abstract render(context: App, mode: RenderMode, uniforms: RenderUniforms): void;
 
     protected pickingManager: PickingManager;
+    protected localUniforms: GenericUniforms;
 
     protected constructor(
         context: App,

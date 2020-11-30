@@ -3,7 +3,7 @@ import {LayerRenderable} from '../LayerRenderable';
 import {GraphPoints} from '../../data/GraphPoints';
 import {DataMappings, PackDataCB} from '../../data/DataTools';
 import {PickingManager} from '../../UX/picking/PickingManager';
-import {GLDataTypes} from '../../renderer/Renderable';
+import {GenericUniforms, GLDataTypes} from '../../renderer/Renderable';
 import {GraferInputColor} from '../../renderer/ColorRegistry';
 
 export interface BasicNodeData {
@@ -34,44 +34,36 @@ export abstract class Nodes<T_SRC extends BasicNodeData, T_TGT> extends LayerRen
     protected map: Map<number | string, number | string>;
     protected idArray: (number | string)[];
 
-    protected localUniforms = {
-        uConstraintSize: true,
-        uMinSize: 1.0,
-        uMaxSize: 4.0,
-        uPixelSizing: false,
-        uBillboard: true,
-    }
-
     public get constraintSize(): boolean {
-        return this.localUniforms.uConstraintSize;
+        return this.localUniforms.uConstraintSize as boolean;
     }
     public set constraintSize(value: boolean) {
         this.localUniforms.uConstraintSize = value;
     }
 
     public get minSize(): number {
-        return this.localUniforms.uMinSize;
+        return this.localUniforms.uMinSize as number;
     }
     public set minSize(value: number) {
         this.localUniforms.uMinSize = value;
     }
 
     public get maxSize(): number {
-        return this.localUniforms.uMaxSize;
+        return this.localUniforms.uMaxSize as number;
     }
     public set maxSize(value: number) {
         this.localUniforms.uMaxSize = value;
     }
 
     public get pixelSizing(): boolean {
-        return this.localUniforms.uPixelSizing;
+        return this.localUniforms.uPixelSizing as boolean;
     }
     public set pixelSizing(value: boolean) {
         this.localUniforms.uPixelSizing = value;
     }
 
     public get billboard(): boolean {
-        return this.localUniforms.uBillboard;
+        return this.localUniforms.uBillboard as boolean;
     }
     public set billboard(value: boolean) {
         this.localUniforms.uBillboard = value;
@@ -84,6 +76,13 @@ export abstract class Nodes<T_SRC extends BasicNodeData, T_TGT> extends LayerRen
                           pickingManager: PickingManager
     ) {
         super(context, points, data, mappings, pickingManager);
+        this.localUniforms = {
+            uConstraintSize: true,
+            uMinSize: 1.0,
+            uMaxSize: 4.0,
+            uPixelSizing: false,
+            uBillboard: true,
+        };
     }
 
     protected computeMappings(mappings: Partial<DataMappings<T_SRC>>): DataMappings<T_SRC> {
