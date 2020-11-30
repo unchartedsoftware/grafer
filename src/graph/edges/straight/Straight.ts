@@ -36,6 +36,7 @@ export class Straight extends Edges<BasicEdgeData, GLStraightEdgeTypes> {
                           pickingManager: PickingManager
     ) {
         super(context, points, data, mappings, pickingManager);
+
         this.verticesVBO = context.createVertexBuffer(PicoGL.FLOAT, 2, new Float32Array([
             0, 0,
             1, 0,
@@ -60,25 +61,24 @@ export class Straight extends Edges<BasicEdgeData, GLStraightEdgeTypes> {
     }
 
     public render(context:App, mode: RenderMode, uniforms: RenderUniforms): void {
+        context.enable(PicoGL.BLEND);
+        context.blendFuncSeparate(PicoGL.SRC_ALPHA, PicoGL.ONE_MINUS_SRC_ALPHA, PicoGL.ONE, PicoGL.ONE);
+
+        context.depthRange(this.nearDepth, this.farDepth);
+        context.depthMask(false);
+
+        setDrawCallUniforms(this.drawCall, uniforms);
+        setDrawCallUniforms(this.drawCall, this.localUniforms);
+
         switch (mode) {
             case RenderMode.PICKING:
                 // this.pickingDrawCall.draw();
                 break;
 
-            case RenderMode.DRAFT:
-            case RenderMode.MEDIUM:
-            case RenderMode.HIGH:
-                context.enable(PicoGL.BLEND);
-                context.blendFuncSeparate(PicoGL.SRC_ALPHA, PicoGL.ONE_MINUS_SRC_ALPHA, PicoGL.ONE, PicoGL.ONE);
+            case RenderMode.HIGH_PASS_2:
+                break;
 
-                context.depthRange(this.nearDepth, this.farDepth);
-                context.depthMask(false);
-
-                setDrawCallUniforms(this.drawCall, uniforms);
-                setDrawCallUniforms(this.drawCall, {
-                    uAlpha: this.alpha,
-                });
-
+            default:
                 this.drawCall.draw();
                 break;
         }

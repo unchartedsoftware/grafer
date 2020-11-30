@@ -31,7 +31,12 @@ export class Gravity extends Edges<BasicEdgeData, GLGravityEdgeTypes> {
     protected verticesVBO: VertexBuffer;
     protected edgesVAO: VertexArray;
 
-    public gravity: number = -0.2;
+    public get gravity(): number {
+        return this.localUniforms.uGravity as number;
+    };
+    public set gravity(value: number) {
+        this.localUniforms.uGravity = value;
+    }
 
     constructor(context: App,
                 points: GraphPoints,
@@ -41,6 +46,9 @@ export class Gravity extends Edges<BasicEdgeData, GLGravityEdgeTypes> {
                 segments: number = 16
     ) {
         super(context, points, data, mappings, pickingManager);
+
+        this.localUniforms.uGravity = -0.2;
+
         const segmentVertices = [];
         for (let i = 0; i <= segments; ++i) {
             segmentVertices.push(i / segments, 0);
@@ -67,10 +75,7 @@ export class Gravity extends Edges<BasicEdgeData, GLGravityEdgeTypes> {
 
     public render(context:App, mode: RenderMode, uniforms: RenderUniforms): void {
         setDrawCallUniforms(this.drawCall, uniforms);
-        setDrawCallUniforms(this.drawCall, {
-            uAlpha: this.alpha,
-            uGravity: this.gravity,
-        });
+        setDrawCallUniforms(this.drawCall, this.localUniforms);
 
         context.enable(PicoGL.BLEND);
         context.blendFuncSeparate(PicoGL.SRC_ALPHA, PicoGL.ONE_MINUS_SRC_ALPHA, PicoGL.ONE, PicoGL.ONE);
@@ -83,11 +88,11 @@ export class Gravity extends Edges<BasicEdgeData, GLGravityEdgeTypes> {
                 // this.pickingDrawCall.draw();
                 break;
 
-            case RenderMode.DRAFT:
-            case RenderMode.MEDIUM:
-            case RenderMode.HIGH:
-                this.drawCall.draw();
+            case RenderMode.HIGH_PASS_2:
+                break;
 
+            default:
+                this.drawCall.draw();
                 break;
         }
     }
