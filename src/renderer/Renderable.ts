@@ -34,7 +34,7 @@ export interface RenderUniforms {
     uRenderMode: RenderMode;
 }
 
-export type GenericUniforms = RenderUniforms | { [key: string]: number | number[] | boolean | Texture };
+export type GenericUniforms = { [key: string]: number | number[] | boolean | Texture };
 
 export interface Renderable {
     enabled: boolean;
@@ -96,7 +96,7 @@ export function glDataTypesInfo<T>(types: GLDataTypes<T>): GLDataTypesInfo {
     };
 }
 
-export function setDrawCallUniforms(drawCall: DrawCall, uniforms: GenericUniforms): void {
+export function setDrawCallUniforms(drawCall: DrawCall, uniforms: GenericUniforms | RenderUniforms): void {
     for (const [key, value] of Object.entries(uniforms)) {
         if (value.texture) {
             drawCall.texture(key, value);
