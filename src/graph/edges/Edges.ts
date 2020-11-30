@@ -36,7 +36,7 @@ export abstract class Edges<T_SRC extends BasicEdgeData, T_TGT> extends LayerRen
 
     public get alpha(): number {
         return this.localUniforms.uAlpha as number;
-    };
+    }
     public set alpha(value: number) {
         this.localUniforms.uAlpha = value;
     }

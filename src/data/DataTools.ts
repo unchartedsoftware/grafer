@@ -4,7 +4,7 @@ import {
     GL_TYPE_SIZE,
     GLDataTypes,
     GLDataTypesInfo,
-    glDataTypesInfo
+    glDataTypesInfo,
 } from '../renderer/Renderable';
 import {App, VertexBuffer} from 'picogl';
 
@@ -70,6 +70,46 @@ export function computeDataTypes<T>(types: GLDataTypes<T>, mappings: DataMapping
     return result;
 }
 
+export function writeValueToDataView(view: DataView, value: number | number[], type: GLenum | GLenum[], offset: number): number {
+    if (Array.isArray(value)) {
+        let writeOffset = 0;
+        for (let i = 0, n = value.length; i < n; ++i) {
+            GL_TYPE_SETTER[type[i]](view, offset + writeOffset, value[i]);
+            writeOffset += GL_TYPE_SIZE[type[i]];
+        }
+        return writeOffset;
+    }
+
+    GL_TYPE_SETTER[type as GLenum](view, offset, value);
+    return GL_TYPE_SIZE[type as GLenum];
+}
+
+export function flattenEntry<T>(entry: T, types: GLDataTypes<T>, typesInfo: GLDataTypesInfo, mappings: DataMappings<T>, view: DataView, offset: number): number {
+    // build an internal mappings object to flatten the values
+    const flatMappings = {};
+    let flattenLength = 0;
+    for (let i = 0, n = typesInfo.keys.length; i < n; ++i) {
+        const key = typesInfo.keys[i];
+        if (entry[kDataEntryNeedsFlatten].has(key)) {
+            flatMappings[key] = mappings[key][kDataMappingFlatten] ?? ((entry, i): unknown => entry[key][i]);
+            // all values to flatten should have the same length
+            flattenLength = entry[key].length;
+        } else {
+            flatMappings[key] = mappings[key][kDataMappingFlatten] ?? ((entry): unknown => entry[key]);
+        }
+    }
+
+    let flatOffset = 0;
+    for (let i = 0; i < flattenLength; ++i) {
+        for (let ii = 0, n = typesInfo.keys.length; ii < n; ++ii) {
+            const key = typesInfo.keys[ii];
+            flatOffset += writeValueToDataView(view, flatMappings[key](entry, i, flattenLength), types[key], offset + flatOffset);
+        }
+    }
+
+    return flatOffset;
+}
+
 export function packData<T>(data: unknown[], mappings: DataMappings<T>, types: GLDataTypes<T>, potLength: boolean, cb?: PackDataCB<T>): ArrayBuffer {
     const typesInfo = glDataTypesInfo(computeDataTypes(types, mappings));
     const entries = [];
@@ -115,46 +155,6 @@ export function packData<T>(data: unknown[], mappings: DataMappings<T>, types: G
     }
 
     return buffer;
-}
-
-export function flattenEntry<T>(entry: T, types: GLDataTypes<T>, typesInfo: GLDataTypesInfo, mappings: DataMappings<T>, view: DataView, offset: number): number {
-    // build an internal mappings object to flatten the values
-    const flatMappings = {};
-    let flattenLength = 0;
-    for (let i = 0, n = typesInfo.keys.length; i < n; ++i) {
-        const key = typesInfo.keys[i];
-        if (entry[kDataEntryNeedsFlatten].has(key)) {
-            flatMappings[key] = mappings[key][kDataMappingFlatten] ?? ((entry, i) => entry[key][i]);
-            // all values to flatten should have the same length
-            flattenLength = entry[key].length;
-        } else {
-            flatMappings[key] = mappings[key][kDataMappingFlatten] ?? ((entry) => entry[key]);
-        }
-    }
-
-    let flatOffset = 0;
-    for (let i = 0; i < flattenLength; ++i) {
-        for (let ii = 0, n = typesInfo.keys.length; ii < n; ++ii) {
-            const key = typesInfo.keys[ii];
-            flatOffset += writeValueToDataView(view, flatMappings[key](entry, i, flattenLength), types[key], offset + flatOffset);
-        }
-    }
-
-    return flatOffset;
-}
-
-export function writeValueToDataView(view: DataView, value: number | number[], type: GLenum | GLenum[], offset: number): number {
-    if (Array.isArray(value)) {
-        let writeOffset = 0;
-        for (let i = 0, n = value.length; i < n; ++i) {
-            GL_TYPE_SETTER[type[i]](view, offset + writeOffset, value[i]);
-            writeOffset += GL_TYPE_SIZE[type[i]];
-        }
-        return writeOffset;
-    }
-
-    GL_TYPE_SETTER[type as GLenum](view, offset, value);
-    return GL_TYPE_SIZE[type as GLenum];
 }
 
 export function printDataGL<T>(context: App, vbo: VertexBuffer, count: number, types: GLDataTypes<T>): void {

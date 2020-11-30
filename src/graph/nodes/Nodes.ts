@@ -3,7 +3,7 @@ import {LayerRenderable} from '../LayerRenderable';
 import {GraphPoints} from '../../data/GraphPoints';
 import {DataMappings, PackDataCB} from '../../data/DataTools';
 import {PickingManager} from '../../UX/picking/PickingManager';
-import {GenericUniforms, GLDataTypes} from '../../renderer/Renderable';
+import {GLDataTypes} from '../../renderer/Renderable';
 import {GraferInputColor} from '../../renderer/ColorRegistry';
 
 export interface BasicNodeData {

@@ -46,7 +46,7 @@ export async function curvedPaths(container: HTMLElement): Promise<void> {
             { source: 'center', target: 'bottom' },
             { source: 'bottom', target: 'right' },
         ],
-    }
+    };
 
     const layers = [
         { nodes, edges },

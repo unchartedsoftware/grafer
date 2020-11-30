@@ -10,7 +10,7 @@ import {
     RenderableShaders,
     RenderMode,
     RenderUniforms,
-    setDrawCallUniforms
+    setDrawCallUniforms,
 } from '../../../renderer/Renderable';
 import {Edges} from '../Edges';
 import {GraphPoints} from '../../../data/GraphPoints';

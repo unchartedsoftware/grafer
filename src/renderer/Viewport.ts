@@ -112,7 +112,7 @@ export class Viewport {
         this.timeoutID = window.setTimeout(this.boundDelayedRender, delay);
     }
 
-    private delayedRender() {
+    private delayedRender(): void {
         this.timeoutID = 0;
         this._render();
     }

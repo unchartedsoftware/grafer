@@ -33,7 +33,7 @@ export class Gravity extends Edges<BasicEdgeData, GLGravityEdgeTypes> {
 
     public get gravity(): number {
         return this.localUniforms.uGravity as number;
-    };
+    }
     public set gravity(value: number) {
         this.localUniforms.uGravity = value;
     }
