@@ -23,10 +23,12 @@ export type GraferPointsData = GraferDataInput<PointDataMappings>;
 
 export interface GraferNodesData extends GraferDataInput<any> {
     type?: GraferNodesType;
+    options?: { [key: string]: any };
 }
 
 export interface GraferEdgesData extends GraferDataInput<any> {
     type?: GraferEdgesType;
+    options?: { [key: string]: any };
 }
 
 export interface GraferLayerData {
@@ -147,6 +149,15 @@ export class GraferController extends EventEmitter {
                     }
 
                     nodes = new NodesClass(context, graph, nodesData.data, nodesMappings, pickingManager);
+                    if ('options' in nodesData) {
+                        const options = nodesData.options;
+                        const keys = Object.keys(options);
+                        for (const key of keys) {
+                            if (key in nodes) {
+                                nodes[key] = options[key];
+                            }
+                        }
+                    }
                 }
 
                 if (layers[i].edges) {
@@ -192,6 +203,16 @@ export class GraferController extends EventEmitter {
                     }
 
                     edges = new EdgesClass(context, graph, edgesData.data, edgesMappings, pickingManager);
+
+                    if ('options' in edgesData) {
+                        const options = edgesData.options;
+                        const keys = Object.keys(options);
+                        for (const key of keys) {
+                            if (key in edges) {
+                                edges[key] = options[key];
+                            }
+                        }
+                    }
                 }
 
                 if (nodes || edges) {

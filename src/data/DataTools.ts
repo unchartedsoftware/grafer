@@ -1,8 +1,23 @@
-import {GL_TYPE_GETTER, GL_TYPE_SETTER, GL_TYPE_SIZE, GLDataTypes, glDataTypesInfo} from '../renderer/Renderable';
+import {
+    GL_TYPE_GETTER,
+    GL_TYPE_SETTER,
+    GL_TYPE_SIZE,
+    GLDataTypes,
+    GLDataTypesInfo,
+    glDataTypesInfo,
+} from '../renderer/Renderable';
 import {App, VertexBuffer} from 'picogl';
 
+export const kDataMappingFlatten = Symbol('graffer:data::mapping::flatten::key');
+const kDataEntryNeedsFlatten = Symbol('graffer:data::tools::needs::flatten');
+
+export type DataMapping<T, R> = {
+    (entry: T, i: number, fi?: number, fl?: number): R,
+    [kDataMappingFlatten]?: (entry: {[key in keyof T]: R}, i: number, l: number) => R,
+}
+
 export type DataMappings<T> = {
-    [key in keyof T]: ((entry: any, i: number) => T[key]);
+    [key in keyof Required<T>]: DataMapping<T, T[key]>;
 };
 
 export interface DataShader {
@@ -12,8 +27,7 @@ export interface DataShader {
 
 export type PackDataCB<T> = (i: number, entry: T) => void;
 
-export function* dataIterator<T>(data: unknown[], dataMappings: DataMappings<T>): Generator<[number, T]> {
-    const mappings = Object.assign({}, dataMappings);
+export function* dataIterator<T>(data: unknown[], mappings: DataMappings<T>): Generator<[number, T]> {
     const keys = Reflect.ownKeys(mappings);
 
     for (let i = 0, n = data.length; i < n; ++i) {
@@ -56,20 +70,87 @@ export function computeDataTypes<T>(types: GLDataTypes<T>, mappings: DataMapping
     return result;
 }
 
+export function writeValueToDataView(view: DataView, value: number | number[], type: GLenum | GLenum[], offset: number): number {
+    if (Array.isArray(value)) {
+        let writeOffset = 0;
+        for (let i = 0, n = value.length; i < n; ++i) {
+            GL_TYPE_SETTER[type[i]](view, offset + writeOffset, value[i]);
+            writeOffset += GL_TYPE_SIZE[type[i]];
+        }
+        return writeOffset;
+    }
+
+    GL_TYPE_SETTER[type as GLenum](view, offset, value);
+    return GL_TYPE_SIZE[type as GLenum];
+}
+
+export function flattenEntry<T>(entry: T, types: GLDataTypes<T>, typesInfo: GLDataTypesInfo, mappings: DataMappings<T>, view: DataView, offset: number): number {
+    // build an internal mappings object to flatten the values
+    const flatMappings = {};
+    let flattenLength = 0;
+    for (let i = 0, n = typesInfo.keys.length; i < n; ++i) {
+        const key = typesInfo.keys[i];
+        if (entry[kDataEntryNeedsFlatten].has(key)) {
+            flatMappings[key] = mappings[key][kDataMappingFlatten] ?? ((entry, i): unknown => entry[key][i]);
+            // all values to flatten should have the same length
+            flattenLength = entry[key].length;
+        } else {
+            flatMappings[key] = mappings[key][kDataMappingFlatten] ?? ((entry): unknown => entry[key]);
+        }
+    }
+
+    let flatOffset = 0;
+    for (let i = 0; i < flattenLength; ++i) {
+        for (let ii = 0, n = typesInfo.keys.length; ii < n; ++ii) {
+            const key = typesInfo.keys[ii];
+            flatOffset += writeValueToDataView(view, flatMappings[key](entry, i, flattenLength), types[key], offset + flatOffset);
+        }
+    }
+
+    return flatOffset;
+}
+
 export function packData<T>(data: unknown[], mappings: DataMappings<T>, types: GLDataTypes<T>, potLength: boolean, cb?: PackDataCB<T>): ArrayBuffer {
     const typesInfo = glDataTypesInfo(computeDataTypes(types, mappings));
-    const dataLength = potLength ? Math.pow(2 , Math.ceil(Math.log2(data.length))) : data.length;
+    const entries = [];
+    let dataLength = 0;
+
+    // go over the data once to compute the data byte length. Sorry future Dario :(
+    // TODO: Investigate a better way to do this in one iteration
+    for (const [index, entry] of dataIterator(data, mappings)) {
+        let entryLength = 1;
+        for (let i = 0, n = typesInfo.keys.length; i < n; ++i) {
+            const value = entry[typesInfo.keys[i]];
+            if (Array.isArray(value)) {
+                if (!entry[kDataEntryNeedsFlatten]) {
+                    entry[kDataEntryNeedsFlatten] = new Set<string>();
+                }
+                entry[kDataEntryNeedsFlatten].add(typesInfo.keys[i]);
+                entryLength = Math.max(entryLength, value.length);
+            }
+        }
+
+        if (cb) {
+            cb(index, entry);
+        }
+
+        entries.push(entry);
+        dataLength += entryLength;
+    }
+
+    dataLength = potLength ? Math.pow(2 , Math.ceil(Math.log2(dataLength))) : dataLength;
+
     const buffer = new ArrayBuffer(typesInfo.stride * dataLength);
     const view = new DataView(buffer);
 
     let offset = 0;
-    for (const [index, entry] of dataIterator(data, mappings)) {
-        for (let i = 0, n = typesInfo.keys.length; i < n; ++i) {
-            GL_TYPE_SETTER[types[typesInfo.keys[i]]](view, offset, entry[typesInfo.keys[i]]);
-            offset += GL_TYPE_SIZE[types[typesInfo.keys[i]]];
-        }
-        if (cb) {
-            cb(index, entry);
+    for (const entry of entries) {
+        if (entry[kDataEntryNeedsFlatten]) {
+            offset += flattenEntry(entry, types, typesInfo, mappings,view, offset);
+        } else {
+            for (let i = 0, n = typesInfo.keys.length; i < n; ++i) {
+                offset += writeValueToDataView(view, entry[typesInfo.keys[i]], types[typesInfo.keys[i]], offset);
+            }
         }
     }
 

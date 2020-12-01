@@ -5,7 +5,7 @@ const sourceMaps = require('rollup-plugin-sourcemaps');
 const commonjs = require('@rollup/plugin-commonjs');
 const resolve = require('@rollup/plugin-node-resolve').nodeResolve;
 const replace = require('@rollup/plugin-replace');
-const string = require('rollup-plugin-string').string;
+const glslify = require('rollup-plugin-glslify');
 const globby = require('globby');
 const server = require('live-server');
 
@@ -166,8 +166,8 @@ function pluginsForType (type) {
                 typescript: require('typescript'),
                 cacheRoot: path.resolve(__dirname, '.rts2_cache'),
             }),
-            string({
-                include: ["**/*.glsl", "**/*.css"],
+            glslify({
+                transform: ['glslify-import'],
             }),
         );
     }

@@ -12,18 +12,13 @@ out vec3 vTarget;
 flat out uint vSourceColor;
 flat out uint vTargetColor;
 
-vec4 getValueByIndexFromTexture(sampler2D tex, int index) {
-    int texWidth = textureSize(tex, 0).x;
-    int col = index % texWidth;
-    int row = index / texWidth;
-    return texelFetch(tex, ivec2(col, row), 0);
-}
+#pragma glslify: valueForIndex = require(../../../renderer/shaders/valueForIndex.glsl)
 
 void main() {
-    vec4 source = getValueByIndexFromTexture(uGraphPoints, int(aSourceIndex));
+    vec4 source = valueForIndex(uGraphPoints, int(aSourceIndex));
     vSource = source.xyz;
 
-    vec4 target = getValueByIndexFromTexture(uGraphPoints, int(aTargetIndex));
+    vec4 target = valueForIndex(uGraphPoints, int(aTargetIndex));
     vTarget = target.xyz;
 
     vSourceColor = aSourceColor;

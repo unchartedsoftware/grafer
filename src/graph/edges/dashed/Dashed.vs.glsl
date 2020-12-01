@@ -12,8 +12,10 @@ uniform mat4 uProjectionMatrix;
 uniform vec2 uViewportSize;
 uniform float uPixelRatio;
 uniform sampler2D uColorPalette;
+uniform uint uDashLength;
 
 out vec3 vColor;
+out float vDashLength;
 out vec2 vProjectedPosition;
 out float vProjectedW;
 
@@ -25,18 +27,24 @@ vec4 getColorByIndexFromTexture(sampler2D tex, int index) {
 }
 
 void main() {
-    float multA = aVertex.x;
-    float multB = 1.0 - aVertex.x;
-
     vec4 colorA = getColorByIndexFromTexture(uColorPalette, int(iColorA));
     vec4 colorB = getColorByIndexFromTexture(uColorPalette, int(iColorB));
 
-    vColor = colorA.rgb * multA + colorB.rgb * multB;
+    vColor = mix(colorA.rgb, colorB.rgb, aVertex.x);
 
     mat4 renderMatrix = uProjectionMatrix * uViewMatrix * uSceneMatrix;
-    vec3 position = iOffsetA * multA + iOffsetB * multB;
+    vec3 position = mix(iOffsetA, iOffsetB, aVertex.x);
     gl_Position = renderMatrix * vec4(position, 1.0);
 
     vProjectedPosition = gl_Position.xy;
     vProjectedW = gl_Position.w;
+
+    vec4 source = renderMatrix * vec4(iOffsetA, 1.0);
+    vec2 screenSource = (source.xy / source.w) * (uViewportSize / 2.0);
+
+    vec4 target = renderMatrix * vec4(iOffsetB, 1.0);
+    vec2 screenTarget = (target.xy / target.w) * (uViewportSize / 2.0);
+
+    float screenDistance = distance(screenSource, screenTarget);
+    vDashLength = (screenDistance / float(uDashLength)) * aVertex.x;
 }

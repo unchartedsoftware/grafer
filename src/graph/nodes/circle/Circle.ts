@@ -108,9 +108,11 @@ export class Circle extends Nodes<BasicNodeData, GLCircleNodeTypes> {
                 }
                 break;
 
-            case RenderMode.DRAFT:
-            case RenderMode.MEDIUM:
-            case RenderMode.HIGH:
+            case RenderMode.HIGH_PASS_2:
+                context.depthMask(false);
+                context.enable(PicoGL.BLEND);
+                /* fallthrough */
+            default:
                 setDrawCallUniforms(this.drawCall, uniforms);
                 setDrawCallUniforms(this.drawCall, this.localUniforms);
                 this.drawCall.uniform('uPicking', false);

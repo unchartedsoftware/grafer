@@ -26,7 +26,7 @@ export abstract class PointsReader<T_SRC, T_TGT> {
     protected constructor(context: App, points: GraphPoints, data: unknown[], mappings: Partial<DataMappings<T_SRC>>) {
         this.points = points;
         this.ingestData(context, data, mappings);
-        this.initializeTargetBuffers(context, data.length);
+        this.initializeTargetBuffers(context, this.dataBuffer.byteLength / this.dataStride);
         this.initializeDataDrawCall(context);
     }
 

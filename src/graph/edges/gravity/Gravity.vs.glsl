@@ -15,6 +15,8 @@ uniform float uGravity;
 uniform sampler2D uColorPalette;
 
 out vec3 vColor;
+out vec2 vProjectedPosition;
+out float vProjectedW;
 
 vec4 getColorByIndexFromTexture(sampler2D tex, int index) {
     int texWidth = textureSize(tex, 0).x;
@@ -44,4 +46,7 @@ void main() {
 
     mat4 renderMatrix = uProjectionMatrix * uViewMatrix * uSceneMatrix;
     gl_Position = renderMatrix * vec4(position, 1.0);
+
+    vProjectedPosition = gl_Position.xy;
+    vProjectedW = gl_Position.w;
 }

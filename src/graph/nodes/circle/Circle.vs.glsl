@@ -39,24 +39,22 @@ void main() {
     offsetMatrix[3] = vec4(iPosition, 1.0);
 
     // reset the rotation of the model-view matrix
-    mat4 lookAtMatrix = uViewMatrix * uSceneMatrix * offsetMatrix;
+    mat4 modelMatrix = uViewMatrix * uSceneMatrix * offsetMatrix;
+    mat4 lookAtMatrix = mat4(modelMatrix);
     lookAtMatrix[0] = vec4(1.0, 0.0, 0.0, lookAtMatrix[0][3]);
     lookAtMatrix[1] = vec4(0.0, 1.0, 0.0, lookAtMatrix[1][3]);
     lookAtMatrix[2] = vec4(0.0, 0.0, 1.0, lookAtMatrix[2][3]);
 
-    // calculate the render matrix
-    mat4 renderMatrix = uProjectionMatrix * lookAtMatrix;
-
     // the on-screen center of this node
-    vec4 quadCenter = renderMatrix * vec4(0.0, 0.0, 0.0, 1.0);
+    vec4 quadCenter = uProjectionMatrix * lookAtMatrix * vec4(0.0, 0.0, 0.0, 1.0);
     vec2 screenQuadCenter = quadCenter.xy / quadCenter.w;
 
     // the on-screen position of a side of this quad
-    vec4 quadSide = renderMatrix * vec4(1.0, 0.0, 0.0, 1.0);
+    vec4 quadSide = uProjectionMatrix * lookAtMatrix * vec4(1.0, 0.0, 0.0, 1.0);
     vec2 screenQuadSide = quadSide.xy / quadSide.w;
 
-    // compute the pixel radius of this node for a size of 1 in worls coordinates
-    float pixelRadius = max(1.0, length((screenQuadSide - screenQuadCenter) * uViewportSize));
+    // compute the pixel radius of this node for a size of 1 in world coordinates
+    float pixelRadius = max(1.0, length((screenQuadSide - screenQuadCenter) * uViewportSize * 0.5));
 
     // calculate the desired pixel radius for the size mode
     float size = iRadius; // uMinSize + (uMaxSize - uMinSize) * iRadius;
@@ -65,10 +63,11 @@ void main() {
     // calculate the pixel radius multiplier needed to acomplish the desired pixel radius
     float pixelRadiusMult = desiredPixelRadius / pixelRadius;
 
+    // calculate the render matrix
+    mat4 renderMatrix = uBillboard ? uProjectionMatrix * lookAtMatrix : uProjectionMatrix * modelMatrix;
+
     // compute the vertex position and its screen position
-    vec4 worldVertex = uBillboard ?
-        renderMatrix * vec4(aVertex * pixelRadiusMult, 1.0) :
-        uProjectionMatrix * uViewMatrix * uSceneMatrix * vec4(aVertex * pixelRadiusMult + iPosition, 1.0);
+    vec4 worldVertex = renderMatrix * vec4(aVertex * pixelRadiusMult, 1.0);
 
     // send the render color to the fragment shader
     fColor = uPicking ? vec4(iPickingColor) / 255.0 : getColorByIndexFromTexture(uColorPalette, int(iColor));
