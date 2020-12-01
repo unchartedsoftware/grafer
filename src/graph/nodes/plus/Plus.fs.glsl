@@ -17,7 +17,6 @@ void main() {
     float antialias = fPixelLength * 1.5;
     float sd = sdPlus(vFromCenter, vec2(1.0, 0.3), 0.0);
     float outline = opOnion(sd, min(0.15, fPixelLength * 6.0 * uPixelRatio));
-
     float distance = uRenderMode == MODE_HIGH_PASS_1 ? -antialias : 0.0;
 
     if (sd > distance) {
