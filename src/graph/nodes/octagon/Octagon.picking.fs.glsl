@@ -10,7 +10,7 @@ in vec2 vFromCenter;
 out vec4 fragColor;
 
 void main() {
-    float sd = sdOctogon(vFromCenter, 1.0);
+    float sd = sdOctagon(vFromCenter, 1.0);
     if (sd > 0.0) {
         discard;
     }
