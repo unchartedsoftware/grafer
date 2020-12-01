@@ -66,3 +66,8 @@ float sdStar(in vec2 p, in float r, in uint n, in float m) { // m=[2,n]
     p += ecs * clamp(-dot(p, ecs), 0.0, r * acs.y / ecs.y);
     return length(p) * sign(p.x);
 }
+
+float sdCross(in vec2 p, in float w, in float r) {
+    p = abs(p / 1.25);
+    return length(p - min(p.x + p.y, w) * 0.5) - r;
+}
