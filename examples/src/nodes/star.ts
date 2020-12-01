@@ -31,7 +31,7 @@ export async function star(container: HTMLElement): Promise<void> {
         options: {
             sides: 10,
             angleDivisor: 2.5,
-        }
+        },
     };
 
     const layers = [
