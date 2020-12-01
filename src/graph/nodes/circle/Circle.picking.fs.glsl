@@ -2,14 +2,14 @@
 precision highp float;
 
 flat in vec4 fColor;
-flat in float fPixelRadius;
-in vec2 vPixelLocation;
+flat in float fPixelLength;
+in vec2 vFromCenter;
 
 out vec4 fragColor;
 
 void main() {
-    float fromCenter = length(vPixelLocation);
-    if (fromCenter > fPixelRadius) {
+    float fromCenter = length(vFromCenter);
+    if (fromCenter > 1.0) {
         discard;
     }
     fragColor = fColor;
