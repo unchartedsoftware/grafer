@@ -62,7 +62,6 @@ export class Straight extends Edges<BasicEdgeData, GLStraightEdgeTypes> {
 
     public render(context:App, mode: RenderMode, uniforms: RenderUniforms): void {
         context.enable(PicoGL.BLEND);
-        context.blendFuncSeparate(PicoGL.SRC_ALPHA, PicoGL.ONE_MINUS_SRC_ALPHA, PicoGL.ONE, PicoGL.ONE);
 
         context.depthRange(this.nearDepth, this.farDepth);
         context.depthMask(false);
