@@ -71,3 +71,15 @@ float sdCross(in vec2 p, in float w, in float r) {
     p = abs(p / 1.25);
     return length(p - min(p.x + p.y, w) * 0.5) - r;
 }
+
+// TODO: Precompute this, we always pass the same parameters tot his function (v, vec2(1.0, 0.3), 0.0)
+float sdPlus( in vec2 p, in vec2 b, float r ) {
+    p = abs(p);
+    p = (p.y > p.x) ? p.yx : p.xy;
+
+    vec2  q = p - b;
+    float k = max(q.y, q.x);
+    vec2  w = (k > 0.0) ? q : vec2(b.y - p.x, -k);
+
+    return sign(k)*length(max(w, 0.0)) + r;
+}

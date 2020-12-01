@@ -5,6 +5,7 @@ export * from './pentagon/Pentagon';
 export * from './octagon/Octagon';
 export * from './star/Star';
 export * from './cross/Cross';
+export * from './plus/Plus';
 
 import {Circle} from './circle/Circle';
 import {Ring} from './ring/Ring';
@@ -13,6 +14,7 @@ import {Pentagon} from './pentagon/Pentagon';
 import {Octagon} from './octagon/Octagon';
 import {Star} from './star/Star';
 import {Cross} from './cross/Cross';
+import {Plus} from './plus/Plus';
 
 const types = {
     Circle,
@@ -22,6 +24,7 @@ const types = {
     Octagon,
     Star,
     Cross,
+    Plus,
 };
 
 export {types};
