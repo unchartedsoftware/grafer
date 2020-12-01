@@ -5,3 +5,4 @@ export * from './pentagon';
 export * from './octagon';
 export * from './star';
 export * from './cross';
+export * from './plus';
