@@ -2,46 +2,34 @@
 precision highp float;
 
 #pragma glslify: import(../../../renderer/shaders/RenderMode.glsl)
+#pragma glslify: import(../shaders/shapes.glsl)
 
 uniform float uPixelRatio;
 uniform uint uRenderMode;
 
 flat in vec4 fColor;
-flat in float fPixelRadius;
-in vec2 vPixelLocation;
+flat in float fPixelLength;
+in vec2 vFromCenter;
 
 out vec4 fragColor;
 
 void main() {
-    float outterRadius = fPixelRadius;
-    float innerRadius = fPixelRadius - max(1.0, min(4.0 * uPixelRatio, floor(fPixelRadius * 0.4)));
-    float discardOutterRadius = uRenderMode == MODE_HIGH_PASS_1 ? outterRadius - 1.5 : outterRadius;
-    float discardInnerRadius = uRenderMode == MODE_HIGH_PASS_1 ? innerRadius + 1.5 : innerRadius;
+    float thickness = min(0.05, fPixelLength * 3.0);
+    float antialias = min(thickness, fPixelLength * 1.5);
+    float radius = 1.0 - thickness;
+    float ring = opOnion(sdCircle(vFromCenter, radius), thickness);
+    float distance = uRenderMode == MODE_HIGH_PASS_1 ? -antialias : 0.0;
 
-    float fromCenter = length(vPixelLocation);
-
-    if (fromCenter > discardOutterRadius || fromCenter < discardInnerRadius) {
+    if (ring > distance) {
         discard;
     }
 
-    switch (uRenderMode) {
-        case MODE_DRAFT:
-        case MODE_MEDIUM:
-        case MODE_HIGH_PASS_1:
-            fragColor = vec4(fColor.rgb, 1.0);
-        break;
-
-        case MODE_HIGH_PASS_2:
-        if (fromCenter < outterRadius - 1.5 && fromCenter > innerRadius + 1.5) {
+    if (uRenderMode == MODE_HIGH_PASS_2) {
+        if (ring < -antialias) {
             discard;
         }
-        float outterAlpha = smoothstep(outterRadius, outterRadius - 1.5, fromCenter);
-        float innerAlpha = smoothstep(innerRadius, innerRadius + 1.5, fromCenter);
-        fragColor = vec4(fColor.rgb,outterAlpha * innerAlpha);
-
-        default:
-        break;
+        fragColor = vec4(fColor.rgb, smoothstep(0.0, antialias, abs(ring)));
+    } else {
+        fragColor = vec4(fColor.rgb, 1.0);
     }
-
-
 }
