@@ -34,7 +34,7 @@ float sdPentagon(in vec2 p, in float r) {
     return length(p) * sign(p.y);
 }
 
-float sdOctogon(in vec2 p, in float r) {
+float sdOctagon(in vec2 p, in float r) {
     // pi/8: cos, sin, tan.
     const vec3 k = vec3(
         -0.9238795325,   // sqrt(2+sqrt(2))/2
@@ -49,5 +49,3 @@ float sdOctogon(in vec2 p, in float r) {
     p -= vec2(clamp(p.x, -k.z*r, k.z*r), r);
     return length(p) * sign(p.y);
 }
-
-

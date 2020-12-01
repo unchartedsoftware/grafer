@@ -15,7 +15,7 @@ out vec4 fragColor;
 
 void main() {
     float antialias = fPixelLength * 1.5;
-    float sd = sdOctogon(vFromCenter, 1.0);
+    float sd = sdOctagon(vFromCenter, 1.0);
     float outline = opOnion(sd, min(0.25, fPixelLength * 10.0));
 
     float distance = uRenderMode == MODE_HIGH_PASS_1 ? -antialias : 0.0;
