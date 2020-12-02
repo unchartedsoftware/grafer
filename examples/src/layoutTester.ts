@@ -161,6 +161,10 @@ async function loadGraph(container: HTMLElement, info: LayoutInfo): Promise<void
 
             const edges = {
                 data: [],
+                options: {
+                    alpha: 0.75,
+                    nearDepth: 0.9,
+                }
             };
 
             if (info.nodeEdgesFile) {
@@ -178,8 +182,8 @@ async function loadGraph(container: HTMLElement, info: LayoutInfo): Promise<void
         const colors = [
             '#5e81ac',
             '#88c0d0',
-            '#ebcb8b',
-            '#d08770',
+            '#d8dee9',
+            '#4c566a',
         ];
 
         new GraferController(canvas, { colors, layers });
