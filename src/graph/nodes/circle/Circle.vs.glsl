@@ -50,15 +50,14 @@ void main() {
     vec2 screenQuadCenter = quadCenter.xy / quadCenter.w;
 
     // the on-screen position of a side of this quad
-    vec4 quadSide = uProjectionMatrix * lookAtMatrix * vec4(1.0, 0.0, 0.0, 1.0);
+    vec4 quadSide = uProjectionMatrix * lookAtMatrix * vec4(iRadius, 0.0, 0.0, 1.0);
     vec2 screenQuadSide = quadSide.xy / quadSide.w;
 
     // compute the pixel radius of this node for a size of 1 in world coordinates
     float pixelRadius = max(1.0, length((screenQuadSide - screenQuadCenter) * uViewportSize * 0.5));
 
     // calculate the desired pixel radius for the size mode
-    float size = iRadius; // uMinSize + (uMaxSize - uMinSize) * iRadius;
-    float desiredPixelRadius = (uPixelSizing ? size : pixelRadius * size);
+    float desiredPixelRadius = (uPixelSizing ? iRadius : pixelRadius);
 
     // calculate the pixel radius multiplier needed to acomplish the desired pixel radius
     float pixelRadiusMult = desiredPixelRadius / pixelRadius;
@@ -67,7 +66,7 @@ void main() {
     mat4 renderMatrix = uBillboard ? uProjectionMatrix * lookAtMatrix : uProjectionMatrix * modelMatrix;
 
     // compute the vertex position and its screen position
-    vec4 worldVertex = renderMatrix * vec4(aVertex * pixelRadiusMult, 1.0);
+    vec4 worldVertex = renderMatrix * vec4(aVertex * iRadius * pixelRadiusMult, 1.0);
 
     // send the render color to the fragment shader
     fColor = uPicking ? vec4(iPickingColor) / 255.0 : getColorByIndexFromTexture(uColorPalette, int(iColor));
