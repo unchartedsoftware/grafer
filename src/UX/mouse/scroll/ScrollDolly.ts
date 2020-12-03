@@ -26,7 +26,11 @@ export class ScrollDolly extends ScrollModule {
         vec3.normalize(rayWorld, rayWorld);
 
         const position = this.viewport.camera.position;
-        vec3.scaleAndAdd(position, position, rayWorld, delta * this.speed);
+        const zMult = position[2] / rayWorld[2];
+        const rayZeroZ = vec3.fromValues(position[0] + rayWorld[0] * zMult, position[1] + rayWorld[1] * zMult, 0.0);
+        const distance = Math.max(100.0, vec3.distance(position, rayZeroZ));
+        const speed = this.speed * (distance / 100.0);
+        vec3.scaleAndAdd(position, position, rayWorld, delta * speed);
 
         this.viewport.camera.position = position;
 
