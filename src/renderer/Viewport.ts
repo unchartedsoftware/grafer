@@ -63,19 +63,18 @@ export class Viewport {
         this.context.depthFunc(PicoGL.LEQUAL);
         this.context.gl.lineWidth(3);
 
-        this.mouseHandler = new MouseHandler(this.canvas, this.rect, this.pixelRatio);
+        this.mouseHandler = new MouseHandler(this.canvas, this.pixelRatio);
 
         this.size = vec2.fromValues(this.canvas.width, this.canvas.height);
 
         this.camera = new Camera(this.size);
 
-        const resizeObserver = new ResizeObserver((entries: ResizeObserverEntry[]): void => {
-            const canvasEntry = entries[0];
-            this.rect = canvasEntry.contentRect;
+        const resizeObserver = new ResizeObserver((): void => {
+            this.rect = this.canvas.getBoundingClientRect();
             this.context.resize(this.rect.width * this.pixelRatio, this.rect.height * this.pixelRatio);
             vec2.set(this.size, this.canvas.width, this.canvas.height);
             this.camera.viewportSize = this.size;
-            this.mouseHandler.resize(this.rect, this.pixelRatio);
+            this.mouseHandler.resize(this.pixelRatio);
             this.graph.resize(this.context);
             this.render();
         });
