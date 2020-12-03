@@ -164,7 +164,7 @@ async function loadGraph(container: HTMLElement, info: LayoutInfo): Promise<void
                 options: {
                     alpha: 0.75,
                     nearDepth: 0.9,
-                }
+                },
             };
 
             if (info.nodeEdgesFile) {
