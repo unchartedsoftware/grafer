@@ -14,7 +14,7 @@ export async function curvedPaths(container: HTMLElement): Promise<void> {
     // create a 'points' data structure to hold all positional data
     const points = {
         data: [
-            { id: 'left', x: -8.6, y: 5.0, radius: 10.0 },
+            { id: 'left', x: -8.6, y: 5.0 },
             { id: 'right', x: 8.6, y: 5.0 },
             { id: 'bottom', x: 0.0, y: -10.0, z: -5.0 },
             { id: 'center', x: 0.0, y: 0.0, z: 5.0 },
@@ -29,6 +29,9 @@ export async function curvedPaths(container: HTMLElement): Promise<void> {
             { point: 'bottom', radius: 0.2 },
             { point: 'center', radius: 0.2 },
         ],
+        mappings: {
+            radius: entry => entry.radius || 1,
+        },
     };
 
     // edges also reference points
