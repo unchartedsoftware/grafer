@@ -113,7 +113,7 @@ function renderMenu(container: HTMLElement, cb: (result: LayoutInfo) => void): v
             bundle: 'bundle',
             straight: 'straight',
             curved: 'curved',
-        }
+        },
     });
 
     const clusterEdgesInput = createFileInput(() => {
@@ -192,9 +192,9 @@ async function loadGraph(container: HTMLElement, info: LayoutInfo): Promise<void
                 nearDepth: 0.9,
             },
             mappings: {
-                source: (entry) => 'sourceCluster' in entry ? entry.sourceCluster : entry.source,
-                target: (entry) => 'targetCluster' in entry ? entry.targetCluster : entry.target,
-            }
+                source: (entry): number => 'sourceCluster' in entry ? entry.sourceCluster : entry.source,
+                target: (entry): number => 'targetCluster' in entry ? entry.targetCluster : entry.target,
+            },
         };
 
         const clusterCurvedEdges = {
@@ -204,7 +204,7 @@ async function loadGraph(container: HTMLElement, info: LayoutInfo): Promise<void
                 alpha: 0.25,
                 nearDepth: 0.9,
             },
-        }
+        };
 
         let edges;
         if (info.clusterEdgesMode === 'bundle') {
@@ -288,7 +288,7 @@ async function loadGraph(container: HTMLElement, info: LayoutInfo): Promise<void
         ];
 
         const controller = new GraferController(canvas, { points, colors, layers });
-        const debug = new DebugMenu(controller.viewport);
+        /* const debug = */ new DebugMenu(controller.viewport);
         // debug.registerUX(dolly);
         // debug.registerUX(truck);
         // debug.registerUX(rotation);

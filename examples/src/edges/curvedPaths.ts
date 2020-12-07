@@ -30,7 +30,7 @@ export async function curvedPaths(container: HTMLElement): Promise<void> {
             { point: 'center', radius: 0.2 },
         ],
         mappings: {
-            radius: entry => entry.radius || 1,
+            radius: (entry): number => entry.radius || 1,
         },
     };
 
