@@ -1,6 +1,7 @@
 import {renderMenu} from './renderMenu';
 import {playground} from './playground';
 import {layoutTester} from './layoutTester';
+import {bundledEdgesLoader} from './bundledEdgesLoader';
 import * as basic from './basic/mod';
 import * as data from './data/mod';
 import * as nodes from './nodes/mod';
@@ -14,6 +15,7 @@ const examples = {
     edges,
     playground,
     layoutTester,
+    bundledEdgesLoader,
 };
 
 function getExample(examples, path): (HTMLElement) => void | null {
