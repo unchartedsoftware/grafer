@@ -16,10 +16,12 @@ flat out uint vTargetColor;
 
 void main() {
     vec4 source = valueForIndex(uGraphPoints, int(aSourceIndex));
-    vSource = source.xyz;
-
     vec4 target = valueForIndex(uGraphPoints, int(aTargetIndex));
-    vTarget = target.xyz;
+
+    vec3 direction = normalize(target.xyz - source.xyz);
+
+    vSource = source.xyz + direction * source[3];
+    vTarget = target.xyz - direction * target[3];
 
     vSourceColor = aSourceColor;
     vTargetColor = aTargetColor;
