@@ -2,12 +2,14 @@ import {renderMenu} from './renderMenu';
 import {playground} from './playground';
 import * as basic from './basic/mod';
 import * as data from './data/mod';
+import * as nodes from './nodes/mod';
 import * as edges from './edges/mod';
 import './HelpElements';
 
 const examples = {
     basic,
     data,
+    nodes,
     edges,
     playground,
 };

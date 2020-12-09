@@ -78,7 +78,6 @@ export class Gravity extends Edges<BasicEdgeData, GLGravityEdgeTypes> {
         setDrawCallUniforms(this.drawCall, this.localUniforms);
 
         context.enable(PicoGL.BLEND);
-        context.blendFuncSeparate(PicoGL.SRC_ALPHA, PicoGL.ONE_MINUS_SRC_ALPHA, PicoGL.ONE, PicoGL.ONE);
 
         context.depthRange(this.nearDepth, this.farDepth);
         context.depthMask(false);

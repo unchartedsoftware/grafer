@@ -23,8 +23,8 @@ uniform bool uBillboard;
 uniform bool uPicking;
 
 flat out vec4 fColor;
-flat out float fPixelRadius;
-out vec2 vPixelLocation;
+flat out float fPixelLength;
+out vec2 vFromCenter;
 
 vec4 getColorByIndexFromTexture(sampler2D tex, int index) {
     int texWidth = textureSize(tex, 0).x;
@@ -71,10 +71,10 @@ void main() {
 
     // send the render color to the fragment shader
     fColor = uPicking ? vec4(iPickingColor) / 255.0 : getColorByIndexFromTexture(uColorPalette, int(iColor));
-    // send the final pixel radius to the fragment shader
-    fPixelRadius = floor(desiredPixelRadius);
-    // send the computed pixel location to the fragment shader
-    vPixelLocation = aVertex.xy * fPixelRadius;
+    // send the normalized length of a single pixel to the fragment shader
+    fPixelLength = 1.0 / desiredPixelRadius;
+    // send the normalized distance from the center to the fragment shader
+    vFromCenter = aVertex.xy;
 
     // set the render vertex location
     gl_Position = worldVertex;

@@ -62,6 +62,7 @@ export class Viewport {
         this.context.enable(PicoGL.DEPTH_TEST);
         this.context.depthFunc(PicoGL.LEQUAL);
         this.context.gl.lineWidth(3);
+        this.context.blendFuncSeparate(PicoGL.SRC_ALPHA, PicoGL.ONE_MINUS_SRC_ALPHA, PicoGL.ONE, PicoGL.ONE);
 
         this.mouseHandler = new MouseHandler(this.canvas, this.rect, this.pixelRatio);
 
