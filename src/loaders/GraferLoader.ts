@@ -36,6 +36,8 @@ export interface GraferLoaderNodesStats extends GraferLoaderNodesStatsCenter {
 }
 
 export interface GraferLoaderNodes extends GraferLoaderNodesStatsCumulative {
+    points,
+    nodes,
     map: Map<number, number>;
     raw: any[],
     positions: Float32Array;
@@ -45,6 +47,7 @@ export interface GraferLoaderNodes extends GraferLoaderNodesStatsCumulative {
 
 export interface GraferLoaderEdges {
     raw: any[],
+    edges: any[],
     positions: Float32Array;
     colors: Uint8Array;
 }
