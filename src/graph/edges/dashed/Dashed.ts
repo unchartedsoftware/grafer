@@ -17,13 +17,14 @@ export class Dashed extends Straight {
         this.localUniforms.uDashLength = value;
     }
 
-    constructor(context: App,
+    protected initialize(
         context: GraferContext,
-                data: unknown[],
-                mappings: Partial<DataMappings<BasicEdgeData>>,
-                pickingManager: PickingManager
+        points: GraphPoints,
+        data: unknown[],
+        mappings: Partial<DataMappings<BasicEdgeData>>,
+        pickingManager: PickingManager
     ) {
-        super(context, points, data, mappings, pickingManager);
+        super.initialize(context, points, data, mappings, pickingManager);
         this.localUniforms.uDashLength = 10.0;
     }
 

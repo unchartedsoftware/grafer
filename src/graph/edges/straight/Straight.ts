@@ -30,14 +30,14 @@ export class Straight extends Edges<BasicEdgeData, GLStraightEdgeTypes> {
     protected verticesVBO: VertexBuffer;
     protected edgesVAO: VertexArray;
 
-    constructor(context: App,
+    protected initialize(
         context: GraferContext,
         points: GraphPoints,
-                          data: unknown[],
-                          mappings: Partial<DataMappings<BasicEdgeData>>,
-                          pickingManager: PickingManager
+        data: unknown[],
+        mappings: Partial<DataMappings<BasicEdgeData>>,
+        pickingManager: PickingManager
     ) {
-        super(context, points, data, mappings, pickingManager);
+        super.initialize(context, points, data, mappings, pickingManager);
 
         this.verticesVBO = context.createVertexBuffer(PicoGL.FLOAT, 2, new Float32Array([
             0, 0,

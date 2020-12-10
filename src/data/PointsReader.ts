@@ -27,6 +27,11 @@ export abstract class PointsReader<T_SRC, T_TGT> {
     protected constructor(context: GraferContext, points: GraphPoints, data: unknown[], mappings: Partial<DataMappings<T_SRC>>);
     protected constructor(...args: any[]); // TypeScript is weird some times!
     protected constructor(...args: any[]) {
+        this.initialize(...args);
+    }
+
+    protected initialize(...args: any[]);
+    protected initialize(context: GraferContext, points: GraphPoints, data: unknown[], mappings: Partial<DataMappings<T_SRC>>): void {
         this.points = points;
         this.ingestData(context, data, mappings);
         this.initializeTargetBuffers(context, this.dataBuffer.byteLength / this.dataStride);
@@ -86,7 +91,7 @@ export abstract class PointsReader<T_SRC, T_TGT> {
         configureVAO(vao, this.targetVBO, types, typesInfo, attrIndex, true);
     }
 
-    protected packDataCB(): PackDataCB<T_SRC> {
+    protected packDataCB(): PackDataCB<T_SRC> | PackDataCB<T_SRC>[] {
         return (): null => null;
     }
 

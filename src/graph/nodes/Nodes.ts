@@ -70,13 +70,7 @@ export abstract class Nodes<T_SRC extends BasicNodeData, T_TGT> extends LayerRen
         this.localUniforms.uBillboard = value;
     }
 
-    protected constructor(context: App,
-                          points: GraphPoints,
-                          data: unknown[],
-                          mappings: Partial<DataMappings<T_SRC>>,
-                          pickingManager: PickingManager
-    ) {
-        super(context, points, data, mappings, pickingManager);
+    protected initialize(...args: any[]) {
         this.localUniforms = {
             uConstraintSize: true,
             uMinSize: 1.0,
@@ -84,6 +78,7 @@ export abstract class Nodes<T_SRC extends BasicNodeData, T_TGT> extends LayerRen
             uPixelSizing: false,
             uBillboard: true,
         };
+        super.initialize(...args);
     }
 
     protected computeMappings(mappings: Partial<DataMappings<T_SRC>>): DataMappings<T_SRC> {

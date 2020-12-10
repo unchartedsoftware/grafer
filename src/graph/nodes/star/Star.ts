@@ -32,7 +32,19 @@ export class Star extends Circle {
         sides: number = 5,
         angleDivisor: number = 3.0
     ) {
-        super(context, points, data, mappings, pickingManager);
+        super(context, points, data, mappings, pickingManager, sides, angleDivisor);
+    }
+
+    protected initialize(
+        context: GraferContext,
+        points: GraphPoints,
+        data: unknown[],
+        mappings: Partial<DataMappings<BasicNodeData>>,
+        pickingManager: PickingManager,
+        sides: number,
+        angleDivisor: number
+    ) {
+        super.initialize(context, points, data, mappings, pickingManager);
         this.localUniforms.uSides = sides;
         this.localUniforms.uAngleDivisor = angleDivisor;
     }

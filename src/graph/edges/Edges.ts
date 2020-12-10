@@ -42,18 +42,23 @@ export abstract class Edges<T_SRC extends BasicEdgeData, T_TGT> extends LayerRen
         this.localUniforms.uAlpha = value;
     }
 
-    protected constructor(context: App,
-                          points: GraphPoints,
-                          data: unknown[],
-                          mappings: Partial<DataMappings<T_SRC>>,
-    constructor(
-        context: GraferContext,
-                          pickingManager: PickingManager
-    ) {
-        super(context, points, data, mappings, pickingManager);
+    protected initialize(...args: any[]) {
         this.localUniforms = {
             uAlpha: 1.0,
         };
+        super.initialize(...args);
+    }
+
+    constructor(
+        context: GraferContext,
+        points: GraphPoints,
+        data: unknown[],
+        mappings: Partial<DataMappings<T_SRC>>,
+        pickingManager: PickingManager,
+    );
+    constructor(...args: any[]);
+    constructor(...args: any[]) {
+        super(...args);
     }
 
     protected computeMappings(mappings: Partial<DataMappings<T_SRC>>): DataMappings<T_SRC> {

@@ -62,13 +62,24 @@ export class CurvedPath extends Edges<PathEdgeData, GLPathEdgeTypes> {
 
     constructor(
         context: GraferContext,
-                points: GraphPoints,
-                data: unknown[],
-                mappings: Partial<DataMappings<PathEdgeData>>,
-                pickingManager: PickingManager,
-                segments: number = 16
+        points: GraphPoints,
+        data: unknown[],
+        mappings: Partial<DataMappings<PathEdgeData>>,
+        pickingManager: PickingManager,
+        segments: number = 16
     ) {
-        super(context, points, data, mappings, pickingManager);
+        super(context, points, data, mappings, pickingManager, segments);
+    }
+
+    protected initialize(
+        context: GraferContext,
+        points: GraphPoints,
+        data: unknown[],
+        mappings: Partial<DataMappings<PathEdgeData>>,
+        pickingManager: PickingManager,
+        segments: number
+    ) {
+        super.initialize(context, points, data, mappings, pickingManager);
 
         const segmentVertices = [];
         for (let i = 0; i <= segments; ++i) {
@@ -112,6 +123,7 @@ export class CurvedPath extends Edges<PathEdgeData, GLPathEdgeTypes> {
                 break;
 
             default:
+                // context.blendFuncSeparate(PicoGL.SRC_ALPHA, PicoGL.ONE, PicoGL.ONE, PicoGL.ONE);
                 this.drawCall.draw();
                 break;
         }
@@ -168,6 +180,6 @@ export class CurvedPath extends Edges<PathEdgeData, GLPathEdgeTypes> {
             return edgesMappings.control[kDataMappingFlatten](entry, i + 1, l)[0] as number;
         };
 
-        return edgesMappings as DataMappings<PathEdgeData>;
+        return edgesMappings;
     }
 }

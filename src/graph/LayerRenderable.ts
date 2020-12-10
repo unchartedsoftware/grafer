@@ -28,11 +28,24 @@ export abstract class LayerRenderable<T_SRC, T_TGT> extends PointsReaderEmitter<
         points: GraphPoints,
         data: unknown[],
         mappings: Partial<DataMappings<T_SRC>>,
-        pickingManager: PickingManager
-    ) {
-        super(context, points, data, mappings);
+        pickingManager: PickingManager,
+    );
+    protected constructor(...args: any[]);
+    protected constructor(...args: any[]) {
+        super(...args);
+    }
+
+    protected initialize(...args: any[]);
+    protected initialize(
+        context: GraferContext,
+        points: GraphPoints,
+        data: unknown[],
+        mappings: Partial<DataMappings<T_SRC>>,
+        pickingManager: PickingManager,
+    ): void {
         this.pickingManager = pickingManager;
         this.picking = true;
+        super.initialize(context, points, data, mappings);
     }
 
     public abstract destroy(): void;

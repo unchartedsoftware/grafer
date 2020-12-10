@@ -67,13 +67,24 @@ export class ClusterBundle extends Edges<ClusterBundleEdgeData, GLClusterBundleE
 
     constructor(
         context: GraferContext,
-                points: GraphPoints,
-                data: unknown[],
-                mappings: Partial<DataMappings<ClusterBundleEdgeData>>,
-                pickingManager: PickingManager,
-                segments: number = 16
+        points: GraphPoints,
+        data: unknown[],
+        mappings: Partial<DataMappings<ClusterBundleEdgeData>>,
+        pickingManager: PickingManager,
+        segments: number = 16
     ) {
-        super(context, points, data, mappings, pickingManager);
+        super(context, points, data, mappings, pickingManager, segments);
+    }
+
+    protected initialize(
+        context: GraferContext,
+        points: GraphPoints,
+        data: unknown[],
+        mappings: Partial<DataMappings<ClusterBundleEdgeData>>,
+        pickingManager: PickingManager,
+        segments: number
+    ) {
+        super.initialize(context, points, data, mappings, pickingManager);
 
         const segmentVertices = [];
         for (let i = 0; i <= segments; ++i) {
@@ -91,8 +102,6 @@ export class ClusterBundle extends Edges<ClusterBundleEdgeData, GLClusterBundleE
         this.compute(context, {
             uGraphPoints: this.dataTexture,
         });
-
-        // printDataGL(context, this.targetVBO, data.length, kGLStraightEdgeTypes);
     }
 
     public destroy(): void {

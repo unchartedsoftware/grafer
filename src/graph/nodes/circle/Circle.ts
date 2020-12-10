@@ -36,7 +36,7 @@ export class Circle extends Nodes<BasicNodeData, GLCircleNodeTypes> {
     protected pickingDrawCall: DrawCall;
     protected pickingColors: PickingColors;
     protected pickingVBO: VertexBuffer;
-    protected pickingHandler: MouseCallback = this.handlePickingEvent.bind(this);
+    protected pickingHandler: MouseCallback;
 
     protected verticesVBO: VertexBuffer;
     protected nodesVAO: VertexArray;
@@ -49,9 +49,21 @@ export class Circle extends Nodes<BasicNodeData, GLCircleNodeTypes> {
         data: unknown[],
         mappings: Partial<DataMappings<BasicNodeData>>,
         pickingManager: PickingManager
-    ) {
-        super(context, points, data, mappings, pickingManager);
+    );
+    constructor(...args: any[]);
+    constructor(...args: any[]) {
+        super(...args);
+    }
 
+    protected initialize(...args: any[]);
+    protected initialize(
+        context: GraferContext,
+        points: GraphPoints,
+        data: unknown[],
+        mappings: Partial<DataMappings<BasicNodeData>>,
+        pickingManager: PickingManager
+    ) {
+        super.initialize(context, points, data, mappings, pickingManager);
         this.verticesVBO = context.createVertexBuffer(PicoGL.FLOAT, 2, new Float32Array([
             -1, -1,
             1, -1,
@@ -59,6 +71,7 @@ export class Circle extends Nodes<BasicNodeData, GLCircleNodeTypes> {
             1, 1,
         ]));
 
+        this.pickingHandler = this.handlePickingEvent.bind(this)
         this.pickingColors = this.pickingManager.allocatePickingColors(data.length);
         this.pickingVBO = context.createVertexBuffer(PicoGL.UNSIGNED_BYTE, 4, this.pickingColors.colors);
 
