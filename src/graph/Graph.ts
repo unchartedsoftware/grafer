@@ -1,5 +1,5 @@
 import {Renderable, RenderMode, RenderUniforms} from '../renderer/Renderable';
-import {App} from 'picogl';
+import {App, PicoGL} from 'picogl';
 import {mat4, quat, vec3} from 'gl-matrix';
 import {Layer} from './Layer';
 import {GraphPoints, PointData, PointDataMappings} from '../data/GraphPoints';
@@ -47,12 +47,14 @@ export class Graph extends GraphPoints implements Renderable {
 
         for (let i = 0, n = this._layers.length; i < n; ++i) {
             if (this._layers[i].enabled) {
+                context.blendFuncSeparate(PicoGL.SRC_ALPHA, PicoGL.ONE_MINUS_SRC_ALPHA, PicoGL.ONE, PicoGL.ONE);
                 this._layers[i].renderNodes(context, mode, uniforms);
             }
         }
 
         for (let i = 0, n = this._layers.length; i < n; ++i) {
             if (this._layers[i].enabled) {
+                context.blendFuncSeparate(PicoGL.SRC_ALPHA, PicoGL.ONE_MINUS_SRC_ALPHA, PicoGL.ONE, PicoGL.ONE);
                 this._layers[i].renderEdges(context, mode, uniforms);
             }
         }

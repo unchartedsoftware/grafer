@@ -89,8 +89,9 @@ export class GraferController extends EventEmitter {
             this._viewport.colorRegisrty.registerColor('#d8dee9');
         }
 
+        const pointsRadiusMapping = { radius: (entry: any): number => 'radius' in entry ? entry.radius : 1.0 };
         if (data.points) {
-            const mappings = data.points.mappings ? data.points.mappings : {};
+            const mappings = Object.assign({}, pointsRadiusMapping, data.points.mappings);
             this._viewport.graph = new Graph(this._viewport.context, data.points.data, mappings);
             this._viewport.graph.picking = new PickingManager(this._viewport.context, this._viewport.mouseHandler);
         }
@@ -107,7 +108,7 @@ export class GraferController extends EventEmitter {
                 for (let i = 0, n = layers.length; i < n; ++i) {
                     nodes.push(layers[i].nodes.data);
                 }
-                this._viewport.graph = Graph.fromNodesArray(context, nodes);
+                this._viewport.graph = Graph.fromNodesArray(context, nodes, pointsRadiusMapping);
                 this._viewport.graph.picking = new PickingManager(this._viewport.context, this._viewport.mouseHandler);
 
                 let vertexIndex = 0;
@@ -126,11 +127,9 @@ export class GraferController extends EventEmitter {
                     const nodesData = layers[i].nodes;
                     const nodesType = layers[i].nodes.type ? layers[i].nodes.type : 'Circle';
                     const NodesClass = GraphNodes.types[nodesType] || GraphNodes.Circle;
-                    const nodesRadiusMapping = { radius: (entry: any): number => 'radius' in entry ? entry.radius : 1.0 };
                     const nodesMappings = Object.assign(
                         {},
                         NodesClass.defaultMappings,
-                        nodesRadiusMapping,
                         nodesData.mappings
                     );
                     if (nodesPointMapping) {
@@ -225,6 +224,7 @@ export class GraferController extends EventEmitter {
 
         if (this._viewport.graph) {
             this._viewport.camera.position = [0, 0, - this._viewport.graph.bbCornerLength * 2];
+            this._viewport.camera.farPlane = this._viewport.graph.bbCornerLength * 3;
             this._viewport.render();
         }
     }

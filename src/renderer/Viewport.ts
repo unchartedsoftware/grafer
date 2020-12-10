@@ -60,9 +60,8 @@ export class Viewport {
         // this.clearColor = [0.18, 0.204, 0.251, 1.0];
         this.context.clearMask(PicoGL.COLOR_BUFFER_BIT | PicoGL.DEPTH_BUFFER_BIT);
         this.context.enable(PicoGL.DEPTH_TEST);
-        this.context.depthFunc(PicoGL.LEQUAL);
+        this.context.depthFunc(PicoGL.LESS);
         this.context.gl.lineWidth(3);
-        this.context.blendFuncSeparate(PicoGL.SRC_ALPHA, PicoGL.ONE_MINUS_SRC_ALPHA, PicoGL.ONE, PicoGL.ONE);
 
         this.mouseHandler = new MouseHandler(this.canvas, this.rect, this.pixelRatio);
 
@@ -86,6 +85,7 @@ export class Viewport {
     }
 
     public resetContextFlags(): void {
+        this.context.blendFuncSeparate(PicoGL.SRC_ALPHA, PicoGL.ONE_MINUS_SRC_ALPHA, PicoGL.ONE, PicoGL.ONE);
         this.context.defaultDrawFramebuffer();
         this.context.defaultReadFramebuffer();
         this.context.disable(PicoGL.BLEND);
