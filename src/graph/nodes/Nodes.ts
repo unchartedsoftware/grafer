@@ -99,7 +99,7 @@ export abstract class Nodes<T_SRC extends BasicNodeData, T_TGT> extends LayerRen
         super.ingestData(context, data, mappings);
     }
 
-    protected packDataCB(): PackDataCB<T_SRC> {
+    protected packDataCB(): PackDataCB<T_SRC> | PackDataCB<T_SRC>[] {
         return (i, entry): void => {
             this.map.set(entry.id, entry.point);
             this.idArray.push(entry.id);
