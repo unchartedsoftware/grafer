@@ -3,11 +3,11 @@ import edgeFS from './Dashed.fs.glsl';
 
 import {Straight} from '../straight/Straight';
 import {RenderableShaders} from '../../../renderer/Renderable';
-import {App} from 'picogl';
 import {GraphPoints} from '../../../data/GraphPoints';
 import {DataMappings} from '../../../data/DataTools';
 import {BasicEdgeData} from '../Edges';
 import {PickingManager} from '../../../UX/picking/PickingManager';
+import {GraferContext} from '../../../renderer/GraferContext';
 
 export class Dashed extends Straight {
     public get dashLength(): number {
@@ -18,7 +18,7 @@ export class Dashed extends Straight {
     }
 
     constructor(context: App,
-                points: GraphPoints,
+        context: GraferContext,
                 data: unknown[],
                 mappings: Partial<DataMappings<BasicEdgeData>>,
                 pickingManager: PickingManager

@@ -15,6 +15,7 @@ import {
 import {Edges} from '../Edges';
 import {GraphPoints} from '../../../data/GraphPoints';
 import {PickingManager} from '../../../UX/picking/PickingManager';
+import {GraferContext} from '../../../renderer/GraferContext';
 
 export interface PathEdgeData {
     id?: number | string;
@@ -59,7 +60,8 @@ export class CurvedPath extends Edges<PathEdgeData, GLPathEdgeTypes> {
     protected verticesVBO: VertexBuffer;
     protected edgesVAO: VertexArray;
 
-    constructor(context: App,
+    constructor(
+        context: GraferContext,
                 points: GraphPoints,
                 data: unknown[],
                 mappings: Partial<DataMappings<PathEdgeData>>,

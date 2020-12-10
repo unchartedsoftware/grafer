@@ -5,6 +5,7 @@ import {DataMappings, PackDataCB} from '../../data/DataTools';
 import {PickingManager} from '../../UX/picking/PickingManager';
 import {GLDataTypes} from '../../renderer/Renderable';
 import {GraferInputColor} from '../../renderer/ColorRegistry';
+import {GraferContext} from '../../renderer/GraferContext';
 
 export interface BasicNodeData {
     id?: number | string;

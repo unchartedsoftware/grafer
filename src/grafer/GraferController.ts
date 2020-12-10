@@ -10,6 +10,7 @@ import {DragPan} from '../UX/mouse/drag/DragPan';
 import {GraferInputColor} from '../renderer/ColorRegistry';
 import {PickingManager} from '../UX/picking/PickingManager';
 import {EventEmitter} from '@dekkai/event-emitter/build/lib/EventEmitter';
+import {GraferContext} from '../renderer/GraferContext';
 
 export type GraferNodesType = keyof typeof GraphNodes.types;
 export type GraferEdgesType = keyof typeof GraphEdges.types;
@@ -49,7 +50,7 @@ export class GraferController extends EventEmitter {
     public get viewport(): Viewport {
         return this._viewport;
     }
-    public get context(): App {
+    public get context(): GraferContext {
         return this.viewport.context;
     }
 

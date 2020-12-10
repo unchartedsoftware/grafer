@@ -6,6 +6,7 @@ import {BasicEdgeData, Edges, kBasicEdgeDataTypes} from '../Edges';
 import {GraphPoints} from '../../../data/GraphPoints';
 import {DataMappings, DataShader} from '../../../data/DataTools';
 import {PickingManager} from '../../../UX/picking/PickingManager';
+import {GraferContext} from '../../../renderer/GraferContext';
 import {
     GLDataTypes,
     RenderableShaders,
@@ -30,7 +31,8 @@ export class Straight extends Edges<BasicEdgeData, GLStraightEdgeTypes> {
     protected edgesVAO: VertexArray;
 
     constructor(context: App,
-                          points: GraphPoints,
+        context: GraferContext,
+        points: GraphPoints,
                           data: unknown[],
                           mappings: Partial<DataMappings<BasicEdgeData>>,
                           pickingManager: PickingManager

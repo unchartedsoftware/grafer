@@ -5,6 +5,7 @@ import {DataMappings} from '../../data/DataTools';
 import {PickingManager} from '../../UX/picking/PickingManager';
 import {GLDataTypes} from '../../renderer/Renderable';
 import {GraferInputColor} from '../../renderer/ColorRegistry';
+import {GraferContext} from '../../renderer/GraferContext';
 
 export interface BasicEdgeData {
     id?: number | string;
@@ -45,6 +46,8 @@ export abstract class Edges<T_SRC extends BasicEdgeData, T_TGT> extends LayerRen
                           points: GraphPoints,
                           data: unknown[],
                           mappings: Partial<DataMappings<T_SRC>>,
+    constructor(
+        context: GraferContext,
                           pickingManager: PickingManager
     ) {
         super(context, points, data, mappings, pickingManager);

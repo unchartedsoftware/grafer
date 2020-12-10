@@ -3,6 +3,7 @@ import {App, DrawCall, PicoGL, Program, Texture, TransformFeedback, VertexArray,
 import {computeDataTypes, DataMappings, DataShader, packData, PackDataCB} from './DataTools';
 import {configureVAO, GenericUniforms, GLDataTypes, glDataTypesInfo, setDrawCallUniforms} from '../renderer/Renderable';
 import noopFS from './shaders/noop.fs.glsl';
+import {GraferContext} from '../renderer/GraferContext';
 
 export abstract class PointsReader<T_SRC, T_TGT> {
     private dataDrawCall: DrawCall;
@@ -23,7 +24,9 @@ export abstract class PointsReader<T_SRC, T_TGT> {
         return this.points.dataTexture;
     }
 
-    protected constructor(context: App, points: GraphPoints, data: unknown[], mappings: Partial<DataMappings<T_SRC>>) {
+    protected constructor(context: GraferContext, points: GraphPoints, data: unknown[], mappings: Partial<DataMappings<T_SRC>>);
+    protected constructor(...args: any[]); // TypeScript is weird some times!
+    protected constructor(...args: any[]) {
         this.points = points;
         this.ingestData(context, data, mappings);
         this.initializeTargetBuffers(context, this.dataBuffer.byteLength / this.dataStride);

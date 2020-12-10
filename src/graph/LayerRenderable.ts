@@ -6,6 +6,7 @@ import {DataMappings} from '../data/DataTools';
 import {PickingManager} from '../UX/picking/PickingManager';
 import {GraphRenderable} from './GraphRenderable';
 import {EventEmitter} from '@dekkai/event-emitter/build/lib/EventEmitter';
+import {GraferContext} from '../renderer/GraferContext';
 
 const PointsReaderEmitter = EventEmitter.mixin(PointsReader);
 export abstract class LayerRenderable<T_SRC, T_TGT> extends PointsReaderEmitter<T_SRC, T_TGT> implements Renderable, GraphRenderable {
@@ -23,7 +24,7 @@ export abstract class LayerRenderable<T_SRC, T_TGT> extends PointsReaderEmitter<
     protected localUniforms: GenericUniforms;
 
     protected constructor(
-        context: App,
+        context: GraferContext,
         points: GraphPoints,
         data: unknown[],
         mappings: Partial<DataMappings<T_SRC>>,

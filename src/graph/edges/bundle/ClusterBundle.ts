@@ -15,6 +15,7 @@ import {
 import {Edges} from '../Edges';
 import {GraphPoints} from '../../../data/GraphPoints';
 import {PickingManager} from '../../../UX/picking/PickingManager';
+import {GraferContext} from '../../../renderer/GraferContext';
 
 export interface ClusterBundleEdgeData {
     id?: number | string;
@@ -64,7 +65,8 @@ export class ClusterBundle extends Edges<ClusterBundleEdgeData, GLClusterBundleE
     protected verticesVBO: VertexBuffer;
     protected edgesVAO: VertexArray;
 
-    constructor(context: App,
+    constructor(
+        context: GraferContext,
                 points: GraphPoints,
                 data: unknown[],
                 mappings: Partial<DataMappings<ClusterBundleEdgeData>>,

@@ -1,4 +1,5 @@
-import {App, PicoGL} from 'picogl';
+import {PicoGL} from 'picogl';
+import {GraferContext} from './GraferContext';
 import {vec2, vec4} from 'gl-matrix';
 import {RenderMode, RenderUniforms} from './Renderable';
 import {Camera} from './Camera';
@@ -9,8 +10,7 @@ import {ColorRegistry} from './ColorRegistry';
 export class Viewport {
     public readonly element: HTMLElement;
     public readonly canvas: HTMLCanvasElement;
-    public readonly context: App;
-    public readonly pixelRatio: number;
+    public readonly context: GraferContext;
     public readonly mouseHandler: MouseHandler;
     public readonly colorRegisrty: ColorRegistry;
     public rect: DOMRectReadOnly;
@@ -29,14 +29,18 @@ export class Viewport {
         this.context.clearColor(...this._clearColor);
     }
 
+    public get pixelRatio(): number {
+        return this.context.pixelRatio;
+    }
+
     private animationFrameID: number = 0;
     private timeoutID: number = 0;
     private renderMode: RenderMode;
     private boundDelayedRender: () => void = this.delayedRender.bind(this);
 
     constructor(element: HTMLElement) {
+        const pixelRatio = window.devicePixelRatio;
         this.element = element;
-        this.pixelRatio = window.devicePixelRatio;
 
         if (this.element instanceof HTMLCanvasElement) {
             this.canvas = this.element;
@@ -48,20 +52,21 @@ export class Viewport {
         }
 
         this.rect = this.canvas.getBoundingClientRect();
-        this.canvas.width = this.rect.width * this.pixelRatio;
-        this.canvas.height = this.rect.height * this.pixelRatio;
+        this.canvas.width = this.rect.width * pixelRatio;
+        this.canvas.height = this.rect.height * pixelRatio;
 
         this.context = PicoGL.createApp(this.canvas, {
             antialias: false,
             premultipliedAlpha: false,
             preserveDrawingBuffer: true,
-        });
+        }) as GraferContext;
         this.clearColor = [0.141176471, 0.160784314, 0.2, 1.0];
         // this.clearColor = [0.18, 0.204, 0.251, 1.0];
         this.context.clearMask(PicoGL.COLOR_BUFFER_BIT | PicoGL.DEPTH_BUFFER_BIT);
         this.context.enable(PicoGL.DEPTH_TEST);
         this.context.depthFunc(PicoGL.LESS);
         this.context.gl.lineWidth(3);
+        this.context.pixelRatio = pixelRatio;
 
         this.mouseHandler = new MouseHandler(this.canvas, this.rect, this.pixelRatio);
 

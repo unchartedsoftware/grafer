@@ -16,6 +16,7 @@ import {
     RenderUniforms,
     setDrawCallUniforms,
 } from '../../../renderer/Renderable';
+import {GraferContext} from '../../../renderer/GraferContext';
 
 export const kGLCircleNodeTypes = {
     // TODO: maybe use points indices?
@@ -43,7 +44,7 @@ export class Circle extends Nodes<BasicNodeData, GLCircleNodeTypes> {
     protected usePointRadius: boolean;
 
     constructor(
-        context: App,
+        context: GraferContext,
         points: GraphPoints,
         data: unknown[],
         mappings: Partial<DataMappings<BasicNodeData>>,

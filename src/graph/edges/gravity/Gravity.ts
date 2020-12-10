@@ -15,6 +15,7 @@ import {
     RenderUniforms,
     setDrawCallUniforms,
 } from '../../../renderer/Renderable';
+import {GraferContext} from '../../../renderer/GraferContext';
 
 export const kGLGravityEdgeTypes = {
     source: [PicoGL.FLOAT, PicoGL.FLOAT, PicoGL.FLOAT],
@@ -38,7 +39,8 @@ export class Gravity extends Edges<BasicEdgeData, GLGravityEdgeTypes> {
         this.localUniforms.uGravity = value;
     }
 
-    constructor(context: App,
+    constructor(
+        context: GraferContext,
                 points: GraphPoints,
                 data: unknown[],
                 mappings: Partial<DataMappings<BasicEdgeData>>,
