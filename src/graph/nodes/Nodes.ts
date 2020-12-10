@@ -9,7 +9,7 @@ import {GraferContext} from '../../renderer/GraferContext';
 
 export interface BasicNodeData {
     id?: number | string;
-    point?: number | string;
+    point: number | string;
     color?: GraferInputColor;
     radius?: number;
 }
