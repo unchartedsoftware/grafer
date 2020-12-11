@@ -23,7 +23,7 @@ export class Dashed extends Straight {
         data: unknown[],
         mappings: Partial<DataMappings<BasicEdgeData>>,
         pickingManager: PickingManager
-    ) {
+    ): void {
         super.initialize(context, points, data, mappings, pickingManager);
         this.localUniforms.uDashLength = 10.0;
     }

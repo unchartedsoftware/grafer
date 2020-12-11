@@ -1,4 +1,4 @@
-import PicoGL, {App} from 'picogl';
+import PicoGL from 'picogl';
 import {LayerRenderable} from '../LayerRenderable';
 import {GraphPoints} from '../../data/GraphPoints';
 import {DataMappings} from '../../data/DataTools';
@@ -42,7 +42,7 @@ export abstract class Edges<T_SRC extends BasicEdgeData, T_TGT> extends LayerRen
         this.localUniforms.uAlpha = value;
     }
 
-    protected initialize(...args: any[]) {
+    protected initialize(...args: any[]): void {
         this.localUniforms = {
             uAlpha: 1.0,
         };

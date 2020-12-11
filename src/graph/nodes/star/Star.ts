@@ -43,7 +43,7 @@ export class Star extends Circle {
         pickingManager: PickingManager,
         sides: number,
         angleDivisor: number
-    ) {
+    ): void {
         super.initialize(context, points, data, mappings, pickingManager);
         this.localUniforms.uSides = sides;
         this.localUniforms.uAngleDivisor = angleDivisor;

@@ -78,7 +78,7 @@ export class CurvedPath extends Edges<PathEdgeData, GLPathEdgeTypes> {
         mappings: Partial<DataMappings<PathEdgeData>>,
         pickingManager: PickingManager,
         segments: number
-    ) {
+    ): void {
         super.initialize(context, points, data, mappings, pickingManager);
 
         const segmentVertices = [];

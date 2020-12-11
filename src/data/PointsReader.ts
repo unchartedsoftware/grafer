@@ -30,7 +30,7 @@ export abstract class PointsReader<T_SRC, T_TGT> {
         this.initialize(...args);
     }
 
-    protected initialize(...args: any[]);
+    protected initialize(...args: any[]): void;
     protected initialize(context: GraferContext, points: GraphPoints, data: unknown[], mappings: Partial<DataMappings<T_SRC>>): void {
         this.points = points;
         this.ingestData(context, data, mappings);

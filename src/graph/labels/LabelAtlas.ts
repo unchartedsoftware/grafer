@@ -26,11 +26,11 @@ export const kLabelMappings: DataMappings<LabelData> = {
 
 export const kLabelBoxDataMappings: DataMappings<{ box: [number, number, number, number] }> = {
     box: (entry: any) => [ entry.x, entry.y, entry.w, entry.h ],
-}
+};
 
 export const kLabelBoxDataTypes: GLDataTypes<typeof kLabelBoxDataMappings> = {
     box: [PicoGL.UNSIGNED_SHORT, PicoGL.UNSIGNED_SHORT, PicoGL.UNSIGNED_SHORT, PicoGL.UNSIGNED_SHORT],
-}
+};
 
 export class LabelAtlas {
     public readonly labelPixelRatio: number;
@@ -53,7 +53,7 @@ export class LabelAtlas {
         this.processData(context, data, Object.assign({}, kLabelMappings, mappings));
     }
 
-    protected processData(context: GraferContext, data: unknown[], mappings: DataMappings<LabelData>) {
+    protected processData(context: GraferContext, data: unknown[], mappings: DataMappings<LabelData>): void {
         const canvas = document.createElement('canvas');
         const ctx = canvas.getContext('2d');
         const images = [];
@@ -122,7 +122,7 @@ export class LabelAtlas {
                     canvas.width - outlineWidth * 2,
                     canvas.height - outlineWidth * 2,
                     Math.min(10, canvas.height * 0.25, canvas.width * 0.25),
-                    true,
+                    true
                 );
             }
 
@@ -146,7 +146,7 @@ export class LabelAtlas {
         radius = 5,
         fill = true,
         stroke = true
-    ) {
+    ): void {
         context.beginPath();
         context.moveTo(x + radius, y);
         context.lineTo(x + width - radius, y);

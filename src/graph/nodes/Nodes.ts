@@ -1,11 +1,8 @@
 import PicoGL, {App} from 'picogl';
 import {LayerRenderable} from '../LayerRenderable';
-import {GraphPoints} from '../../data/GraphPoints';
 import {DataMappings, PackDataCB} from '../../data/DataTools';
-import {PickingManager} from '../../UX/picking/PickingManager';
 import {GLDataTypes} from '../../renderer/Renderable';
 import {GraferInputColor} from '../../renderer/ColorRegistry';
-import {GraferContext} from '../../renderer/GraferContext';
 
 export interface BasicNodeData {
     id?: number | string;
@@ -70,7 +67,7 @@ export abstract class Nodes<T_SRC extends BasicNodeData, T_TGT> extends LayerRen
         this.localUniforms.uBillboard = value;
     }
 
-    protected initialize(...args: any[]) {
+    protected initialize(...args: any[]): void {
         this.localUniforms = {
             uConstraintSize: true,
             uMinSize: 1.0,

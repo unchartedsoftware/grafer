@@ -1,5 +1,4 @@
 import {Viewport} from '../renderer/Viewport';
-import {App} from 'picogl';
 import {PointDataMappings} from '../data/GraphPoints';
 import {nodes as GraphNodes, edges as GraphEdges, labels as GraphLabels, Graph} from '../graph/mod';
 import {Layer} from '../graph/Layer';

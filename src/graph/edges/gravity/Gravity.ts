@@ -57,7 +57,7 @@ export class Gravity extends Edges<BasicEdgeData, GLGravityEdgeTypes> {
         mappings: Partial<DataMappings<BasicEdgeData>>,
         pickingManager: PickingManager,
         segments: number
-    ) {
+    ): void {
         super.initialize(context, points, data, mappings, pickingManager);
 
         this.localUniforms.uGravity = -0.2;

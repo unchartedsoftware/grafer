@@ -7,7 +7,7 @@ import {
     RenderableShaders,
     RenderMode,
     RenderUniforms,
-    setDrawCallUniforms
+    setDrawCallUniforms,
 } from '../../../renderer/Renderable';
 import {Nodes} from '../../nodes/Nodes';
 import {DataMappings, DataShader} from '../../../data/DataTools';
@@ -217,16 +217,6 @@ export class PointLabel extends Nodes<LabelNodeData, GLLabelNodeTypes> {
         const idMapping = dataMappings.id;
         dataMappings.label = (entry: any, i): number => this.labelAtlas.labelMap.get(idMapping(entry, i));
 
-        const pointMapping = dataMappings.point;
-        dataMappings.point = (entry, i) => pointMapping(entry, i);
-
         return dataMappings;
-    }
-
-    protected packDataCB(): any {
-        const scb = super.packDataCB() as any;
-        return (i, entry) => {
-            scb.call(this, i, entry);
-        }
     }
 }

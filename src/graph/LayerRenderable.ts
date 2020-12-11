@@ -35,13 +35,13 @@ export abstract class LayerRenderable<T_SRC, T_TGT> extends PointsReaderEmitter<
         super(...args);
     }
 
-    protected initialize(...args: any[]);
+    protected initialize(...args: any[]): void;
     protected initialize(
         context: GraferContext,
         points: GraphPoints,
         data: unknown[],
         mappings: Partial<DataMappings<T_SRC>>,
-        pickingManager: PickingManager,
+        pickingManager: PickingManager
     ): void {
         this.pickingManager = pickingManager;
         this.picking = true;

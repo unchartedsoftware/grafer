@@ -83,7 +83,7 @@ export class ClusterBundle extends Edges<ClusterBundleEdgeData, GLClusterBundleE
         mappings: Partial<DataMappings<ClusterBundleEdgeData>>,
         pickingManager: PickingManager,
         segments: number
-    ) {
+    ): void {
         super.initialize(context, points, data, mappings, pickingManager);
 
         const segmentVertices = [];

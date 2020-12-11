@@ -36,7 +36,7 @@ export class Straight extends Edges<BasicEdgeData, GLStraightEdgeTypes> {
         data: unknown[],
         mappings: Partial<DataMappings<BasicEdgeData>>,
         pickingManager: PickingManager
-    ) {
+    ): void {
         super.initialize(context, points, data, mappings, pickingManager);
 
         this.verticesVBO = context.createVertexBuffer(PicoGL.FLOAT, 2, new Float32Array([
