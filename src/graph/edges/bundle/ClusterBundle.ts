@@ -102,6 +102,8 @@ export class ClusterBundle extends Edges<ClusterBundleEdgeData, GLClusterBundleE
         this.compute(context, {
             uGraphPoints: this.dataTexture,
         });
+
+        // printDataGL(context, this.targetVBO, data.length, kGLStraightEdgeTypes);
     }
 
     public destroy(): void {
