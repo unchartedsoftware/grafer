@@ -351,13 +351,13 @@ export async function playground(container: HTMLElement): Promise<void> {
                     nodes: {
                         data: layer.nodes.nodes,
                         mappings: nodesMapping
-                            ? eval(`(${nodesMapping})`)
+                            ? (new Function(`return (${nodesMapping})`))()
                             : {},
                     },
                     edges: {
                         data: layer.edges ? layer.edges.edges : [],
                         mappings: edgesMapping
-                            ? eval(`(${edgesMapping})`)
+                            ? (new Function(`return (${edgesMapping})`))()
                             : {},
                     },
                 });
