@@ -19,7 +19,7 @@ export const kLabelMappings: DataMappings<LabelData> = {
     id: (entry: LabelData, i) => 'id' in entry ? entry.id : i,
     label: (entry: LabelData, i) => 'label' in entry ? entry.label : `${i}`,
     font: (entry: LabelData) => 'font' in entry ? entry.font : 'monospace',
-    fontSize: (entry: LabelData) => 'fontSize' in entry ? entry.fontSize : 10,
+    fontSize: (entry: LabelData) => 'fontSize' in entry ? entry.fontSize : 12,
     padding: (entry: LabelData) => 'padding' in entry ? entry.padding : [8, 5],
     background: (entry: LabelData) => 'background' in entry ? entry.background : true,
 };
