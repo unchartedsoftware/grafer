@@ -95,6 +95,7 @@ export class Viewport {
         this.context.defaultReadFramebuffer();
         this.context.disable(PicoGL.BLEND);
         this.context.enable(PicoGL.DEPTH_TEST);
+        this.context.depthFunc(PicoGL.LESS);
         this.context.depthMask(true);
         this.context.depthRange(0.0, 1.0);
         this.context.clearColor(...this._clearColor);
