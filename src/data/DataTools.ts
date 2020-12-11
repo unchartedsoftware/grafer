@@ -60,10 +60,10 @@ export function concatenateData<T>(data: unknown[][], mappings: DataMappings<T>)
 }
 
 export function computeDataTypes<T>(types: GLDataTypes<T>, mappings: DataMappings<T>): GLDataTypes<T> {
-    const keys = Object.keys(mappings);
+    const keys = Object.keys(types);
     const result: GLDataTypes<T> = {};
     for (let i = 0, n = keys.length; i < n; ++i) {
-        if (types[keys[i]] && mappings[keys[i]] !== null) {
+        if (keys[i] in mappings && mappings[keys[i]] !== null) {
             result[keys[i]] = types[keys[i]];
         }
     }
@@ -124,7 +124,7 @@ export function packData<T>(data: unknown[], mappings: DataMappings<T>, types: G
         let entryLength = 1;
         for (let i = 0, n = typesInfo.keys.length; i < n; ++i) {
             const value = entry[typesInfo.keys[i]];
-            if (Array.isArray(value)) {
+            if (Array.isArray(value) && (!Array.isArray(types[typesInfo.keys[i]]) || mappings[typesInfo.keys[i]][kDataMappingFlatten])) {
                 if (!entry[kDataEntryNeedsFlatten]) {
                     entry[kDataEntryNeedsFlatten] = new Set<string>();
                 }
