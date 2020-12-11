@@ -17,7 +17,7 @@ out vec4 fragColor;
 void main() {
     vec4 texPixel = texture(uLabelTexture, vUV);
     float threshold = uRenderMode == MODE_HIGH_PASS_1 ? 1.0 : 0.5;
-    if (uRenderMode != MODE_HIGH_PASS_2 && texPixel.a < threshold) {
+    if ((uRenderMode != MODE_HIGH_PASS_2 && texPixel.a < threshold) || (uRenderMode == MODE_HIGH_PASS_2 && texPixel.a == 1.0)) {
         discard;
     }
     fragColor = texPixel * fColor;
