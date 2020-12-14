@@ -175,15 +175,15 @@ export class PointLabel extends Nodes<LabelNodeData, GLLabelNodeTypes> {
 
             case RenderMode.HIGH_PASS_2:
                 context.enable(PicoGL.BLEND);
-                context.blendFuncSeparate(PicoGL.ONE, PicoGL.ONE_MINUS_SRC_ALPHA, PicoGL.ONE, PicoGL.ONE_MINUS_SRC_ALPHA);
+                // context.blendFuncSeparate(PicoGL.ONE, PicoGL.ONE_MINUS_SRC_ALPHA, PicoGL.ONE, PicoGL.ONE_MINUS_SRC_ALPHA);
                 context.depthMask(false);
-                context.depthFunc(PicoGL.LEQUAL);
+                // context.depthFunc(PicoGL.LEQUAL);
 
                 setDrawCallUniforms(this.drawCall, uniforms);
                 setDrawCallUniforms(this.drawCall, this.localUniforms);
                 this.drawCall.draw();
 
-                context.depthFunc(PicoGL.LESS);
+                // context.depthFunc(PicoGL.LESS);
                 break;
 
             default:
