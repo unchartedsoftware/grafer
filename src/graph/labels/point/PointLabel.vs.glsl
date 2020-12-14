@@ -94,7 +94,7 @@ void main() {
     vec3 labelOffset = vec3(
         (iRadius + labelSize.x * 0.5 + labelMargin) * uLabelPlacement.x,
         (iRadius + labelSize.y * 0.5 + labelMargin) * uLabelPlacement.y,
-        0.0
+        0.01
     );
 
     // compute the vertex position and its screen position

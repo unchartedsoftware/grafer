@@ -97,7 +97,8 @@ void main() {
     // compute the vertex position and its screen position
     float pixelLength = iRadius / pixelRadius;
     float textRadius = iRadius + pixelLength * placementOffset;
-    vec4 worldVertex = renderMatrix * vec4(aVertex * textRadius, 1.0) * visibilityMultiplier;
+    vec3 labelOffset = vec3(0.0, 0.0, 0.01); // offset the label forward a tiny bit so it's always in front
+    vec4 worldVertex = renderMatrix * vec4(aVertex * textRadius * visibilityMultiplier + labelOffset, 1.0);
 
     // find the number of label repetitions
     float repeatLabels = float(uint(uRepeatLabel));
