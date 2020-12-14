@@ -110,7 +110,7 @@ export class GraferController extends EventEmitter {
                 const nodes = [];
                 let vertexIndex = 0;
                 for (let i = 0, n = layers.length; i < n; ++i) {
-                    const data = layers[i].nodes.data;
+                    const data = layers[i].nodes?.data ?? layers[i].labels?.data;
                     nodes.push(data);
                     for (let ii = 0, nn = data.length; ii < nn; ++ii) {
                         (data[ii] as any).point = vertexIndex++;
