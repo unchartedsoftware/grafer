@@ -13,6 +13,8 @@ export class GraferView extends LitElement {
             }
             #grafer_canvas {
                 flex-grow: 1;
+                max-width: 100%;
+                max-height: 100%;
             }
         `;
     }
