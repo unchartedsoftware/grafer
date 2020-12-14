@@ -70,7 +70,7 @@ export class LabelAtlas {
         const pack = potpack(boxes);
         const finalImage = ctx.createImageData(pack.w, pack.h);
 
-        const buffer = packData(boxes, kLabelBoxDataMappings, kLabelBoxDataTypes, true, ((i, entry) => {
+        const buffer = packData(boxes, kLabelBoxDataMappings, kLabelBoxDataTypes, true, ((i) => {
             const box = boxes[i];
             this.labelMap.set(box.id, i);
             this.blitImageData(box.image, finalImage, box.x + kImageMargin, finalImage.height - box.y - box.h + kImageMargin);
