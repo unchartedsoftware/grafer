@@ -16,6 +16,7 @@ function createNodePoints(count: number, radius: number = 10.0): any[] {
             radius: 2,
             label: `Node p${i}-r${radius}`,
             color: Math.round(Math.random() * 4),
+            background: true,
         });
     }
 
@@ -35,7 +36,7 @@ export async function pointLabel(container: HTMLElement): Promise<void> {
         type: 'PointLabel',
         data: nodes.data,
         options: {
-            visibilityThreshold: 30,
+            visibilityThreshold: 50,
             labelPositioning: 1,
         },
     };
