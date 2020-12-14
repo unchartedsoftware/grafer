@@ -19,9 +19,10 @@ layout(location=4) in uint iBox;
 uniform usampler2D uLabelBoxes;
 uniform sampler2D uLabelTexture;
 uniform float uVisibilityThreshold;
-uniform vec2 uLabelPositioning;
+uniform vec2 uLabelPlacement;
 
 flat out vec4 fColor;
+flat out vec2 fLabelSize;
 flat out float fPixelLength;
 out vec2 vFromCenter;
 out vec2 vUV;
@@ -73,8 +74,11 @@ void main() {
     // send the uv to the fragment shader
     vUV = vec2(u, v);
 
+    // send the label size to the fragment shader
+    fLabelSize = vec2(box[2], box[3]);
+
     // compute the visibility multiplier
-    float visibilityMultiplier = pixelRadius >= uVisibilityThreshold * uPixelRatio ? 1.0 : 0.0;
+    float visibilityMultiplier = pixelRadius >= uVisibilityThreshold * 0.5 * uPixelRatio ? 1.0 : 0.0;
 
     // calculate the size of a pixel in worls coordinates with repsect to the point's position
     float pixelToWorld = iRadius / pixelRadius;
@@ -88,8 +92,8 @@ void main() {
     // claculate the label offset
     float labelMargin = 5.0 * pixelToWorld; // pixels
     vec3 labelOffset = vec3(
-        (iRadius + labelSize.x * 0.5 + labelMargin) * uLabelPositioning.x,
-        (iRadius + labelSize.y * 0.5 + labelMargin) * uLabelPositioning.y,
+        (iRadius + labelSize.x * 0.5 + labelMargin) * uLabelPlacement.x,
+        (iRadius + labelSize.y * 0.5 + labelMargin) * uLabelPlacement.y,
         0.0
     );
 

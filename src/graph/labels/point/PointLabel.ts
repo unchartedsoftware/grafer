@@ -48,7 +48,7 @@ export const kGLLabelNodeTypes = {
 } as const;
 export type GLLabelNodeTypes = typeof kGLLabelNodeTypes;
 
-export enum LabelNodePositioning {
+export enum PointLabelPlacement {
     CENTER,
     TOP,
     BOTTOM,
@@ -65,31 +65,32 @@ export class PointLabel extends Nodes<LabelNodeData, GLLabelNodeTypes> {
 
     protected labelAtlas: LabelAtlas;
 
-    private _labelPositioning: LabelNodePositioning = LabelNodePositioning.CENTER;
-    public get labelPositioning(): LabelNodePositioning {
-        return this._labelPositioning;
+    protected _labelPlacement: unknown = PointLabelPlacement.CENTER;
+
+    public get labelPlacement(): PointLabelPlacement | unknown {
+        return this._labelPlacement;
     }
-    public set labelPositioning(value: LabelNodePositioning) {
-        this._labelPositioning = value;
-        switch (this._labelPositioning) {
-            case LabelNodePositioning.CENTER:
-                this.localUniforms.uLabelPositioning = [0 ,0];
+    public set labelPlacement(value: PointLabelPlacement | unknown) {
+        this._labelPlacement = value;
+        switch (this._labelPlacement) {
+            case PointLabelPlacement.CENTER:
+                this.localUniforms.uLabelPlacement = [0 ,0];
                 break;
 
-            case LabelNodePositioning.BOTTOM:
-                this.localUniforms.uLabelPositioning = [0, -1];
+            case PointLabelPlacement.BOTTOM:
+                this.localUniforms.uLabelPlacement = [0, -1];
                 break;
 
-            case LabelNodePositioning.TOP:
-                this.localUniforms.uLabelPositioning = [0, 1];
+            case PointLabelPlacement.TOP:
+                this.localUniforms.uLabelPlacement = [0, 1];
                 break;
 
-            case LabelNodePositioning.LEFT:
-                this.localUniforms.uLabelPositioning = [-1, 0];
+            case PointLabelPlacement.LEFT:
+                this.localUniforms.uLabelPlacement = [-1, 0];
                 break;
 
-            case LabelNodePositioning.RIGHT:
-                this.localUniforms.uLabelPositioning = [1, 0];
+            case PointLabelPlacement.RIGHT:
+                this.localUniforms.uLabelPlacement = [1, 0];
                 break;
         }
     }
@@ -150,7 +151,7 @@ export class PointLabel extends Nodes<LabelNodeData, GLLabelNodeTypes> {
         this.localUniforms.uLabelBoxes = this.labelAtlas.dataTexture;
         this.localUniforms.uLabelTexture = this.labelAtlas.labelsTexture;
         this.localUniforms.uVisibilityThreshold = 15;
-        this.localUniforms.uLabelPositioning = [0, 0];
+        this.localUniforms.uLabelPlacement = [0, 0];
     }
 
     public destroy(): void {
