@@ -28,6 +28,7 @@ export class Layer extends EventEmitter implements GraphRenderable {
     }
     public set nearDepth(value: number) {
         this._nearDepth = value;
+        this.updateLabelsDepths();
         this.updateNodesDepths();
         this.updateEdgesDepths();
     }
@@ -38,6 +39,7 @@ export class Layer extends EventEmitter implements GraphRenderable {
     }
     public set farDepth(value: number) {
         this._farDepth = value;
+        this.updateLabelsDepths();
         this.updateNodesDepths();
         this.updateEdgesDepths();
     }
@@ -76,6 +78,24 @@ export class Layer extends EventEmitter implements GraphRenderable {
     public set edgesFarDepth(value: number) {
         this._edgesFarDepth = value;
         this.updateEdgesDepths();
+    }
+
+    private _labelsNearDepth: number = 0;
+    public get labelsNearDepth(): number {
+        return this._labelsNearDepth;
+    }
+    public set labelsNearDepth(value: number) {
+        this._labelsNearDepth = value;
+        this.updateLabelsDepths();
+    }
+
+    private _labelsFarDepth: number = 1;
+    public get labelsFarDepth(): number {
+        return this._labelsFarDepth;
+    }
+    public set labelsFarDepth(value: number) {
+        this._labelsFarDepth = value;
+        this.updateLabelsDepths();
     }
 
     public enabled: boolean = true;
@@ -133,10 +153,20 @@ export class Layer extends EventEmitter implements GraphRenderable {
         }
     }
 
+    private updateLabelsDepths(): void {
+        if (this._labels) {
+            const depthRange = this._farDepth - this._nearDepth;
+            this._labels.nearDepth = this._nearDepth + depthRange * this._labelsNearDepth;
+            this._labels.farDepth = this._nearDepth + depthRange * this._labelsFarDepth;
+        }
+    }
+
     private updateNodesDepths(): void {
-        const depthRange = this._farDepth - this._nearDepth;
-        this._nodes.nearDepth = this._nearDepth + depthRange * this._nodesNearDepth;
-        this._nodes.farDepth = this._nearDepth + depthRange * this._nodesFarDepth;
+        if (this._nodes) {
+            const depthRange = this._farDepth - this._nearDepth;
+            this._nodes.nearDepth = this._nearDepth + depthRange * this._nodesNearDepth;
+            this._nodes.farDepth = this._nearDepth + depthRange * this._nodesFarDepth;
+        }
     }
 
     private updateEdgesDepths(): void {
