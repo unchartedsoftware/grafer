@@ -114,10 +114,10 @@ void main() {
     // find the number of label repetitions
     float repeatLabels = float(uint(uRepeatLabel));
     float repeatGap = uRepeatGap * uPixelRatio;
-    float diameter = fPixelRadius * M_2PI;
-    float maxLabels = min(repeatLabels, floor(diameter / (fLabelSize.x + repeatGap)));
+    float circumference = fPixelRadius * M_2PI;
+    float maxLabels = min(repeatLabels, floor(circumference / (fLabelSize.x + repeatGap)));
     float maxLabelsLength = fLabelSize.x * maxLabels;
-    float labelGap = (diameter - maxLabelsLength) / maxLabels;
+    float labelGap = (circumference - maxLabelsLength) / maxLabels;
     fLabelStep = fLabelSize.x + labelGap;
 
     // set the render vertex location
