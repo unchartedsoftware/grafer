@@ -73,7 +73,7 @@ void main() {
     float visibilityMultiplier = smoothstep(visibilityThreshold * 0.5 - box[3], visibilityThreshold * 0.5, pixelRadius * 0.5);
 
     // send the pixel radius of this label to the fragment shader
-    float minThickness = 3.0 * uPixelRatio;
+    float minThickness = max(2.0, min(pixelRadius * 0.1, 3.0 * uPixelRatio));
     fThickness = (minThickness + (box[3] - minThickness) * visibilityMultiplier) * 0.5;
     fPixelRadius = pixelRadius + fThickness;
 
