@@ -53,7 +53,12 @@ export class LabelAtlas {
         this.labelPixelRatio = window.devicePixelRatio;
         this.labelMap = new Map();
 
-        this.processData(context, data, Object.assign({}, kLabelMappings, mappings));
+        if (data.length) {
+            this.processData(context, data, Object.assign({}, kLabelMappings, mappings));
+        } else {
+            this._dataTexture = context.createTexture2D(1, 1);
+            this._labelsTexture = context.createTexture2D(1, 1);
+        }
     }
 
     protected processData(context: GraferContext, data: unknown[], mappings: DataMappings<LabelData>): void {
