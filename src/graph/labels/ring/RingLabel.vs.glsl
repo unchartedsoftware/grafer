@@ -101,7 +101,7 @@ void main() {
     fColor = valueForIndex(uColorPalette, int(iColor));
     // send the contrast color to the fragment shader
     // https://www.w3.org/TR/WCAG20/#visual-audio-contrast
-    contrastingColor(fColor.rgb, 7.0);
+    fContrastColor = contrastingColor(fColor.rgb, 7.0);
 
     // send the normalized distance from the center to the fragment shader
     vFromCenter = aVertex.xy;
