@@ -78,7 +78,13 @@ void main() {
     fLabelSize = vec2(box[2], box[3]);
 
     // compute the visibility multiplier
-    float visibilityMultiplier = pixelRadius >= uVisibilityThreshold * 0.5 * uPixelRatio ? 1.0 : 0.0;
+    float visibilityThreshold = uVisibilityThreshold * uPixelRatio;
+    vec3 visibilityMultiplier = vec3(
+        smoothstep(visibilityThreshold * 0.5, visibilityThreshold * 0.6, pixelRadius),
+        smoothstep(visibilityThreshold * 0.5, visibilityThreshold * 0.525, pixelRadius),
+        1.0
+    );
+//    float visibilityMultiplier = pixelRadius >= uVisibilityThreshold * 0.5 * uPixelRatio ? 1.0 : 0.0;
 
     // calculate the size of a pixel in worls coordinates with repsect to the point's position
     float pixelToWorld = iRadius / pixelRadius;
