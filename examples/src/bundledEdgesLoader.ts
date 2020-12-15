@@ -3,6 +3,7 @@ import Tweakpane from 'tweakpane';
 import {GraferController} from '../../src/grafer/GraferController';
 import {DataFile} from '@dekkai/data-source/build/lib/file/DataFile';
 import {DebugMenu} from '../../src/UX/debug/DebugMenu';
+import {PointLabelPlacement} from '../../src/graph/labels/point/PointLabel';
 
 interface LayoutInfo {
     points: string;
@@ -217,16 +218,26 @@ async function loadGraph(container: HTMLElement, info: LayoutInfo): Promise<void
 
         const clusterLayer = {
             name: 'Clusters',
-            nodes: {
-                type: 'Ring',
+            labels: {
+                type: 'RingLabel',
                 data: [],
+                mappings: {
+                    background: () => false,
+                    fontSize: () => 14,
+                    padding: () => 0,
+                },
+                options: {
+                    visibilityThreshold: 128,
+                    repeatLabel: -1,
+                    repeatGap: 64,
+                },
             },
             edges,
         };
         layers.push(clusterLayer);
 
         if (info.clustersFile) {
-            const nodes = clusterLayer.nodes;
+            const nodes = clusterLayer.labels;
             await parseJSONL(info.clustersFile, json => {
                 nodes.data.push(Object.assign({}, json, {
                     color: 3,
@@ -257,6 +268,19 @@ async function loadGraph(container: HTMLElement, info: LayoutInfo): Promise<void
                     nearDepth: 0.9,
                 },
             },
+            labels: {
+                type: 'PointLabel',
+                data: [],
+                mappings: {
+                    background: () => true,
+                    fontSize: () => 12,
+                    padding: () => [8, 5],
+                },
+                options: {
+                    visibilityThreshold: 8,
+                    labelPlacement: PointLabelPlacement.TOP,
+                },
+            },
         };
         layers.push(nodeLayer);
 
@@ -267,6 +291,7 @@ async function loadGraph(container: HTMLElement, info: LayoutInfo): Promise<void
                     color: 1,
                 }));
             });
+            nodeLayer.labels.data = nodes.data;
         }
 
 
