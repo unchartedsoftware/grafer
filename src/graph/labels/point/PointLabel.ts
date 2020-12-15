@@ -214,7 +214,7 @@ export class PointLabel extends Nodes<LabelNodeData, GLLabelNodeTypes> {
     }
 
     protected computeMappings(mappings: Partial<DataMappings<LabelNodeData>>): DataMappings<LabelNodeData> {
-        const dataMappings = Object.assign({}, kLabelNodeMappings, mappings);
+        const dataMappings = Object.assign({}, kLabelNodeMappings, super.computeMappings(mappings));
         const idMapping = dataMappings.id;
         dataMappings.label = (entry: any, i): number => this.labelAtlas.labelMap.get(idMapping(entry, i));
 
