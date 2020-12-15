@@ -222,9 +222,9 @@ async function loadGraph(container: HTMLElement, info: LayoutInfo): Promise<void
                 type: 'RingLabel',
                 data: [],
                 mappings: {
-                    background: () => false,
-                    fontSize: () => 14,
-                    padding: () => 0,
+                    background: (): boolean => false,
+                    fontSize: (): number => 14,
+                    padding: (): number => 0,
                 },
                 options: {
                     visibilityThreshold: 128,
@@ -272,9 +272,9 @@ async function loadGraph(container: HTMLElement, info: LayoutInfo): Promise<void
                 type: 'PointLabel',
                 data: [],
                 mappings: {
-                    background: () => true,
-                    fontSize: () => 12,
-                    padding: () => [8, 5],
+                    background: (): boolean => true,
+                    fontSize: (): number => 12,
+                    padding: (): [number, number] => [8, 5],
                 },
                 options: {
                     visibilityThreshold: 8,
