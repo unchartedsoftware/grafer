@@ -37,7 +37,7 @@ export async function pointLabel(container: HTMLElement): Promise<void> {
         data: nodes.data,
         options: {
             visibilityThreshold: 50,
-            labelPositioning: 1,
+            labelPlacement: 1,
         },
     };
 
