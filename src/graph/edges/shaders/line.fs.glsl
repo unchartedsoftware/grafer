@@ -1,18 +1,19 @@
 #pragma glslify: import(../../../renderer/shaders/RenderMode.glsl)
 #define ONE_ALPHA 0.00392156862 // 1.0 / 255.0
 
-float lineAlpha(vec2 position, float w, vec2 viewportSize, float alpha) {
+float lineAlpha(vec2 position, float w, vec2 viewportSize, float alpha, float lineWidth) {
     vec2 lineCenter = ((position / w) * 0.5 + 0.5) * viewportSize;
-    float dist = max(0.0 , length(lineCenter - gl_FragCoord.xy) - 0.5);
+    float distOffset = (lineWidth - 1.0) * 0.5;
+    float dist = smoothstep(lineWidth * 0.5 - 0.5, lineWidth * 0.5 + 0.5, distance(lineCenter, gl_FragCoord.xy));
     return alpha * (1.0 - dist);
 }
 
-vec4 lineColor(vec3 color, vec2 position, float w, vec2 viewportSize, float alpha, uint mode) {
+vec4 lineColor(vec3 color, vec2 position, float w, vec2 viewportSize, float alpha, uint mode, float lineWidth) {
     if (mode < MODE_HIGH_PASS_1) {
         return vec4(color, alpha);
     }
 
-    float a = lineAlpha(position, w, viewportSize, alpha);
+    float a = lineAlpha(position, w, viewportSize, alpha, lineWidth);
     // Possible optimization.
     // Edges run into fill rate issues because too many of them overlap, discarging pixels below a certain alpha
     // threshold might help spee things up a bit.

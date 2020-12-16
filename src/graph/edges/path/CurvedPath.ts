@@ -83,7 +83,10 @@ export class CurvedPath extends Edges<PathEdgeData, GLPathEdgeTypes> {
 
         const segmentVertices = [];
         for (let i = 0; i <= segments; ++i) {
-            segmentVertices.push(i / segments, 0);
+            segmentVertices.push(
+                -1, i,
+                1, i,
+            );
         }
 
         this.verticesVBO = context.createVertexBuffer(PicoGL.FLOAT, 2, new Float32Array(segmentVertices));
@@ -92,13 +95,15 @@ export class CurvedPath extends Edges<PathEdgeData, GLPathEdgeTypes> {
 
         const shaders = this.getDrawShaders();
         this.program = context.createProgram(shaders.vs, shaders.fs);
-        this.drawCall = context.createDrawCall(this.program, this.edgesVAO).primitive(PicoGL.LINE_STRIP);
+        this.drawCall = context.createDrawCall(this.program, this.edgesVAO).primitive(PicoGL.TRIANGLE_STRIP);
 
         this.compute(context, {
             uGraphPoints: this.dataTexture,
         });
 
         // printDataGL(context, this.targetVBO, data.length, kGLStraightEdgeTypes);
+
+        this.localUniforms.uSegments = segments;
     }
 
     public destroy(): void {

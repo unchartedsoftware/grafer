@@ -8,6 +8,7 @@ uniform vec2 uViewportSize;
 uniform float uAlpha;
 uniform uint uRenderMode;
 
+flat in float fLineWidth;
 in vec3 vColor;
 in vec2 vProjectedPosition;
 in float vProjectedW;
@@ -15,5 +16,5 @@ in float vProjectedW;
 out vec4 fragColor;
 
 void main() {
-    fragColor = lineColor(vColor, vProjectedPosition, vProjectedW, uViewportSize, uAlpha, uRenderMode);
+    fragColor = lineColor(vColor, vProjectedPosition, vProjectedW, uViewportSize, uAlpha, uRenderMode, fLineWidth);
 }

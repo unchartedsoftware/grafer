@@ -40,8 +40,10 @@ export class Straight extends Edges<BasicEdgeData, GLStraightEdgeTypes> {
         super.initialize(context, points, data, mappings, pickingManager);
 
         this.verticesVBO = context.createVertexBuffer(PicoGL.FLOAT, 2, new Float32Array([
-            0, 0,
+            -1, 0,
             1, 0,
+            -1, 1,
+            1, 1,
         ]));
 
         this.edgesVAO = context.createVertexArray().vertexAttributeBuffer(0, this.verticesVBO);
@@ -49,7 +51,7 @@ export class Straight extends Edges<BasicEdgeData, GLStraightEdgeTypes> {
 
         const shaders = this.getDrawShaders();
         this.program = context.createProgram(shaders.vs, shaders.fs);
-        this.drawCall = context.createDrawCall(this.program, this.edgesVAO).primitive(PicoGL.LINE_STRIP);
+        this.drawCall = context.createDrawCall(this.program, this.edgesVAO).primitive(PicoGL.TRIANGLE_STRIP);
 
         this.compute(context, {
             uGraphPoints: this.dataTexture,
