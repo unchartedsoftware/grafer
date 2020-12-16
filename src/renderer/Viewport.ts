@@ -65,7 +65,6 @@ export class Viewport {
         this.context.clearMask(PicoGL.COLOR_BUFFER_BIT | PicoGL.DEPTH_BUFFER_BIT);
         this.context.enable(PicoGL.DEPTH_TEST);
         this.context.depthFunc(PicoGL.LESS);
-        this.context.gl.lineWidth(3);
         this.context.pixelRatio = pixelRatio;
 
         this.mouseHandler = new MouseHandler(this.canvas, this.rect, this.pixelRatio);
