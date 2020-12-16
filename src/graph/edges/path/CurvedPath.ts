@@ -85,7 +85,7 @@ export class CurvedPath extends Edges<PathEdgeData, GLPathEdgeTypes> {
         for (let i = 0; i <= segments; ++i) {
             segmentVertices.push(
                 -1, i,
-                1, i,
+                1, i
             );
         }
 
