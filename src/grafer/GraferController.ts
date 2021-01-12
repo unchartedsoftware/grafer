@@ -129,6 +129,24 @@ export class GraferController extends EventEmitter {
         }
     }
 
+    public removeLayerByName(name: string): void {
+        const {layers} = this._viewport.graph;
+        for (let i = 0; i < layers.length; i++) {
+            const layer = layers[i];
+            if (layer.name === name) {
+                this.removeLayerByIndex(i);
+                i--;
+            }
+        }
+    }
+
+    public removeLayerByIndex(index: number): void {
+        const {layers} = this._viewport.graph;
+        if (index >= 0 && index < layers.length) {
+            layers.splice(index, 1);
+        }
+    }
+
     private addEdge(edgesData: GraferEdgesData, nodes: any, hasColors: boolean): any {
         if (edgesData) {
             const hasPoints = Boolean(this._viewport.graph);
