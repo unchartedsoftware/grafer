@@ -23,8 +23,8 @@ export default class RectObserver {
 
     public disconnect(): void {
         clearInterval(this.poll);
-        this.elementTarget.addEventListener("mouseenter", this.handleMouseEnter.bind(this), false);
-        this.elementTarget.addEventListener("mouseleave", this.handleMouseLeave.bind(this), false);
+        this.elementTarget.removeEventListener("mouseenter", this.handleMouseEnter.bind(this), false);
+        this.elementTarget.removeEventListener("mouseleave", this.handleMouseLeave.bind(this), false);
     }
 
     private handleMouseEnter(): void {
