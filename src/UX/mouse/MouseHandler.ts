@@ -271,7 +271,7 @@ export class MouseHandler extends EventEmitter.mixin(UXModule) {
 
         this.newState.valid = Boolean(
             canvas[0] >= rect.left && canvas[0] <= rect.right &&
-            canvas[1] >= rect.top && canvas[1] <= rect.bottom
+            canvas[1] >= 0 && canvas[1] <= rect.height
         );
 
         this.newState.buttons.primary = Boolean(e.buttons & 1);
