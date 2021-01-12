@@ -87,7 +87,7 @@ export class GraferController extends EventEmitter {
         this.renderGraph();
     }
 
-    private renderGraph(): void {
+    public renderGraph(): void {
         if (this._viewport.graph) {
             this._viewport.camera.position = [0, 0, -this._viewport.graph.bbCornerLength * 2];
             this._viewport.camera.farPlane = this._viewport.graph.bbCornerLength * 3;
