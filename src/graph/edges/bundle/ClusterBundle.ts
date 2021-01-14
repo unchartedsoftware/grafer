@@ -4,7 +4,7 @@ import dataVS from './ClusterBundle.data.vs.glsl';
 
 import {App, DrawCall, PicoGL, Program, VertexArray, VertexBuffer} from 'picogl';
 import {GraferInputColor} from '../../../renderer/ColorRegistry';
-import {DataMappings, DataShader} from '../../../data/DataTools';
+import {DataMappings, DataShader, printDataGL} from '../../../data/DataTools';
 import {
     GLDataTypes,
     RenderableShaders,
@@ -88,7 +88,10 @@ export class ClusterBundle extends Edges<ClusterBundleEdgeData, GLClusterBundleE
 
         const segmentVertices = [];
         for (let i = 0; i <= segments; ++i) {
-            segmentVertices.push(i / segments, 0);
+            segmentVertices.push(
+                -1, i,
+                1, i
+            );
         }
 
         this.verticesVBO = context.createVertexBuffer(PicoGL.FLOAT, 2, new Float32Array(segmentVertices));
@@ -97,13 +100,15 @@ export class ClusterBundle extends Edges<ClusterBundleEdgeData, GLClusterBundleE
 
         const shaders = this.getDrawShaders();
         this.program = context.createProgram(shaders.vs, shaders.fs);
-        this.drawCall = context.createDrawCall(this.program, this.edgesVAO).primitive(PicoGL.LINE_STRIP);
+        this.drawCall = context.createDrawCall(this.program, this.edgesVAO).primitive(PicoGL.TRIANGLE_STRIP);
 
         this.compute(context, {
             uGraphPoints: this.dataTexture,
         });
 
-        // printDataGL(context, this.targetVBO, data.length, kGLStraightEdgeTypes);
+        // printDataGL(context, this.targetVBO, data.length, kGLClusterBundleEdgeTypes);
+
+        this.localUniforms.uSegments = segments;
     }
 
     public destroy(): void {
