@@ -6,6 +6,7 @@ import {Camera} from './Camera';
 import {Graph} from '../graph/Graph';
 import {MouseHandler} from '../UX/mouse/MouseHandler';
 import {ColorRegistry} from './ColorRegistry';
+import RectObserver from './RectObserver';
 
 export class Viewport {
     public readonly element: HTMLElement;
@@ -73,9 +74,8 @@ export class Viewport {
 
         this.camera = new Camera(this.size);
 
-        const resizeObserver = new ResizeObserver((entries: ResizeObserverEntry[]): void => {
-            const canvasEntry = entries[0];
-            this.rect = canvasEntry.contentRect;
+        const resizeObserver = new RectObserver((rect): void => {
+            this.rect = rect;
             this.context.resize(this.rect.width * this.pixelRatio, this.rect.height * this.pixelRatio);
             vec2.set(this.size, this.canvas.width, this.canvas.height);
             this.camera.viewportSize = this.size;
