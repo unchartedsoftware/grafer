@@ -178,21 +178,11 @@ export class MouseHandler extends EventEmitter.mixin(UXModule) {
 
     private update(state: MouseState): void {
         const events: EventEntry[] = [];
-        if (state.valid !== this.state.valid) {
-            this.state.valid = state.valid;
-            vec2.copy(this.state.clientCoords, state.clientCoords);
-            vec2.copy(this.state.canvasCoords, state.canvasCoords);
-        }
-        vec2.copy(this.state.deltaCoords, state.deltaCoords);
-        vec2.copy(this.state.clientCoords, state.clientCoords);
-        vec2.copy(this.state.canvasCoords, state.canvasCoords);
-        vec2.copy(this.state.glCoords, state.glCoords);
-
-        if (this.state.deltaCoords[0] !== 0 || this.state.deltaCoords[1] !== 0) {
-            if (this.state.valid) {
+        if (state.deltaCoords[0] !== 0 || state.deltaCoords[1] !== 0) {
+            if (state.valid) {
                 events.push({
                     event: kEvents.move,
-                    args: [this.state.deltaCoords, this.state.canvasCoords],
+                    args: [state.deltaCoords, state.canvasCoords],
                 });
             }
         }
@@ -200,7 +190,7 @@ export class MouseHandler extends EventEmitter.mixin(UXModule) {
         const buttonKeys = Object.keys(state.buttons);
         for (let i = 0, n = buttonKeys.length; i < n; ++i) {
             const key = buttonKeys[i];
-            const pressed = this.state.valid && state.buttons[key];
+            const pressed = state.valid && state.buttons[key];
             if (this.state.buttons[key] !== pressed) {
                 this.state.buttons[key] = pressed;
                 events.push({
@@ -209,7 +199,7 @@ export class MouseHandler extends EventEmitter.mixin(UXModule) {
                 });
             }
         }
-
+        this.setMouseState(state);
         this.emitEvents(events);
     }
 
@@ -223,6 +213,7 @@ export class MouseHandler extends EventEmitter.mixin(UXModule) {
         this.state.valid = state.valid;
         vec2.copy(this.state.clientCoords, state.clientCoords);
         vec2.copy(this.state.canvasCoords, state.canvasCoords);
+        vec2.copy(this.state.glCoords, state.glCoords);
         vec2.copy(this.state.deltaCoords, state.deltaCoords);
         this.state.wheel = state.wheel;
         Object.assign(this.state.buttons, state.buttons);
@@ -271,7 +262,7 @@ export class MouseHandler extends EventEmitter.mixin(UXModule) {
 
         this.newState.valid = Boolean(
             canvas[0] >= rect.left && canvas[0] <= rect.right &&
-            canvas[1] >= rect.top && canvas[1] <= rect.bottom
+            canvas[1] >= 0 && canvas[1] <= rect.height
         );
 
         this.newState.buttons.primary = Boolean(e.buttons & 1);
