@@ -1,14 +1,12 @@
 import PicoGL, {App} from 'picogl';
 import {LayerRenderable} from '../LayerRenderable';
-import {GraphPoints} from '../../data/GraphPoints';
 import {DataMappings, PackDataCB} from '../../data/DataTools';
-import {PickingManager} from '../../UX/picking/PickingManager';
 import {GLDataTypes} from '../../renderer/Renderable';
 import {GraferInputColor} from '../../renderer/ColorRegistry';
 
 export interface BasicNodeData {
     id?: number | string;
-    point?: number | string;
+    point: number | string;
     color?: GraferInputColor;
     radius?: number;
 }
@@ -69,13 +67,7 @@ export abstract class Nodes<T_SRC extends BasicNodeData, T_TGT> extends LayerRen
         this.localUniforms.uBillboard = value;
     }
 
-    protected constructor(context: App,
-                          points: GraphPoints,
-                          data: unknown[],
-                          mappings: Partial<DataMappings<T_SRC>>,
-                          pickingManager: PickingManager
-    ) {
-        super(context, points, data, mappings, pickingManager);
+    protected initialize(...args: any[]): void {
         this.localUniforms = {
             uConstraintSize: true,
             uMinSize: 1.0,
@@ -83,6 +75,7 @@ export abstract class Nodes<T_SRC extends BasicNodeData, T_TGT> extends LayerRen
             uPixelSizing: false,
             uBillboard: true,
         };
+        super.initialize(...args);
     }
 
     protected computeMappings(mappings: Partial<DataMappings<T_SRC>>): DataMappings<T_SRC> {
@@ -103,7 +96,7 @@ export abstract class Nodes<T_SRC extends BasicNodeData, T_TGT> extends LayerRen
         super.ingestData(context, data, mappings);
     }
 
-    protected packDataCB(): PackDataCB<T_SRC> {
+    protected packDataCB(): PackDataCB<T_SRC> | PackDataCB<T_SRC>[] {
         return (i, entry): void => {
             this.map.set(entry.id, entry.point);
             this.idArray.push(entry.id);

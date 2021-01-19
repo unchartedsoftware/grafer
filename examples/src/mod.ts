@@ -6,6 +6,7 @@ import * as basic from './basic/mod';
 import * as data from './data/mod';
 import * as nodes from './nodes/mod';
 import * as edges from './edges/mod';
+import * as labels from './labels/mod';
 import './HelpElements';
 
 const examples = {
@@ -13,6 +14,7 @@ const examples = {
     data,
     nodes,
     edges,
+    labels,
     playground,
     layoutTester,
     bundledEdgesLoader,

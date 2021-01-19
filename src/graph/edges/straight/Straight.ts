@@ -6,6 +6,7 @@ import {BasicEdgeData, Edges, kBasicEdgeDataTypes} from '../Edges';
 import {GraphPoints} from '../../../data/GraphPoints';
 import {DataMappings, DataShader} from '../../../data/DataTools';
 import {PickingManager} from '../../../UX/picking/PickingManager';
+import {GraferContext} from '../../../renderer/GraferContext';
 import {
     GLDataTypes,
     RenderableShaders,
@@ -29,13 +30,14 @@ export class Straight extends Edges<BasicEdgeData, GLStraightEdgeTypes> {
     protected verticesVBO: VertexBuffer;
     protected edgesVAO: VertexArray;
 
-    constructor(context: App,
-                          points: GraphPoints,
-                          data: unknown[],
-                          mappings: Partial<DataMappings<BasicEdgeData>>,
-                          pickingManager: PickingManager
-    ) {
-        super(context, points, data, mappings, pickingManager);
+    protected initialize(
+        context: GraferContext,
+        points: GraphPoints,
+        data: unknown[],
+        mappings: Partial<DataMappings<BasicEdgeData>>,
+        pickingManager: PickingManager
+    ): void {
+        super.initialize(context, points, data, mappings, pickingManager);
 
         this.verticesVBO = context.createVertexBuffer(PicoGL.FLOAT, 2, new Float32Array([
             0, 0,

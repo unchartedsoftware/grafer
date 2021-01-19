@@ -30,7 +30,7 @@ export async function circuitBoard(container: HTMLElement): Promise<void> {
             { id: 'p3-c3', x: 16.0, y: -7.0 },
             { id: 'p3-p2', x: 16.0, y: 11.0 },
 
-            { id: 'origin', x: 0.0, y: 5.0 },
+            { id: 'origin', x: 0.0, y: 5.0, radius: 8.0 },
         ],
     };
 
@@ -43,7 +43,7 @@ export async function circuitBoard(container: HTMLElement): Promise<void> {
             { point: 'p2-p2' },
             { point: 'p3-p1' },
             { point: 'p3-p2' },
-            { point: 'origin', radius: 8.0, color: 1 },
+            { point: 'origin', color: 1 },
         ],
     };
 

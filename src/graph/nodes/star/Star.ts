@@ -2,11 +2,11 @@ import nodeFS from './Star.fs.glsl';
 import pickingFS from './Star.picking.fs.glsl';
 import {Circle} from '../circle/Circle';
 import {RenderableShaders} from '../../../renderer/Renderable';
-import {App} from 'picogl';
 import {GraphPoints} from '../../../data/GraphPoints';
 import {DataMappings} from '../../../data/DataTools';
 import {BasicNodeData} from '../Nodes';
 import {PickingManager} from '../../../UX/picking/PickingManager';
+import {GraferContext} from '../../../renderer/GraferContext';
 
 export class Star extends Circle {
     public get sides(): number {
@@ -24,7 +24,7 @@ export class Star extends Circle {
     }
 
     constructor(
-        context: App,
+        context: GraferContext,
         points: GraphPoints,
         data: unknown[],
         mappings: Partial<DataMappings<BasicNodeData>>,
@@ -32,7 +32,19 @@ export class Star extends Circle {
         sides: number = 5,
         angleDivisor: number = 3.0
     ) {
-        super(context, points, data, mappings, pickingManager);
+        super(context, points, data, mappings, pickingManager, sides, angleDivisor);
+    }
+
+    protected initialize(
+        context: GraferContext,
+        points: GraphPoints,
+        data: unknown[],
+        mappings: Partial<DataMappings<BasicNodeData>>,
+        pickingManager: PickingManager,
+        sides: number,
+        angleDivisor: number
+    ): void {
+        super.initialize(context, points, data, mappings, pickingManager);
         this.localUniforms.uSides = sides;
         this.localUniforms.uAngleDivisor = angleDivisor;
     }

@@ -6,13 +6,13 @@ export async function separateNodesEdges(container: HTMLElement): Promise<void> 
     // create a 'points' data structure to hold all positional data
     const points = {
         data: [
-            { id: 'top-left', x: -8.6, y: 5.0 },
-            { id: 'top-right', x: 8.6, y: 5.0 },
+            { id: 'top-left', x: -8.6, y: 5.0, radius: 0 },
+            { id: 'top-right', x: 8.6, y: 5.0, radius: 0 },
             { id: 'top-center', x: 0.0, y: 10.0 },
 
             { id: 'bottom-left', x: -8.6, y: -5.0 },
             { id: 'bottom-right', x: 8.6, y: -5.0 },
-            { id: 'bottom-center', x: 0.0, y: -10.0 },
+            { id: 'bottom-center', x: 0.0, y: -10.0, radius: 0 },
 
             { id: 'origin', x: 0.0, y: 0.0 },
         ],

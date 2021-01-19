@@ -60,10 +60,10 @@ export function concatenateData<T>(data: unknown[][], mappings: DataMappings<T>)
 }
 
 export function computeDataTypes<T>(types: GLDataTypes<T>, mappings: DataMappings<T>): GLDataTypes<T> {
-    const keys = Object.keys(mappings);
+    const keys = Object.keys(types);
     const result: GLDataTypes<T> = {};
     for (let i = 0, n = keys.length; i < n; ++i) {
-        if (types[keys[i]] && mappings[keys[i]] !== null) {
+        if (keys[i] in mappings && mappings[keys[i]] !== null) {
             result[keys[i]] = types[keys[i]];
         }
     }
@@ -110,10 +110,13 @@ export function flattenEntry<T>(entry: T, types: GLDataTypes<T>, typesInfo: GLDa
     return flatOffset;
 }
 
-export function packData<T>(data: unknown[], mappings: DataMappings<T>, types: GLDataTypes<T>, potLength: boolean, cb?: PackDataCB<T>): ArrayBuffer {
+export function packData<T>(data: unknown[], mappings: DataMappings<T>, types: GLDataTypes<T>, potLength: boolean, cb?: PackDataCB<T> | PackDataCB<T>[]): ArrayBuffer {
     const typesInfo = glDataTypesInfo(computeDataTypes(types, mappings));
     const entries = [];
     let dataLength = 0;
+
+    const cb1 = Array.isArray(cb) ? cb[0] : cb;
+    const cb2 = Array.isArray(cb) ? cb[1] : null;
 
     // go over the data once to compute the data byte length. Sorry future Dario :(
     // TODO: Investigate a better way to do this in one iteration
@@ -121,7 +124,7 @@ export function packData<T>(data: unknown[], mappings: DataMappings<T>, types: G
         let entryLength = 1;
         for (let i = 0, n = typesInfo.keys.length; i < n; ++i) {
             const value = entry[typesInfo.keys[i]];
-            if (Array.isArray(value)) {
+            if (Array.isArray(value) && (!Array.isArray(types[typesInfo.keys[i]]) || mappings[typesInfo.keys[i]][kDataMappingFlatten])) {
                 if (!entry[kDataEntryNeedsFlatten]) {
                     entry[kDataEntryNeedsFlatten] = new Set<string>();
                 }
@@ -130,12 +133,13 @@ export function packData<T>(data: unknown[], mappings: DataMappings<T>, types: G
             }
         }
 
-        if (cb) {
-            cb(index, entry);
-        }
-
         entries.push(entry);
         dataLength += entryLength;
+
+        // call the first callback with the entries
+        if (cb1) {
+            cb1(index, entry);
+        }
     }
 
     dataLength = potLength ? Math.pow(2 , Math.ceil(Math.log2(dataLength))) : dataLength;
@@ -144,9 +148,16 @@ export function packData<T>(data: unknown[], mappings: DataMappings<T>, types: G
     const view = new DataView(buffer);
 
     let offset = 0;
-    for (const entry of entries) {
+    for (let i = 0, n = entries.length; i < n; ++i) {
+        const entry = entries[i];
+
+        // give the caller a last chance to modify the entries
+        if (cb2) {
+            cb2(i, entry);
+        }
+
         if (entry[kDataEntryNeedsFlatten]) {
-            offset += flattenEntry(entry, types, typesInfo, mappings,view, offset);
+            offset += flattenEntry(entry, types, typesInfo, mappings, view, offset);
         } else {
             for (let i = 0, n = typesInfo.keys.length; i < n; ++i) {
                 offset += writeValueToDataView(view, entry[typesInfo.keys[i]], types[typesInfo.keys[i]], offset);

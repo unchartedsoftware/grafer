@@ -85,6 +85,9 @@ export async function bundling(container: HTMLElement): Promise<void> {
             { point: 'c1', radius: 20.0, color: 1 },
             { point: 'c2', radius: 25.0, color: 1 },
         ],
+        mappings: {
+            radius: (entry): number => entry.radius,
+        },
         options: {
             billboard: false,
         },

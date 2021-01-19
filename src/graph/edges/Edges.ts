@@ -1,10 +1,11 @@
-import PicoGL, {App} from 'picogl';
+import PicoGL from 'picogl';
 import {LayerRenderable} from '../LayerRenderable';
 import {GraphPoints} from '../../data/GraphPoints';
 import {DataMappings} from '../../data/DataTools';
 import {PickingManager} from '../../UX/picking/PickingManager';
 import {GLDataTypes} from '../../renderer/Renderable';
 import {GraferInputColor} from '../../renderer/ColorRegistry';
+import {GraferContext} from '../../renderer/GraferContext';
 
 export interface BasicEdgeData {
     id?: number | string;
@@ -41,16 +42,23 @@ export abstract class Edges<T_SRC extends BasicEdgeData, T_TGT> extends LayerRen
         this.localUniforms.uAlpha = value;
     }
 
-    protected constructor(context: App,
-                          points: GraphPoints,
-                          data: unknown[],
-                          mappings: Partial<DataMappings<T_SRC>>,
-                          pickingManager: PickingManager
-    ) {
-        super(context, points, data, mappings, pickingManager);
+    protected initialize(...args: any[]): void {
         this.localUniforms = {
             uAlpha: 1.0,
         };
+        super.initialize(...args);
+    }
+
+    constructor(
+        context: GraferContext,
+        points: GraphPoints,
+        data: unknown[],
+        mappings: Partial<DataMappings<T_SRC>>,
+        pickingManager: PickingManager,
+    );
+    constructor(...args: any[]);
+    constructor(...args: any[]) {
+        super(...args);
     }
 
     protected computeMappings(mappings: Partial<DataMappings<T_SRC>>): DataMappings<T_SRC> {

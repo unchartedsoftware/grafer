@@ -4,6 +4,7 @@ import {Nodes} from './nodes/Nodes';
 import {Edges} from './edges/Edges';
 import {GraphRenderable} from './GraphRenderable';
 import {EventEmitter} from '@dekkai/event-emitter/build/lib/EventEmitter';
+import {LayerRenderable} from './LayerRenderable';
 
 export class Layer extends EventEmitter implements GraphRenderable {
     private _nodes: Nodes<any, any>;
@@ -14,6 +15,11 @@ export class Layer extends EventEmitter implements GraphRenderable {
     private _edges: Edges<any, any> | null;
     public get edges(): Edges<any, any> | null {
         return this._edges;
+    }
+
+    private _labels: LayerRenderable<any, any> | null;
+    public get labels(): LayerRenderable<any, any> | null {
+        return this._labels;
     }
 
     private _nearDepth: number = 0.0;
@@ -75,10 +81,11 @@ export class Layer extends EventEmitter implements GraphRenderable {
     public enabled: boolean = true;
     public name: string;
 
-    public constructor(nodes: Nodes<any, any>, edges: Edges<any, any>, name = 'Layer') {
+    public constructor(nodes: Nodes<any, any>, edges: Edges<any, any>, labels: LayerRenderable<any, any>, name = 'Layer') {
         super();
         this._nodes = nodes;
         this._edges = edges;
+        this._labels = labels;
         this.name = name;
 
         if (this._nodes) {
@@ -103,13 +110,9 @@ export class Layer extends EventEmitter implements GraphRenderable {
     }
 
     public render(context: App, mode: RenderMode, uniforms: RenderUniforms): void {
-        if (this._nodes.enabled) {
-            this._nodes.render(context, mode, uniforms);
-        }
-
-        if (this._edges && this._edges.enabled) {
-            this.edges.render(context, mode, uniforms);
-        }
+        this.renderLabels(context, mode, uniforms);
+        this.renderNodes(context, mode, uniforms);
+        this.renderEdges(context, mode, uniforms);
     }
 
     public renderNodes(context: App, mode: RenderMode, uniforms: RenderUniforms): void {
@@ -121,6 +124,12 @@ export class Layer extends EventEmitter implements GraphRenderable {
     public renderEdges(context: App, mode: RenderMode, uniforms: RenderUniforms): void {
         if (this._edges && this._edges.enabled) {
             this._edges.render(context, mode, uniforms);
+        }
+    }
+
+    public renderLabels(context: App, mode: RenderMode, uniforms: RenderUniforms): void {
+        if (this._labels && this.labels.enabled) {
+            this._labels.render(context, mode, uniforms);
         }
     }
 

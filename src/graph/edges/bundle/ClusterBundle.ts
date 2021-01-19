@@ -15,6 +15,7 @@ import {
 import {Edges} from '../Edges';
 import {GraphPoints} from '../../../data/GraphPoints';
 import {PickingManager} from '../../../UX/picking/PickingManager';
+import {GraferContext} from '../../../renderer/GraferContext';
 
 export interface ClusterBundleEdgeData {
     id?: number | string;
@@ -64,14 +65,26 @@ export class ClusterBundle extends Edges<ClusterBundleEdgeData, GLClusterBundleE
     protected verticesVBO: VertexBuffer;
     protected edgesVAO: VertexArray;
 
-    constructor(context: App,
-                points: GraphPoints,
-                data: unknown[],
-                mappings: Partial<DataMappings<ClusterBundleEdgeData>>,
-                pickingManager: PickingManager,
-                segments: number = 16
+    constructor(
+        context: GraferContext,
+        points: GraphPoints,
+        data: unknown[],
+        mappings: Partial<DataMappings<ClusterBundleEdgeData>>,
+        pickingManager: PickingManager,
+        segments: number = 16
     ) {
-        super(context, points, data, mappings, pickingManager);
+        super(context, points, data, mappings, pickingManager, segments);
+    }
+
+    protected initialize(
+        context: GraferContext,
+        points: GraphPoints,
+        data: unknown[],
+        mappings: Partial<DataMappings<ClusterBundleEdgeData>>,
+        pickingManager: PickingManager,
+        segments: number
+    ): void {
+        super.initialize(context, points, data, mappings, pickingManager);
 
         const segmentVertices = [];
         for (let i = 0; i <= segments; ++i) {

@@ -1,7 +1,6 @@
 import {Viewport} from '../renderer/Viewport';
-import {App} from 'picogl';
 import {PointDataMappings} from '../data/GraphPoints';
-import {nodes as GraphNodes, edges as GraphEdges, Graph} from '../graph/mod';
+import {nodes as GraphNodes, edges as GraphEdges, labels as GraphLabels, Graph} from '../graph/mod';
 import {Layer} from '../graph/Layer';
 import {DragTruck} from '../UX/mouse/drag/DragTruck';
 import {DragRotation} from '../UX/mouse/drag/DragRotation';
@@ -10,9 +9,11 @@ import {DragPan} from '../UX/mouse/drag/DragPan';
 import {GraferInputColor} from '../renderer/ColorRegistry';
 import {PickingManager} from '../UX/picking/PickingManager';
 import {EventEmitter} from '@dekkai/event-emitter/build/lib/EventEmitter';
+import {GraferContext} from '../renderer/GraferContext';
 
 export type GraferNodesType = keyof typeof GraphNodes.types;
 export type GraferEdgesType = keyof typeof GraphEdges.types;
+export type GraferLabelsType = keyof typeof GraphLabels.types;
 
 export interface GraferDataInput<T> {
     data: unknown[],
@@ -21,22 +22,25 @@ export interface GraferDataInput<T> {
 
 export type GraferPointsData = GraferDataInput<PointDataMappings>;
 
-export interface GraferNodesData extends GraferDataInput<any> {
-    type?: GraferNodesType;
+export interface GraferElementData<T> extends GraferDataInput<any> {
+    type?: T;
     options?: { [key: string]: any };
 }
 
-export interface GraferEdgesData extends GraferDataInput<any> {
-    type?: GraferEdgesType;
-    options?: { [key: string]: any };
-}
+export type GraferNodesData = GraferElementData<GraferNodesType>;
+export type GraferEdgesData = GraferElementData<GraferEdgesType>;
+export type GraferLabelsData = GraferElementData<GraferLabelsType>;
 
-export interface GraferLayerData {
+interface GraferLayerDataBase {
     id?: number | string;
     name?: string;
-    nodes: GraferNodesData;
-    edges: GraferEdgesData;
+    nodes?: GraferNodesData;
+    edges?: GraferEdgesData;
+    labels?: GraferLabelsData;
 }
+
+// layers should at least have one of nodes, edges or labels
+export type GraferLayerData = GraferLayerDataBase & ({ nodes: GraferNodesData } | { edges: GraferEdgesData } | { labels: GraferLabelsData });
 
 export interface GraferControllerData {
     colors?: GraferInputColor[];
@@ -49,7 +53,7 @@ export class GraferController extends EventEmitter {
     public get viewport(): Viewport {
         return this._viewport;
     }
-    public get context(): App {
+    public get context(): GraferContext {
         return this.viewport.context;
     }
 
@@ -101,18 +105,19 @@ export class GraferController extends EventEmitter {
             const layers = data.layers;
             const hasPoints = Boolean(this._viewport.graph);
             const hasColors = Boolean(data.colors);
-            let nodesPointMapping: () => number = null;
 
             if (!hasPoints) {
                 const nodes = [];
+                let vertexIndex = 0;
                 for (let i = 0, n = layers.length; i < n; ++i) {
-                    nodes.push(layers[i].nodes.data);
+                    const data = layers[i].nodes.data;
+                    nodes.push(data);
+                    for (let ii = 0, nn = data.length; ii < nn; ++ii) {
+                        (data[ii] as any).point = vertexIndex++;
+                    }
                 }
                 this._viewport.graph = Graph.fromNodesArray(context, nodes, pointsRadiusMapping);
                 this._viewport.graph.picking = new PickingManager(this._viewport.context, this._viewport.mouseHandler);
-
-                let vertexIndex = 0;
-                nodesPointMapping = (): number => vertexIndex++;
             }
 
             const pickingManager = this._viewport.graph.picking;
@@ -122,6 +127,7 @@ export class GraferController extends EventEmitter {
 
                 let nodes = null;
                 let edges = null;
+                let labels = null;
 
                 if (layers[i].nodes) {
                     const nodesData = layers[i].nodes;
@@ -132,9 +138,6 @@ export class GraferController extends EventEmitter {
                         NodesClass.defaultMappings,
                         nodesData.mappings
                     );
-                    if (nodesPointMapping) {
-                        nodesMappings.point = nodesPointMapping;
-                    }
 
                     if (!hasColors) {
                         const colorMapping = nodesMappings.color;
@@ -214,8 +217,41 @@ export class GraferController extends EventEmitter {
                     }
                 }
 
-                if (nodes || edges) {
-                    const layer = new Layer(nodes, edges, name);
+                if (layers[i].labels) {
+                    const labelsData = layers[i].labels;
+                    const labelsType = layers[i].labels.type ? layers[i].labels.type : 'PointLabel';
+                    const LabelsClass = GraphLabels.types[labelsType] || GraphLabels.PointLabel;
+                    const labelsMappings = Object.assign(
+                        {},
+                        LabelsClass.defaultMappings,
+                        labelsData.mappings
+                    );
+
+                    if (!hasColors) {
+                        const colorMapping = labelsMappings.color;
+                        labelsMappings.color = (entry: any, i): number => {
+                            const value = colorMapping(entry, i);
+                            if (typeof value !== 'number') {
+                                return this._viewport.colorRegisrty.registerColor(value);
+                            }
+                            return value;
+                        };
+                    }
+
+                    labels = new LabelsClass(context, graph, labelsData.data, labelsMappings, pickingManager);
+                    if ('options' in labelsData) {
+                        const options = labelsData.options;
+                        const keys = Object.keys(options);
+                        for (const key of keys) {
+                            if (key in labels) {
+                                labels[key] = options[key];
+                            }
+                        }
+                    }
+                }
+
+                if (nodes || edges || labels) {
+                    const layer = new Layer(nodes, edges, labels, name);
                     graph.layers.push(layer);
                     layer.on(EventEmitter.omniEvent, (...args) => this.emit(...args));
                 }
@@ -224,7 +260,7 @@ export class GraferController extends EventEmitter {
 
         if (this._viewport.graph) {
             this._viewport.camera.position = [0, 0, - this._viewport.graph.bbCornerLength * 2];
-            this._viewport.camera.farPlane = this._viewport.graph.bbCornerLength * 3;
+            this._viewport.camera.farPlane = this._viewport.graph.bbCornerLength * 4;
             this._viewport.render();
         }
     }
