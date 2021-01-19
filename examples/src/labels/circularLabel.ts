@@ -14,30 +14,31 @@ function createNodePoints(count: number, radius: number = 10.0): any[] {
             x: pX,
             y: pY,
             radius: 2,
-            label: `Node p${i}-r${radius}`,
-            color: Math.round(Math.random() * 4),
+            label: `NODE P${i}-R${radius}`,
+            color: Math.round(Math.random() * 4) + 1,
             background: true,
+            fontSize: 16,
         });
     }
 
     return result;
 }
 
-export async function pointLabel(container: HTMLElement): Promise<void> {
+export async function circularLabel(container: HTMLElement): Promise<void> {
     const nodes = {
         type: 'Circle',
         data: [
-            ...createNodePoints(10, 10),
-            ...createNodePoints(5, 5),
+            ...createNodePoints(10, 16),
+            ...createNodePoints(5, 8),
         ],
     };
 
     const labels = {
-        type: 'PointLabel',
+        type: 'CircularLabel',
         data: nodes.data,
         options: {
-            visibilityThreshold: 50,
-            labelPlacement: 1,
+            visibilityThreshold: 40,
+            repeatLabel: -1,
         },
     };
 
@@ -46,6 +47,7 @@ export async function pointLabel(container: HTMLElement): Promise<void> {
     ];
 
     const colors = [
+        'white',
         '#bf616a',
         '#d08770',
         '#ebcb8b',
@@ -53,5 +55,9 @@ export async function pointLabel(container: HTMLElement): Promise<void> {
         '#b48ead',
     ];
 
-    render(html`<grafer-view class="grafer_container" .colors="${colors}" .layers="${layers}"></grafer-view><mouse-interactions></mouse-interactions>`, container);
+    render(html`
+        <grafer-view class="grafer_container" .colors="${colors}" .layers="${layers}"></grafer-view>
+        <canvas id="debug_canvas" class="grafer_container"></canvas>
+        <mouse-interactions></mouse-interactions>
+    `, container);
 }

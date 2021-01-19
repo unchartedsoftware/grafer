@@ -37,18 +37,18 @@ function getExample(examples, path): (HTMLElement) => void | null {
     return null;
 }
 
-function main(): void {
+async function main(): Promise<void> {
     const pathName = window.location.pathname;
     const pathComponents = pathName.split('/').filter(v => Boolean(v));
     const example = getExample(examples, pathComponents);
 
     if (example) {
-        example(document.body);
+        await example(document.body);
     } else {
         renderMenu(document.body, examples, pathComponents);
     }
 }
 
-document.addEventListener("DOMContentLoaded",() => {
-    main();
+document.addEventListener("DOMContentLoaded",async () => {
+    await main();
 });

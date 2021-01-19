@@ -110,7 +110,7 @@ export class GraferController extends EventEmitter {
                 const nodes = [];
                 let vertexIndex = 0;
                 for (let i = 0, n = layers.length; i < n; ++i) {
-                    const data = layers[i].nodes.data;
+                    const data = layers[i].nodes?.data ?? layers[i].labels?.data;
                     nodes.push(data);
                     for (let ii = 0, nn = data.length; ii < nn; ++ii) {
                         (data[ii] as any).point = vertexIndex++;
@@ -260,7 +260,7 @@ export class GraferController extends EventEmitter {
 
         if (this._viewport.graph) {
             this._viewport.camera.position = [0, 0, - this._viewport.graph.bbCornerLength * 2];
-            this._viewport.camera.farPlane = this._viewport.graph.bbCornerLength * 4;
+            this._viewport.camera.farPlane = Math.max(this._viewport.graph.bbCornerLength * 4, 1000);
             this._viewport.render();
         }
     }

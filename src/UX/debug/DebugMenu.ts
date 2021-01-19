@@ -55,8 +55,10 @@ export class DebugMenu {
         folder.addInput(layer, 'nearDepth', { min: 0, max: 1, label: 'near' });
         folder.addInput(layer, 'farDepth', { min: 0, max: 1, label: 'far' });
 
-        const nodesFolder = folder.addFolder({ title: 'Nodes', expanded: false });
-        this.addNodesOptions(nodesFolder, layer);
+        if (layer.nodes) {
+            const nodesFolder = folder.addFolder({title: 'Nodes', expanded: false});
+            this.addNodesOptions(nodesFolder, layer);
+        }
 
         if (layer.edges) {
             const edgesFolder = folder.addFolder({ title: 'Edges', expanded: false });
