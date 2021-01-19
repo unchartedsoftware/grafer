@@ -227,7 +227,7 @@ async function loadGraph(container: HTMLElement, info: LayoutInfo): Promise<void
                     padding: (): number => 0,
                 },
                 options: {
-                    visibilityThreshold: 128,
+                    visibilityThreshold: 160,
                     repeatLabel: -1,
                     repeatGap: 64,
                 },
