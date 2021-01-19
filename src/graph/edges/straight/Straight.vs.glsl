@@ -13,6 +13,9 @@ uniform vec2 uViewportSize;
 uniform float uPixelRatio;
 uniform sampler2D uColorPalette;
 
+uniform float uLineWidth;
+
+flat out float fLineWidth;
 out vec3 vColor;
 out vec2 vProjectedPosition;
 out float vProjectedW;
@@ -25,8 +28,8 @@ vec4 getColorByIndexFromTexture(sampler2D tex, int index) {
 }
 
 void main() {
-    float multA = aVertex.x;
-    float multB = 1.0 - aVertex.x;
+    float multA = aVertex.y;
+    float multB = 1.0 - aVertex.y;
 
     vec4 colorA = getColorByIndexFromTexture(uColorPalette, int(iColorA));
     vec4 colorB = getColorByIndexFromTexture(uColorPalette, int(iColorB));
@@ -34,9 +37,22 @@ void main() {
     vColor = colorA.rgb * multA + colorB.rgb * multB;
 
     mat4 renderMatrix = uProjectionMatrix * uViewMatrix * uSceneMatrix;
-    vec3 position = iOffsetA * multA + iOffsetB * multB;
-    gl_Position = renderMatrix * vec4(position, 1.0);
 
-    vProjectedPosition = gl_Position.xy;
-    vProjectedW = gl_Position.w;
+    vec4 aProjected = renderMatrix * vec4(iOffsetA, 1.0);
+    vec2 aScreen = aProjected.xy / aProjected.w * uViewportSize * 0.5;
+
+    vec4 bProjected = renderMatrix * vec4(iOffsetB, 1.0);
+    vec2 bScreen = bProjected.xy / bProjected.w * uViewportSize * 0.5;
+
+    vec2 direction = normalize(bScreen - aScreen);
+    vec2 perp = vec2(-direction.y, direction.x);
+
+    fLineWidth = uLineWidth * uPixelRatio;
+    float offsetWidth = fLineWidth + 0.5;
+    vec4 position = aProjected * multA + bProjected * multB;
+    vec4 offset = vec4(((aVertex.x * perp * offsetWidth) / uViewportSize) * position.w, 0.0, 0.0);
+    gl_Position = position + offset;
+
+    vProjectedPosition = position.xy;
+    vProjectedW = position.w;
 }

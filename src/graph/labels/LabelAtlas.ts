@@ -101,6 +101,7 @@ export class LabelAtlas {
 
     protected renderLabelTexture(entry: LabelData, context: CanvasRenderingContext2D, canvas: HTMLCanvasElement): ImageData {
         if (typeof entry.label === 'string') {
+            const label = entry.label || ' ';
             const pixelRatio = this.labelPixelRatio;
             const outlineWidth = 3;
 
@@ -117,7 +118,7 @@ export class LabelAtlas {
             context.font = `${entry.fontSize * pixelRatio}px ${entry.font}`;
             context.imageSmoothingEnabled = false;
 
-            canvas.width = context.measureText(entry.label).width + horizontalPadding * 2 * pixelRatio;
+            canvas.width = context.measureText(label).width + horizontalPadding * 2 * pixelRatio;
             canvas.height = entry.fontSize * pixelRatio + verticalPadding * 2 * pixelRatio;
 
             context.fillStyle = '#ff0000';
@@ -143,7 +144,7 @@ export class LabelAtlas {
             context.fillStyle = '#00ffff';
             context.textAlign = 'center';
             context.textBaseline = 'middle';
-            context.fillText(entry.label, canvas.width * 0.5, canvas.height * 0.5);
+            context.fillText(label, canvas.width * 0.5, canvas.height * 0.5);
 
             return context.getImageData(0, 0, canvas.width, canvas.height);
         }

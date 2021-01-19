@@ -14,6 +14,9 @@ uniform float uPixelRatio;
 uniform sampler2D uColorPalette;
 uniform uint uDashLength;
 
+uniform float uLineWidth;
+
+flat out float fLineWidth;
 out vec3 vColor;
 out float vDashLength;
 out vec2 vProjectedPosition;
@@ -27,24 +30,34 @@ vec4 getColorByIndexFromTexture(sampler2D tex, int index) {
 }
 
 void main() {
+    float multA = aVertex.y;
+    float multB = 1.0 - aVertex.y;
+
     vec4 colorA = getColorByIndexFromTexture(uColorPalette, int(iColorA));
     vec4 colorB = getColorByIndexFromTexture(uColorPalette, int(iColorB));
 
-    vColor = mix(colorA.rgb, colorB.rgb, aVertex.x);
+    vColor = colorA.rgb * multA + colorB.rgb * multB;
 
     mat4 renderMatrix = uProjectionMatrix * uViewMatrix * uSceneMatrix;
-    vec3 position = mix(iOffsetA, iOffsetB, aVertex.x);
-    gl_Position = renderMatrix * vec4(position, 1.0);
 
-    vProjectedPosition = gl_Position.xy;
-    vProjectedW = gl_Position.w;
+    vec4 aProjected = renderMatrix * vec4(iOffsetA, 1.0);
+    vec2 aScreen = (aProjected.xy / aProjected.w) * (uViewportSize / 2.0);
 
-    vec4 source = renderMatrix * vec4(iOffsetA, 1.0);
-    vec2 screenSource = (source.xy / source.w) * (uViewportSize / 2.0);
+    vec4 bProjected = renderMatrix * vec4(iOffsetB, 1.0);
+    vec2 bScreen = (bProjected.xy / bProjected.w) * (uViewportSize / 2.0);
 
-    vec4 target = renderMatrix * vec4(iOffsetB, 1.0);
-    vec2 screenTarget = (target.xy / target.w) * (uViewportSize / 2.0);
+    vec2 direction = normalize(bScreen - aScreen);
+    vec2 perp = vec2(-direction.y, direction.x);
 
-    float screenDistance = distance(screenSource, screenTarget);
-    vDashLength = (screenDistance / float(uDashLength)) * aVertex.x;
+    fLineWidth = uLineWidth * uPixelRatio;
+    float offsetWidth = fLineWidth + 0.5;
+    vec4 position = aProjected * multA + bProjected * multB;
+    vec4 offset = vec4(((aVertex.x * perp * offsetWidth) / uViewportSize) * position.w, 0.0, 0.0);
+    gl_Position = position + offset;
+
+    vProjectedPosition = position.xy;
+    vProjectedW = position.w;
+
+    float screenDistance = distance(aScreen, bScreen);
+    vDashLength = (screenDistance / float(uDashLength)) * aVertex.y;
 }

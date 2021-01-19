@@ -42,9 +42,17 @@ export abstract class Edges<T_SRC extends BasicEdgeData, T_TGT> extends LayerRen
         this.localUniforms.uAlpha = value;
     }
 
+    public get lineWidth(): number {
+        return this.localUniforms.uLineWidth as number;
+    }
+    public set lineWidth(value: number) {
+        this.localUniforms.uLineWidth = value;
+    }
+
     protected initialize(...args: any[]): void {
         this.localUniforms = {
             uAlpha: 1.0,
+            uLineWidth: 1.5,
         };
         super.initialize(...args);
     }
