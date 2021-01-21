@@ -117,7 +117,7 @@ export class GraferController extends EventEmitter {
                 }
                 nodes.push(layers[i].nodes.data);
             }
-            this._viewport.graph = Graph.fromNodesArray(this.context, nodes, pointsRadiusMapping);
+            this._viewport.graph = Graph.createGraphFromNodes(this.context, nodes, pointsRadiusMapping);
             this._viewport.graph.picking = new PickingManager(this._viewport.context, this._viewport.mouseHandler);
         }
     }

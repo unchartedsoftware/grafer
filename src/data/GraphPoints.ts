@@ -31,7 +31,7 @@ const kGLTypes: GLDataTypes<PointData> = {
 };
 
 export class GraphPoints {
-    public static fromNodesArray<R extends GraphPoints>(context: App, nodes: unknown[][], mappings: Partial<PointDataMappings> = {}): R {
+    public static createGraphFromNodes<R extends GraphPoints>(context: App, nodes: unknown[][], mappings: Partial<PointDataMappings> = {}): R {
         let pointIndex = 0;
         const dataMappings: PointDataMappings = Object.assign({}, kDefaultMappings, {
             id: () => pointIndex++,
