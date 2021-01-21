@@ -141,16 +141,16 @@ export class GraferController extends EventEmitter {
         const graph = this._viewport.graph;
 
         const nodesData = layer.nodes;
-        const nodes = this.addNode(nodesData, hasColors);
+        const nodes = this.addNodes(nodesData, hasColors);
 
         const edgesData = layer.edges;
         if (edgesData && !nodes && !hasPoints) {
             throw 'Cannot load an edge-only layer in a graph without points!';
         }
-        const edges = this.addEdge(edgesData, nodes, hasColors);
+        const edges = this.addEdges(edgesData, nodes, hasColors);
 
         const layersData = layer.labels;
-        const labels = this.addLabel(layersData, hasColors);
+        const labels = this.addLabels(layersData, hasColors);
 
         if (nodes || edges || labels) {
             const layer = new Layer(nodes, edges, labels, name);
@@ -177,15 +177,14 @@ export class GraferController extends EventEmitter {
         }
     }
 
-    private addLabel(layersData: GraferLabelsData, hasColors: boolean): any {
+    private addLabels(labelsData: GraferLabelsData, hasColors: boolean): any {
         const pickingManager = this._viewport.graph.picking;
         const context = this.context;
         const graph = this._viewport.graph;
         let labels = null;
 
-        if (layersData) {
-            const labelsData = layersData;
-            const labelsType = layersData.type ? layersData.type : 'PointLabel';
+        if (labelsData) {
+            const labelsType = labelsData.type ? labelsData.type : 'PointLabel';
             const LabelsClass = GraphLabels.types[labelsType] || GraphLabels.PointLabel;
             const labelsMappings = Object.assign(
                 {},
@@ -218,7 +217,7 @@ export class GraferController extends EventEmitter {
         return labels;
     }
 
-    private addEdge(edgesData: GraferEdgesData, nodes: any, hasColors: boolean): any {
+    private addEdges(edgesData: GraferEdgesData, nodes: any, hasColors: boolean): any {
         const pickingManager = this._viewport.graph.picking;
         const context = this.context;
         const graph = this._viewport.graph;
@@ -277,7 +276,7 @@ export class GraferController extends EventEmitter {
         return edges;
     }
 
-    private addNode(nodesData: GraferNodesData, hasColors: boolean): any {
+    private addNodes(nodesData: GraferNodesData, hasColors: boolean): any {
         const pickingManager = this._viewport.graph.picking;
         const context = this.context;
         const graph = this._viewport.graph;
