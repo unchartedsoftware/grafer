@@ -48,12 +48,6 @@ export interface GraferControllerData {
     layers?: GraferLayerData[];
 }
 
-const generateId = (): number => {
-    return generateId.previous++;
-};
-
-generateId.previous = 0;
-
 export class GraferController extends EventEmitter {
     private _viewport: Viewport;
     public get viewport(): Viewport {
@@ -63,9 +57,12 @@ export class GraferController extends EventEmitter {
         return this.viewport.context;
     }
 
+    generateIdPrev: number;
+
     constructor(canvas: HTMLCanvasElement, data?: GraferControllerData) {
         super();
         this._viewport = new Viewport(canvas);
+        this.generateIdPrev = 0;
 
         const dolly = new ScrollDolly(this._viewport);
         dolly.enabled = true;
@@ -85,6 +82,10 @@ export class GraferController extends EventEmitter {
         if (data) {
             this.loadData(data);
         }
+    }
+
+    private generateId(): number {
+        return this.generateIdPrev++;
     }
 
     private loadData(data: GraferControllerData): void {
@@ -112,7 +113,7 @@ export class GraferController extends EventEmitter {
             for (let i = 0, n = layers.length; i < n; ++i) {
                 const data = layers[i].nodes?.data ?? layers[i].labels?.data;
                 for (let ii = 0, nn = data.length; ii < nn; ++ii) {
-                    (data[ii] as any).point = generateId();
+                    (data[ii] as any).point = this.generateId();
                 }
                 nodes.push(layers[i].nodes.data);
             }
