@@ -107,19 +107,17 @@ export class GraferController extends EventEmitter {
     }
 
     private mapPointsToNodes(data: GraferControllerData, pointsRadiusMapping: { radius: (entry: any) => number; }): void {
-        if (!Boolean(this._viewport.graph)) {
-            const nodes = [];
-            const layers = data.layers;
-            for (let i = 0, n = layers.length; i < n; ++i) {
-                const data = layers[i].nodes?.data ?? layers[i].labels?.data;
-                for (let ii = 0, nn = data.length; ii < nn; ++ii) {
-                    (data[ii] as any).point = this.generateId();
-                }
-                nodes.push(layers[i].nodes.data);
+        const nodes = [];
+        const layers = data.layers;
+        for (let i = 0, n = layers.length; i < n; ++i) {
+            const data = layers[i].nodes?.data ?? layers[i].labels?.data;
+            for (let ii = 0, nn = data.length; ii < nn; ++ii) {
+                (data[ii] as any).point = this.generateId();
             }
-            this._viewport.graph = Graph.createGraphFromNodes(this.context, nodes, pointsRadiusMapping);
-            this._viewport.graph.picking = new PickingManager(this._viewport.context, this._viewport.mouseHandler);
+            nodes.push(layers[i].nodes.data);
         }
+        this._viewport.graph = Graph.createGraphFromNodes(this.context, nodes, pointsRadiusMapping);
+        this._viewport.graph.picking = new PickingManager(this._viewport.context, this._viewport.mouseHandler);
     }
 
     private loadLayers(data: GraferControllerData, pointsRadiusMapping: { radius: (entry: any) => number; }): void {
@@ -127,7 +125,9 @@ export class GraferController extends EventEmitter {
             const layers = data.layers;
             const hasColors = Boolean(data.colors);
 
-            this.mapPointsToNodes(data, pointsRadiusMapping);
+            if (!Boolean(this._viewport.graph)) {
+                this.mapPointsToNodes(data, pointsRadiusMapping);
+            }
 
             for (let i = 0, n = layers.length; i < n; ++i) {
                 const name = layers[i].name || `Layer_${i}`;
