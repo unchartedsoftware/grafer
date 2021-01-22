@@ -106,7 +106,7 @@ export class GraferController extends EventEmitter {
         }
     }
 
-    private mapPointsToNodes(data: GraferControllerData, pointsRadiusMapping: { radius: (entry: any) => number; }): void {
+    private concatenateNodesFromLayers(data: GraferControllerData): unknown[][] {
         const nodes = [];
         const layers = data.layers;
         for (let i = 0, n = layers.length; i < n; ++i) {
@@ -116,8 +116,7 @@ export class GraferController extends EventEmitter {
             }
             nodes.push(layers[i].nodes.data);
         }
-        this._viewport.graph = Graph.createGraphFromNodes(this.context, nodes, pointsRadiusMapping);
-        this._viewport.graph.picking = new PickingManager(this._viewport.context, this._viewport.mouseHandler);
+        return nodes;
     }
 
     private loadLayers(data: GraferControllerData, pointsRadiusMapping: { radius: (entry: any) => number; }): void {
@@ -126,7 +125,9 @@ export class GraferController extends EventEmitter {
             const hasColors = Boolean(data.colors);
 
             if (!Boolean(this._viewport.graph)) {
-                this.mapPointsToNodes(data, pointsRadiusMapping);
+                const nodes = this.concatenateNodesFromLayers(data);
+                this._viewport.graph = Graph.createGraphFromNodes(this.context, nodes, pointsRadiusMapping);
+                this._viewport.graph.picking = new PickingManager(this._viewport.context, this._viewport.mouseHandler);
             }
 
             for (let i = 0, n = layers.length; i < n; ++i) {
