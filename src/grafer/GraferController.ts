@@ -56,13 +56,16 @@ export class GraferController extends EventEmitter {
     public get context(): GraferContext {
         return this.viewport.context;
     }
-
-    generateIdPrev: number;
+    private _hasColors: boolean;
+    public get hasColors(): boolean {
+        return this._hasColors;
+    }
+    private _generateIdPrev: number;
 
     constructor(canvas: HTMLCanvasElement, data?: GraferControllerData) {
         super();
         this._viewport = new Viewport(canvas);
-        this.generateIdPrev = 0;
+        this._generateIdPrev = 0;
 
         const dolly = new ScrollDolly(this._viewport);
         dolly.enabled = true;
@@ -85,7 +88,7 @@ export class GraferController extends EventEmitter {
     }
 
     private generateId(): number {
-        return this.generateIdPrev++;
+        return this._generateIdPrev++;
     }
 
     private loadData(data: GraferControllerData): void {
@@ -122,7 +125,7 @@ export class GraferController extends EventEmitter {
     private loadLayers(data: GraferControllerData, pointsRadiusMapping: { radius: (entry: any) => number; }): void {
         if (data.layers && data.layers.length) {
             const layers = data.layers;
-            const hasColors = Boolean(data.colors);
+            this._hasColors = Boolean(data.colors);
 
             if (!Boolean(this._viewport.graph)) {
                 const nodes = this.concatenateNodesFromLayers(data);
@@ -132,12 +135,14 @@ export class GraferController extends EventEmitter {
 
             for (let i = 0, n = layers.length; i < n; ++i) {
                 const name = layers[i].name || `Layer_${i}`;
-                this.addLayer(layers[i], name, hasColors);
+                this.addLayer(layers[i], name, this.hasColors);
             }
         }
     }
 
-    public addLayer(layer: GraferLayerData, name: string, hasColors: boolean): void {
+    public addLayer(layer: GraferLayerData, name: string, hasColors?: boolean): void {
+        hasColors = hasColors ?? this.hasColors;
+
         const hasPoints = Boolean(this._viewport.graph);
         const graph = this._viewport.graph;
 
