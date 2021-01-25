@@ -140,23 +140,26 @@ export class GraferController extends EventEmitter {
         }
     }
 
-    public addLayer(layer: GraferLayerData, name: string, hasColors?: boolean): void {
-        hasColors = hasColors ?? this.hasColors;
+    public addLayer(layer: GraferLayerData, name: string, useColors?: boolean): void {
+        if( useColors && !this.hasColors ) {
+            throw new Error('No colors found');
+        }
+        useColors = useColors ?? this.hasColors;
 
         const hasPoints = Boolean(this._viewport.graph);
         const graph = this._viewport.graph;
 
         const nodesData = layer.nodes;
-        const nodes = this.addNodes(nodesData, hasColors);
+        const nodes = this.addNodes(nodesData, useColors);
 
         const edgesData = layer.edges;
         if (edgesData && !nodes && !hasPoints) {
             throw 'Cannot load an edge-only layer in a graph without points!';
         }
-        const edges = this.addEdges(edgesData, nodes, hasColors);
+        const edges = this.addEdges(edgesData, nodes, useColors);
 
         const layersData = layer.labels;
-        const labels = this.addLabels(layersData, hasColors);
+        const labels = this.addLabels(layersData, useColors);
 
         if (nodes || edges || labels) {
             const layer = new Layer(nodes, edges, labels, name);
