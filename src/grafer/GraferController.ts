@@ -168,7 +168,7 @@ export class GraferController extends EventEmitter {
 
         if (nodes || edges || labels) {
             const layer = new Layer(nodes, edges, labels, name);
-            graph.layers.push(layer);
+            graph.layers.unshift(layer);
             layer.on(EventEmitter.omniEvent, (...args) => this.emit(...args));
         }
     }
