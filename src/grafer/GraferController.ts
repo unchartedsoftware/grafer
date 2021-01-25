@@ -98,14 +98,19 @@ export class GraferController extends EventEmitter {
         this.loadPoints(data, pointsRadiusMapping);
         this.loadLayers(data, pointsRadiusMapping);
 
-        this.renderGraph();
-    }
-
-    private renderGraph(): void {
         if (this._viewport.graph) {
             this._viewport.camera.position = [0, 0, -this._viewport.graph.bbCornerLength * 2];
             this._viewport.camera.farPlane = Math.max(this._viewport.graph.bbCornerLength * 4, 1000);
             this._viewport.render();
+        }
+    }
+
+    public render(): void {
+        if (this._viewport.graph) {
+            this._viewport.render();
+        }
+        else {
+            throw new Error('No graph found.');
         }
     }
 
@@ -142,7 +147,7 @@ export class GraferController extends EventEmitter {
 
     public addLayer(layer: GraferLayerData, name: string, useColors?: boolean): void {
         if( useColors && !this.hasColors ) {
-            throw new Error('No colors found');
+            throw new Error('No colors found.');
         }
         useColors = useColors ?? this.hasColors;
 
@@ -154,7 +159,7 @@ export class GraferController extends EventEmitter {
 
         const edgesData = layer.edges;
         if (edgesData && !nodes && !hasPoints) {
-            throw 'Cannot load an edge-only layer in a graph without points!';
+            throw new Error('Cannot load an edge-only layer in a graph without points!');
         }
         const edges = this.addEdges(edgesData, nodes, useColors);
 
