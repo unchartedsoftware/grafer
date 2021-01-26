@@ -202,7 +202,7 @@ async function loadGraph(container: HTMLElement, info: LayoutInfo): Promise<void
             type: 'CurvedPath',
             data: [],
             options: {
-                alpha: 0.25,
+                alpha: 0.04,
                 nearDepth: 0.9,
             },
         };
