@@ -17,7 +17,7 @@ function getExamplePaths(examples, currentPath, entries = [], path = '') {
     }
     return entries;
 }
-function renderMenu(element, examples, pathComponents) {
+function renderMenu(element, examples, pathComponents, basePath) {
     const currentPath = pathComponents.length ? `/${pathComponents.join('/')}` : '';
     const entries = getExamplePaths(examples, currentPath);
     const container = document.createElement('div');
@@ -26,7 +26,7 @@ function renderMenu(element, examples, pathComponents) {
     header.className = 'menu-header';
     container.appendChild(header);
     if (pathComponents.length) {
-        const backPath = `/${pathComponents.slice(0, -1).join('/')}`;
+        const backPath = `${basePath}/${pathComponents.slice(0, -1).join('/')}`;
         const div = document.createElement('div');
         div.className = 'menu-back';
         const a = document.createElement('a');
@@ -46,7 +46,7 @@ function renderMenu(element, examples, pathComponents) {
         div.className = 'menu-item';
         div.innerText = entries[i];
         const a = document.createElement('a');
-        a.href = entries[i];
+        a.href = `${basePath}${entries[i]}`;
         a.appendChild(div);
         items.appendChild(a);
     }
@@ -29745,15 +29745,16 @@ async function main() {
     const pathName = window.location.pathname;
     const pathComponents = pathName.split('/').filter(v => Boolean(v));
     // if the site is being served from github pages, remove the first component
+    let basePath = '';
     if (window.location.hostname.indexOf('github.io') !== -1) {
-        pathComponents.shift();
+        basePath = `/${pathComponents.shift()}`;
     }
     const example = getExample(examples, pathComponents);
     if (example) {
         await example(document.body);
     }
     else {
-        renderMenu(document.body, examples, pathComponents);
+        renderMenu(document.body, examples, pathComponents, basePath);
     }
 }
 main();
