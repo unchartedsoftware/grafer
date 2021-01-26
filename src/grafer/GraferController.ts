@@ -56,13 +56,16 @@ export class GraferController extends EventEmitter {
     public get context(): GraferContext {
         return this.viewport.context;
     }
-
-    generateIdPrev: number;
+    private _hasColors: boolean;
+    public get hasColors(): boolean {
+        return this._hasColors;
+    }
+    private _generateIdPrev: number;
 
     constructor(canvas: HTMLCanvasElement, data?: GraferControllerData) {
         super();
         this._viewport = new Viewport(canvas);
-        this.generateIdPrev = 0;
+        this._generateIdPrev = 0;
 
         const dolly = new ScrollDolly(this._viewport);
         dolly.enabled = true;
@@ -85,7 +88,7 @@ export class GraferController extends EventEmitter {
     }
 
     private generateId(): number {
-        return this.generateIdPrev++;
+        return this._generateIdPrev++;
     }
 
     private loadData(data: GraferControllerData): void {
@@ -95,14 +98,19 @@ export class GraferController extends EventEmitter {
         this.loadPoints(data, pointsRadiusMapping);
         this.loadLayers(data, pointsRadiusMapping);
 
-        this.renderGraph();
-    }
-
-    private renderGraph(): void {
         if (this._viewport.graph) {
             this._viewport.camera.position = [0, 0, -this._viewport.graph.bbCornerLength * 2];
             this._viewport.camera.farPlane = Math.max(this._viewport.graph.bbCornerLength * 4, 1000);
             this._viewport.render();
+        }
+    }
+
+    public render(): void {
+        if (this._viewport.graph) {
+            this._viewport.render();
+        }
+        else {
+            throw new Error('No graph found.');
         }
     }
 
@@ -122,7 +130,7 @@ export class GraferController extends EventEmitter {
     private loadLayers(data: GraferControllerData, pointsRadiusMapping: { radius: (entry: any) => number; }): void {
         if (data.layers && data.layers.length) {
             const layers = data.layers;
-            const hasColors = Boolean(data.colors);
+            this._hasColors = Boolean(data.colors);
 
             if (!Boolean(this._viewport.graph)) {
                 const nodes = this.concatenateNodesFromLayers(data);
@@ -132,30 +140,35 @@ export class GraferController extends EventEmitter {
 
             for (let i = 0, n = layers.length; i < n; ++i) {
                 const name = layers[i].name || `Layer_${i}`;
-                this.addLayer(layers[i], name, hasColors);
+                this.addLayer(layers[i], name, this.hasColors);
             }
         }
     }
 
-    public addLayer(layer: GraferLayerData, name: string, hasColors: boolean): void {
+    public addLayer(layer: GraferLayerData, name: string, useColors?: boolean): void {
+        if( useColors && !this.hasColors ) {
+            throw new Error('No colors found.');
+        }
+        useColors = useColors ?? this.hasColors;
+
         const hasPoints = Boolean(this._viewport.graph);
         const graph = this._viewport.graph;
 
         const nodesData = layer.nodes;
-        const nodes = this.addNodes(nodesData, hasColors);
+        const nodes = this.addNodes(nodesData, useColors);
 
         const edgesData = layer.edges;
         if (edgesData && !nodes && !hasPoints) {
-            throw 'Cannot load an edge-only layer in a graph without points!';
+            throw new Error('Cannot load an edge-only layer in a graph without points!');
         }
-        const edges = this.addEdges(edgesData, nodes, hasColors);
+        const edges = this.addEdges(edgesData, nodes, useColors);
 
         const layersData = layer.labels;
-        const labels = this.addLabels(layersData, hasColors);
+        const labels = this.addLabels(layersData, useColors);
 
         if (nodes || edges || labels) {
             const layer = new Layer(nodes, edges, labels, name);
-            graph.layers.push(layer);
+            graph.layers.unshift(layer);
             layer.on(EventEmitter.omniEvent, (...args) => this.emit(...args));
         }
     }
