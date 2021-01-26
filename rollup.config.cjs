@@ -34,7 +34,7 @@ const buildDir = path.resolve(__dirname, 'build');
 const outputDirs = {
     [types.LIB]: path.join(buildDir, 'lib'),
     [types.DEV]: path.join(buildDir, 'dev'),
-    [types.EXAMPLES]: path.join(buildDir, 'examples'),
+    [types.EXAMPLES]: path.join(buildDir, 'examples/examples'),
     [types.DIST]: path.join(buildDir, 'dist'),
 };
 
@@ -73,6 +73,8 @@ function inputForType (type) {
 
     if (type === types.DIST) {
         input['mod'] = path.join(outputDirs[types.DEV], 'js', 'mod.js');
+    } else if (type === types.EXAMPLES) {
+        input['mod'] = path.join(outputDirs[types.DEV], 'examples', 'mod.js');
     } else if (type === types.LIB || type === types.DEV) {
         globby.sync([
             path.join('src/', '/**/*.{ts,js}'),
@@ -84,7 +86,7 @@ function inputForType (type) {
         });
     }
 
-    if (type === types.DEV || type === types.EXAMPLES) {
+    if (type === types.DEV) {
         globby.sync([
             path.join('examples/src/', '/**/*.{ts,js}'),
             `!${path.join('examples/src/', '/**/*.d.ts')}`,
@@ -122,7 +124,7 @@ function outputForType (type) {
         output: {
             dir: outputDirs[type],
             format: 'esm',
-            sourcemap: type !== types.DIST,
+            sourcemap: type !== types.DIST && type !== types.EXAMPLES,
             chunkFileNames: chunk => {
                 if (chunk.name === 'mod') {
                     const keys = Object.keys(chunk.modules);
@@ -147,7 +149,7 @@ function outputForType (type) {
 
 function pluginsForType (type) {
     const plugins = [];
-    if (type === types.DEV || type === types.TEST || type === types.EXAMPLES) {
+    if (type === types.DEV || type === types.TEST) {
         plugins.push(
             resolve({
                 extensions,
@@ -159,7 +161,7 @@ function pluginsForType (type) {
         );
     }
 
-    if (type !== types.DIST) {
+    if (type !== types.DIST && type !== types.EXAMPLES) {
         plugins.push(
             replace({
                 'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV),
@@ -187,7 +189,7 @@ function pluginsForType (type) {
 }
 
 function chunksForType (type) {
-    if (type === types.DEV || type === types.EXAMPLES) {
+    if (type === types.DEV) {
         return {
             manualChunks: function (id) {
                 if (id.includes('tslib.js')) {
