@@ -128,7 +128,7 @@ export class CurvedPath extends Edges<PathEdgeData, GLPathEdgeTypes> {
                 break;
 
             default:
-                // context.blendFuncSeparate(PicoGL.SRC_ALPHA, PicoGL.ONE, PicoGL.ONE, PicoGL.ONE);
+                context.blendFuncSeparate(PicoGL.SRC_ALPHA, PicoGL.ONE, PicoGL.ONE, PicoGL.ONE);
                 this.drawCall.draw();
                 break;
         }
