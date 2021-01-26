@@ -6,6 +6,7 @@ const commonjs = require('@rollup/plugin-commonjs');
 const resolve = require('@rollup/plugin-node-resolve').nodeResolve;
 const replace = require('@rollup/plugin-replace');
 const glslify = require('rollup-plugin-glslify');
+const copy = require('rollup-plugin-copy');
 const globby = require('globby');
 const server = require('live-server');
 
@@ -25,6 +26,7 @@ const types = {
     DIST: 'dist',
     DEV: 'dev',
     TEST: 'test',
+    EXAMPLES: 'examples',
 };
 
 // Directories where the build files will be written
@@ -32,6 +34,7 @@ const buildDir = path.resolve(__dirname, 'build');
 const outputDirs = {
     [types.LIB]: path.join(buildDir, 'lib'),
     [types.DEV]: path.join(buildDir, 'dev'),
+    [types.EXAMPLES]: path.join(buildDir, 'examples'),
     [types.DIST]: path.join(buildDir, 'dist'),
 };
 
@@ -81,7 +84,7 @@ function inputForType (type) {
         });
     }
 
-    if (type === types.DEV) {
+    if (type === types.DEV || type === types.EXAMPLES) {
         globby.sync([
             path.join('examples/src/', '/**/*.{ts,js}'),
             `!${path.join('examples/src/', '/**/*.d.ts')}`,
@@ -144,7 +147,7 @@ function outputForType (type) {
 
 function pluginsForType (type) {
     const plugins = [];
-    if (type === types.DEV || type === types.TEST) {
+    if (type === types.DEV || type === types.TEST || type === types.EXAMPLES) {
         plugins.push(
             resolve({
                 extensions,
@@ -172,11 +175,19 @@ function pluginsForType (type) {
         );
     }
 
+    if (type === types.EXAMPLES) {
+        plugins.push(copy({
+            targets: [
+                { src: 'examples/static/**/*', dest: 'build/examples' },
+            ],
+        }));
+    }
+
     return { plugins };
 }
 
 function chunksForType (type) {
-    if (type === types.DEV) {
+    if (type === types.DEV || type === types.EXAMPLES) {
         return {
             manualChunks: function (id) {
                 if (id.includes('tslib.js')) {
@@ -279,6 +290,8 @@ module.exports = function generator (args) {
             type = types.TEST;
         } else if (args['config-dev'] || args['config-dev-server']) {
             type = types.DEV;
+        } else if (args['config-examples']) {
+            type = types.EXAMPLES;
         } else {
             type = types.LIB;
         }

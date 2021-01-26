@@ -56,10 +56,16 @@ export class GraferController extends EventEmitter {
     public get context(): GraferContext {
         return this.viewport.context;
     }
+    private _hasColors: boolean;
+    public get hasColors(): boolean {
+        return this._hasColors;
+    }
+    private _generateIdPrev: number;
 
     constructor(canvas: HTMLCanvasElement, data?: GraferControllerData) {
         super();
         this._viewport = new Viewport(canvas);
+        this._generateIdPrev = 0;
 
         const dolly = new ScrollDolly(this._viewport);
         dolly.enabled = true;
@@ -81,7 +87,258 @@ export class GraferController extends EventEmitter {
         }
     }
 
+    private generateId(): number {
+        return this._generateIdPrev++;
+    }
+
     private loadData(data: GraferControllerData): void {
+        const pointsRadiusMapping = { radius: (entry: any): number => 'radius' in entry ? entry.radius : 1.0 };
+
+        this.loadColors(data);
+        this.loadPoints(data, pointsRadiusMapping);
+        this.loadLayers(data, pointsRadiusMapping);
+
+        if (this._viewport.graph) {
+            this._viewport.camera.position = [0, 0, -this._viewport.graph.bbCornerLength * 2];
+            this._viewport.camera.farPlane = Math.max(this._viewport.graph.bbCornerLength * 4, 1000);
+            this._viewport.render();
+        }
+    }
+
+    public render(): void {
+        if (this._viewport.graph) {
+            this._viewport.render();
+        }
+        else {
+            throw new Error('No graph found.');
+        }
+    }
+
+    private concatenateNodesFromLayers(data: GraferControllerData): unknown[][] {
+        const nodes = [];
+        const layers = data.layers;
+        for (let i = 0, n = layers.length; i < n; ++i) {
+            const data = layers[i].nodes?.data ?? layers[i].labels?.data;
+            for (let ii = 0, nn = data.length; ii < nn; ++ii) {
+                (data[ii] as any).point = this.generateId();
+            }
+            nodes.push(layers[i].nodes.data);
+        }
+        return nodes;
+    }
+
+    private loadLayers(data: GraferControllerData, pointsRadiusMapping: { radius: (entry: any) => number; }): void {
+        if (data.layers && data.layers.length) {
+            const layers = data.layers;
+            this._hasColors = Boolean(data.colors);
+
+            if (!Boolean(this._viewport.graph)) {
+                const nodes = this.concatenateNodesFromLayers(data);
+                this._viewport.graph = Graph.createGraphFromNodes(this.context, nodes, pointsRadiusMapping);
+                this._viewport.graph.picking = new PickingManager(this._viewport.context, this._viewport.mouseHandler);
+            }
+
+            for (let i = 0, n = layers.length; i < n; ++i) {
+                const name = layers[i].name || `Layer_${i}`;
+                this.addLayer(layers[i], name, this.hasColors);
+            }
+        }
+    }
+
+    public addLayer(layer: GraferLayerData, name: string, useColors?: boolean): void {
+        if( useColors && !this.hasColors ) {
+            throw new Error('No colors found.');
+        }
+        useColors = useColors ?? this.hasColors;
+
+        const hasPoints = Boolean(this._viewport.graph);
+        const graph = this._viewport.graph;
+
+        const nodesData = layer.nodes;
+        const nodes = this.addNodes(nodesData, useColors);
+
+        const edgesData = layer.edges;
+        if (edgesData && !nodes && !hasPoints) {
+            throw new Error('Cannot load an edge-only layer in a graph without points!');
+        }
+        const edges = this.addEdges(edgesData, nodes, useColors);
+
+        const layersData = layer.labels;
+        const labels = this.addLabels(layersData, useColors);
+
+        if (nodes || edges || labels) {
+            const layer = new Layer(nodes, edges, labels, name);
+            graph.layers.unshift(layer);
+            layer.on(EventEmitter.omniEvent, (...args) => this.emit(...args));
+        }
+    }
+
+    public removeLayerByName(name: string): void {
+        const {layers} = this._viewport.graph;
+        for (let i = 0; i < layers.length; i++) {
+            const layer = layers[i];
+            if (layer.name === name) {
+                this.removeLayerByIndex(i);
+                i--;
+            }
+        }
+    }
+
+    public removeLayerByIndex(index: number): void {
+        const {layers} = this._viewport.graph;
+        if (index >= 0 && index < layers.length) {
+            layers.splice(index, 1);
+        }
+    }
+
+    private addLabels(labelsData: GraferLabelsData, hasColors: boolean): any {
+        const pickingManager = this._viewport.graph.picking;
+        const context = this.context;
+        const graph = this._viewport.graph;
+        let labels = null;
+
+        if (labelsData) {
+            const labelsType = labelsData.type ? labelsData.type : 'PointLabel';
+            const LabelsClass = GraphLabels.types[labelsType] || GraphLabels.PointLabel;
+            const labelsMappings = Object.assign(
+                {},
+                LabelsClass.defaultMappings,
+                labelsData.mappings
+            );
+
+            if (!hasColors) {
+                const colorMapping = labelsMappings.color;
+                labelsMappings.color = (entry: any, i): number => {
+                    const value = colorMapping(entry, i);
+                    if (typeof value !== 'number') {
+                        return this._viewport.colorRegisrty.registerColor(value);
+                    }
+                    return value;
+                };
+            }
+
+            labels = new LabelsClass(context, graph, labelsData.data, labelsMappings, pickingManager);
+            if ('options' in labelsData) {
+                const options = labelsData.options;
+                const keys = Object.keys(options);
+                for (const key of keys) {
+                    if (key in labels) {
+                        labels[key] = options[key];
+                    }
+                }
+            }
+        }
+        return labels;
+    }
+
+    private addEdges(edgesData: GraferEdgesData, nodes: any, hasColors: boolean): any {
+        const pickingManager = this._viewport.graph.picking;
+        const context = this.context;
+        const graph = this._viewport.graph;
+        const hasPoints = Boolean(this._viewport.graph);
+        let edges = null;
+
+        if (edgesData) {
+            const edgesType = edgesData.type ? edgesData.type : 'Straight';
+            const EdgesClass = GraphEdges.types[edgesType] || GraphEdges.Straight;
+            const edgesMappings = Object.assign({}, EdgesClass.defaultMappings, edgesData.mappings);
+
+            if (!hasPoints) {
+                const sourceMapping = edgesMappings.source;
+                edgesMappings.source = (entry, i): number => {
+                    return nodes.getEntryPointID(sourceMapping(entry, i));
+                };
+
+                const targetMapping = edgesMappings.target;
+                edgesMappings.target = (entry, i): number => {
+                    return nodes.getEntryPointID(targetMapping(entry, i));
+                };
+            }
+
+            if (!hasColors) {
+                const sourceColorMapping = edgesMappings.sourceColor;
+                edgesMappings.sourceColor = (entry: any, i): number => {
+                    const value = sourceColorMapping(entry, i);
+                    if (typeof value !== 'number') {
+                        return this._viewport.colorRegisrty.registerColor(value);
+                    }
+                    return value;
+                };
+
+                const targetColorMapping = edgesMappings.targetColor;
+                edgesMappings.targetColor = (entry: any, i): number => {
+                    const value = targetColorMapping(entry, i);
+                    if (typeof value !== 'number') {
+                        return this._viewport.colorRegisrty.registerColor(value);
+                    }
+                    return value;
+                };
+            }
+
+            edges = new EdgesClass(context, graph, edgesData.data, edgesMappings, pickingManager);
+
+            if ('options' in edgesData) {
+                const options = edgesData.options;
+                const keys = Object.keys(options);
+                for (const key of keys) {
+                    if (key in edges) {
+                        edges[key] = options[key];
+                    }
+                }
+            }
+        }
+        return edges;
+    }
+
+    private addNodes(nodesData: GraferNodesData, hasColors: boolean): any {
+        const pickingManager = this._viewport.graph.picking;
+        const context = this.context;
+        const graph = this._viewport.graph;
+        let nodes = null;
+
+        if (nodesData) {
+            const nodesType = nodesData.type ? nodesData.type : 'Circle';
+            const NodesClass = GraphNodes.types[nodesType] || GraphNodes.Circle;
+            const nodesMappings = Object.assign(
+                {},
+                NodesClass.defaultMappings,
+                nodesData.mappings
+            );
+
+            if (!hasColors) {
+                const colorMapping = nodesMappings.color;
+                nodesMappings.color = (entry: any, i): number => {
+                    const value = colorMapping(entry, i);
+                    if (typeof value !== 'number') {
+                        return this._viewport.colorRegisrty.registerColor(value);
+                    }
+                    return value;
+                };
+            }
+
+            nodes = new NodesClass(context, graph, nodesData.data, nodesMappings, pickingManager);
+            if ('options' in nodesData) {
+                const options = nodesData.options;
+                const keys = Object.keys(options);
+                for (const key of keys) {
+                    if (key in nodes) {
+                        nodes[key] = options[key];
+                    }
+                }
+            }
+        }
+        return nodes;
+    }
+
+    private loadPoints(data: GraferControllerData, pointsRadiusMapping: { radius: (entry: any) => number; }): void {
+        if (data.points) {
+            const mappings = Object.assign({}, pointsRadiusMapping, data.points.mappings);
+            this._viewport.graph = new Graph(this._viewport.context, data.points.data, mappings);
+            this._viewport.graph.picking = new PickingManager(this._viewport.context, this._viewport.mouseHandler);
+        }
+    }
+
+    private loadColors(data: GraferControllerData): void {
         if (data.colors) {
             const colors = data.colors;
             const colorRegisrty = this._viewport.colorRegisrty;
@@ -91,177 +348,6 @@ export class GraferController extends EventEmitter {
         } else {
             // add at least one color in case the data does not have colors either
             this._viewport.colorRegisrty.registerColor('#d8dee9');
-        }
-
-        const pointsRadiusMapping = { radius: (entry: any): number => 'radius' in entry ? entry.radius : 1.0 };
-        if (data.points) {
-            const mappings = Object.assign({}, pointsRadiusMapping, data.points.mappings);
-            this._viewport.graph = new Graph(this._viewport.context, data.points.data, mappings);
-            this._viewport.graph.picking = new PickingManager(this._viewport.context, this._viewport.mouseHandler);
-        }
-
-        if (data.layers && data.layers.length) {
-            const context = this.context;
-            const layers = data.layers;
-            const hasPoints = Boolean(this._viewport.graph);
-            const hasColors = Boolean(data.colors);
-
-            if (!hasPoints) {
-                const nodes = [];
-                let vertexIndex = 0;
-                for (let i = 0, n = layers.length; i < n; ++i) {
-                    const data = layers[i].nodes?.data ?? layers[i].labels?.data;
-                    nodes.push(data);
-                    for (let ii = 0, nn = data.length; ii < nn; ++ii) {
-                        (data[ii] as any).point = vertexIndex++;
-                    }
-                }
-                this._viewport.graph = Graph.fromNodesArray(context, nodes, pointsRadiusMapping);
-                this._viewport.graph.picking = new PickingManager(this._viewport.context, this._viewport.mouseHandler);
-            }
-
-            const pickingManager = this._viewport.graph.picking;
-            for (let i = 0, n = layers.length; i < n; ++i) {
-                const name = layers[i].name || `Layer_${i}`;
-                const graph = this._viewport.graph;
-
-                let nodes = null;
-                let edges = null;
-                let labels = null;
-
-                if (layers[i].nodes) {
-                    const nodesData = layers[i].nodes;
-                    const nodesType = layers[i].nodes.type ? layers[i].nodes.type : 'Circle';
-                    const NodesClass = GraphNodes.types[nodesType] || GraphNodes.Circle;
-                    const nodesMappings = Object.assign(
-                        {},
-                        NodesClass.defaultMappings,
-                        nodesData.mappings
-                    );
-
-                    if (!hasColors) {
-                        const colorMapping = nodesMappings.color;
-                        nodesMappings.color = (entry: any, i): number => {
-                            const value = colorMapping(entry, i);
-                            if (typeof value !== 'number') {
-                                return this._viewport.colorRegisrty.registerColor(value);
-                            }
-                            return value;
-                        };
-                    }
-
-                    nodes = new NodesClass(context, graph, nodesData.data, nodesMappings, pickingManager);
-                    if ('options' in nodesData) {
-                        const options = nodesData.options;
-                        const keys = Object.keys(options);
-                        for (const key of keys) {
-                            if (key in nodes) {
-                                nodes[key] = options[key];
-                            }
-                        }
-                    }
-                }
-
-                if (layers[i].edges) {
-                    if (!nodes && !hasPoints) {
-                        throw 'Cannot load an edge-only layer in a graph without points!';
-                    }
-
-                    const edgesData = layers[i].edges;
-                    const edgesType = layers[i].edges.type ? layers[i].edges.type : 'Straight';
-                    const EdgesClass = GraphEdges.types[edgesType] || GraphEdges.Straight;
-                    const edgesMappings = Object.assign({}, EdgesClass.defaultMappings, edgesData.mappings);
-
-                    if (!hasPoints) {
-                        const sourceMapping = edgesMappings.source;
-                        edgesMappings.source = (entry, i): number => {
-                            return nodes.getEntryPointID(sourceMapping(entry, i));
-                        };
-
-                        const targetMapping = edgesMappings.target;
-                        edgesMappings.target = (entry, i): number => {
-                            return nodes.getEntryPointID(targetMapping(entry, i));
-                        };
-                    }
-
-                    if (!hasColors) {
-                        const sourceColorMapping = edgesMappings.sourceColor;
-                        edgesMappings.sourceColor = (entry: any, i): number => {
-                            const value = sourceColorMapping(entry, i);
-                            if (typeof value !== 'number') {
-                                return this._viewport.colorRegisrty.registerColor(value);
-                            }
-                            return value;
-                        };
-
-                        const targetColorMapping = edgesMappings.targetColor;
-                        edgesMappings.targetColor = (entry: any, i): number => {
-                            const value = targetColorMapping(entry, i);
-                            if (typeof value !== 'number') {
-                                return this._viewport.colorRegisrty.registerColor(value);
-                            }
-                            return value;
-                        };
-                    }
-
-                    edges = new EdgesClass(context, graph, edgesData.data, edgesMappings, pickingManager);
-
-                    if ('options' in edgesData) {
-                        const options = edgesData.options;
-                        const keys = Object.keys(options);
-                        for (const key of keys) {
-                            if (key in edges) {
-                                edges[key] = options[key];
-                            }
-                        }
-                    }
-                }
-
-                if (layers[i].labels) {
-                    const labelsData = layers[i].labels;
-                    const labelsType = layers[i].labels.type ? layers[i].labels.type : 'PointLabel';
-                    const LabelsClass = GraphLabels.types[labelsType] || GraphLabels.PointLabel;
-                    const labelsMappings = Object.assign(
-                        {},
-                        LabelsClass.defaultMappings,
-                        labelsData.mappings
-                    );
-
-                    if (!hasColors) {
-                        const colorMapping = labelsMappings.color;
-                        labelsMappings.color = (entry: any, i): number => {
-                            const value = colorMapping(entry, i);
-                            if (typeof value !== 'number') {
-                                return this._viewport.colorRegisrty.registerColor(value);
-                            }
-                            return value;
-                        };
-                    }
-
-                    labels = new LabelsClass(context, graph, labelsData.data, labelsMappings, pickingManager);
-                    if ('options' in labelsData) {
-                        const options = labelsData.options;
-                        const keys = Object.keys(options);
-                        for (const key of keys) {
-                            if (key in labels) {
-                                labels[key] = options[key];
-                            }
-                        }
-                    }
-                }
-
-                if (nodes || edges || labels) {
-                    const layer = new Layer(nodes, edges, labels, name);
-                    graph.layers.push(layer);
-                    layer.on(EventEmitter.omniEvent, (...args) => this.emit(...args));
-                }
-            }
-        }
-
-        if (this._viewport.graph) {
-            this._viewport.camera.position = [0, 0, - this._viewport.graph.bbCornerLength * 2];
-            this._viewport.camera.farPlane = Math.max(this._viewport.graph.bbCornerLength * 4, 1000);
-            this._viewport.render();
         }
     }
 }
