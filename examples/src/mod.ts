@@ -40,6 +40,11 @@ function getExample(examples, path): (HTMLElement) => void | null {
 async function main(): Promise<void> {
     const pathName = window.location.pathname;
     const pathComponents = pathName.split('/').filter(v => Boolean(v));
+    // if the site is being served from github pages, remove the first component
+    if (window.location.hostname.indexOf('github.io') !== -1) {
+        pathComponents.shift();
+    }
+
     const example = getExample(examples, pathComponents);
 
     if (example) {
