@@ -41,8 +41,9 @@ async function main(): Promise<void> {
     const pathName = window.location.pathname;
     const pathComponents = pathName.split('/').filter(v => Boolean(v));
     // if the site is being served from github pages, remove the first component
+    let basePath = '';
     if (window.location.hostname.indexOf('github.io') !== -1) {
-        pathComponents.shift();
+        basePath = `/${pathComponents.shift()}`;
     }
 
     const example = getExample(examples, pathComponents);
@@ -50,7 +51,7 @@ async function main(): Promise<void> {
     if (example) {
         await example(document.body);
     } else {
-        renderMenu(document.body, examples, pathComponents);
+        renderMenu(document.body, examples, pathComponents, basePath);
     }
 }
 

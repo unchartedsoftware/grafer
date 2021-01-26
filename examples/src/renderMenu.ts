@@ -19,7 +19,7 @@ function getExamplePaths(examples: ExamplesContainer, currentPath: string, entri
     return entries;
 }
 
-export function renderMenu(element: HTMLElement, examples: ExamplesContainer, pathComponents: string[]): void {
+export function renderMenu(element: HTMLElement, examples: ExamplesContainer, pathComponents: string[], basePath: string): void {
     const currentPath = pathComponents.length ? `/${pathComponents.join('/')}` : '';
     const entries = getExamplePaths(examples, currentPath);
     const container = document.createElement('div');
@@ -30,7 +30,7 @@ export function renderMenu(element: HTMLElement, examples: ExamplesContainer, pa
     container.appendChild(header);
 
     if (pathComponents.length) {
-        const backPath = `/${pathComponents.slice(0, -1).join('/')}`;
+        const backPath = `${basePath}/${pathComponents.slice(0, -1).join('/')}`;
 
         const div = document.createElement('div');
         div.className = 'menu-back';
@@ -57,7 +57,7 @@ export function renderMenu(element: HTMLElement, examples: ExamplesContainer, pa
         div.innerText = entries[i];
 
         const a = document.createElement('a');
-        a.href = entries[i];
+        a.href = `${basePath}${entries[i]}`;
         a.appendChild(div);
 
         items.appendChild(a);
