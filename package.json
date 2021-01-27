@@ -1,6 +1,6 @@
 {
-    "name": "@uncharted-aske/grafer",
-    "version": "1.0.0",
+    "name": "@uncharted.software/grafer",
+    "version": "0.1.2",
     "description": "Large graph renderer",
     "main": "build/lib/mod.js",
     "types": "build/types/mod.d.ts",
@@ -36,7 +36,7 @@
         "examples:bundle": "rollup --config --config-examples",
         "lint": "eslint --config ./.eslintrc.cjs \"./{src,tests,examples}/**/*.{js,ts}\"",
         "test": "karma start --single-run --browsers ChromeHeadless karma.conf.cjs",
-        "prepack": "run-s clean test lint",
+        "prepack": "run-s clean build test lint",
         "pre-push": "run-p pre-push:**",
         "pre-push:lint": "yarn lint",
         "pre-push:test": "yarn test",
