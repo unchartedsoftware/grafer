@@ -1,5 +1,5 @@
 import {PointsReader} from '../data/PointsReader';
-import {GenericUniforms, Renderable, RenderMode, RenderUniforms, setDrawCallUniforms} from '../renderer/Renderable';
+import {GenericUniforms, Renderable, RenderMode, RenderUniforms} from '../renderer/Renderable';
 import {App, PicoGL} from 'picogl';
 import {GraphPoints} from '../data/GraphPoints';
 import {DataMappings} from '../data/DataTools';
@@ -82,7 +82,7 @@ export abstract class LayerRenderable<T_SRC, T_TGT> extends PointsReaderEmitter<
         super.initialize(context, points, data, mappings);
     }
 
-    protected configureRenderContext(context: App, renderMode: RenderMode) {
+    protected configureRenderContext(context: App, renderMode: RenderMode): void {
         context.depthRange(this.nearDepth, this.farDepth);
 
         switch (renderMode) {

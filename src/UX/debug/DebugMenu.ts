@@ -71,7 +71,7 @@ export class DebugMenu {
         }
     }
 
-    private addLayerElementOptions(folder: FolderApi, layer: Layer, key: string) {
+    private addLayerElementOptions(folder: FolderApi, layer: Layer, key: string): void {
         const element = layer[key];
 
         const options = {

@@ -69,7 +69,7 @@ function createFileInput(cb: () => void): HTMLInputElement {
     return input;
 }
 
-function createDefaultFileInput(menu: Tweakpane, result: LayoutInfo, key: string) {
+function createDefaultFileInput(menu: Tweakpane, result: LayoutInfo, key: string): void {
     const input = createFileInput(() => {
         if (input.files.length) {
             result[`${key}File`] = input.files[0];

@@ -1,5 +1,5 @@
 import {Renderable, RenderMode, RenderUniforms} from '../renderer/Renderable';
-import {App, PicoGL} from 'picogl';
+import {App} from 'picogl';
 import {mat4, quat, vec3} from 'gl-matrix';
 import {Layer} from './Layer';
 import {GraphPoints, PointData, PointDataMappings} from '../data/GraphPoints';
