@@ -65,10 +65,7 @@ export class Straight extends Edges<BasicEdgeData, GLStraightEdgeTypes> {
     }
 
     public render(context:App, mode: RenderMode, uniforms: RenderUniforms): void {
-        context.enable(PicoGL.BLEND);
-
-        context.depthRange(this.nearDepth, this.farDepth);
-        context.depthMask(false);
+        this.configureRenderContext(context, mode);
 
         setDrawCallUniforms(this.drawCall, uniforms);
         setDrawCallUniforms(this.drawCall, this.localUniforms);
@@ -76,9 +73,6 @@ export class Straight extends Edges<BasicEdgeData, GLStraightEdgeTypes> {
         switch (mode) {
             case RenderMode.PICKING:
                 // this.pickingDrawCall.draw();
-                break;
-
-            case RenderMode.HIGH_PASS_2:
                 break;
 
             default:

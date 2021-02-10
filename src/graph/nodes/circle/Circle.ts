@@ -107,10 +107,7 @@ export class Circle extends Nodes<BasicNodeData, GLCircleNodeTypes> {
     }
 
     public render(context:App, mode: RenderMode, uniforms: RenderUniforms): void {
-        context.disable(PicoGL.BLEND);
-
-        context.depthRange(this.nearDepth, this.farDepth);
-        context.depthMask(true);
+        this.configureRenderContext(context, mode);
 
         switch (mode) {
             case RenderMode.PICKING:
@@ -124,7 +121,6 @@ export class Circle extends Nodes<BasicNodeData, GLCircleNodeTypes> {
 
             case RenderMode.HIGH_PASS_2:
                 context.depthMask(false);
-                context.enable(PicoGL.BLEND);
                 /* fallthrough */
             default:
                 setDrawCallUniforms(this.drawCall, uniforms);

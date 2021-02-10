@@ -68,13 +68,13 @@ export abstract class Nodes<T_SRC extends BasicNodeData, T_TGT> extends LayerRen
     }
 
     protected initialize(...args: any[]): void {
-        this.localUniforms = {
+        this.localUniforms = Object.assign({}, this.localUniforms, {
             uConstraintSize: true,
             uMinSize: 1.0,
             uMaxSize: 4.0,
             uPixelSizing: false,
             uBillboard: true,
-        };
+        });
         super.initialize(...args);
     }
 

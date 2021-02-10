@@ -3,7 +3,7 @@
     "version": "0.1.2",
     "description": "Large graph renderer",
     "main": "build/lib/mod.js",
-    "types": "build/types/mod.d.ts",
+    "types": "build/types/src/mod.d.ts",
     "repository": "https://github.com/uncharted-aske/grafer.git",
     "author": "Uncharted Software",
     "license": "Apache-2.0",
@@ -87,7 +87,7 @@
         "typescript": "^4.1.3"
     },
     "dependencies": {
-        "@dekkai/data-source": "^0.1.0",
+        "@dekkai/data-source": "^0.2.0",
         "@dekkai/event-emitter": "^1.1.0",
         "chroma-js": "^2.1.0",
         "dekkai": "^0.3.6",

@@ -4,7 +4,6 @@ precision highp float;
 #pragma glslify: lineColor = require(../shaders/line.fs.glsl)
 
 uniform vec2 uViewportSize;
-uniform float uAlpha;
 uniform uint uRenderMode;
 
 flat in float fLineWidth;
@@ -19,5 +18,5 @@ void main() {
     if (int(vDashLength) % 2 == 1) {
         discard;
     }
-    fragColor = lineColor(vColor, vProjectedPosition, vProjectedW, uViewportSize, uAlpha, uRenderMode, fLineWidth);
+    fragColor = lineColor(vColor, vProjectedPosition, vProjectedW, uViewportSize, uRenderMode, fLineWidth);
 }

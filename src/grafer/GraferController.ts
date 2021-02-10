@@ -122,7 +122,7 @@ export class GraferController extends EventEmitter {
             for (let ii = 0, nn = data.length; ii < nn; ++ii) {
                 (data[ii] as any).point = this.generateId();
             }
-            nodes.push(layers[i].nodes.data);
+            nodes.push(data);
         }
         return nodes;
     }

@@ -100,20 +100,20 @@
   dependencies:
     commander "^2.15.1"
 
-"@dekkai/data-source@^0.1.0":
-  version "0.1.0"
-  resolved "https://registry.npmjs.org/@dekkai/data-source/-/data-source-0.1.0.tgz#cce59bda9eb54722a90ab5081c641b7c5af72644"
-  integrity sha512-XhCDInhqoHkV1NlUqj+aKof/KLoakKt54h3AnHGNmp8EnOKSs5PVNnATtufmyCXPCg35iyr62QH2n4GLfY4ZNQ==
+"@dekkai/data-source@^0.2.0":
+  version "0.2.0"
+  resolved "https://registry.npmjs.org/@dekkai/data-source/-/data-source-0.2.0.tgz#d9a0354abc4ae8c45ddd824716cb757ae2b1a99d"
+  integrity sha512-ORCLlzYtTlAffkXuwPXjJ71udNE3dhysM0pMYcv6DnkVuPCMzI9HXMbEAMkVz4Oio0j+9CEpjxrqNxlqK9w6rw==
   dependencies:
     "@dekkai/env" "^1.0.1"
-    "@dekkai/event-emitter" "^1.0.2"
+    "@dekkai/event-emitter" "^1.1.0"
 
 "@dekkai/env@^1.0.1":
   version "1.0.1"
   resolved "https://registry.npmjs.org/@dekkai/env/-/env-1.0.1.tgz#b91ce8e3cbcab71420301688df983e156a687692"
   integrity sha512-dE9y9DVIVZYJ2xq7FWNK4zo61ZZLR/LPR4FTtEp4VgbaNBLMtm5VkD5ZECwtY/0ey7XvWrEocvxHtiiaglYv+w==
 
-"@dekkai/event-emitter@^1.0.2", "@dekkai/event-emitter@^1.1.0":
+"@dekkai/event-emitter@^1.1.0":
   version "1.1.0"
   resolved "https://registry.npmjs.org/@dekkai/event-emitter/-/event-emitter-1.1.0.tgz#82bf46f9b8cc1443320567f57f377dc2cc8f007f"
   integrity sha512-wQkAuh4p96ZZvCuOA1XRi8FiYE2Nbsozzv8y8mRq2JwN7fSJS0DtMCsLvfcpEF4wdFo2Hum0u3vpxoAv0rY5Eg==

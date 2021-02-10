@@ -1,6 +1,7 @@
 #version 300 es
 precision highp float;
 
+#pragma glslify: import(../../../renderer/shaders/outputColor.glsl)
 #pragma glslify: import(../../../renderer/shaders/RenderMode.glsl)
 #pragma glslify: import(../shaders/shapes.glsl)
 
@@ -30,8 +31,8 @@ void main() {
         if (sd < -antialias) {
             discard;
         }
-        fragColor = vec4(color, smoothstep(0.0, antialias, abs(sd)));
+        fragColor = outputColor(vec4(color, smoothstep(0.0, antialias, abs(sd))));
     } else {
-        fragColor = vec4(color, 1.0);
+        fragColor = outputColor(vec4(color, 1.0));
     }
 }

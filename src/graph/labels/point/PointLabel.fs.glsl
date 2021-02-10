@@ -1,6 +1,7 @@
 #version 300 es
 precision highp float;
 
+#pragma glslify: import(../../../renderer/shaders/outputColor.glsl)
 #pragma glslify: import(../../../renderer/shaders/RenderMode.glsl)
 
 uniform float uPixelRatio;
@@ -27,12 +28,12 @@ void main() {
         if (alpha < threshold) {
             discard;
         }
-        fragColor = vec4(texPixel.rgb * fColor.rgb, 1.0);
+        fragColor = outputColor(vec4(texPixel.rgb * fColor.rgb, 1.0));
     } else {
         if (texPixel.a == 1.0) {
             discard;
         }
-        fragColor = vec4(texPixel.rgb * fColor.rgb, alpha);
+        fragColor = outputColor(vec4(texPixel.rgb * fColor.rgb, alpha));
     }
 
 //    if ((uRenderMode != MODE_HIGH_PASS_2 && texPixel.a < threshold) || (uRenderMode == MODE_HIGH_PASS_2 && texPixel.a == 1.0)) {
