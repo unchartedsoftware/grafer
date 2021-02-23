@@ -9,7 +9,7 @@ layout(location=0) in vec3 aVertex;
 layout(location=1) in vec3 iPosition;
 layout(location=2) in float iRadius;
 layout(location=3) in uint iColor;
-layout(location=4) in uint iBox;
+layout(location=4) in uvec4 iLabel;
 
 //layout(std140) uniform RenderUniforms {
     uniform mat4 uViewMatrix;
@@ -19,8 +19,7 @@ layout(location=4) in uint iBox;
     uniform float uPixelRatio;
     uniform sampler2D uColorPalette;
 //};
-uniform usampler2D uLabelBoxes;
-uniform sampler2D uLabelTexture;
+uniform sampler2D uCharTexture;
 uniform float uVisibilityThreshold;
 uniform vec2 uLabelPositioning;
 uniform int uRepeatLabel;
@@ -28,15 +27,20 @@ uniform float uRepeatGap;
 uniform float uPlacementMargin;
 uniform float uLabelPlacement;
 uniform vec2 uLabelDirection;
+uniform bool uBackground;
+uniform float uPadding;
 
-flat out vec4 fColor;
-flat out vec2 fLabelSize;
+flat out vec4 fBackgroundColor;
+flat out vec4 fTextColor;
 flat out float fPixelRadius;
-flat out vec4 fUV;
 flat out float fLabelStep;
+flat out vec2 fCharTextureSize;
+flat out vec4 fLabelInfo;
+flat out float fPixelLength;
 out vec2 vFromCenter;
 
 #pragma glslify: import(../../../renderer/shaders/valueForIndex.glsl)
+#pragma glslify: import(../../../renderer/shaders/colorTools.glsl)
 
 void main() {
     // claculate the offset matrix, done as a matrix to be able to compute "billboard" vertices in the shader
@@ -61,11 +65,24 @@ void main() {
     // compute the pixel radius of this point for a size of 1 in world coordinates
     float pixelRadius = length((screenQuadSide - screenQuadCenter) * uViewportSize * 0.5);
 
-    // get the box of the label to render
-    vec4 box = vec4(uvalueForIndex(uLabelBoxes, int(iBox)));
+    // send the size of the char texture to the fragment shader
+    fCharTextureSize = vec2(textureSize(uCharTexture, 0));
+
+    // send the render color to the fragment shader
+    vec4 color = valueForIndex(uColorPalette, int(iColor));
+    if (uBackground) {
+        fBackgroundColor = vec4(color.rgb, 1.0);
+        fTextColor = vec4(contrastingColor(color.rgb, 7.0), 1.0);
+    } else {
+        fBackgroundColor = vec4(color.rgb, 0.0);
+        fTextColor = vec4(color.rgb, 1.0);
+    }
+
+    // send thelabel info to the fragment shader
+    fLabelInfo = vec4(iLabel);
 
     // send the pixel radius of this label to the fragment shader
-    float placementOffset = box[3] * uLabelPlacement + uPlacementMargin * (-1.0 + 2.0 * uLabelPlacement) * uPixelRatio;
+    float placementOffset = (fLabelInfo[3] + uPadding * 2.0) * uLabelPlacement + uPlacementMargin * (-1.0 + 2.0 * uLabelPlacement) * uPixelRatio;
     fPixelRadius = pixelRadius + placementOffset;
 
     // calculate the render matrix
@@ -74,22 +91,8 @@ void main() {
     // compute the visibility multiplier
     float visibilityMultiplier = pixelRadius >= uVisibilityThreshold * 0.5 * uPixelRatio ? 1.0 : 0.0;
 
-    // and the size of the texture
-    vec2 texSize = vec2(textureSize(uLabelTexture, 0));
-
-    // send the uv to the fragment shader
-    fUV = vec4(
-        (box[0] / texSize.x),
-        (box[1] / texSize.y),
-        (box[2] / texSize.x),
-        (box[3] / texSize.y)
-    );
-
-    // send the label size to the fragment shader
-    fLabelSize = vec2(box[2], box[3]);
-
-    // send the render color to the fragment shader
-    fColor = valueForIndex(uColorPalette, int(iColor));
+    // send the normalized length of a single pixel
+    fPixelLength = 1.0 / fPixelRadius;
 
     // send the normalized distance from the center to the fragment shader
     vFromCenter = aVertex.xy;
@@ -104,10 +107,10 @@ void main() {
     float repeatLabels = float(uint(uRepeatLabel));
     float repeatGap = uRepeatGap * uPixelRatio;
     float diameter = fPixelRadius * M_2PI;
-    float maxLabels = min(repeatLabels, floor(diameter / (fLabelSize.x + repeatGap)));
-    float maxLabelsLength = fLabelSize.x * maxLabels;
+    float maxLabels = min(repeatLabels, floor(diameter / (fLabelInfo[2] + repeatGap + uPadding * 2.0)));
+    float maxLabelsLength = (fLabelInfo[2] + uPadding * 2.0) * maxLabels;
     float labelGap = (diameter - maxLabelsLength) / maxLabels;
-    fLabelStep = fLabelSize.x + labelGap;
+    fLabelStep = fLabelInfo[2] + labelGap + uPadding * 2.0;
 
     // set the render vertex location
     gl_Position = worldVertex;

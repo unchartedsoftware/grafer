@@ -39,6 +39,11 @@ export async function circularLabel(container: HTMLElement): Promise<void> {
         options: {
             visibilityThreshold: 40,
             repeatLabel: -1,
+            placementMargin: 5,
+            renderBackground: true,
+            mirror: false,
+            padding: 6,
+            repeatGap: 25,
         },
     };
 
