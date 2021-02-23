@@ -11739,6 +11739,18 @@ function isNodeJS() {
 }
 
 /**
+ * Caches the result of a  NodeJS environment check.
+ * @internal
+ */
+const kIsDeno = Boolean(typeof Deno !== 'undefined');
+/**
+ * Checks if the current environment is Deno.
+ */
+function isDeno() {
+    return kIsDeno;
+}
+
+/**
  * Checks if the current environment supports dynamic imports.
  * @internal
  */
@@ -11776,18 +11788,6 @@ async function loadModule(mod) {
 }
 
 /**
- * Caches the result of a  NodeJS environment check.
- * @internal
- */
-const kIsDeno = Boolean(typeof Deno !== 'undefined');
-/**
- * Checks if the current environment is Deno.
- */
-function isDeno() {
-    return kIsDeno;
-}
-
-/**
  * [[DataSource]] that represents a section (chunk) of a larger data source (parent). Useful when chunking a data source to
  * parallelize processing.
  */
@@ -11816,10 +11816,10 @@ class DataChunk {
      * The total byte length this chunk represents.
      *
      * NOTE: This value can change after a chunk is loaded for the first time if the chunk belongs to a remote data
-     * source for which the total size is unknown.
+     * source, if the total size is unknown, the value will be -1.
      */
     get byteLength() {
-        return this.end - this.start;
+        return Promise.resolve(this.end - this.start);
     }
     /**
      * Is this chunk loaded in memory.
@@ -11842,8 +11842,8 @@ class DataChunk {
                 this.start = 0;
                 this.end = 0;
             }
-            else if (this.byteLength > this._buffer.byteLength) { // the actual data is smaller than the requested size
-                this.end -= this.byteLength - this._buffer.byteLength;
+            else if (this.end - this.start > this._buffer.byteLength) { // the actual data is smaller than the requested size
+                this.end -= this.end - this.start - this._buffer.byteLength;
             }
         }
     }
@@ -11867,7 +11867,7 @@ class DataChunk {
      * @param start - The offset at which the data will start loading
      * @param end - The offset at which the data will stop loading
      */
-    loadData(start = 0, end = this.byteLength) {
+    loadData(start = 0, end = (this.end - this.start)) {
         return this.source.loadData(this.start + start, this.start + end);
     }
 }
@@ -11931,7 +11931,7 @@ class LocalDataFileNode extends LocalDataFile {
      * The total length, in bytes, of the file this instance represents.
      */
     get byteLength() {
-        return this.stats.size;
+        return Promise.resolve(this.stats.size);
     }
     /**
      * Closes the local file handle for the current platform. After this function is called all subsequent operations
@@ -11948,14 +11948,15 @@ class LocalDataFileNode extends LocalDataFile {
      * @param start - The offset at which the data will start loading
      * @param end - The offset at which the data will stop loading
      */
-    async loadData(start = 0, end = this.byteLength) {
+    async loadData(start = 0, end = this.stats.size) {
         // wait for `fs` to be loaded
         await kFsPromise;
-        const length = end - start;
+        const normalizedEnd = Math.min(end, this.stats.size);
+        const length = normalizedEnd - start;
         const result = new Uint8Array(length);
         let loaded = 0;
         while (loaded < length) {
-            loaded += await this.loadDataIntoBuffer(result, loaded, start + loaded, end);
+            loaded += await this.loadDataIntoBuffer(result, loaded, start + loaded, normalizedEnd);
         }
         return result.buffer;
     }
@@ -11977,61 +11978,6 @@ class LocalDataFileNode extends LocalDataFile {
                     resolve(bytesRead);
                 }
             });
-        });
-    }
-}
-
-/**
- * Represents a data file on the browser platform.
- */
-class LocalDataFileBrowser extends LocalDataFile {
-    /**
-     * @param blob - Container of the file
-     */
-    constructor(blob) {
-        super();
-        this.blob = blob;
-    }
-    /**
-     * Utility function to wrap a file as a [[DataFile]] for this platform.
-     * @param source - The file to wrap
-     */
-    static async fromSource(source) {
-        return new LocalDataFileBrowser(source);
-    }
-    /**
-     * The total length, in bytes, of the file this instance represents.
-     */
-    get byteLength() {
-        return this.blob.size;
-    }
-    /**
-     * Closes the local file handle for the current platform. After this function is called all subsequent operations
-     * on this file, or any other data sources depending on this file, will fail.
-     */
-    close() {
-        this.blob = null;
-    }
-    /**
-     * Loads the file into an ArrayBuffer. Optionally a `start` and `end` can be specified to load a part of the file.
-     * @param start - The offset at which the data will start loading
-     * @param end - The offset at which the data will stop loading
-     */
-    async loadData(start = 0, end = this.byteLength) {
-        const slice = this.blob.slice(start, end);
-        return await this.loadBlob(slice);
-    }
-    /**
-     * Loads the specified blob into an array buffer.
-     * @param blob - The blob to load
-     */
-    loadBlob(blob) {
-        return new Promise(resolve => {
-            const reader = new FileReader();
-            reader.onload = () => {
-                resolve(reader.result);
-            };
-            reader.readAsArrayBuffer(blob);
         });
     }
 }
@@ -12068,7 +12014,7 @@ class LocalDataFileDeno extends LocalDataFile {
      * The total length, in bytes, of the file this instance represents.
      */
     get byteLength() {
-        return this.info.size;
+        return Promise.resolve(this.info.size);
     }
     /**
      * Closes the local file handle for the current platform. After this function is called all subsequent operations
@@ -12084,12 +12030,13 @@ class LocalDataFileDeno extends LocalDataFile {
      * @param start - The offset at which the data will start loading
      * @param end - The offset at which the data will stop loading
      */
-    async loadData(start = 0, end = this.byteLength) {
-        const length = end - start;
+    async loadData(start = 0, end = this.info.size) {
+        const normalizedEnd = Math.min(end, this.info.size);
+        const length = normalizedEnd - start;
         const result = new Uint8Array(length);
         let loaded = 0;
         while (loaded < length) {
-            loaded += await this.loadDataIntoBuffer(result, loaded, start + loaded, end);
+            loaded += await this.loadDataIntoBuffer(result, loaded, start + loaded, normalizedEnd);
         }
         return result.buffer;
     }
@@ -12109,6 +12056,499 @@ class LocalDataFileDeno extends LocalDataFile {
         const bytesRead = await this.file.read(result);
         buffer.set(result, offset);
         return bytesRead;
+    }
+}
+
+/**
+ * Represents a data file on the browser platform.
+ */
+class LocalDataFileBrowser extends LocalDataFile {
+    /**
+     * @param blob - Container of the file
+     */
+    constructor(blob) {
+        super();
+        this.blob = blob;
+    }
+    /**
+     * Utility function to wrap a file as a [[DataFile]] for this platform.
+     * @param source - The file to wrap
+     */
+    static async fromSource(source) {
+        return new LocalDataFileBrowser(source);
+    }
+    /**
+     * The total length, in bytes, of the file this instance represents.
+     */
+    get byteLength() {
+        return Promise.resolve(this.blob.size);
+    }
+    /**
+     * Closes the local file handle for the current platform. After this function is called all subsequent operations
+     * on this file, or any other data sources depending on this file, will fail.
+     */
+    close() {
+        this.blob = null;
+    }
+    /**
+     * Loads the file into an ArrayBuffer. Optionally a `start` and `end` can be specified to load a part of the file.
+     * @param start - The offset at which the data will start loading
+     * @param end - The offset at which the data will stop loading
+     */
+    async loadData(start = 0, end = this.blob.size) {
+        const slice = this.blob.slice(start, Math.min(end, this.blob.size));
+        return await this.loadBlob(slice);
+    }
+    /**
+     * Loads the specified blob into an array buffer.
+     * @param blob - The blob to load
+     */
+    loadBlob(blob) {
+        return new Promise(resolve => {
+            const reader = new FileReader();
+            reader.onload = () => {
+                resolve(reader.result);
+            };
+            reader.readAsArrayBuffer(blob);
+        });
+    }
+}
+
+class RemoteDataFile extends EventEmitter {
+    /**
+     * Slices the file and returns a data chunk pointing at the data within the specified boundaries.
+     * @param start - Pointer to the start of the data in bytes
+     * @param end - Pointer to the end of the data in bytes
+     */
+    slice(start, end) {
+        return new DataChunk(this, start, end);
+    }
+}
+/**
+ * Fired when data loading progresses. Not fired when data loading finishes.
+ * @event
+ */
+RemoteDataFile.LOADING_START = Symbol('DataFileEvents::LoadingStart');
+/**
+ * Fired when data loading progresses. Not fired when data loading finishes.
+ * @event
+ */
+RemoteDataFile.LOADING_PROGRESS = Symbol('DataFileEvents::LoadingProgress');
+/**
+ * Fired when the data loading finishes.
+ * @event
+ */
+RemoteDataFile.LOADING_COMPLETE = Symbol('DataFileEvents::LoadingComplete');
+
+/**
+ * The byte size of 4MB.
+ * @internal
+ */
+const kSizeOf4MB = 1024 * 1024 * 4;
+/**
+ * Represents a remote data file on the browser platform.
+ */
+class RemoteDataFileBrowser extends RemoteDataFile {
+    /**
+     * @param source - The source from where this instance should load its file contents.
+     */
+    constructor(source) {
+        super();
+        /**
+         * Variable to hold the byte length of the loaded file.
+         */
+        this._byteLength = null;
+        /**
+         * Variable to hold the bytes loaded so far from the remote file.
+         */
+        this._bytesLoaded = 0;
+        /**
+         * Variable that holds a promise that resolves when the file finishes loading
+         */
+        this._onLoadingComplete = null;
+        /**
+         * Variable that holds a boolean describing if the loading is complete or not.
+         */
+        this._isLoadingComplete = false;
+        /**
+         * An ArrayBuffer instance that holds the data loaded for this file, do not keep a local copy of this variable as
+         * it could be replaced as the file loads into memory.
+         */
+        this.buffer = null;
+        this.source = source;
+        this._onLoadingComplete = {
+            promise: null,
+            resolve: null,
+            reject: null,
+            started: false,
+        };
+        this._onLoadingComplete.promise = new Promise((resolve, reject) => {
+            this._onLoadingComplete.resolve = resolve;
+            this._onLoadingComplete.reject = reject;
+        });
+    }
+    /**
+     * Utility function to wrap a file as a [[DataFile]] for this platform.
+     * NOTE: This function calls `startDownloading` on the file.
+     * @param source - The file to wrap
+     */
+    static async fromSource(source) {
+        const result = new RemoteDataFileBrowser(source);
+        await result.startDownloading();
+        return result;
+    }
+    /**
+     * The total length, in bytes, of the file this instance represents.
+     */
+    get byteLength() {
+        if (this._byteLength === null) {
+            return new Promise(resolve => {
+                const handleEvent = (e, byteLength) => {
+                    this.off(RemoteDataFile.LOADING_START, handleEvent);
+                    this._byteLength = byteLength;
+                    resolve(byteLength);
+                };
+                this.on(RemoteDataFile.LOADING_START, handleEvent);
+            });
+        }
+        return Promise.resolve(this._byteLength);
+    }
+    /**
+     * Bytes loaded for this file, useful when parsing streaming files.
+     */
+    get bytesLoaded() {
+        return this._bytesLoaded;
+    }
+    /**
+     * Promise that resolves when this file has finished downloading from the remote server.
+     */
+    get onLoadingComplete() {
+        return this._onLoadingComplete.promise;
+    }
+    /**
+     * Has the file finished downloading from the remote server.
+     */
+    get isLoadingComplete() {
+        return this._isLoadingComplete;
+    }
+    /**
+     * This function must ba called in order to start downloading the file, if this function fail the file cannot be
+     * fetched from the server.
+     */
+    async startDownloading() {
+        if (!this._onLoadingComplete.started) {
+            this._onLoadingComplete.started = true;
+            let response;
+            try {
+                response = await fetch(this.source);
+            }
+            catch (e) {
+                this._onLoadingComplete.reject(e);
+                throw e;
+            }
+            if (!response.ok) {
+                const notOK = new Error('Network response was not ok');
+                this._onLoadingComplete.reject(notOK);
+                throw notOK;
+            }
+            // allow for the calling script to register events, etc
+            setTimeout(() => this.readFileStream(response));
+        }
+    }
+    /**
+     * Loads the file into an ArrayBuffer. Optionally a `start` and `end` can be specified to load a part of the file.
+     * @param start - The offset at which the data will start loading
+     * @param end - The offset at which the data will stop loading
+     */
+    async loadData(start = 0, end = this._byteLength) {
+        if (this._isLoadingComplete && start >= this._byteLength) {
+            return new ArrayBuffer(0);
+        }
+        if (this._bytesLoaded >= end || this._isLoadingComplete) {
+            return this.buffer.slice(start, Math.min(end, this._bytesLoaded));
+        }
+        return new Promise(resolve => {
+            const handleEvent = (e, loaded) => {
+                if (loaded >= end || e === RemoteDataFile.LOADING_COMPLETE) {
+                    this.off(RemoteDataFile.LOADING_PROGRESS, handleEvent);
+                    this.off(RemoteDataFile.LOADING_COMPLETE, handleEvent);
+                    resolve(this.buffer.slice(start, Math.min(end, loaded)));
+                }
+            };
+            this.on(RemoteDataFile.LOADING_PROGRESS, handleEvent);
+            this.on(RemoteDataFile.LOADING_COMPLETE, handleEvent);
+        });
+    }
+    /**
+     * Reads the data from a remote response using streams, this allows for data to be processed even if the file has
+     * not been completely loaded.
+     * @param response - A response object returned by `fetch`. This object will be used to retrieve the read stream.
+     */
+    async readFileStream(response) {
+        const contentLength = response.headers.get('content-length');
+        if (contentLength !== null) {
+            this._byteLength = parseInt(contentLength, 10);
+            this.buffer = new ArrayBuffer(this._byteLength);
+        }
+        else {
+            this._byteLength = -1;
+            this.buffer = new ArrayBuffer(kSizeOf4MB);
+        }
+        this._bytesLoaded = 0;
+        this.emit(RemoteDataFile.LOADING_START, this._byteLength);
+        if (this._byteLength === 0) {
+            this.emit(RemoteDataFile.LOADING_PROGRESS, this._bytesLoaded, this._byteLength);
+            this._isLoadingComplete = true;
+            this.emit(RemoteDataFile.LOADING_COMPLETE, this._byteLength);
+            this._onLoadingComplete.resolve(this._byteLength);
+        }
+        else {
+            const reader = response.body.getReader();
+            let view = new Uint8Array(this.buffer);
+            while (true) {
+                try {
+                    const result = await reader.read();
+                    if (result.done) {
+                        this._byteLength = this._bytesLoaded;
+                        this._isLoadingComplete = true;
+                        this.emit(RemoteDataFile.LOADING_COMPLETE, this._byteLength);
+                        this._onLoadingComplete.resolve(this._byteLength);
+                        break;
+                    }
+                    if (this.buffer.byteLength < this._bytesLoaded + result.value.byteLength) {
+                        const oldView = view;
+                        this.buffer = new ArrayBuffer(this._bytesLoaded + Math.max(result.value.byteLength, kSizeOf4MB));
+                        view = new Uint8Array(this.buffer);
+                        view.set(oldView, 0);
+                    }
+                    view.set(result.value, this._bytesLoaded);
+                    this.emit(RemoteDataFile.LOADING_PROGRESS, this._bytesLoaded, this._byteLength);
+                    this._bytesLoaded += result.value.length;
+                }
+                catch (e) {
+                    this._onLoadingComplete.reject(e);
+                    throw e;
+                }
+            }
+        }
+    }
+}
+
+/**
+ * Cached [`http`](https://nodejs.org/api/http.html) module in node and `null` in every other platform. If this in null
+ * in node, `await` for [[kLibPromise]] to finish.
+ * @internal
+ */
+let gHTTP = null;
+/**
+ * Cached [`https`](https://nodejs.org/api/https.html) module in node and `null` in every other platform. If this in
+ * null in node, `await` for [[kLibPromise]] to finish.
+ * @internal
+ */
+let gHTTPS = null;
+/**
+ * Cached [`url`](https://nodejs.org/api/url.html) module in node and `null` in every other platform. If this in
+ * null in node, `await` for [[kLibPromise]] to finish.
+ * @internal
+ */
+let gURL = null;
+/**
+ * Promise that resolves to the [`http`](https://nodejs.org/api/fs.html) and [`https`](https://nodejs.org/api/https.html)
+ * modules in node and `null` in every other platform.
+ * @internal
+ */
+const kLibPromise = (isNodeJS() ?
+    Promise.all([loadModule('http'), loadModule('https'), loadModule('url')]) :
+    Promise.resolve([null, null])).then(libs => {
+    gHTTP = libs[0];
+    gHTTPS = libs[1];
+    gURL = libs[2];
+});
+/**
+ * The byte size of 4MB.
+ * @internal
+ */
+const kSizeOf4MB$1 = 1024 * 1024 * 4;
+/**
+ * Represents a remote data file on node.js.
+ */
+class RemoteDataFileNode extends RemoteDataFile {
+    constructor(source) {
+        super();
+        /**
+         * Variable to hold the byte length of the loaded file.
+         */
+        this._byteLength = null;
+        /**
+         * Variable to hold the bytes loaded so far from the remote file.
+         */
+        this._bytesLoaded = null;
+        /**
+         * Variable that holds a promise that resolves when the file finishes loading
+         */
+        this._onLoadingComplete = null;
+        /**
+         * Variable that holds a boolean describing if the loading is complete or not.
+         */
+        this._isLoadingComplete = false;
+        /**
+         * An ArrayBuffer instance that holds the data loaded for this file, do not keep a local copy of this variable as
+         * it could be replaced as the file loads into memory.
+         */
+        this.buffer = null;
+        this.source = source;
+        this._onLoadingComplete = {
+            promise: null,
+            resolve: null,
+            reject: null,
+            started: false,
+        };
+        this._onLoadingComplete.promise = new Promise((resolve, reject) => {
+            this._onLoadingComplete.resolve = resolve;
+            this._onLoadingComplete.reject = reject;
+        });
+    }
+    /**
+     * Utility function to wrap a file as a [[DataFile]] for this platform.
+     * NOTE: This function calls `startDownloading` on the file.
+     * @param source - The file to wrap
+     */
+    static async fromSource(source) {
+        const result = new RemoteDataFileNode(source);
+        await result.startDownloading();
+        return result;
+    }
+    /**
+     * The total length, in bytes, of the file this instance represents.
+     */
+    get byteLength() {
+        if (this._byteLength === null) {
+            return new Promise(resolve => {
+                const handleEvent = (e, byteLength) => {
+                    this.off(RemoteDataFile.LOADING_START, handleEvent);
+                    this._byteLength = byteLength;
+                    resolve(byteLength);
+                };
+                this.on(RemoteDataFile.LOADING_START, handleEvent);
+            });
+        }
+        return Promise.resolve(this._byteLength);
+    }
+    /**
+     * Bytes loaded for this file, useful when parsing streaming files.
+     */
+    get bytesLoaded() {
+        return this._bytesLoaded;
+    }
+    /**
+     * Promise that resolves when this file has finished downloading from the remote server.
+     */
+    get onLoadingComplete() {
+        return this._onLoadingComplete.promise;
+    }
+    /**
+     * Has the file finished downloading from the remote server.
+     */
+    get isLoadingComplete() {
+        return this._isLoadingComplete;
+    }
+    /**
+     * This function must ba called in order to start downloading the file, if this function fail the file cannot be
+     * fetched from the server.
+     */
+    startDownloading() {
+        return new Promise((resolve, reject) => {
+            // wait for libraries to be loaded
+            kLibPromise.then(() => {
+                const url = this.source instanceof gURL.URL ? this.source : gURL.parse(this.source);
+                const protocol = url.protocol === 'https' ? gHTTPS : gHTTP;
+                protocol.get(this.source, response => {
+                    if (response.statusCode < 200 || response.statusCode >= 300) {
+                        response.resume();
+                        const notOK = new Error('Network response was not ok');
+                        this._onLoadingComplete.reject(notOK);
+                        reject(notOK);
+                        return;
+                    }
+                    resolve();
+                    // allow for the calling script to register events, etc
+                    setTimeout(() => this.readFileStream(response));
+                });
+            });
+        });
+    }
+    /**
+     * Loads the file into an ArrayBuffer. Optionally a `start` and `end` can be specified to load a part of the file.
+     * @param start - The offset at which the data will start loading
+     * @param end - The offset at which the data will stop loading
+     */
+    async loadData(start = 0, end = this._byteLength) {
+        if (this._isLoadingComplete && start >= this._byteLength) {
+            return new ArrayBuffer(0);
+        }
+        if (this._bytesLoaded >= end || this._isLoadingComplete) {
+            return this.buffer.slice(start, Math.min(end, this._bytesLoaded));
+        }
+        return new Promise(resolve => {
+            const handleEvent = (e, loaded) => {
+                if (loaded >= end || e === RemoteDataFile.LOADING_COMPLETE) {
+                    this.off(RemoteDataFile.LOADING_PROGRESS, handleEvent);
+                    this.off(RemoteDataFile.LOADING_COMPLETE, handleEvent);
+                    resolve(this.buffer.slice(start, Math.min(end, loaded)));
+                }
+            };
+            this.on(RemoteDataFile.LOADING_PROGRESS, handleEvent);
+            this.on(RemoteDataFile.LOADING_COMPLETE, handleEvent);
+        });
+    }
+    /**
+     * Reads the data from a remote response using streams, this allows for data to be processed even if the file has
+     * not been completely loaded.
+     * @param response - A response object returned by `fetch`. This object will be used to retrieve the read stream.
+     */
+    async readFileStream(response) {
+        const contentLength = response.headers['content-length'];
+        if (contentLength !== null && contentLength !== undefined) {
+            this._byteLength = parseInt(contentLength, 10);
+            this.buffer = new ArrayBuffer(this._byteLength);
+        }
+        else {
+            this._byteLength = -1;
+            this.buffer = new ArrayBuffer(kSizeOf4MB$1);
+        }
+        this._bytesLoaded = 0;
+        this.emit(RemoteDataFile.LOADING_START, this._byteLength);
+        if (this._byteLength === 0) {
+            this.emit(RemoteDataFile.LOADING_PROGRESS, this._bytesLoaded, this._byteLength);
+            this._isLoadingComplete = true;
+            this.emit(RemoteDataFile.LOADING_COMPLETE, this._byteLength);
+            this._onLoadingComplete.resolve(this._byteLength);
+            response.resume();
+        }
+        else {
+            let view = new Uint8Array(this.buffer);
+            response.on('error', error => {
+                this._onLoadingComplete.reject(error);
+                throw error;
+            });
+            response.on('data', chunk => {
+                if (this.buffer.byteLength < this._bytesLoaded + chunk.byteLength) {
+                    const oldView = view;
+                    this.buffer = new ArrayBuffer(this._bytesLoaded + Math.max(chunk.byteLength, kSizeOf4MB$1));
+                    view = new Uint8Array(this.buffer);
+                    view.set(oldView, 0);
+                }
+                view.set(chunk, this._bytesLoaded);
+                this.emit(RemoteDataFile.LOADING_PROGRESS, this._bytesLoaded, this._byteLength);
+                this._bytesLoaded += chunk.byteLength;
+            });
+            response.on('end', () => {
+                this._byteLength = this._bytesLoaded;
+                this._isLoadingComplete = true;
+                this.emit(RemoteDataFile.LOADING_COMPLETE, this._byteLength);
+                this._onLoadingComplete.resolve(this._byteLength);
+            });
+        }
     }
 }
 
@@ -12134,7 +12574,13 @@ class DataFile {
      * @param source - The file to wrap
      */
     static async fromRemoteSource(source) {
-        throw 'Not implemented yet!';
+        if (isNodeJS()) {
+            return RemoteDataFileNode.fromSource(source);
+        }
+        else if (isDeno()) {
+            return RemoteDataFileBrowser.fromSource(source);
+        }
+        return RemoteDataFileBrowser.fromSource(source);
     }
 }
 
@@ -12234,7 +12680,7 @@ async function parseJSONL(input, cb) {
     const file = await DataFile.fromLocalSource(input);
     // load 16MB chunks
     const sizeOf16MB = 16 * 1024 * 1024;
-    const byteLength = file.byteLength;
+    const byteLength = await file.byteLength;
     const decoder = new TextDecoder();
     const lineBreak = '\n'.charCodeAt(0);
     for (let offset = 0; offset <= byteLength; offset += sizeOf16MB) {
@@ -25436,24 +25882,22 @@ class Graph extends GraphPoints {
         // render labels
         for (let i = 0, n = this._layers.length; i < n; ++i) {
             if (this._layers[i].enabled) {
-                context.blendFuncSeparate(PicoGL.SRC_ALPHA, PicoGL.ONE_MINUS_SRC_ALPHA, PicoGL.ONE, PicoGL.ONE);
-                this._layers[i].renderLabels(context, mode, uniforms);
+                this._layers[i].render(context, mode, uniforms);
             }
         }
-        // render nodes
-        for (let i = 0, n = this._layers.length; i < n; ++i) {
-            if (this._layers[i].enabled) {
-                context.blendFuncSeparate(PicoGL.SRC_ALPHA, PicoGL.ONE_MINUS_SRC_ALPHA, PicoGL.ONE, PicoGL.ONE);
-                this._layers[i].renderNodes(context, mode, uniforms);
-            }
-        }
-        // render edges
-        for (let i = 0, n = this._layers.length; i < n; ++i) {
-            if (this._layers[i].enabled) {
-                context.blendFuncSeparate(PicoGL.SRC_ALPHA, PicoGL.ONE_MINUS_SRC_ALPHA, PicoGL.ONE, PicoGL.ONE);
-                this._layers[i].renderEdges(context, mode, uniforms);
-            }
-        }
+        // // render nodes
+        // for (let i = 0, n = this._layers.length; i < n; ++i) {
+        //     if (this._layers[i].enabled) {
+        //         this._layers[i].renderNodes(context, mode, uniforms);
+        //     }
+        // }
+        //
+        // // render edges
+        // for (let i = 0, n = this._layers.length; i < n; ++i) {
+        //     if (this._layers[i].enabled) {
+        //         this._layers[i].renderEdges(context, mode, uniforms);
+        //     }
+        // }
         // if (this.picking) {
         //     this.picking.offscreenBuffer.blitToScreen(context);
         // }
@@ -25545,6 +25989,12 @@ class PointsReader {
     }
 }
 
+var LayerRenderableBlendMode;
+(function (LayerRenderableBlendMode) {
+    LayerRenderableBlendMode[LayerRenderableBlendMode["NONE"] = 0] = "NONE";
+    LayerRenderableBlendMode[LayerRenderableBlendMode["NORMAL"] = 1] = "NORMAL";
+    LayerRenderableBlendMode[LayerRenderableBlendMode["ADDITIVE"] = 2] = "ADDITIVE";
+})(LayerRenderableBlendMode || (LayerRenderableBlendMode = {}));
 const PointsReaderEmitter = EventEmitter.mixin(PointsReader);
 class LayerRenderable extends PointsReaderEmitter {
     constructor(...args) {
@@ -25552,14 +26002,73 @@ class LayerRenderable extends PointsReaderEmitter {
         this.enabled = true;
         this.nearDepth = 0.0;
         this.farDepth = 1.0;
+        this.blendMode = LayerRenderableBlendMode.NORMAL;
     }
     static get defaultMappings() {
         return undefined;
     }
+    get alpha() {
+        return this.localUniforms.uAlpha;
+    }
+    set alpha(value) {
+        this.localUniforms.uAlpha = value;
+    }
+    get fade() {
+        return this.localUniforms.uFade;
+    }
+    set fade(value) {
+        this.localUniforms.uFade = value;
+    }
+    get desaturate() {
+        return this.localUniforms.uDesaturate;
+    }
+    set desaturate(value) {
+        this.localUniforms.uDesaturate = value;
+    }
     initialize(context, points, data, mappings, pickingManager) {
         this.pickingManager = pickingManager;
         this.picking = true;
+        this.localUniforms = Object.assign({}, this.localUniforms, {
+            uAlpha: 1.0,
+            uFade: 0.0,
+            uDesaturate: 0.0,
+        });
         super.initialize(context, points, data, mappings);
+    }
+    configureRenderContext(context, renderMode) {
+        context.depthRange(this.nearDepth, this.farDepth);
+        switch (renderMode) {
+            case RenderMode.PICKING:
+                context.depthMask(true);
+                context.disable(PicoGL.BLEND);
+                break;
+            case RenderMode.HIGH_PASS_2:
+                context.depthMask(false);
+                context.enable(PicoGL.BLEND);
+                if (this.blendMode === LayerRenderableBlendMode.ADDITIVE) {
+                    context.blendFuncSeparate(PicoGL.SRC_ALPHA, PicoGL.ONE, PicoGL.ONE, PicoGL.ONE);
+                }
+                else { // NORMAL
+                    context.blendFuncSeparate(PicoGL.SRC_ALPHA, PicoGL.ONE_MINUS_SRC_ALPHA, PicoGL.ONE, PicoGL.ONE);
+                }
+                break;
+            default:
+                if (this.localUniforms.uAlpha >= 1.0 || this.blendMode === LayerRenderableBlendMode.NONE) {
+                    context.disable(PicoGL.BLEND);
+                    context.depthMask(true);
+                }
+                else {
+                    context.enable(PicoGL.BLEND);
+                    context.depthMask(false);
+                    if (this.blendMode === LayerRenderableBlendMode.ADDITIVE) {
+                        context.blendFuncSeparate(PicoGL.SRC_ALPHA, PicoGL.ONE, PicoGL.ONE, PicoGL.ONE);
+                    }
+                    else { // NORMAL
+                        context.blendFuncSeparate(PicoGL.SRC_ALPHA, PicoGL.ONE_MINUS_SRC_ALPHA, PicoGL.ONE, PicoGL.ONE);
+                    }
+                }
+                break;
+        }
     }
 }
 
@@ -25609,13 +26118,13 @@ class Nodes extends LayerRenderable {
         this.localUniforms.uBillboard = value;
     }
     initialize(...args) {
-        this.localUniforms = {
+        this.localUniforms = Object.assign({}, this.localUniforms, {
             uConstraintSize: true,
             uMinSize: 1.0,
             uMaxSize: 4.0,
             uPixelSizing: false,
             uBillboard: true,
-        };
+        });
         super.initialize(...args);
     }
     computeMappings(mappings) {
@@ -25845,7 +26354,7 @@ class PickingManager extends EventEmitter.mixin(UXModule) {
 
 var nodeVS = "#version 300 es\n#define GLSLIFY 1\nlayout(location=0)in vec3 aVertex;layout(location=1)in vec3 iPosition;layout(location=2)in float iRadius;layout(location=3)in uint iColor;layout(location=4)in uvec4 iPickingColor;uniform mat4 uViewMatrix;uniform mat4 uSceneMatrix;uniform mat4 uProjectionMatrix;uniform vec2 uViewportSize;uniform float uPixelRatio;uniform sampler2D uColorPalette;uniform float uMinSize;uniform float uMaxSize;uniform bool uPixelSizing;uniform bool uBillboard;uniform bool uPicking;flat out vec4 fColor;flat out float fPixelLength;out vec2 vFromCenter;vec4 getColorByIndexFromTexture(sampler2D tex,int index){int texWidth=textureSize(tex,0).x;int col=index % texWidth;int row=index/texWidth;return texelFetch(tex,ivec2(col,row),0);}void main(){mat4 offsetMatrix=mat4(1.0);offsetMatrix[3]=vec4(iPosition,1.0);mat4 modelMatrix=uViewMatrix*uSceneMatrix*offsetMatrix;mat4 lookAtMatrix=mat4(modelMatrix);lookAtMatrix[0]=vec4(1.0,0.0,0.0,lookAtMatrix[0][3]);lookAtMatrix[1]=vec4(0.0,1.0,0.0,lookAtMatrix[1][3]);lookAtMatrix[2]=vec4(0.0,0.0,1.0,lookAtMatrix[2][3]);vec4 quadCenter=uProjectionMatrix*lookAtMatrix*vec4(0.0,0.0,0.0,1.0);vec2 screenQuadCenter=quadCenter.xy/quadCenter.w;vec4 quadSide=uProjectionMatrix*lookAtMatrix*vec4(iRadius,0.0,0.0,1.0);vec2 screenQuadSide=quadSide.xy/quadSide.w;float pixelRadius=max(1.0,length((screenQuadSide-screenQuadCenter)*uViewportSize*0.5));float desiredPixelRadius=(uPixelSizing ? iRadius : pixelRadius);float pixelRadiusMult=desiredPixelRadius/pixelRadius;mat4 renderMatrix=uBillboard ? uProjectionMatrix*lookAtMatrix : uProjectionMatrix*modelMatrix;vec4 worldVertex=renderMatrix*vec4(aVertex*iRadius*pixelRadiusMult,1.0);fColor=uPicking ? vec4(iPickingColor)/255.0 : getColorByIndexFromTexture(uColorPalette,int(iColor));fPixelLength=1.0/desiredPixelRadius;vFromCenter=aVertex.xy;gl_Position=worldVertex;}"; // eslint-disable-line
 
-var nodeFS = "#version 300 es\nprecision highp float;\n#define GLSLIFY 1\n#define MODE_DRAFT 0u\n#define MODE_MEDIUM 1u\n#define MODE_HIGH_PASS_1 2u\n#define MODE_HIGH_PASS_2 3u\n#define MODE_PICKING 4u\nfloat opRound(in float d,in float r){return d-r;}float opOnion(in float d,in float r){return abs(d)-r;}float sdCircle(in vec2 p,in float r){return length(p)-r;}float sdEquilateralTriangle(in vec2 p,in float r){const float k=sqrt(3.0);p.x=abs(p.x)-r;p.y=p.y+(r)/k;if(p.x+k*p.y>0.0){p=vec2(p.x-k*p.y,-k*p.x-p.y)/2.0;}p.x-=clamp(p.x,-2.0*r,0.0);return-length(p)*sign(p.y);}float sdPentagon(in vec2 p,in float r){const vec3 k=vec3(0.809016994,0.587785252,0.726542528);p.y=-(p.y)*1.25;p.x=abs(p.x)*1.25;p-=2.0*min(dot(vec2(-k.x,k.y),p),0.0)*vec2(-k.x,k.y);p-=2.0*min(dot(vec2(k.x,k.y),p),0.0)*vec2(k.x,k.y);p-=vec2(clamp(p.x,-r*k.z,r*k.z),r);return length(p)*sign(p.y);}float sdOctagon(in vec2 p,in float r){const vec3 k=vec3(-0.9238795325,0.3826834323,0.4142135623);p=abs(p)*1.1;p-=2.0*min(dot(vec2(k.x,k.y),p),0.0)*vec2(k.x,k.y);p-=2.0*min(dot(vec2(-k.x,k.y),p),0.0)*vec2(-k.x,k.y);p-=vec2(clamp(p.x,-k.z*r,k.z*r),r);return length(p)*sign(p.y);}float sdStar(in vec2 p,in float r,in uint n,in float m){float an=3.141593/float(n);float en=3.141593/m;vec2 acs=vec2(cos(an),sin(an));vec2 ecs=vec2(cos(en),sin(en));float bn=mod(atan(p.x,p.y),2.0*an)-an;p=length(p)*vec2(cos(bn),abs(sin(bn)));p-=r*acs;p+=ecs*clamp(-dot(p,ecs),0.0,r*acs.y/ecs.y);return length(p)*sign(p.x);}float sdCross(in vec2 p,in float w,in float r){p=abs(p);return length(p-min(p.x+p.y,w)*0.5)-r;}float sdPlus(in vec2 p,in vec2 b,float r){p=abs(p);p=(p.y>p.x)? p.yx : p.xy;vec2 q=p-b;float k=max(q.y,q.x);vec2 w=(k>0.0)? q : vec2(b.y-p.x,-k);return sign(k)*length(max(w,0.0))+r;}uniform float uPixelRatio;uniform uint uRenderMode;flat in vec4 fColor;flat in float fPixelLength;in vec2 vFromCenter;out vec4 fragColor;void main(){float antialias=fPixelLength*1.5;float sd=sdCircle(vFromCenter,1.0);float outline=opOnion(sd,min(0.15,fPixelLength*6.0*uPixelRatio));float modeDistance=uRenderMode==MODE_HIGH_PASS_1 ?-antialias :-antialias*0.5;float distance=uRenderMode==MODE_HIGH_PASS_2 ? 0.0 : modeDistance;if(sd>distance){discard;}vec3 color=fColor.rgb*(1.0-0.25*smoothstep(antialias,0.0,outline));if(uRenderMode==MODE_HIGH_PASS_2){if(sd<-antialias){discard;}fragColor=vec4(color,smoothstep(0.0,antialias,abs(sd)));}else{fragColor=vec4(color,1.0);}}"; // eslint-disable-line
+var nodeFS = "#version 300 es\nprecision highp float;\n#define GLSLIFY 1\nfloat luminance_x(float x){return x<=0.04045 ? x/12.92 : pow((x+0.055)/1.055,2.4);}float color_l(float l){return min(1.0,max(0.0,l<=0.0031308 ? l*12.92 : pow(l*1.055,1.0/2.4)-0.055));}float rgb2luminance(vec3 color){float r=luminance_x(color.r);float g=luminance_x(color.g);float b=luminance_x(color.b);return 0.2126*r+0.7152*g+0.0722*b;}vec3 setLuminance(vec3 color,float luminance){float r=luminance_x(color.r)*0.2126;float g=luminance_x(color.g)*0.7152;float b=luminance_x(color.b)*0.0722;float colorLuminance=r+g+b;float tr=luminance*(r/colorLuminance);float tg=luminance*(g/colorLuminance);float tb=luminance*(b/colorLuminance);float rr=color_l(tr/0.2126);float rg=color_l(tg/0.7152);float rb=color_l(tb/0.0722);return vec3(rr,rg,rb);}float findDarker(float luminance,float contrast){return(contrast*luminance)+(0.05*contrast)-0.05;}float findLighter(float luminance,float contrast){return(luminance+0.05-(0.05*contrast))/contrast;}vec3 contrastingColor(vec3 color,float contrast){float luminance=rgb2luminance(color);float darker=findDarker(luminance,contrast);float lighter=findLighter(luminance,contrast);float targetLuminance;if(darker<0.0||darker>1.0){targetLuminance=lighter;}else if(lighter<0.0||lighter>1.0){targetLuminance=darker;}else{targetLuminance=abs(luminance-lighter)<abs(darker-luminance)? lighter : darker;}return setLuminance(color,targetLuminance);}vec3 desaturateColor(vec3 color,float amount){float l=rgb2luminance(color);vec3 gray=vec3(l,l,l);return mix(color,gray,amount);}uniform vec4 uClearColor;uniform float uDesaturate;uniform float uFade;uniform float uAlpha;vec4 outputColor(vec4 color){vec3 ret=vec3(desaturateColor(color.rgb,uDesaturate));ret=mix(ret,uClearColor.rgb,uFade);return vec4(ret,color.a*uAlpha);}\n#define MODE_DRAFT 0u\n#define MODE_MEDIUM 1u\n#define MODE_HIGH_PASS_1 2u\n#define MODE_HIGH_PASS_2 3u\n#define MODE_PICKING 4u\nfloat opRound(in float d,in float r){return d-r;}float opOnion(in float d,in float r){return abs(d)-r;}float sdCircle(in vec2 p,in float r){return length(p)-r;}float sdEquilateralTriangle(in vec2 p,in float r){const float k=sqrt(3.0);p.x=abs(p.x)-r;p.y=p.y+(r)/k;if(p.x+k*p.y>0.0){p=vec2(p.x-k*p.y,-k*p.x-p.y)/2.0;}p.x-=clamp(p.x,-2.0*r,0.0);return-length(p)*sign(p.y);}float sdPentagon(in vec2 p,in float r){const vec3 k=vec3(0.809016994,0.587785252,0.726542528);p.y=-(p.y)*1.25;p.x=abs(p.x)*1.25;p-=2.0*min(dot(vec2(-k.x,k.y),p),0.0)*vec2(-k.x,k.y);p-=2.0*min(dot(vec2(k.x,k.y),p),0.0)*vec2(k.x,k.y);p-=vec2(clamp(p.x,-r*k.z,r*k.z),r);return length(p)*sign(p.y);}float sdOctagon(in vec2 p,in float r){const vec3 k=vec3(-0.9238795325,0.3826834323,0.4142135623);p=abs(p)*1.1;p-=2.0*min(dot(vec2(k.x,k.y),p),0.0)*vec2(k.x,k.y);p-=2.0*min(dot(vec2(-k.x,k.y),p),0.0)*vec2(-k.x,k.y);p-=vec2(clamp(p.x,-k.z*r,k.z*r),r);return length(p)*sign(p.y);}float sdStar(in vec2 p,in float r,in uint n,in float m){float an=3.141593/float(n);float en=3.141593/m;vec2 acs=vec2(cos(an),sin(an));vec2 ecs=vec2(cos(en),sin(en));float bn=mod(atan(p.x,p.y),2.0*an)-an;p=length(p)*vec2(cos(bn),abs(sin(bn)));p-=r*acs;p+=ecs*clamp(-dot(p,ecs),0.0,r*acs.y/ecs.y);return length(p)*sign(p.x);}float sdCross(in vec2 p,in float w,in float r){p=abs(p);return length(p-min(p.x+p.y,w)*0.5)-r;}float sdPlus(in vec2 p,in vec2 b,float r){p=abs(p);p=(p.y>p.x)? p.yx : p.xy;vec2 q=p-b;float k=max(q.y,q.x);vec2 w=(k>0.0)? q : vec2(b.y-p.x,-k);return sign(k)*length(max(w,0.0))+r;}uniform float uPixelRatio;uniform uint uRenderMode;flat in vec4 fColor;flat in float fPixelLength;in vec2 vFromCenter;out vec4 fragColor;void main(){float antialias=fPixelLength*1.5;float sd=sdCircle(vFromCenter,1.0);float outline=opOnion(sd,min(0.15,fPixelLength*6.0*uPixelRatio));float modeDistance=uRenderMode==MODE_HIGH_PASS_1 ?-antialias :-antialias*0.5;float distance=uRenderMode==MODE_HIGH_PASS_2 ? 0.0 : modeDistance;if(sd>distance){discard;}vec3 color=fColor.rgb*(1.0-0.25*smoothstep(antialias,0.0,outline));if(uRenderMode==MODE_HIGH_PASS_2){if(sd<-antialias){discard;}fragColor=outputColor(vec4(color,smoothstep(0.0,antialias,abs(sd))));}else{fragColor=outputColor(vec4(color,1.0));}}"; // eslint-disable-line
 
 var dataVS = "#version 300 es\n#define GLSLIFY 1\nlayout(location=0)in uint aPositionIndex;layout(location=1)in uint aColor;layout(location=2)in float aRadius;uniform sampler2D uGraphPoints;uniform bool uUsePointRadius;out vec3 vPosition;out float vRadius;flat out uint vColor;vec4 getValueByIndexFromTexture(sampler2D tex,int index){int texWidth=textureSize(tex,0).x;int col=index % texWidth;int row=index/texWidth;return texelFetch(tex,ivec2(col,row),0);}void main(){vec4 value=getValueByIndexFromTexture(uGraphPoints,int(aPositionIndex));vPosition=value.xyz;if(uUsePointRadius){vRadius=value.w;}else{vRadius=aRadius;}vColor=aColor;}"; // eslint-disable-line
 
@@ -25898,9 +26407,7 @@ class Circle extends Nodes {
         // TODO: Implement destroy method
     }
     render(context, mode, uniforms) {
-        context.disable(PicoGL.BLEND);
-        context.depthRange(this.nearDepth, this.farDepth);
-        context.depthMask(true);
+        this.configureRenderContext(context, mode);
         switch (mode) {
             case RenderMode.PICKING:
                 if (this.picking) {
@@ -25912,7 +26419,6 @@ class Circle extends Nodes {
                 break;
             case RenderMode.HIGH_PASS_2:
                 context.depthMask(false);
-                context.enable(PicoGL.BLEND);
             /* fallthrough */
             default:
                 setDrawCallUniforms(this.drawCall, uniforms);
@@ -25954,7 +26460,7 @@ class Circle extends Nodes {
     }
 }
 
-var nodeFS$1 = "#version 300 es\nprecision highp float;\n#define GLSLIFY 1\n#define MODE_DRAFT 0u\n#define MODE_MEDIUM 1u\n#define MODE_HIGH_PASS_1 2u\n#define MODE_HIGH_PASS_2 3u\n#define MODE_PICKING 4u\nfloat opRound(in float d,in float r){return d-r;}float opOnion(in float d,in float r){return abs(d)-r;}float sdCircle(in vec2 p,in float r){return length(p)-r;}float sdEquilateralTriangle(in vec2 p,in float r){const float k=sqrt(3.0);p.x=abs(p.x)-r;p.y=p.y+(r)/k;if(p.x+k*p.y>0.0){p=vec2(p.x-k*p.y,-k*p.x-p.y)/2.0;}p.x-=clamp(p.x,-2.0*r,0.0);return-length(p)*sign(p.y);}float sdPentagon(in vec2 p,in float r){const vec3 k=vec3(0.809016994,0.587785252,0.726542528);p.y=-(p.y)*1.25;p.x=abs(p.x)*1.25;p-=2.0*min(dot(vec2(-k.x,k.y),p),0.0)*vec2(-k.x,k.y);p-=2.0*min(dot(vec2(k.x,k.y),p),0.0)*vec2(k.x,k.y);p-=vec2(clamp(p.x,-r*k.z,r*k.z),r);return length(p)*sign(p.y);}float sdOctagon(in vec2 p,in float r){const vec3 k=vec3(-0.9238795325,0.3826834323,0.4142135623);p=abs(p)*1.1;p-=2.0*min(dot(vec2(k.x,k.y),p),0.0)*vec2(k.x,k.y);p-=2.0*min(dot(vec2(-k.x,k.y),p),0.0)*vec2(-k.x,k.y);p-=vec2(clamp(p.x,-k.z*r,k.z*r),r);return length(p)*sign(p.y);}float sdStar(in vec2 p,in float r,in uint n,in float m){float an=3.141593/float(n);float en=3.141593/m;vec2 acs=vec2(cos(an),sin(an));vec2 ecs=vec2(cos(en),sin(en));float bn=mod(atan(p.x,p.y),2.0*an)-an;p=length(p)*vec2(cos(bn),abs(sin(bn)));p-=r*acs;p+=ecs*clamp(-dot(p,ecs),0.0,r*acs.y/ecs.y);return length(p)*sign(p.x);}float sdCross(in vec2 p,in float w,in float r){p=abs(p);return length(p-min(p.x+p.y,w)*0.5)-r;}float sdPlus(in vec2 p,in vec2 b,float r){p=abs(p);p=(p.y>p.x)? p.yx : p.xy;vec2 q=p-b;float k=max(q.y,q.x);vec2 w=(k>0.0)? q : vec2(b.y-p.x,-k);return sign(k)*length(max(w,0.0))+r;}uniform float uPixelRatio;uniform uint uRenderMode;flat in vec4 fColor;flat in float fPixelLength;in vec2 vFromCenter;out vec4 fragColor;void main(){float thickness=max(fPixelLength,min(0.05,fPixelLength*1.5*uPixelRatio));float antialias=min(thickness,fPixelLength*1.5);float radius=1.0-thickness;float ring=opOnion(sdCircle(vFromCenter,radius),thickness);float modeDistance=uRenderMode==MODE_HIGH_PASS_1 ?-antialias :-antialias*0.5;float distance=uRenderMode==MODE_HIGH_PASS_2 ? 0.0 : modeDistance;if(ring>distance){discard;}if(uRenderMode==MODE_HIGH_PASS_2){if(ring<-antialias){discard;}fragColor=vec4(fColor.rgb,smoothstep(0.0,antialias,abs(ring)));}else{fragColor=vec4(fColor.rgb,1.0);}}"; // eslint-disable-line
+var nodeFS$1 = "#version 300 es\nprecision highp float;\n#define GLSLIFY 1\nfloat luminance_x(float x){return x<=0.04045 ? x/12.92 : pow((x+0.055)/1.055,2.4);}float color_l(float l){return min(1.0,max(0.0,l<=0.0031308 ? l*12.92 : pow(l*1.055,1.0/2.4)-0.055));}float rgb2luminance(vec3 color){float r=luminance_x(color.r);float g=luminance_x(color.g);float b=luminance_x(color.b);return 0.2126*r+0.7152*g+0.0722*b;}vec3 setLuminance(vec3 color,float luminance){float r=luminance_x(color.r)*0.2126;float g=luminance_x(color.g)*0.7152;float b=luminance_x(color.b)*0.0722;float colorLuminance=r+g+b;float tr=luminance*(r/colorLuminance);float tg=luminance*(g/colorLuminance);float tb=luminance*(b/colorLuminance);float rr=color_l(tr/0.2126);float rg=color_l(tg/0.7152);float rb=color_l(tb/0.0722);return vec3(rr,rg,rb);}float findDarker(float luminance,float contrast){return(contrast*luminance)+(0.05*contrast)-0.05;}float findLighter(float luminance,float contrast){return(luminance+0.05-(0.05*contrast))/contrast;}vec3 contrastingColor(vec3 color,float contrast){float luminance=rgb2luminance(color);float darker=findDarker(luminance,contrast);float lighter=findLighter(luminance,contrast);float targetLuminance;if(darker<0.0||darker>1.0){targetLuminance=lighter;}else if(lighter<0.0||lighter>1.0){targetLuminance=darker;}else{targetLuminance=abs(luminance-lighter)<abs(darker-luminance)? lighter : darker;}return setLuminance(color,targetLuminance);}vec3 desaturateColor(vec3 color,float amount){float l=rgb2luminance(color);vec3 gray=vec3(l,l,l);return mix(color,gray,amount);}uniform vec4 uClearColor;uniform float uDesaturate;uniform float uFade;uniform float uAlpha;vec4 outputColor(vec4 color){vec3 ret=vec3(desaturateColor(color.rgb,uDesaturate));ret=mix(ret,uClearColor.rgb,uFade);return vec4(ret,color.a*uAlpha);}\n#define MODE_DRAFT 0u\n#define MODE_MEDIUM 1u\n#define MODE_HIGH_PASS_1 2u\n#define MODE_HIGH_PASS_2 3u\n#define MODE_PICKING 4u\nfloat opRound(in float d,in float r){return d-r;}float opOnion(in float d,in float r){return abs(d)-r;}float sdCircle(in vec2 p,in float r){return length(p)-r;}float sdEquilateralTriangle(in vec2 p,in float r){const float k=sqrt(3.0);p.x=abs(p.x)-r;p.y=p.y+(r)/k;if(p.x+k*p.y>0.0){p=vec2(p.x-k*p.y,-k*p.x-p.y)/2.0;}p.x-=clamp(p.x,-2.0*r,0.0);return-length(p)*sign(p.y);}float sdPentagon(in vec2 p,in float r){const vec3 k=vec3(0.809016994,0.587785252,0.726542528);p.y=-(p.y)*1.25;p.x=abs(p.x)*1.25;p-=2.0*min(dot(vec2(-k.x,k.y),p),0.0)*vec2(-k.x,k.y);p-=2.0*min(dot(vec2(k.x,k.y),p),0.0)*vec2(k.x,k.y);p-=vec2(clamp(p.x,-r*k.z,r*k.z),r);return length(p)*sign(p.y);}float sdOctagon(in vec2 p,in float r){const vec3 k=vec3(-0.9238795325,0.3826834323,0.4142135623);p=abs(p)*1.1;p-=2.0*min(dot(vec2(k.x,k.y),p),0.0)*vec2(k.x,k.y);p-=2.0*min(dot(vec2(-k.x,k.y),p),0.0)*vec2(-k.x,k.y);p-=vec2(clamp(p.x,-k.z*r,k.z*r),r);return length(p)*sign(p.y);}float sdStar(in vec2 p,in float r,in uint n,in float m){float an=3.141593/float(n);float en=3.141593/m;vec2 acs=vec2(cos(an),sin(an));vec2 ecs=vec2(cos(en),sin(en));float bn=mod(atan(p.x,p.y),2.0*an)-an;p=length(p)*vec2(cos(bn),abs(sin(bn)));p-=r*acs;p+=ecs*clamp(-dot(p,ecs),0.0,r*acs.y/ecs.y);return length(p)*sign(p.x);}float sdCross(in vec2 p,in float w,in float r){p=abs(p);return length(p-min(p.x+p.y,w)*0.5)-r;}float sdPlus(in vec2 p,in vec2 b,float r){p=abs(p);p=(p.y>p.x)? p.yx : p.xy;vec2 q=p-b;float k=max(q.y,q.x);vec2 w=(k>0.0)? q : vec2(b.y-p.x,-k);return sign(k)*length(max(w,0.0))+r;}uniform float uPixelRatio;uniform uint uRenderMode;flat in vec4 fColor;flat in float fPixelLength;in vec2 vFromCenter;out vec4 fragColor;void main(){float thickness=max(fPixelLength,min(0.05,fPixelLength*1.5*uPixelRatio));float antialias=min(thickness,fPixelLength*1.5);float radius=1.0-thickness;float ring=opOnion(sdCircle(vFromCenter,radius),thickness);float modeDistance=uRenderMode==MODE_HIGH_PASS_1 ?-antialias :-antialias*0.5;float distance=uRenderMode==MODE_HIGH_PASS_2 ? 0.0 : modeDistance;if(ring>distance){discard;}if(uRenderMode==MODE_HIGH_PASS_2){if(ring<-antialias){discard;}fragColor=outputColor(vec4(fColor.rgb,smoothstep(0.0,antialias,abs(ring))));}else{fragColor=outputColor(vec4(fColor.rgb,1.0));}}"; // eslint-disable-line
 
 class Ring extends Circle {
     getDrawShaders() {
@@ -25964,7 +26470,7 @@ class Ring extends Circle {
     }
 }
 
-var nodeFS$2 = "#version 300 es\nprecision highp float;\n#define GLSLIFY 1\n#define MODE_DRAFT 0u\n#define MODE_MEDIUM 1u\n#define MODE_HIGH_PASS_1 2u\n#define MODE_HIGH_PASS_2 3u\n#define MODE_PICKING 4u\nfloat opRound(in float d,in float r){return d-r;}float opOnion(in float d,in float r){return abs(d)-r;}float sdCircle(in vec2 p,in float r){return length(p)-r;}float sdEquilateralTriangle(in vec2 p,in float r){const float k=sqrt(3.0);p.x=abs(p.x)-r;p.y=p.y+(r)/k;if(p.x+k*p.y>0.0){p=vec2(p.x-k*p.y,-k*p.x-p.y)/2.0;}p.x-=clamp(p.x,-2.0*r,0.0);return-length(p)*sign(p.y);}float sdPentagon(in vec2 p,in float r){const vec3 k=vec3(0.809016994,0.587785252,0.726542528);p.y=-(p.y)*1.25;p.x=abs(p.x)*1.25;p-=2.0*min(dot(vec2(-k.x,k.y),p),0.0)*vec2(-k.x,k.y);p-=2.0*min(dot(vec2(k.x,k.y),p),0.0)*vec2(k.x,k.y);p-=vec2(clamp(p.x,-r*k.z,r*k.z),r);return length(p)*sign(p.y);}float sdOctagon(in vec2 p,in float r){const vec3 k=vec3(-0.9238795325,0.3826834323,0.4142135623);p=abs(p)*1.1;p-=2.0*min(dot(vec2(k.x,k.y),p),0.0)*vec2(k.x,k.y);p-=2.0*min(dot(vec2(-k.x,k.y),p),0.0)*vec2(-k.x,k.y);p-=vec2(clamp(p.x,-k.z*r,k.z*r),r);return length(p)*sign(p.y);}float sdStar(in vec2 p,in float r,in uint n,in float m){float an=3.141593/float(n);float en=3.141593/m;vec2 acs=vec2(cos(an),sin(an));vec2 ecs=vec2(cos(en),sin(en));float bn=mod(atan(p.x,p.y),2.0*an)-an;p=length(p)*vec2(cos(bn),abs(sin(bn)));p-=r*acs;p+=ecs*clamp(-dot(p,ecs),0.0,r*acs.y/ecs.y);return length(p)*sign(p.x);}float sdCross(in vec2 p,in float w,in float r){p=abs(p);return length(p-min(p.x+p.y,w)*0.5)-r;}float sdPlus(in vec2 p,in vec2 b,float r){p=abs(p);p=(p.y>p.x)? p.yx : p.xy;vec2 q=p-b;float k=max(q.y,q.x);vec2 w=(k>0.0)? q : vec2(b.y-p.x,-k);return sign(k)*length(max(w,0.0))+r;}uniform float uPixelRatio;uniform uint uRenderMode;flat in vec4 fColor;flat in float fPixelLength;in vec2 vFromCenter;out vec4 fragColor;void main(){float antialias=fPixelLength*1.5;float sd=sdEquilateralTriangle(vFromCenter,0.85);float outline=opOnion(sd,min(0.15,fPixelLength*6.0*uPixelRatio));float modeDistance=uRenderMode==MODE_HIGH_PASS_1 ?-antialias :-antialias*0.5;float distance=uRenderMode==MODE_HIGH_PASS_2 ? 0.0 : modeDistance;if(sd>distance){discard;}vec3 color=fColor.rgb*(1.0-0.25*smoothstep(antialias,0.0,outline));if(uRenderMode==MODE_HIGH_PASS_2){if(sd<-antialias){discard;}fragColor=vec4(color,smoothstep(0.0,antialias,abs(sd)));}else{fragColor=vec4(color,1.0);}}"; // eslint-disable-line
+var nodeFS$2 = "#version 300 es\nprecision highp float;\n#define GLSLIFY 1\nfloat luminance_x(float x){return x<=0.04045 ? x/12.92 : pow((x+0.055)/1.055,2.4);}float color_l(float l){return min(1.0,max(0.0,l<=0.0031308 ? l*12.92 : pow(l*1.055,1.0/2.4)-0.055));}float rgb2luminance(vec3 color){float r=luminance_x(color.r);float g=luminance_x(color.g);float b=luminance_x(color.b);return 0.2126*r+0.7152*g+0.0722*b;}vec3 setLuminance(vec3 color,float luminance){float r=luminance_x(color.r)*0.2126;float g=luminance_x(color.g)*0.7152;float b=luminance_x(color.b)*0.0722;float colorLuminance=r+g+b;float tr=luminance*(r/colorLuminance);float tg=luminance*(g/colorLuminance);float tb=luminance*(b/colorLuminance);float rr=color_l(tr/0.2126);float rg=color_l(tg/0.7152);float rb=color_l(tb/0.0722);return vec3(rr,rg,rb);}float findDarker(float luminance,float contrast){return(contrast*luminance)+(0.05*contrast)-0.05;}float findLighter(float luminance,float contrast){return(luminance+0.05-(0.05*contrast))/contrast;}vec3 contrastingColor(vec3 color,float contrast){float luminance=rgb2luminance(color);float darker=findDarker(luminance,contrast);float lighter=findLighter(luminance,contrast);float targetLuminance;if(darker<0.0||darker>1.0){targetLuminance=lighter;}else if(lighter<0.0||lighter>1.0){targetLuminance=darker;}else{targetLuminance=abs(luminance-lighter)<abs(darker-luminance)? lighter : darker;}return setLuminance(color,targetLuminance);}vec3 desaturateColor(vec3 color,float amount){float l=rgb2luminance(color);vec3 gray=vec3(l,l,l);return mix(color,gray,amount);}uniform vec4 uClearColor;uniform float uDesaturate;uniform float uFade;uniform float uAlpha;vec4 outputColor(vec4 color){vec3 ret=vec3(desaturateColor(color.rgb,uDesaturate));ret=mix(ret,uClearColor.rgb,uFade);return vec4(ret,color.a*uAlpha);}\n#define MODE_DRAFT 0u\n#define MODE_MEDIUM 1u\n#define MODE_HIGH_PASS_1 2u\n#define MODE_HIGH_PASS_2 3u\n#define MODE_PICKING 4u\nfloat opRound(in float d,in float r){return d-r;}float opOnion(in float d,in float r){return abs(d)-r;}float sdCircle(in vec2 p,in float r){return length(p)-r;}float sdEquilateralTriangle(in vec2 p,in float r){const float k=sqrt(3.0);p.x=abs(p.x)-r;p.y=p.y+(r)/k;if(p.x+k*p.y>0.0){p=vec2(p.x-k*p.y,-k*p.x-p.y)/2.0;}p.x-=clamp(p.x,-2.0*r,0.0);return-length(p)*sign(p.y);}float sdPentagon(in vec2 p,in float r){const vec3 k=vec3(0.809016994,0.587785252,0.726542528);p.y=-(p.y)*1.25;p.x=abs(p.x)*1.25;p-=2.0*min(dot(vec2(-k.x,k.y),p),0.0)*vec2(-k.x,k.y);p-=2.0*min(dot(vec2(k.x,k.y),p),0.0)*vec2(k.x,k.y);p-=vec2(clamp(p.x,-r*k.z,r*k.z),r);return length(p)*sign(p.y);}float sdOctagon(in vec2 p,in float r){const vec3 k=vec3(-0.9238795325,0.3826834323,0.4142135623);p=abs(p)*1.1;p-=2.0*min(dot(vec2(k.x,k.y),p),0.0)*vec2(k.x,k.y);p-=2.0*min(dot(vec2(-k.x,k.y),p),0.0)*vec2(-k.x,k.y);p-=vec2(clamp(p.x,-k.z*r,k.z*r),r);return length(p)*sign(p.y);}float sdStar(in vec2 p,in float r,in uint n,in float m){float an=3.141593/float(n);float en=3.141593/m;vec2 acs=vec2(cos(an),sin(an));vec2 ecs=vec2(cos(en),sin(en));float bn=mod(atan(p.x,p.y),2.0*an)-an;p=length(p)*vec2(cos(bn),abs(sin(bn)));p-=r*acs;p+=ecs*clamp(-dot(p,ecs),0.0,r*acs.y/ecs.y);return length(p)*sign(p.x);}float sdCross(in vec2 p,in float w,in float r){p=abs(p);return length(p-min(p.x+p.y,w)*0.5)-r;}float sdPlus(in vec2 p,in vec2 b,float r){p=abs(p);p=(p.y>p.x)? p.yx : p.xy;vec2 q=p-b;float k=max(q.y,q.x);vec2 w=(k>0.0)? q : vec2(b.y-p.x,-k);return sign(k)*length(max(w,0.0))+r;}uniform float uPixelRatio;uniform uint uRenderMode;flat in vec4 fColor;flat in float fPixelLength;in vec2 vFromCenter;out vec4 fragColor;void main(){float antialias=fPixelLength*1.5;float sd=sdEquilateralTriangle(vFromCenter,0.85);float outline=opOnion(sd,min(0.15,fPixelLength*6.0*uPixelRatio));float modeDistance=uRenderMode==MODE_HIGH_PASS_1 ?-antialias :-antialias*0.5;float distance=uRenderMode==MODE_HIGH_PASS_2 ? 0.0 : modeDistance;if(sd>distance){discard;}vec3 color=fColor.rgb*(1.0-0.25*smoothstep(antialias,0.0,outline));if(uRenderMode==MODE_HIGH_PASS_2){if(sd<-antialias){discard;}fragColor=outputColor(vec4(color,smoothstep(0.0,antialias,abs(sd))));}else{fragColor=outputColor(vec4(color,1.0));}}"; // eslint-disable-line
 
 var pickingFS$1 = "#version 300 es\nprecision highp float;\n#define GLSLIFY 1\nfloat opRound(in float d,in float r){return d-r;}float opOnion(in float d,in float r){return abs(d)-r;}float sdCircle(in vec2 p,in float r){return length(p)-r;}float sdEquilateralTriangle(in vec2 p,in float r){const float k=sqrt(3.0);p.x=abs(p.x)-r;p.y=p.y+(r)/k;if(p.x+k*p.y>0.0){p=vec2(p.x-k*p.y,-k*p.x-p.y)/2.0;}p.x-=clamp(p.x,-2.0*r,0.0);return-length(p)*sign(p.y);}float sdPentagon(in vec2 p,in float r){const vec3 k=vec3(0.809016994,0.587785252,0.726542528);p.y=-(p.y)*1.25;p.x=abs(p.x)*1.25;p-=2.0*min(dot(vec2(-k.x,k.y),p),0.0)*vec2(-k.x,k.y);p-=2.0*min(dot(vec2(k.x,k.y),p),0.0)*vec2(k.x,k.y);p-=vec2(clamp(p.x,-r*k.z,r*k.z),r);return length(p)*sign(p.y);}float sdOctagon(in vec2 p,in float r){const vec3 k=vec3(-0.9238795325,0.3826834323,0.4142135623);p=abs(p)*1.1;p-=2.0*min(dot(vec2(k.x,k.y),p),0.0)*vec2(k.x,k.y);p-=2.0*min(dot(vec2(-k.x,k.y),p),0.0)*vec2(-k.x,k.y);p-=vec2(clamp(p.x,-k.z*r,k.z*r),r);return length(p)*sign(p.y);}float sdStar(in vec2 p,in float r,in uint n,in float m){float an=3.141593/float(n);float en=3.141593/m;vec2 acs=vec2(cos(an),sin(an));vec2 ecs=vec2(cos(en),sin(en));float bn=mod(atan(p.x,p.y),2.0*an)-an;p=length(p)*vec2(cos(bn),abs(sin(bn)));p-=r*acs;p+=ecs*clamp(-dot(p,ecs),0.0,r*acs.y/ecs.y);return length(p)*sign(p.x);}float sdCross(in vec2 p,in float w,in float r){p=abs(p);return length(p-min(p.x+p.y,w)*0.5)-r;}float sdPlus(in vec2 p,in vec2 b,float r){p=abs(p);p=(p.y>p.x)? p.yx : p.xy;vec2 q=p-b;float k=max(q.y,q.x);vec2 w=(k>0.0)? q : vec2(b.y-p.x,-k);return sign(k)*length(max(w,0.0))+r;}flat in vec4 fColor;flat in float fPixelLength;in vec2 vFromCenter;out vec4 fragColor;void main(){float sd=sdEquilateralTriangle(vFromCenter,1.0);if(sd>0.0){discard;}fragColor=fColor;}"; // eslint-disable-line
 
@@ -25981,7 +26487,7 @@ class Triangle extends Circle {
     }
 }
 
-var nodeFS$3 = "#version 300 es\nprecision highp float;\n#define GLSLIFY 1\n#define MODE_DRAFT 0u\n#define MODE_MEDIUM 1u\n#define MODE_HIGH_PASS_1 2u\n#define MODE_HIGH_PASS_2 3u\n#define MODE_PICKING 4u\nfloat opRound(in float d,in float r){return d-r;}float opOnion(in float d,in float r){return abs(d)-r;}float sdCircle(in vec2 p,in float r){return length(p)-r;}float sdEquilateralTriangle(in vec2 p,in float r){const float k=sqrt(3.0);p.x=abs(p.x)-r;p.y=p.y+(r)/k;if(p.x+k*p.y>0.0){p=vec2(p.x-k*p.y,-k*p.x-p.y)/2.0;}p.x-=clamp(p.x,-2.0*r,0.0);return-length(p)*sign(p.y);}float sdPentagon(in vec2 p,in float r){const vec3 k=vec3(0.809016994,0.587785252,0.726542528);p.y=-(p.y)*1.25;p.x=abs(p.x)*1.25;p-=2.0*min(dot(vec2(-k.x,k.y),p),0.0)*vec2(-k.x,k.y);p-=2.0*min(dot(vec2(k.x,k.y),p),0.0)*vec2(k.x,k.y);p-=vec2(clamp(p.x,-r*k.z,r*k.z),r);return length(p)*sign(p.y);}float sdOctagon(in vec2 p,in float r){const vec3 k=vec3(-0.9238795325,0.3826834323,0.4142135623);p=abs(p)*1.1;p-=2.0*min(dot(vec2(k.x,k.y),p),0.0)*vec2(k.x,k.y);p-=2.0*min(dot(vec2(-k.x,k.y),p),0.0)*vec2(-k.x,k.y);p-=vec2(clamp(p.x,-k.z*r,k.z*r),r);return length(p)*sign(p.y);}float sdStar(in vec2 p,in float r,in uint n,in float m){float an=3.141593/float(n);float en=3.141593/m;vec2 acs=vec2(cos(an),sin(an));vec2 ecs=vec2(cos(en),sin(en));float bn=mod(atan(p.x,p.y),2.0*an)-an;p=length(p)*vec2(cos(bn),abs(sin(bn)));p-=r*acs;p+=ecs*clamp(-dot(p,ecs),0.0,r*acs.y/ecs.y);return length(p)*sign(p.x);}float sdCross(in vec2 p,in float w,in float r){p=abs(p);return length(p-min(p.x+p.y,w)*0.5)-r;}float sdPlus(in vec2 p,in vec2 b,float r){p=abs(p);p=(p.y>p.x)? p.yx : p.xy;vec2 q=p-b;float k=max(q.y,q.x);vec2 w=(k>0.0)? q : vec2(b.y-p.x,-k);return sign(k)*length(max(w,0.0))+r;}uniform float uPixelRatio;uniform uint uRenderMode;flat in vec4 fColor;flat in float fPixelLength;in vec2 vFromCenter;out vec4 fragColor;void main(){float antialias=fPixelLength*1.5;float sd=sdPentagon(vFromCenter,1.0);float outline=opOnion(sd,min(0.15,fPixelLength*6.0*uPixelRatio));float modeDistance=uRenderMode==MODE_HIGH_PASS_1 ?-antialias :-antialias*0.5;float distance=uRenderMode==MODE_HIGH_PASS_2 ? 0.0 : modeDistance;if(sd>distance){discard;}vec3 color=fColor.rgb*(1.0-0.25*smoothstep(antialias,0.0,outline));if(uRenderMode==MODE_HIGH_PASS_2){if(sd<-antialias){discard;}fragColor=vec4(color,smoothstep(0.0,antialias,abs(sd)));}else{fragColor=vec4(color,1.0);}}"; // eslint-disable-line
+var nodeFS$3 = "#version 300 es\nprecision highp float;\n#define GLSLIFY 1\nfloat luminance_x(float x){return x<=0.04045 ? x/12.92 : pow((x+0.055)/1.055,2.4);}float color_l(float l){return min(1.0,max(0.0,l<=0.0031308 ? l*12.92 : pow(l*1.055,1.0/2.4)-0.055));}float rgb2luminance(vec3 color){float r=luminance_x(color.r);float g=luminance_x(color.g);float b=luminance_x(color.b);return 0.2126*r+0.7152*g+0.0722*b;}vec3 setLuminance(vec3 color,float luminance){float r=luminance_x(color.r)*0.2126;float g=luminance_x(color.g)*0.7152;float b=luminance_x(color.b)*0.0722;float colorLuminance=r+g+b;float tr=luminance*(r/colorLuminance);float tg=luminance*(g/colorLuminance);float tb=luminance*(b/colorLuminance);float rr=color_l(tr/0.2126);float rg=color_l(tg/0.7152);float rb=color_l(tb/0.0722);return vec3(rr,rg,rb);}float findDarker(float luminance,float contrast){return(contrast*luminance)+(0.05*contrast)-0.05;}float findLighter(float luminance,float contrast){return(luminance+0.05-(0.05*contrast))/contrast;}vec3 contrastingColor(vec3 color,float contrast){float luminance=rgb2luminance(color);float darker=findDarker(luminance,contrast);float lighter=findLighter(luminance,contrast);float targetLuminance;if(darker<0.0||darker>1.0){targetLuminance=lighter;}else if(lighter<0.0||lighter>1.0){targetLuminance=darker;}else{targetLuminance=abs(luminance-lighter)<abs(darker-luminance)? lighter : darker;}return setLuminance(color,targetLuminance);}vec3 desaturateColor(vec3 color,float amount){float l=rgb2luminance(color);vec3 gray=vec3(l,l,l);return mix(color,gray,amount);}uniform vec4 uClearColor;uniform float uDesaturate;uniform float uFade;uniform float uAlpha;vec4 outputColor(vec4 color){vec3 ret=vec3(desaturateColor(color.rgb,uDesaturate));ret=mix(ret,uClearColor.rgb,uFade);return vec4(ret,color.a*uAlpha);}\n#define MODE_DRAFT 0u\n#define MODE_MEDIUM 1u\n#define MODE_HIGH_PASS_1 2u\n#define MODE_HIGH_PASS_2 3u\n#define MODE_PICKING 4u\nfloat opRound(in float d,in float r){return d-r;}float opOnion(in float d,in float r){return abs(d)-r;}float sdCircle(in vec2 p,in float r){return length(p)-r;}float sdEquilateralTriangle(in vec2 p,in float r){const float k=sqrt(3.0);p.x=abs(p.x)-r;p.y=p.y+(r)/k;if(p.x+k*p.y>0.0){p=vec2(p.x-k*p.y,-k*p.x-p.y)/2.0;}p.x-=clamp(p.x,-2.0*r,0.0);return-length(p)*sign(p.y);}float sdPentagon(in vec2 p,in float r){const vec3 k=vec3(0.809016994,0.587785252,0.726542528);p.y=-(p.y)*1.25;p.x=abs(p.x)*1.25;p-=2.0*min(dot(vec2(-k.x,k.y),p),0.0)*vec2(-k.x,k.y);p-=2.0*min(dot(vec2(k.x,k.y),p),0.0)*vec2(k.x,k.y);p-=vec2(clamp(p.x,-r*k.z,r*k.z),r);return length(p)*sign(p.y);}float sdOctagon(in vec2 p,in float r){const vec3 k=vec3(-0.9238795325,0.3826834323,0.4142135623);p=abs(p)*1.1;p-=2.0*min(dot(vec2(k.x,k.y),p),0.0)*vec2(k.x,k.y);p-=2.0*min(dot(vec2(-k.x,k.y),p),0.0)*vec2(-k.x,k.y);p-=vec2(clamp(p.x,-k.z*r,k.z*r),r);return length(p)*sign(p.y);}float sdStar(in vec2 p,in float r,in uint n,in float m){float an=3.141593/float(n);float en=3.141593/m;vec2 acs=vec2(cos(an),sin(an));vec2 ecs=vec2(cos(en),sin(en));float bn=mod(atan(p.x,p.y),2.0*an)-an;p=length(p)*vec2(cos(bn),abs(sin(bn)));p-=r*acs;p+=ecs*clamp(-dot(p,ecs),0.0,r*acs.y/ecs.y);return length(p)*sign(p.x);}float sdCross(in vec2 p,in float w,in float r){p=abs(p);return length(p-min(p.x+p.y,w)*0.5)-r;}float sdPlus(in vec2 p,in vec2 b,float r){p=abs(p);p=(p.y>p.x)? p.yx : p.xy;vec2 q=p-b;float k=max(q.y,q.x);vec2 w=(k>0.0)? q : vec2(b.y-p.x,-k);return sign(k)*length(max(w,0.0))+r;}uniform float uPixelRatio;uniform uint uRenderMode;flat in vec4 fColor;flat in float fPixelLength;in vec2 vFromCenter;out vec4 fragColor;void main(){float antialias=fPixelLength*1.5;float sd=sdPentagon(vFromCenter,1.0);float outline=opOnion(sd,min(0.15,fPixelLength*6.0*uPixelRatio));float modeDistance=uRenderMode==MODE_HIGH_PASS_1 ?-antialias :-antialias*0.5;float distance=uRenderMode==MODE_HIGH_PASS_2 ? 0.0 : modeDistance;if(sd>distance){discard;}vec3 color=fColor.rgb*(1.0-0.25*smoothstep(antialias,0.0,outline));if(uRenderMode==MODE_HIGH_PASS_2){if(sd<-antialias){discard;}fragColor=outputColor(vec4(color,smoothstep(0.0,antialias,abs(sd))));}else{fragColor=outputColor(vec4(color,1.0));}}"; // eslint-disable-line
 
 var pickingFS$2 = "#version 300 es\nprecision highp float;\n#define GLSLIFY 1\nfloat opRound(in float d,in float r){return d-r;}float opOnion(in float d,in float r){return abs(d)-r;}float sdCircle(in vec2 p,in float r){return length(p)-r;}float sdEquilateralTriangle(in vec2 p,in float r){const float k=sqrt(3.0);p.x=abs(p.x)-r;p.y=p.y+(r)/k;if(p.x+k*p.y>0.0){p=vec2(p.x-k*p.y,-k*p.x-p.y)/2.0;}p.x-=clamp(p.x,-2.0*r,0.0);return-length(p)*sign(p.y);}float sdPentagon(in vec2 p,in float r){const vec3 k=vec3(0.809016994,0.587785252,0.726542528);p.y=-(p.y)*1.25;p.x=abs(p.x)*1.25;p-=2.0*min(dot(vec2(-k.x,k.y),p),0.0)*vec2(-k.x,k.y);p-=2.0*min(dot(vec2(k.x,k.y),p),0.0)*vec2(k.x,k.y);p-=vec2(clamp(p.x,-r*k.z,r*k.z),r);return length(p)*sign(p.y);}float sdOctagon(in vec2 p,in float r){const vec3 k=vec3(-0.9238795325,0.3826834323,0.4142135623);p=abs(p)*1.1;p-=2.0*min(dot(vec2(k.x,k.y),p),0.0)*vec2(k.x,k.y);p-=2.0*min(dot(vec2(-k.x,k.y),p),0.0)*vec2(-k.x,k.y);p-=vec2(clamp(p.x,-k.z*r,k.z*r),r);return length(p)*sign(p.y);}float sdStar(in vec2 p,in float r,in uint n,in float m){float an=3.141593/float(n);float en=3.141593/m;vec2 acs=vec2(cos(an),sin(an));vec2 ecs=vec2(cos(en),sin(en));float bn=mod(atan(p.x,p.y),2.0*an)-an;p=length(p)*vec2(cos(bn),abs(sin(bn)));p-=r*acs;p+=ecs*clamp(-dot(p,ecs),0.0,r*acs.y/ecs.y);return length(p)*sign(p.x);}float sdCross(in vec2 p,in float w,in float r){p=abs(p);return length(p-min(p.x+p.y,w)*0.5)-r;}float sdPlus(in vec2 p,in vec2 b,float r){p=abs(p);p=(p.y>p.x)? p.yx : p.xy;vec2 q=p-b;float k=max(q.y,q.x);vec2 w=(k>0.0)? q : vec2(b.y-p.x,-k);return sign(k)*length(max(w,0.0))+r;}flat in vec4 fColor;flat in float fPixelLength;in vec2 vFromCenter;out vec4 fragColor;void main(){float sd=sdPentagon(vFromCenter,1.0);if(sd>0.0){discard;}fragColor=fColor;}"; // eslint-disable-line
 
@@ -25998,7 +26504,7 @@ class Pentagon extends Circle {
     }
 }
 
-var nodeFS$4 = "#version 300 es\nprecision highp float;\n#define GLSLIFY 1\n#define MODE_DRAFT 0u\n#define MODE_MEDIUM 1u\n#define MODE_HIGH_PASS_1 2u\n#define MODE_HIGH_PASS_2 3u\n#define MODE_PICKING 4u\nfloat opRound(in float d,in float r){return d-r;}float opOnion(in float d,in float r){return abs(d)-r;}float sdCircle(in vec2 p,in float r){return length(p)-r;}float sdEquilateralTriangle(in vec2 p,in float r){const float k=sqrt(3.0);p.x=abs(p.x)-r;p.y=p.y+(r)/k;if(p.x+k*p.y>0.0){p=vec2(p.x-k*p.y,-k*p.x-p.y)/2.0;}p.x-=clamp(p.x,-2.0*r,0.0);return-length(p)*sign(p.y);}float sdPentagon(in vec2 p,in float r){const vec3 k=vec3(0.809016994,0.587785252,0.726542528);p.y=-(p.y)*1.25;p.x=abs(p.x)*1.25;p-=2.0*min(dot(vec2(-k.x,k.y),p),0.0)*vec2(-k.x,k.y);p-=2.0*min(dot(vec2(k.x,k.y),p),0.0)*vec2(k.x,k.y);p-=vec2(clamp(p.x,-r*k.z,r*k.z),r);return length(p)*sign(p.y);}float sdOctagon(in vec2 p,in float r){const vec3 k=vec3(-0.9238795325,0.3826834323,0.4142135623);p=abs(p)*1.1;p-=2.0*min(dot(vec2(k.x,k.y),p),0.0)*vec2(k.x,k.y);p-=2.0*min(dot(vec2(-k.x,k.y),p),0.0)*vec2(-k.x,k.y);p-=vec2(clamp(p.x,-k.z*r,k.z*r),r);return length(p)*sign(p.y);}float sdStar(in vec2 p,in float r,in uint n,in float m){float an=3.141593/float(n);float en=3.141593/m;vec2 acs=vec2(cos(an),sin(an));vec2 ecs=vec2(cos(en),sin(en));float bn=mod(atan(p.x,p.y),2.0*an)-an;p=length(p)*vec2(cos(bn),abs(sin(bn)));p-=r*acs;p+=ecs*clamp(-dot(p,ecs),0.0,r*acs.y/ecs.y);return length(p)*sign(p.x);}float sdCross(in vec2 p,in float w,in float r){p=abs(p);return length(p-min(p.x+p.y,w)*0.5)-r;}float sdPlus(in vec2 p,in vec2 b,float r){p=abs(p);p=(p.y>p.x)? p.yx : p.xy;vec2 q=p-b;float k=max(q.y,q.x);vec2 w=(k>0.0)? q : vec2(b.y-p.x,-k);return sign(k)*length(max(w,0.0))+r;}uniform float uPixelRatio;uniform uint uRenderMode;flat in vec4 fColor;flat in float fPixelLength;in vec2 vFromCenter;out vec4 fragColor;void main(){float antialias=fPixelLength*1.5;float sd=sdOctagon(vFromCenter,1.0);float outline=opOnion(sd,min(0.15,fPixelLength*6.0*uPixelRatio));float modeDistance=uRenderMode==MODE_HIGH_PASS_1 ?-antialias :-antialias*0.5;float distance=uRenderMode==MODE_HIGH_PASS_2 ? 0.0 : modeDistance;if(sd>distance){discard;}vec3 color=fColor.rgb*(1.0-0.25*smoothstep(antialias,0.0,outline));if(uRenderMode==MODE_HIGH_PASS_2){if(sd<-antialias){discard;}fragColor=vec4(color,smoothstep(0.0,antialias,abs(sd)));}else{fragColor=vec4(color,1.0);}}"; // eslint-disable-line
+var nodeFS$4 = "#version 300 es\nprecision highp float;\n#define GLSLIFY 1\nfloat luminance_x(float x){return x<=0.04045 ? x/12.92 : pow((x+0.055)/1.055,2.4);}float color_l(float l){return min(1.0,max(0.0,l<=0.0031308 ? l*12.92 : pow(l*1.055,1.0/2.4)-0.055));}float rgb2luminance(vec3 color){float r=luminance_x(color.r);float g=luminance_x(color.g);float b=luminance_x(color.b);return 0.2126*r+0.7152*g+0.0722*b;}vec3 setLuminance(vec3 color,float luminance){float r=luminance_x(color.r)*0.2126;float g=luminance_x(color.g)*0.7152;float b=luminance_x(color.b)*0.0722;float colorLuminance=r+g+b;float tr=luminance*(r/colorLuminance);float tg=luminance*(g/colorLuminance);float tb=luminance*(b/colorLuminance);float rr=color_l(tr/0.2126);float rg=color_l(tg/0.7152);float rb=color_l(tb/0.0722);return vec3(rr,rg,rb);}float findDarker(float luminance,float contrast){return(contrast*luminance)+(0.05*contrast)-0.05;}float findLighter(float luminance,float contrast){return(luminance+0.05-(0.05*contrast))/contrast;}vec3 contrastingColor(vec3 color,float contrast){float luminance=rgb2luminance(color);float darker=findDarker(luminance,contrast);float lighter=findLighter(luminance,contrast);float targetLuminance;if(darker<0.0||darker>1.0){targetLuminance=lighter;}else if(lighter<0.0||lighter>1.0){targetLuminance=darker;}else{targetLuminance=abs(luminance-lighter)<abs(darker-luminance)? lighter : darker;}return setLuminance(color,targetLuminance);}vec3 desaturateColor(vec3 color,float amount){float l=rgb2luminance(color);vec3 gray=vec3(l,l,l);return mix(color,gray,amount);}uniform vec4 uClearColor;uniform float uDesaturate;uniform float uFade;uniform float uAlpha;vec4 outputColor(vec4 color){vec3 ret=vec3(desaturateColor(color.rgb,uDesaturate));ret=mix(ret,uClearColor.rgb,uFade);return vec4(ret,color.a*uAlpha);}\n#define MODE_DRAFT 0u\n#define MODE_MEDIUM 1u\n#define MODE_HIGH_PASS_1 2u\n#define MODE_HIGH_PASS_2 3u\n#define MODE_PICKING 4u\nfloat opRound(in float d,in float r){return d-r;}float opOnion(in float d,in float r){return abs(d)-r;}float sdCircle(in vec2 p,in float r){return length(p)-r;}float sdEquilateralTriangle(in vec2 p,in float r){const float k=sqrt(3.0);p.x=abs(p.x)-r;p.y=p.y+(r)/k;if(p.x+k*p.y>0.0){p=vec2(p.x-k*p.y,-k*p.x-p.y)/2.0;}p.x-=clamp(p.x,-2.0*r,0.0);return-length(p)*sign(p.y);}float sdPentagon(in vec2 p,in float r){const vec3 k=vec3(0.809016994,0.587785252,0.726542528);p.y=-(p.y)*1.25;p.x=abs(p.x)*1.25;p-=2.0*min(dot(vec2(-k.x,k.y),p),0.0)*vec2(-k.x,k.y);p-=2.0*min(dot(vec2(k.x,k.y),p),0.0)*vec2(k.x,k.y);p-=vec2(clamp(p.x,-r*k.z,r*k.z),r);return length(p)*sign(p.y);}float sdOctagon(in vec2 p,in float r){const vec3 k=vec3(-0.9238795325,0.3826834323,0.4142135623);p=abs(p)*1.1;p-=2.0*min(dot(vec2(k.x,k.y),p),0.0)*vec2(k.x,k.y);p-=2.0*min(dot(vec2(-k.x,k.y),p),0.0)*vec2(-k.x,k.y);p-=vec2(clamp(p.x,-k.z*r,k.z*r),r);return length(p)*sign(p.y);}float sdStar(in vec2 p,in float r,in uint n,in float m){float an=3.141593/float(n);float en=3.141593/m;vec2 acs=vec2(cos(an),sin(an));vec2 ecs=vec2(cos(en),sin(en));float bn=mod(atan(p.x,p.y),2.0*an)-an;p=length(p)*vec2(cos(bn),abs(sin(bn)));p-=r*acs;p+=ecs*clamp(-dot(p,ecs),0.0,r*acs.y/ecs.y);return length(p)*sign(p.x);}float sdCross(in vec2 p,in float w,in float r){p=abs(p);return length(p-min(p.x+p.y,w)*0.5)-r;}float sdPlus(in vec2 p,in vec2 b,float r){p=abs(p);p=(p.y>p.x)? p.yx : p.xy;vec2 q=p-b;float k=max(q.y,q.x);vec2 w=(k>0.0)? q : vec2(b.y-p.x,-k);return sign(k)*length(max(w,0.0))+r;}uniform float uPixelRatio;uniform uint uRenderMode;flat in vec4 fColor;flat in float fPixelLength;in vec2 vFromCenter;out vec4 fragColor;void main(){float antialias=fPixelLength*1.5;float sd=sdOctagon(vFromCenter,1.0);float outline=opOnion(sd,min(0.15,fPixelLength*6.0*uPixelRatio));float modeDistance=uRenderMode==MODE_HIGH_PASS_1 ?-antialias :-antialias*0.5;float distance=uRenderMode==MODE_HIGH_PASS_2 ? 0.0 : modeDistance;if(sd>distance){discard;}vec3 color=fColor.rgb*(1.0-0.25*smoothstep(antialias,0.0,outline));if(uRenderMode==MODE_HIGH_PASS_2){if(sd<-antialias){discard;}fragColor=outputColor(vec4(color,smoothstep(0.0,antialias,abs(sd))));}else{fragColor=outputColor(vec4(color,1.0));}}"; // eslint-disable-line
 
 var pickingFS$3 = "#version 300 es\nprecision highp float;\n#define GLSLIFY 1\nfloat opRound(in float d,in float r){return d-r;}float opOnion(in float d,in float r){return abs(d)-r;}float sdCircle(in vec2 p,in float r){return length(p)-r;}float sdEquilateralTriangle(in vec2 p,in float r){const float k=sqrt(3.0);p.x=abs(p.x)-r;p.y=p.y+(r)/k;if(p.x+k*p.y>0.0){p=vec2(p.x-k*p.y,-k*p.x-p.y)/2.0;}p.x-=clamp(p.x,-2.0*r,0.0);return-length(p)*sign(p.y);}float sdPentagon(in vec2 p,in float r){const vec3 k=vec3(0.809016994,0.587785252,0.726542528);p.y=-(p.y)*1.25;p.x=abs(p.x)*1.25;p-=2.0*min(dot(vec2(-k.x,k.y),p),0.0)*vec2(-k.x,k.y);p-=2.0*min(dot(vec2(k.x,k.y),p),0.0)*vec2(k.x,k.y);p-=vec2(clamp(p.x,-r*k.z,r*k.z),r);return length(p)*sign(p.y);}float sdOctagon(in vec2 p,in float r){const vec3 k=vec3(-0.9238795325,0.3826834323,0.4142135623);p=abs(p)*1.1;p-=2.0*min(dot(vec2(k.x,k.y),p),0.0)*vec2(k.x,k.y);p-=2.0*min(dot(vec2(-k.x,k.y),p),0.0)*vec2(-k.x,k.y);p-=vec2(clamp(p.x,-k.z*r,k.z*r),r);return length(p)*sign(p.y);}float sdStar(in vec2 p,in float r,in uint n,in float m){float an=3.141593/float(n);float en=3.141593/m;vec2 acs=vec2(cos(an),sin(an));vec2 ecs=vec2(cos(en),sin(en));float bn=mod(atan(p.x,p.y),2.0*an)-an;p=length(p)*vec2(cos(bn),abs(sin(bn)));p-=r*acs;p+=ecs*clamp(-dot(p,ecs),0.0,r*acs.y/ecs.y);return length(p)*sign(p.x);}float sdCross(in vec2 p,in float w,in float r){p=abs(p);return length(p-min(p.x+p.y,w)*0.5)-r;}float sdPlus(in vec2 p,in vec2 b,float r){p=abs(p);p=(p.y>p.x)? p.yx : p.xy;vec2 q=p-b;float k=max(q.y,q.x);vec2 w=(k>0.0)? q : vec2(b.y-p.x,-k);return sign(k)*length(max(w,0.0))+r;}flat in vec4 fColor;flat in float fPixelLength;in vec2 vFromCenter;out vec4 fragColor;void main(){float sd=sdOctagon(vFromCenter,1.0);if(sd>0.0){discard;}fragColor=fColor;}"; // eslint-disable-line
 
@@ -26015,7 +26521,7 @@ class Octagon extends Circle {
     }
 }
 
-var nodeFS$5 = "#version 300 es\nprecision highp float;\n#define GLSLIFY 1\n#define MODE_DRAFT 0u\n#define MODE_MEDIUM 1u\n#define MODE_HIGH_PASS_1 2u\n#define MODE_HIGH_PASS_2 3u\n#define MODE_PICKING 4u\nfloat opRound(in float d,in float r){return d-r;}float opOnion(in float d,in float r){return abs(d)-r;}float sdCircle(in vec2 p,in float r){return length(p)-r;}float sdEquilateralTriangle(in vec2 p,in float r){const float k=sqrt(3.0);p.x=abs(p.x)-r;p.y=p.y+(r)/k;if(p.x+k*p.y>0.0){p=vec2(p.x-k*p.y,-k*p.x-p.y)/2.0;}p.x-=clamp(p.x,-2.0*r,0.0);return-length(p)*sign(p.y);}float sdPentagon(in vec2 p,in float r){const vec3 k=vec3(0.809016994,0.587785252,0.726542528);p.y=-(p.y)*1.25;p.x=abs(p.x)*1.25;p-=2.0*min(dot(vec2(-k.x,k.y),p),0.0)*vec2(-k.x,k.y);p-=2.0*min(dot(vec2(k.x,k.y),p),0.0)*vec2(k.x,k.y);p-=vec2(clamp(p.x,-r*k.z,r*k.z),r);return length(p)*sign(p.y);}float sdOctagon(in vec2 p,in float r){const vec3 k=vec3(-0.9238795325,0.3826834323,0.4142135623);p=abs(p)*1.1;p-=2.0*min(dot(vec2(k.x,k.y),p),0.0)*vec2(k.x,k.y);p-=2.0*min(dot(vec2(-k.x,k.y),p),0.0)*vec2(-k.x,k.y);p-=vec2(clamp(p.x,-k.z*r,k.z*r),r);return length(p)*sign(p.y);}float sdStar(in vec2 p,in float r,in uint n,in float m){float an=3.141593/float(n);float en=3.141593/m;vec2 acs=vec2(cos(an),sin(an));vec2 ecs=vec2(cos(en),sin(en));float bn=mod(atan(p.x,p.y),2.0*an)-an;p=length(p)*vec2(cos(bn),abs(sin(bn)));p-=r*acs;p+=ecs*clamp(-dot(p,ecs),0.0,r*acs.y/ecs.y);return length(p)*sign(p.x);}float sdCross(in vec2 p,in float w,in float r){p=abs(p);return length(p-min(p.x+p.y,w)*0.5)-r;}float sdPlus(in vec2 p,in vec2 b,float r){p=abs(p);p=(p.y>p.x)? p.yx : p.xy;vec2 q=p-b;float k=max(q.y,q.x);vec2 w=(k>0.0)? q : vec2(b.y-p.x,-k);return sign(k)*length(max(w,0.0))+r;}uniform float uPixelRatio;uniform uint uRenderMode;uniform uint uSides;uniform float uAngleDivisor;flat in vec4 fColor;flat in float fPixelLength;in vec2 vFromCenter;out vec4 fragColor;void main(){float antialias=fPixelLength*1.5;float sd=sdStar(vFromCenter,1.0,uSides,uAngleDivisor);float outline=opOnion(sd,min(0.15,fPixelLength*6.0*uPixelRatio));float modeDistance=uRenderMode==MODE_HIGH_PASS_1 ?-antialias :-antialias*0.5;float distance=uRenderMode==MODE_HIGH_PASS_2 ? 0.0 : modeDistance;if(sd>distance){discard;}vec3 color=fColor.rgb*(1.0-0.25*smoothstep(antialias,0.0,outline));if(uRenderMode==MODE_HIGH_PASS_2){if(sd<-antialias){discard;}fragColor=vec4(color,smoothstep(0.0,antialias,abs(sd)));}else{fragColor=vec4(color,1.0);}}"; // eslint-disable-line
+var nodeFS$5 = "#version 300 es\nprecision highp float;\n#define GLSLIFY 1\nfloat luminance_x(float x){return x<=0.04045 ? x/12.92 : pow((x+0.055)/1.055,2.4);}float color_l(float l){return min(1.0,max(0.0,l<=0.0031308 ? l*12.92 : pow(l*1.055,1.0/2.4)-0.055));}float rgb2luminance(vec3 color){float r=luminance_x(color.r);float g=luminance_x(color.g);float b=luminance_x(color.b);return 0.2126*r+0.7152*g+0.0722*b;}vec3 setLuminance(vec3 color,float luminance){float r=luminance_x(color.r)*0.2126;float g=luminance_x(color.g)*0.7152;float b=luminance_x(color.b)*0.0722;float colorLuminance=r+g+b;float tr=luminance*(r/colorLuminance);float tg=luminance*(g/colorLuminance);float tb=luminance*(b/colorLuminance);float rr=color_l(tr/0.2126);float rg=color_l(tg/0.7152);float rb=color_l(tb/0.0722);return vec3(rr,rg,rb);}float findDarker(float luminance,float contrast){return(contrast*luminance)+(0.05*contrast)-0.05;}float findLighter(float luminance,float contrast){return(luminance+0.05-(0.05*contrast))/contrast;}vec3 contrastingColor(vec3 color,float contrast){float luminance=rgb2luminance(color);float darker=findDarker(luminance,contrast);float lighter=findLighter(luminance,contrast);float targetLuminance;if(darker<0.0||darker>1.0){targetLuminance=lighter;}else if(lighter<0.0||lighter>1.0){targetLuminance=darker;}else{targetLuminance=abs(luminance-lighter)<abs(darker-luminance)? lighter : darker;}return setLuminance(color,targetLuminance);}vec3 desaturateColor(vec3 color,float amount){float l=rgb2luminance(color);vec3 gray=vec3(l,l,l);return mix(color,gray,amount);}uniform vec4 uClearColor;uniform float uDesaturate;uniform float uFade;uniform float uAlpha;vec4 outputColor(vec4 color){vec3 ret=vec3(desaturateColor(color.rgb,uDesaturate));ret=mix(ret,uClearColor.rgb,uFade);return vec4(ret,color.a*uAlpha);}\n#define MODE_DRAFT 0u\n#define MODE_MEDIUM 1u\n#define MODE_HIGH_PASS_1 2u\n#define MODE_HIGH_PASS_2 3u\n#define MODE_PICKING 4u\nfloat opRound(in float d,in float r){return d-r;}float opOnion(in float d,in float r){return abs(d)-r;}float sdCircle(in vec2 p,in float r){return length(p)-r;}float sdEquilateralTriangle(in vec2 p,in float r){const float k=sqrt(3.0);p.x=abs(p.x)-r;p.y=p.y+(r)/k;if(p.x+k*p.y>0.0){p=vec2(p.x-k*p.y,-k*p.x-p.y)/2.0;}p.x-=clamp(p.x,-2.0*r,0.0);return-length(p)*sign(p.y);}float sdPentagon(in vec2 p,in float r){const vec3 k=vec3(0.809016994,0.587785252,0.726542528);p.y=-(p.y)*1.25;p.x=abs(p.x)*1.25;p-=2.0*min(dot(vec2(-k.x,k.y),p),0.0)*vec2(-k.x,k.y);p-=2.0*min(dot(vec2(k.x,k.y),p),0.0)*vec2(k.x,k.y);p-=vec2(clamp(p.x,-r*k.z,r*k.z),r);return length(p)*sign(p.y);}float sdOctagon(in vec2 p,in float r){const vec3 k=vec3(-0.9238795325,0.3826834323,0.4142135623);p=abs(p)*1.1;p-=2.0*min(dot(vec2(k.x,k.y),p),0.0)*vec2(k.x,k.y);p-=2.0*min(dot(vec2(-k.x,k.y),p),0.0)*vec2(-k.x,k.y);p-=vec2(clamp(p.x,-k.z*r,k.z*r),r);return length(p)*sign(p.y);}float sdStar(in vec2 p,in float r,in uint n,in float m){float an=3.141593/float(n);float en=3.141593/m;vec2 acs=vec2(cos(an),sin(an));vec2 ecs=vec2(cos(en),sin(en));float bn=mod(atan(p.x,p.y),2.0*an)-an;p=length(p)*vec2(cos(bn),abs(sin(bn)));p-=r*acs;p+=ecs*clamp(-dot(p,ecs),0.0,r*acs.y/ecs.y);return length(p)*sign(p.x);}float sdCross(in vec2 p,in float w,in float r){p=abs(p);return length(p-min(p.x+p.y,w)*0.5)-r;}float sdPlus(in vec2 p,in vec2 b,float r){p=abs(p);p=(p.y>p.x)? p.yx : p.xy;vec2 q=p-b;float k=max(q.y,q.x);vec2 w=(k>0.0)? q : vec2(b.y-p.x,-k);return sign(k)*length(max(w,0.0))+r;}uniform float uPixelRatio;uniform uint uRenderMode;uniform uint uSides;uniform float uAngleDivisor;flat in vec4 fColor;flat in float fPixelLength;in vec2 vFromCenter;out vec4 fragColor;void main(){float antialias=fPixelLength*1.5;float sd=sdStar(vFromCenter,1.0,uSides,uAngleDivisor);float outline=opOnion(sd,min(0.15,fPixelLength*6.0*uPixelRatio));float modeDistance=uRenderMode==MODE_HIGH_PASS_1 ?-antialias :-antialias*0.5;float distance=uRenderMode==MODE_HIGH_PASS_2 ? 0.0 : modeDistance;if(sd>distance){discard;}vec3 color=fColor.rgb*(1.0-0.25*smoothstep(antialias,0.0,outline));if(uRenderMode==MODE_HIGH_PASS_2){if(sd<-antialias){discard;}fragColor=outputColor(vec4(color,smoothstep(0.0,antialias,abs(sd))));}else{fragColor=outputColor(vec4(color,1.0));}}"; // eslint-disable-line
 
 var pickingFS$4 = "#version 300 es\nprecision highp float;\n#define GLSLIFY 1\nfloat opRound(in float d,in float r){return d-r;}float opOnion(in float d,in float r){return abs(d)-r;}float sdCircle(in vec2 p,in float r){return length(p)-r;}float sdEquilateralTriangle(in vec2 p,in float r){const float k=sqrt(3.0);p.x=abs(p.x)-r;p.y=p.y+(r)/k;if(p.x+k*p.y>0.0){p=vec2(p.x-k*p.y,-k*p.x-p.y)/2.0;}p.x-=clamp(p.x,-2.0*r,0.0);return-length(p)*sign(p.y);}float sdPentagon(in vec2 p,in float r){const vec3 k=vec3(0.809016994,0.587785252,0.726542528);p.y=-(p.y)*1.25;p.x=abs(p.x)*1.25;p-=2.0*min(dot(vec2(-k.x,k.y),p),0.0)*vec2(-k.x,k.y);p-=2.0*min(dot(vec2(k.x,k.y),p),0.0)*vec2(k.x,k.y);p-=vec2(clamp(p.x,-r*k.z,r*k.z),r);return length(p)*sign(p.y);}float sdOctagon(in vec2 p,in float r){const vec3 k=vec3(-0.9238795325,0.3826834323,0.4142135623);p=abs(p)*1.1;p-=2.0*min(dot(vec2(k.x,k.y),p),0.0)*vec2(k.x,k.y);p-=2.0*min(dot(vec2(-k.x,k.y),p),0.0)*vec2(-k.x,k.y);p-=vec2(clamp(p.x,-k.z*r,k.z*r),r);return length(p)*sign(p.y);}float sdStar(in vec2 p,in float r,in uint n,in float m){float an=3.141593/float(n);float en=3.141593/m;vec2 acs=vec2(cos(an),sin(an));vec2 ecs=vec2(cos(en),sin(en));float bn=mod(atan(p.x,p.y),2.0*an)-an;p=length(p)*vec2(cos(bn),abs(sin(bn)));p-=r*acs;p+=ecs*clamp(-dot(p,ecs),0.0,r*acs.y/ecs.y);return length(p)*sign(p.x);}float sdCross(in vec2 p,in float w,in float r){p=abs(p);return length(p-min(p.x+p.y,w)*0.5)-r;}float sdPlus(in vec2 p,in vec2 b,float r){p=abs(p);p=(p.y>p.x)? p.yx : p.xy;vec2 q=p-b;float k=max(q.y,q.x);vec2 w=(k>0.0)? q : vec2(b.y-p.x,-k);return sign(k)*length(max(w,0.0))+r;}uniform uint uSides;uniform float uAngleDivisor;flat in vec4 fColor;flat in float fPixelLength;in vec2 vFromCenter;out vec4 fragColor;void main(){float sd=sdStar(vFromCenter,1.0,uSides,uAngleDivisor);if(sd>0.0){discard;}fragColor=fColor;}"; // eslint-disable-line
 
@@ -26052,7 +26558,7 @@ class Star extends Circle {
     }
 }
 
-var nodeFS$6 = "#version 300 es\nprecision highp float;\n#define GLSLIFY 1\n#define MODE_DRAFT 0u\n#define MODE_MEDIUM 1u\n#define MODE_HIGH_PASS_1 2u\n#define MODE_HIGH_PASS_2 3u\n#define MODE_PICKING 4u\nfloat opRound(in float d,in float r){return d-r;}float opOnion(in float d,in float r){return abs(d)-r;}float sdCircle(in vec2 p,in float r){return length(p)-r;}float sdEquilateralTriangle(in vec2 p,in float r){const float k=sqrt(3.0);p.x=abs(p.x)-r;p.y=p.y+(r)/k;if(p.x+k*p.y>0.0){p=vec2(p.x-k*p.y,-k*p.x-p.y)/2.0;}p.x-=clamp(p.x,-2.0*r,0.0);return-length(p)*sign(p.y);}float sdPentagon(in vec2 p,in float r){const vec3 k=vec3(0.809016994,0.587785252,0.726542528);p.y=-(p.y)*1.25;p.x=abs(p.x)*1.25;p-=2.0*min(dot(vec2(-k.x,k.y),p),0.0)*vec2(-k.x,k.y);p-=2.0*min(dot(vec2(k.x,k.y),p),0.0)*vec2(k.x,k.y);p-=vec2(clamp(p.x,-r*k.z,r*k.z),r);return length(p)*sign(p.y);}float sdOctagon(in vec2 p,in float r){const vec3 k=vec3(-0.9238795325,0.3826834323,0.4142135623);p=abs(p)*1.1;p-=2.0*min(dot(vec2(k.x,k.y),p),0.0)*vec2(k.x,k.y);p-=2.0*min(dot(vec2(-k.x,k.y),p),0.0)*vec2(-k.x,k.y);p-=vec2(clamp(p.x,-k.z*r,k.z*r),r);return length(p)*sign(p.y);}float sdStar(in vec2 p,in float r,in uint n,in float m){float an=3.141593/float(n);float en=3.141593/m;vec2 acs=vec2(cos(an),sin(an));vec2 ecs=vec2(cos(en),sin(en));float bn=mod(atan(p.x,p.y),2.0*an)-an;p=length(p)*vec2(cos(bn),abs(sin(bn)));p-=r*acs;p+=ecs*clamp(-dot(p,ecs),0.0,r*acs.y/ecs.y);return length(p)*sign(p.x);}float sdCross(in vec2 p,in float w,in float r){p=abs(p);return length(p-min(p.x+p.y,w)*0.5)-r;}float sdPlus(in vec2 p,in vec2 b,float r){p=abs(p);p=(p.y>p.x)? p.yx : p.xy;vec2 q=p-b;float k=max(q.y,q.x);vec2 w=(k>0.0)? q : vec2(b.y-p.x,-k);return sign(k)*length(max(w,0.0))+r;}uniform float uPixelRatio;uniform uint uRenderMode;flat in vec4 fColor;flat in float fPixelLength;in vec2 vFromCenter;out vec4 fragColor;void main(){float antialias=fPixelLength*1.5;float sd=sdCross(vFromCenter,1.0,0.3);float outline=opOnion(sd,min(0.15,fPixelLength*6.0*uPixelRatio));float modeDistance=uRenderMode==MODE_HIGH_PASS_1 ?-antialias :-antialias*0.5;float distance=uRenderMode==MODE_HIGH_PASS_2 ? 0.0 : modeDistance;if(sd>distance){discard;}vec3 color=fColor.rgb*(1.0-0.25*smoothstep(antialias,0.0,outline));if(uRenderMode==MODE_HIGH_PASS_2){if(sd<-antialias){discard;}fragColor=vec4(color,smoothstep(0.0,antialias,abs(sd)));}else{fragColor=vec4(color,1.0);}}"; // eslint-disable-line
+var nodeFS$6 = "#version 300 es\nprecision highp float;\n#define GLSLIFY 1\nfloat luminance_x(float x){return x<=0.04045 ? x/12.92 : pow((x+0.055)/1.055,2.4);}float color_l(float l){return min(1.0,max(0.0,l<=0.0031308 ? l*12.92 : pow(l*1.055,1.0/2.4)-0.055));}float rgb2luminance(vec3 color){float r=luminance_x(color.r);float g=luminance_x(color.g);float b=luminance_x(color.b);return 0.2126*r+0.7152*g+0.0722*b;}vec3 setLuminance(vec3 color,float luminance){float r=luminance_x(color.r)*0.2126;float g=luminance_x(color.g)*0.7152;float b=luminance_x(color.b)*0.0722;float colorLuminance=r+g+b;float tr=luminance*(r/colorLuminance);float tg=luminance*(g/colorLuminance);float tb=luminance*(b/colorLuminance);float rr=color_l(tr/0.2126);float rg=color_l(tg/0.7152);float rb=color_l(tb/0.0722);return vec3(rr,rg,rb);}float findDarker(float luminance,float contrast){return(contrast*luminance)+(0.05*contrast)-0.05;}float findLighter(float luminance,float contrast){return(luminance+0.05-(0.05*contrast))/contrast;}vec3 contrastingColor(vec3 color,float contrast){float luminance=rgb2luminance(color);float darker=findDarker(luminance,contrast);float lighter=findLighter(luminance,contrast);float targetLuminance;if(darker<0.0||darker>1.0){targetLuminance=lighter;}else if(lighter<0.0||lighter>1.0){targetLuminance=darker;}else{targetLuminance=abs(luminance-lighter)<abs(darker-luminance)? lighter : darker;}return setLuminance(color,targetLuminance);}vec3 desaturateColor(vec3 color,float amount){float l=rgb2luminance(color);vec3 gray=vec3(l,l,l);return mix(color,gray,amount);}uniform vec4 uClearColor;uniform float uDesaturate;uniform float uFade;uniform float uAlpha;vec4 outputColor(vec4 color){vec3 ret=vec3(desaturateColor(color.rgb,uDesaturate));ret=mix(ret,uClearColor.rgb,uFade);return vec4(ret,color.a*uAlpha);}\n#define MODE_DRAFT 0u\n#define MODE_MEDIUM 1u\n#define MODE_HIGH_PASS_1 2u\n#define MODE_HIGH_PASS_2 3u\n#define MODE_PICKING 4u\nfloat opRound(in float d,in float r){return d-r;}float opOnion(in float d,in float r){return abs(d)-r;}float sdCircle(in vec2 p,in float r){return length(p)-r;}float sdEquilateralTriangle(in vec2 p,in float r){const float k=sqrt(3.0);p.x=abs(p.x)-r;p.y=p.y+(r)/k;if(p.x+k*p.y>0.0){p=vec2(p.x-k*p.y,-k*p.x-p.y)/2.0;}p.x-=clamp(p.x,-2.0*r,0.0);return-length(p)*sign(p.y);}float sdPentagon(in vec2 p,in float r){const vec3 k=vec3(0.809016994,0.587785252,0.726542528);p.y=-(p.y)*1.25;p.x=abs(p.x)*1.25;p-=2.0*min(dot(vec2(-k.x,k.y),p),0.0)*vec2(-k.x,k.y);p-=2.0*min(dot(vec2(k.x,k.y),p),0.0)*vec2(k.x,k.y);p-=vec2(clamp(p.x,-r*k.z,r*k.z),r);return length(p)*sign(p.y);}float sdOctagon(in vec2 p,in float r){const vec3 k=vec3(-0.9238795325,0.3826834323,0.4142135623);p=abs(p)*1.1;p-=2.0*min(dot(vec2(k.x,k.y),p),0.0)*vec2(k.x,k.y);p-=2.0*min(dot(vec2(-k.x,k.y),p),0.0)*vec2(-k.x,k.y);p-=vec2(clamp(p.x,-k.z*r,k.z*r),r);return length(p)*sign(p.y);}float sdStar(in vec2 p,in float r,in uint n,in float m){float an=3.141593/float(n);float en=3.141593/m;vec2 acs=vec2(cos(an),sin(an));vec2 ecs=vec2(cos(en),sin(en));float bn=mod(atan(p.x,p.y),2.0*an)-an;p=length(p)*vec2(cos(bn),abs(sin(bn)));p-=r*acs;p+=ecs*clamp(-dot(p,ecs),0.0,r*acs.y/ecs.y);return length(p)*sign(p.x);}float sdCross(in vec2 p,in float w,in float r){p=abs(p);return length(p-min(p.x+p.y,w)*0.5)-r;}float sdPlus(in vec2 p,in vec2 b,float r){p=abs(p);p=(p.y>p.x)? p.yx : p.xy;vec2 q=p-b;float k=max(q.y,q.x);vec2 w=(k>0.0)? q : vec2(b.y-p.x,-k);return sign(k)*length(max(w,0.0))+r;}uniform float uPixelRatio;uniform uint uRenderMode;flat in vec4 fColor;flat in float fPixelLength;in vec2 vFromCenter;out vec4 fragColor;void main(){float antialias=fPixelLength*1.5;float sd=sdCross(vFromCenter,1.0,0.3);float outline=opOnion(sd,min(0.15,fPixelLength*6.0*uPixelRatio));float modeDistance=uRenderMode==MODE_HIGH_PASS_1 ?-antialias :-antialias*0.5;float distance=uRenderMode==MODE_HIGH_PASS_2 ? 0.0 : modeDistance;if(sd>distance){discard;}vec3 color=fColor.rgb*(1.0-0.25*smoothstep(antialias,0.0,outline));if(uRenderMode==MODE_HIGH_PASS_2){if(sd<-antialias){discard;}fragColor=outputColor(vec4(color,smoothstep(0.0,antialias,abs(sd))));}else{fragColor=outputColor(vec4(color,1.0));}}"; // eslint-disable-line
 
 var pickingFS$5 = "#version 300 es\nprecision highp float;\n#define GLSLIFY 1\nfloat opRound(in float d,in float r){return d-r;}float opOnion(in float d,in float r){return abs(d)-r;}float sdCircle(in vec2 p,in float r){return length(p)-r;}float sdEquilateralTriangle(in vec2 p,in float r){const float k=sqrt(3.0);p.x=abs(p.x)-r;p.y=p.y+(r)/k;if(p.x+k*p.y>0.0){p=vec2(p.x-k*p.y,-k*p.x-p.y)/2.0;}p.x-=clamp(p.x,-2.0*r,0.0);return-length(p)*sign(p.y);}float sdPentagon(in vec2 p,in float r){const vec3 k=vec3(0.809016994,0.587785252,0.726542528);p.y=-(p.y)*1.25;p.x=abs(p.x)*1.25;p-=2.0*min(dot(vec2(-k.x,k.y),p),0.0)*vec2(-k.x,k.y);p-=2.0*min(dot(vec2(k.x,k.y),p),0.0)*vec2(k.x,k.y);p-=vec2(clamp(p.x,-r*k.z,r*k.z),r);return length(p)*sign(p.y);}float sdOctagon(in vec2 p,in float r){const vec3 k=vec3(-0.9238795325,0.3826834323,0.4142135623);p=abs(p)*1.1;p-=2.0*min(dot(vec2(k.x,k.y),p),0.0)*vec2(k.x,k.y);p-=2.0*min(dot(vec2(-k.x,k.y),p),0.0)*vec2(-k.x,k.y);p-=vec2(clamp(p.x,-k.z*r,k.z*r),r);return length(p)*sign(p.y);}float sdStar(in vec2 p,in float r,in uint n,in float m){float an=3.141593/float(n);float en=3.141593/m;vec2 acs=vec2(cos(an),sin(an));vec2 ecs=vec2(cos(en),sin(en));float bn=mod(atan(p.x,p.y),2.0*an)-an;p=length(p)*vec2(cos(bn),abs(sin(bn)));p-=r*acs;p+=ecs*clamp(-dot(p,ecs),0.0,r*acs.y/ecs.y);return length(p)*sign(p.x);}float sdCross(in vec2 p,in float w,in float r){p=abs(p);return length(p-min(p.x+p.y,w)*0.5)-r;}float sdPlus(in vec2 p,in vec2 b,float r){p=abs(p);p=(p.y>p.x)? p.yx : p.xy;vec2 q=p-b;float k=max(q.y,q.x);vec2 w=(k>0.0)? q : vec2(b.y-p.x,-k);return sign(k)*length(max(w,0.0))+r;}flat in vec4 fColor;flat in float fPixelLength;in vec2 vFromCenter;out vec4 fragColor;void main(){float sd=sdCross(vFromCenter,1.0,0.3);if(sd>0.0){discard;}fragColor=fColor;}"; // eslint-disable-line
 
@@ -26069,7 +26575,7 @@ class Cross extends Circle {
     }
 }
 
-var nodeFS$7 = "#version 300 es\nprecision highp float;\n#define GLSLIFY 1\n#define MODE_DRAFT 0u\n#define MODE_MEDIUM 1u\n#define MODE_HIGH_PASS_1 2u\n#define MODE_HIGH_PASS_2 3u\n#define MODE_PICKING 4u\nfloat opRound(in float d,in float r){return d-r;}float opOnion(in float d,in float r){return abs(d)-r;}float sdCircle(in vec2 p,in float r){return length(p)-r;}float sdEquilateralTriangle(in vec2 p,in float r){const float k=sqrt(3.0);p.x=abs(p.x)-r;p.y=p.y+(r)/k;if(p.x+k*p.y>0.0){p=vec2(p.x-k*p.y,-k*p.x-p.y)/2.0;}p.x-=clamp(p.x,-2.0*r,0.0);return-length(p)*sign(p.y);}float sdPentagon(in vec2 p,in float r){const vec3 k=vec3(0.809016994,0.587785252,0.726542528);p.y=-(p.y)*1.25;p.x=abs(p.x)*1.25;p-=2.0*min(dot(vec2(-k.x,k.y),p),0.0)*vec2(-k.x,k.y);p-=2.0*min(dot(vec2(k.x,k.y),p),0.0)*vec2(k.x,k.y);p-=vec2(clamp(p.x,-r*k.z,r*k.z),r);return length(p)*sign(p.y);}float sdOctagon(in vec2 p,in float r){const vec3 k=vec3(-0.9238795325,0.3826834323,0.4142135623);p=abs(p)*1.1;p-=2.0*min(dot(vec2(k.x,k.y),p),0.0)*vec2(k.x,k.y);p-=2.0*min(dot(vec2(-k.x,k.y),p),0.0)*vec2(-k.x,k.y);p-=vec2(clamp(p.x,-k.z*r,k.z*r),r);return length(p)*sign(p.y);}float sdStar(in vec2 p,in float r,in uint n,in float m){float an=3.141593/float(n);float en=3.141593/m;vec2 acs=vec2(cos(an),sin(an));vec2 ecs=vec2(cos(en),sin(en));float bn=mod(atan(p.x,p.y),2.0*an)-an;p=length(p)*vec2(cos(bn),abs(sin(bn)));p-=r*acs;p+=ecs*clamp(-dot(p,ecs),0.0,r*acs.y/ecs.y);return length(p)*sign(p.x);}float sdCross(in vec2 p,in float w,in float r){p=abs(p);return length(p-min(p.x+p.y,w)*0.5)-r;}float sdPlus(in vec2 p,in vec2 b,float r){p=abs(p);p=(p.y>p.x)? p.yx : p.xy;vec2 q=p-b;float k=max(q.y,q.x);vec2 w=(k>0.0)? q : vec2(b.y-p.x,-k);return sign(k)*length(max(w,0.0))+r;}uniform float uPixelRatio;uniform uint uRenderMode;flat in vec4 fColor;flat in float fPixelLength;in vec2 vFromCenter;out vec4 fragColor;void main(){float antialias=fPixelLength*1.5;float sd=sdPlus(vFromCenter,vec2(0.9,0.3),0.0);float outline=opOnion(sd,min(0.15,fPixelLength*6.0*uPixelRatio));float modeDistance=uRenderMode==MODE_HIGH_PASS_1 ?-antialias :-antialias*0.5;float distance=uRenderMode==MODE_HIGH_PASS_2 ? 0.0 : modeDistance;if(sd>distance){discard;}vec3 color=fColor.rgb*(1.0-0.25*smoothstep(antialias,0.0,outline));if(uRenderMode==MODE_HIGH_PASS_2){if(sd<-antialias){discard;}fragColor=vec4(color,smoothstep(0.0,antialias,abs(sd)));}else{fragColor=vec4(color,1.0);}}"; // eslint-disable-line
+var nodeFS$7 = "#version 300 es\nprecision highp float;\n#define GLSLIFY 1\nfloat luminance_x(float x){return x<=0.04045 ? x/12.92 : pow((x+0.055)/1.055,2.4);}float color_l(float l){return min(1.0,max(0.0,l<=0.0031308 ? l*12.92 : pow(l*1.055,1.0/2.4)-0.055));}float rgb2luminance(vec3 color){float r=luminance_x(color.r);float g=luminance_x(color.g);float b=luminance_x(color.b);return 0.2126*r+0.7152*g+0.0722*b;}vec3 setLuminance(vec3 color,float luminance){float r=luminance_x(color.r)*0.2126;float g=luminance_x(color.g)*0.7152;float b=luminance_x(color.b)*0.0722;float colorLuminance=r+g+b;float tr=luminance*(r/colorLuminance);float tg=luminance*(g/colorLuminance);float tb=luminance*(b/colorLuminance);float rr=color_l(tr/0.2126);float rg=color_l(tg/0.7152);float rb=color_l(tb/0.0722);return vec3(rr,rg,rb);}float findDarker(float luminance,float contrast){return(contrast*luminance)+(0.05*contrast)-0.05;}float findLighter(float luminance,float contrast){return(luminance+0.05-(0.05*contrast))/contrast;}vec3 contrastingColor(vec3 color,float contrast){float luminance=rgb2luminance(color);float darker=findDarker(luminance,contrast);float lighter=findLighter(luminance,contrast);float targetLuminance;if(darker<0.0||darker>1.0){targetLuminance=lighter;}else if(lighter<0.0||lighter>1.0){targetLuminance=darker;}else{targetLuminance=abs(luminance-lighter)<abs(darker-luminance)? lighter : darker;}return setLuminance(color,targetLuminance);}vec3 desaturateColor(vec3 color,float amount){float l=rgb2luminance(color);vec3 gray=vec3(l,l,l);return mix(color,gray,amount);}uniform vec4 uClearColor;uniform float uDesaturate;uniform float uFade;uniform float uAlpha;vec4 outputColor(vec4 color){vec3 ret=vec3(desaturateColor(color.rgb,uDesaturate));ret=mix(ret,uClearColor.rgb,uFade);return vec4(ret,color.a*uAlpha);}\n#define MODE_DRAFT 0u\n#define MODE_MEDIUM 1u\n#define MODE_HIGH_PASS_1 2u\n#define MODE_HIGH_PASS_2 3u\n#define MODE_PICKING 4u\nfloat opRound(in float d,in float r){return d-r;}float opOnion(in float d,in float r){return abs(d)-r;}float sdCircle(in vec2 p,in float r){return length(p)-r;}float sdEquilateralTriangle(in vec2 p,in float r){const float k=sqrt(3.0);p.x=abs(p.x)-r;p.y=p.y+(r)/k;if(p.x+k*p.y>0.0){p=vec2(p.x-k*p.y,-k*p.x-p.y)/2.0;}p.x-=clamp(p.x,-2.0*r,0.0);return-length(p)*sign(p.y);}float sdPentagon(in vec2 p,in float r){const vec3 k=vec3(0.809016994,0.587785252,0.726542528);p.y=-(p.y)*1.25;p.x=abs(p.x)*1.25;p-=2.0*min(dot(vec2(-k.x,k.y),p),0.0)*vec2(-k.x,k.y);p-=2.0*min(dot(vec2(k.x,k.y),p),0.0)*vec2(k.x,k.y);p-=vec2(clamp(p.x,-r*k.z,r*k.z),r);return length(p)*sign(p.y);}float sdOctagon(in vec2 p,in float r){const vec3 k=vec3(-0.9238795325,0.3826834323,0.4142135623);p=abs(p)*1.1;p-=2.0*min(dot(vec2(k.x,k.y),p),0.0)*vec2(k.x,k.y);p-=2.0*min(dot(vec2(-k.x,k.y),p),0.0)*vec2(-k.x,k.y);p-=vec2(clamp(p.x,-k.z*r,k.z*r),r);return length(p)*sign(p.y);}float sdStar(in vec2 p,in float r,in uint n,in float m){float an=3.141593/float(n);float en=3.141593/m;vec2 acs=vec2(cos(an),sin(an));vec2 ecs=vec2(cos(en),sin(en));float bn=mod(atan(p.x,p.y),2.0*an)-an;p=length(p)*vec2(cos(bn),abs(sin(bn)));p-=r*acs;p+=ecs*clamp(-dot(p,ecs),0.0,r*acs.y/ecs.y);return length(p)*sign(p.x);}float sdCross(in vec2 p,in float w,in float r){p=abs(p);return length(p-min(p.x+p.y,w)*0.5)-r;}float sdPlus(in vec2 p,in vec2 b,float r){p=abs(p);p=(p.y>p.x)? p.yx : p.xy;vec2 q=p-b;float k=max(q.y,q.x);vec2 w=(k>0.0)? q : vec2(b.y-p.x,-k);return sign(k)*length(max(w,0.0))+r;}uniform float uPixelRatio;uniform uint uRenderMode;flat in vec4 fColor;flat in float fPixelLength;in vec2 vFromCenter;out vec4 fragColor;void main(){float antialias=fPixelLength*1.5;float sd=sdPlus(vFromCenter,vec2(0.9,0.3),0.0);float outline=opOnion(sd,min(0.15,fPixelLength*6.0*uPixelRatio));float modeDistance=uRenderMode==MODE_HIGH_PASS_1 ?-antialias :-antialias*0.5;float distance=uRenderMode==MODE_HIGH_PASS_2 ? 0.0 : modeDistance;if(sd>distance){discard;}vec3 color=fColor.rgb*(1.0-0.25*smoothstep(antialias,0.0,outline));if(uRenderMode==MODE_HIGH_PASS_2){if(sd<-antialias){discard;}fragColor=outputColor(vec4(color,smoothstep(0.0,antialias,abs(sd))));}else{fragColor=outputColor(vec4(color,1.0));}}"; // eslint-disable-line
 
 var pickingFS$6 = "#version 300 es\nprecision highp float;\n#define GLSLIFY 1\nfloat opRound(in float d,in float r){return d-r;}float opOnion(in float d,in float r){return abs(d)-r;}float sdCircle(in vec2 p,in float r){return length(p)-r;}float sdEquilateralTriangle(in vec2 p,in float r){const float k=sqrt(3.0);p.x=abs(p.x)-r;p.y=p.y+(r)/k;if(p.x+k*p.y>0.0){p=vec2(p.x-k*p.y,-k*p.x-p.y)/2.0;}p.x-=clamp(p.x,-2.0*r,0.0);return-length(p)*sign(p.y);}float sdPentagon(in vec2 p,in float r){const vec3 k=vec3(0.809016994,0.587785252,0.726542528);p.y=-(p.y)*1.25;p.x=abs(p.x)*1.25;p-=2.0*min(dot(vec2(-k.x,k.y),p),0.0)*vec2(-k.x,k.y);p-=2.0*min(dot(vec2(k.x,k.y),p),0.0)*vec2(k.x,k.y);p-=vec2(clamp(p.x,-r*k.z,r*k.z),r);return length(p)*sign(p.y);}float sdOctagon(in vec2 p,in float r){const vec3 k=vec3(-0.9238795325,0.3826834323,0.4142135623);p=abs(p)*1.1;p-=2.0*min(dot(vec2(k.x,k.y),p),0.0)*vec2(k.x,k.y);p-=2.0*min(dot(vec2(-k.x,k.y),p),0.0)*vec2(-k.x,k.y);p-=vec2(clamp(p.x,-k.z*r,k.z*r),r);return length(p)*sign(p.y);}float sdStar(in vec2 p,in float r,in uint n,in float m){float an=3.141593/float(n);float en=3.141593/m;vec2 acs=vec2(cos(an),sin(an));vec2 ecs=vec2(cos(en),sin(en));float bn=mod(atan(p.x,p.y),2.0*an)-an;p=length(p)*vec2(cos(bn),abs(sin(bn)));p-=r*acs;p+=ecs*clamp(-dot(p,ecs),0.0,r*acs.y/ecs.y);return length(p)*sign(p.x);}float sdCross(in vec2 p,in float w,in float r){p=abs(p);return length(p-min(p.x+p.y,w)*0.5)-r;}float sdPlus(in vec2 p,in vec2 b,float r){p=abs(p);p=(p.y>p.x)? p.yx : p.xy;vec2 q=p-b;float k=max(q.y,q.x);vec2 w=(k>0.0)? q : vec2(b.y-p.x,-k);return sign(k)*length(max(w,0.0))+r;}flat in vec4 fColor;flat in float fPixelLength;in vec2 vFromCenter;out vec4 fragColor;void main(){float sd=sdPlus(vFromCenter,vec2(1.0,0.3),0.0);if(sd>0.0){discard;}fragColor=fColor;}"; // eslint-disable-line
 
@@ -26114,12 +26620,6 @@ class Edges extends LayerRenderable {
     static get defaultMappings() {
         return kBasicEdgeMappings;
     }
-    get alpha() {
-        return this.localUniforms.uAlpha;
-    }
-    set alpha(value) {
-        this.localUniforms.uAlpha = value;
-    }
     get lineWidth() {
         return this.localUniforms.uLineWidth;
     }
@@ -26127,10 +26627,9 @@ class Edges extends LayerRenderable {
         this.localUniforms.uLineWidth = value;
     }
     initialize(...args) {
-        this.localUniforms = {
-            uAlpha: 1.0,
+        this.localUniforms = Object.assign({}, this.localUniforms, {
             uLineWidth: 1.5,
-        };
+        });
         super.initialize(...args);
     }
     constructor(...args) {
@@ -26153,7 +26652,7 @@ class Edges extends LayerRenderable {
 
 var edgeVS = "#version 300 es\n#define GLSLIFY 1\nlayout(location=0)in vec3 aVertex;layout(location=1)in vec3 iOffsetA;layout(location=2)in vec3 iOffsetB;layout(location=3)in uint iColorA;layout(location=4)in uint iColorB;uniform mat4 uViewMatrix;uniform mat4 uSceneMatrix;uniform mat4 uProjectionMatrix;uniform vec2 uViewportSize;uniform float uPixelRatio;uniform sampler2D uColorPalette;uniform float uLineWidth;flat out float fLineWidth;out vec3 vColor;out vec2 vProjectedPosition;out float vProjectedW;vec4 getColorByIndexFromTexture(sampler2D tex,int index){int texWidth=textureSize(tex,0).x;int col=index % texWidth;int row=index/texWidth;return texelFetch(tex,ivec2(col,row),0);}void main(){float multA=aVertex.y;float multB=1.0-aVertex.y;vec4 colorA=getColorByIndexFromTexture(uColorPalette,int(iColorA));vec4 colorB=getColorByIndexFromTexture(uColorPalette,int(iColorB));vColor=colorA.rgb*multA+colorB.rgb*multB;mat4 renderMatrix=uProjectionMatrix*uViewMatrix*uSceneMatrix;vec4 aProjected=renderMatrix*vec4(iOffsetA,1.0);vec2 aScreen=aProjected.xy/aProjected.w*uViewportSize*0.5;vec4 bProjected=renderMatrix*vec4(iOffsetB,1.0);vec2 bScreen=bProjected.xy/bProjected.w*uViewportSize*0.5;vec2 direction=normalize(bScreen-aScreen);vec2 perp=vec2(-direction.y,direction.x);fLineWidth=uLineWidth*uPixelRatio;float offsetWidth=fLineWidth+0.5;vec4 position=aProjected*multA+bProjected*multB;vec4 offset=vec4(((aVertex.x*perp*offsetWidth)/uViewportSize)*position.w,0.0,0.0);gl_Position=position+offset;vProjectedPosition=position.xy;vProjectedW=position.w;}"; // eslint-disable-line
 
-var edgeFS = "#version 300 es\nprecision highp float;\n#define GLSLIFY 1\n#define MODE_DRAFT 0u\n#define MODE_MEDIUM 1u\n#define MODE_HIGH_PASS_1 2u\n#define MODE_HIGH_PASS_2 3u\n#define MODE_PICKING 4u\n#define ONE_ALPHA 0.00392156862\nfloat lineAlpha(vec2 position,float w,vec2 viewportSize,float alpha,float lineWidth){vec2 lineCenter=((position/w)*0.5+0.5)*viewportSize;float distOffset=(lineWidth-1.0)*0.5;float dist=smoothstep(lineWidth*0.5-0.5,lineWidth*0.5+0.5,distance(lineCenter,gl_FragCoord.xy));return alpha*(1.0-dist);}vec4 lineColor(vec3 color,vec2 position,float w,vec2 viewportSize,float alpha,uint mode,float lineWidth){if(mode<MODE_HIGH_PASS_1){return vec4(color,alpha);}float a=lineAlpha(position,w,viewportSize,alpha,lineWidth);if(a<ONE_ALPHA){discard;}return vec4(color,a);}uniform vec2 uViewportSize;uniform float uAlpha;uniform uint uRenderMode;flat in float fLineWidth;in vec3 vColor;in vec2 vProjectedPosition;in float vProjectedW;out vec4 fragColor;void main(){fragColor=lineColor(vColor,vProjectedPosition,vProjectedW,uViewportSize,uAlpha,uRenderMode,fLineWidth);}"; // eslint-disable-line
+var edgeFS = "#version 300 es\nprecision highp float;\n#define GLSLIFY 1\nfloat luminance_x_1540259130(float x){return x<=0.04045 ? x/12.92 : pow((x+0.055)/1.055,2.4);}float color_l_1540259130(float l){return min(1.0,max(0.0,l<=0.0031308 ? l*12.92 : pow(l*1.055,1.0/2.4)-0.055));}float rgb2luminance(vec3 color){float r=luminance_x_1540259130(color.r);float g=luminance_x_1540259130(color.g);float b=luminance_x_1540259130(color.b);return 0.2126*r+0.7152*g+0.0722*b;}vec3 setLuminance(vec3 color,float luminance){float r=luminance_x_1540259130(color.r)*0.2126;float g=luminance_x_1540259130(color.g)*0.7152;float b=luminance_x_1540259130(color.b)*0.0722;float colorLuminance=r+g+b;float tr=luminance*(r/colorLuminance);float tg=luminance*(g/colorLuminance);float tb=luminance*(b/colorLuminance);float rr=color_l_1540259130(tr/0.2126);float rg=color_l_1540259130(tg/0.7152);float rb=color_l_1540259130(tb/0.0722);return vec3(rr,rg,rb);}float findDarker(float luminance,float contrast){return(contrast*luminance)+(0.05*contrast)-0.05;}float findLighter(float luminance,float contrast){return(luminance+0.05-(0.05*contrast))/contrast;}vec3 contrastingColor(vec3 color,float contrast){float luminance=rgb2luminance(color);float darker=findDarker(luminance,contrast);float lighter=findLighter(luminance,contrast);float targetLuminance;if(darker<0.0||darker>1.0){targetLuminance=lighter;}else if(lighter<0.0||lighter>1.0){targetLuminance=darker;}else{targetLuminance=abs(luminance-lighter)<abs(darker-luminance)? lighter : darker;}return setLuminance(color,targetLuminance);}vec3 desaturateColor(vec3 color,float amount){float l=rgb2luminance(color);vec3 gray=vec3(l,l,l);return mix(color,gray,amount);}uniform vec4 uClearColor;uniform float uDesaturate;uniform float uFade;uniform float uAlpha;vec4 outputColor(vec4 color){vec3 ret=vec3(desaturateColor(color.rgb,uDesaturate));ret=mix(ret,uClearColor.rgb,uFade);return vec4(ret,color.a*uAlpha);}\n#define MODE_DRAFT 0u\n#define MODE_MEDIUM 1u\n#define MODE_HIGH_PASS_1 2u\n#define MODE_HIGH_PASS_2 3u\n#define MODE_PICKING 4u\n#define ONE_ALPHA 0.00392156862\nfloat lineAlpha(vec2 position,float w,vec2 viewportSize,float lineWidth){vec2 lineCenter=((position/w)*0.5+0.5)*viewportSize;float distOffset=(lineWidth-1.0)*0.5;float dist=smoothstep(lineWidth*0.5-0.5,lineWidth*0.5+0.5,distance(lineCenter,gl_FragCoord.xy));return(1.0-dist);}vec4 lineColor(vec3 color,vec2 position,float w,vec2 viewportSize,uint mode,float lineWidth){if(mode<MODE_HIGH_PASS_1){return outputColor(vec4(color,1.0));}float a=lineAlpha(position,w,viewportSize,lineWidth);if(mode==MODE_HIGH_PASS_1){if(a==1.0){return outputColor(vec4(color,a));}else{discard;}}if(a<ONE_ALPHA){discard;}return outputColor(vec4(color,a));}uniform vec2 uViewportSize;uniform uint uRenderMode;flat in float fLineWidth;in vec3 vColor;in vec2 vProjectedPosition;in float vProjectedW;out vec4 fragColor;void main(){fragColor=lineColor(vColor,vProjectedPosition,vProjectedW,uViewportSize,uRenderMode,fLineWidth);}"; // eslint-disable-line
 
 var dataVS$1 = "#version 300 es\n#define GLSLIFY 1\nlayout(location=0)in uint aSourceIndex;layout(location=1)in uint aTargetIndex;layout(location=2)in uint aSourceColor;layout(location=3)in uint aTargetColor;uniform sampler2D uGraphPoints;out vec3 vSource;out vec3 vTarget;flat out uint vSourceColor;flat out uint vTargetColor;vec4 valueForIndex(sampler2D tex,int index){int texWidth=textureSize(tex,0).x;int col=index % texWidth;int row=index/texWidth;return texelFetch(tex,ivec2(col,row),0);}uvec4 uvalueForIndex(usampler2D tex,int index){int texWidth=textureSize(tex,0).x;int col=index % texWidth;int row=index/texWidth;return texelFetch(tex,ivec2(col,row),0);}void main(){vec4 source=valueForIndex(uGraphPoints,int(aSourceIndex));vec4 target=valueForIndex(uGraphPoints,int(aTargetIndex));vec3 direction=normalize(target.xyz-source.xyz);vSource=source.xyz+direction*source[3];vTarget=target.xyz-direction*target[3];vSourceColor=aSourceColor;vTargetColor=aTargetColor;}"; // eslint-disable-line
 
@@ -26186,16 +26685,12 @@ class Straight extends Edges {
         // TODO: Implement destroy method
     }
     render(context, mode, uniforms) {
-        context.enable(PicoGL.BLEND);
-        context.depthRange(this.nearDepth, this.farDepth);
-        context.depthMask(false);
+        this.configureRenderContext(context, mode);
         setDrawCallUniforms(this.drawCall, uniforms);
         setDrawCallUniforms(this.drawCall, this.localUniforms);
         switch (mode) {
             case RenderMode.PICKING:
                 // this.pickingDrawCall.draw();
-                break;
-            case RenderMode.HIGH_PASS_2:
                 break;
             default:
                 this.drawCall.draw();
@@ -26230,7 +26725,7 @@ class Straight extends Edges {
 
 var edgeVS$1 = "#version 300 es\n#define GLSLIFY 1\nlayout(location=0)in vec3 aVertex;layout(location=1)in vec3 iOffsetA;layout(location=2)in vec3 iOffsetB;layout(location=3)in uint iColorA;layout(location=4)in uint iColorB;uniform mat4 uViewMatrix;uniform mat4 uSceneMatrix;uniform mat4 uProjectionMatrix;uniform vec2 uViewportSize;uniform float uPixelRatio;uniform sampler2D uColorPalette;uniform uint uDashLength;uniform float uLineWidth;flat out float fLineWidth;out vec3 vColor;out float vDashLength;out vec2 vProjectedPosition;out float vProjectedW;vec4 getColorByIndexFromTexture(sampler2D tex,int index){int texWidth=textureSize(tex,0).x;int col=index % texWidth;int row=index/texWidth;return texelFetch(tex,ivec2(col,row),0);}void main(){float multA=aVertex.y;float multB=1.0-aVertex.y;vec4 colorA=getColorByIndexFromTexture(uColorPalette,int(iColorA));vec4 colorB=getColorByIndexFromTexture(uColorPalette,int(iColorB));vColor=colorA.rgb*multA+colorB.rgb*multB;mat4 renderMatrix=uProjectionMatrix*uViewMatrix*uSceneMatrix;vec4 aProjected=renderMatrix*vec4(iOffsetA,1.0);vec2 aScreen=(aProjected.xy/aProjected.w)*(uViewportSize/2.0);vec4 bProjected=renderMatrix*vec4(iOffsetB,1.0);vec2 bScreen=(bProjected.xy/bProjected.w)*(uViewportSize/2.0);vec2 direction=normalize(bScreen-aScreen);vec2 perp=vec2(-direction.y,direction.x);fLineWidth=uLineWidth*uPixelRatio;float offsetWidth=fLineWidth+0.5;vec4 position=aProjected*multA+bProjected*multB;vec4 offset=vec4(((aVertex.x*perp*offsetWidth)/uViewportSize)*position.w,0.0,0.0);gl_Position=position+offset;vProjectedPosition=position.xy;vProjectedW=position.w;float screenDistance=distance(aScreen,bScreen);vDashLength=(screenDistance/float(uDashLength))*aVertex.y;}"; // eslint-disable-line
 
-var edgeFS$1 = "#version 300 es\nprecision highp float;\n#define GLSLIFY 1\n#define MODE_DRAFT 0u\n#define MODE_MEDIUM 1u\n#define MODE_HIGH_PASS_1 2u\n#define MODE_HIGH_PASS_2 3u\n#define MODE_PICKING 4u\n#define ONE_ALPHA 0.00392156862\nfloat lineAlpha(vec2 position,float w,vec2 viewportSize,float alpha,float lineWidth){vec2 lineCenter=((position/w)*0.5+0.5)*viewportSize;float distOffset=(lineWidth-1.0)*0.5;float dist=smoothstep(lineWidth*0.5-0.5,lineWidth*0.5+0.5,distance(lineCenter,gl_FragCoord.xy));return alpha*(1.0-dist);}vec4 lineColor(vec3 color,vec2 position,float w,vec2 viewportSize,float alpha,uint mode,float lineWidth){if(mode<MODE_HIGH_PASS_1){return vec4(color,alpha);}float a=lineAlpha(position,w,viewportSize,alpha,lineWidth);if(a<ONE_ALPHA){discard;}return vec4(color,a);}uniform vec2 uViewportSize;uniform float uAlpha;uniform uint uRenderMode;flat in float fLineWidth;in vec3 vColor;in float vDashLength;in vec2 vProjectedPosition;in float vProjectedW;out vec4 fragColor;void main(){if(int(vDashLength)% 2==1){discard;}fragColor=lineColor(vColor,vProjectedPosition,vProjectedW,uViewportSize,uAlpha,uRenderMode,fLineWidth);}"; // eslint-disable-line
+var edgeFS$1 = "#version 300 es\nprecision highp float;\n#define GLSLIFY 1\nfloat luminance_x_1540259130(float x){return x<=0.04045 ? x/12.92 : pow((x+0.055)/1.055,2.4);}float color_l_1540259130(float l){return min(1.0,max(0.0,l<=0.0031308 ? l*12.92 : pow(l*1.055,1.0/2.4)-0.055));}float rgb2luminance(vec3 color){float r=luminance_x_1540259130(color.r);float g=luminance_x_1540259130(color.g);float b=luminance_x_1540259130(color.b);return 0.2126*r+0.7152*g+0.0722*b;}vec3 setLuminance(vec3 color,float luminance){float r=luminance_x_1540259130(color.r)*0.2126;float g=luminance_x_1540259130(color.g)*0.7152;float b=luminance_x_1540259130(color.b)*0.0722;float colorLuminance=r+g+b;float tr=luminance*(r/colorLuminance);float tg=luminance*(g/colorLuminance);float tb=luminance*(b/colorLuminance);float rr=color_l_1540259130(tr/0.2126);float rg=color_l_1540259130(tg/0.7152);float rb=color_l_1540259130(tb/0.0722);return vec3(rr,rg,rb);}float findDarker(float luminance,float contrast){return(contrast*luminance)+(0.05*contrast)-0.05;}float findLighter(float luminance,float contrast){return(luminance+0.05-(0.05*contrast))/contrast;}vec3 contrastingColor(vec3 color,float contrast){float luminance=rgb2luminance(color);float darker=findDarker(luminance,contrast);float lighter=findLighter(luminance,contrast);float targetLuminance;if(darker<0.0||darker>1.0){targetLuminance=lighter;}else if(lighter<0.0||lighter>1.0){targetLuminance=darker;}else{targetLuminance=abs(luminance-lighter)<abs(darker-luminance)? lighter : darker;}return setLuminance(color,targetLuminance);}vec3 desaturateColor(vec3 color,float amount){float l=rgb2luminance(color);vec3 gray=vec3(l,l,l);return mix(color,gray,amount);}uniform vec4 uClearColor;uniform float uDesaturate;uniform float uFade;uniform float uAlpha;vec4 outputColor(vec4 color){vec3 ret=vec3(desaturateColor(color.rgb,uDesaturate));ret=mix(ret,uClearColor.rgb,uFade);return vec4(ret,color.a*uAlpha);}\n#define MODE_DRAFT 0u\n#define MODE_MEDIUM 1u\n#define MODE_HIGH_PASS_1 2u\n#define MODE_HIGH_PASS_2 3u\n#define MODE_PICKING 4u\n#define ONE_ALPHA 0.00392156862\nfloat lineAlpha(vec2 position,float w,vec2 viewportSize,float lineWidth){vec2 lineCenter=((position/w)*0.5+0.5)*viewportSize;float distOffset=(lineWidth-1.0)*0.5;float dist=smoothstep(lineWidth*0.5-0.5,lineWidth*0.5+0.5,distance(lineCenter,gl_FragCoord.xy));return(1.0-dist);}vec4 lineColor(vec3 color,vec2 position,float w,vec2 viewportSize,uint mode,float lineWidth){if(mode<MODE_HIGH_PASS_1){return outputColor(vec4(color,1.0));}float a=lineAlpha(position,w,viewportSize,lineWidth);if(mode==MODE_HIGH_PASS_1){if(a==1.0){return outputColor(vec4(color,a));}else{discard;}}if(a<ONE_ALPHA){discard;}return outputColor(vec4(color,a));}uniform vec2 uViewportSize;uniform uint uRenderMode;flat in float fLineWidth;in vec3 vColor;in float vDashLength;in vec2 vProjectedPosition;in float vProjectedW;out vec4 fragColor;void main(){if(int(vDashLength)% 2==1){discard;}fragColor=lineColor(vColor,vProjectedPosition,vProjectedW,uViewportSize,uRenderMode,fLineWidth);}"; // eslint-disable-line
 
 class Dashed extends Straight {
     get dashLength() {
@@ -26253,7 +26748,7 @@ class Dashed extends Straight {
 
 var edgeVS$2 = "#version 300 es\n#define GLSLIFY 1\nlayout(location=0)in vec3 aVertex;layout(location=1)in vec3 iOffsetA;layout(location=2)in vec3 iOffsetB;layout(location=3)in uint iColorA;layout(location=4)in uint iColorB;uniform mat4 uViewMatrix;uniform mat4 uSceneMatrix;uniform mat4 uProjectionMatrix;uniform vec2 uViewportSize;uniform float uPixelRatio;uniform float uGravity;uniform sampler2D uColorPalette;out vec3 vColor;out vec2 vProjectedPosition;out float vProjectedW;vec4 getColorByIndexFromTexture(sampler2D tex,int index){int texWidth=textureSize(tex,0).x;int col=index % texWidth;int row=index/texWidth;return texelFetch(tex,ivec2(col,row),0);}void main(){float multA=aVertex.x;float multB=1.0-aVertex.x;vec4 colorA=getColorByIndexFromTexture(uColorPalette,int(iColorA));vec4 colorB=getColorByIndexFromTexture(uColorPalette,int(iColorB));vColor=colorA.rgb*multA+colorB.rgb*multB;vec3 direction=iOffsetB-iOffsetA;vec3 middle=iOffsetA+direction*0.5;float distance=length(direction);float toCenter=length(middle);vec3 towardsCenter=(middle*-1.0)/toCenter;vec3 gravity=middle+towardsCenter*min(toCenter,distance*uGravity);vec3 position=gravity+pow(multB,2.0)*(iOffsetB-gravity)+pow(multA,2.0)*(iOffsetA-gravity);mat4 renderMatrix=uProjectionMatrix*uViewMatrix*uSceneMatrix;gl_Position=renderMatrix*vec4(position,1.0);vProjectedPosition=gl_Position.xy;vProjectedW=gl_Position.w;}"; // eslint-disable-line
 
-var edgeFS$2 = "#version 300 es\nprecision highp float;\n#define GLSLIFY 1\n#define MODE_DRAFT 0u\n#define MODE_MEDIUM 1u\n#define MODE_HIGH_PASS_1 2u\n#define MODE_HIGH_PASS_2 3u\n#define MODE_PICKING 4u\n#define ONE_ALPHA 0.00392156862\nfloat lineAlpha(vec2 position,float w,vec2 viewportSize,float alpha,float lineWidth){vec2 lineCenter=((position/w)*0.5+0.5)*viewportSize;float distOffset=(lineWidth-1.0)*0.5;float dist=smoothstep(lineWidth*0.5-0.5,lineWidth*0.5+0.5,distance(lineCenter,gl_FragCoord.xy));return alpha*(1.0-dist);}vec4 lineColor(vec3 color,vec2 position,float w,vec2 viewportSize,float alpha,uint mode,float lineWidth){if(mode<MODE_HIGH_PASS_1){return vec4(color,alpha);}float a=lineAlpha(position,w,viewportSize,alpha,lineWidth);if(a<ONE_ALPHA){discard;}return vec4(color,a);}uniform vec2 uViewportSize;uniform float uAlpha;uniform uint uRenderMode;in vec3 vColor;in vec2 vProjectedPosition;in float vProjectedW;out vec4 fragColor;void main(){fragColor=lineColor(vColor,vProjectedPosition,vProjectedW,uViewportSize,uAlpha,uRenderMode);}"; // eslint-disable-line
+var edgeFS$2 = "#version 300 es\nprecision highp float;\n#define GLSLIFY 1\nfloat luminance_x_1540259130(float x){return x<=0.04045 ? x/12.92 : pow((x+0.055)/1.055,2.4);}float color_l_1540259130(float l){return min(1.0,max(0.0,l<=0.0031308 ? l*12.92 : pow(l*1.055,1.0/2.4)-0.055));}float rgb2luminance(vec3 color){float r=luminance_x_1540259130(color.r);float g=luminance_x_1540259130(color.g);float b=luminance_x_1540259130(color.b);return 0.2126*r+0.7152*g+0.0722*b;}vec3 setLuminance(vec3 color,float luminance){float r=luminance_x_1540259130(color.r)*0.2126;float g=luminance_x_1540259130(color.g)*0.7152;float b=luminance_x_1540259130(color.b)*0.0722;float colorLuminance=r+g+b;float tr=luminance*(r/colorLuminance);float tg=luminance*(g/colorLuminance);float tb=luminance*(b/colorLuminance);float rr=color_l_1540259130(tr/0.2126);float rg=color_l_1540259130(tg/0.7152);float rb=color_l_1540259130(tb/0.0722);return vec3(rr,rg,rb);}float findDarker(float luminance,float contrast){return(contrast*luminance)+(0.05*contrast)-0.05;}float findLighter(float luminance,float contrast){return(luminance+0.05-(0.05*contrast))/contrast;}vec3 contrastingColor(vec3 color,float contrast){float luminance=rgb2luminance(color);float darker=findDarker(luminance,contrast);float lighter=findLighter(luminance,contrast);float targetLuminance;if(darker<0.0||darker>1.0){targetLuminance=lighter;}else if(lighter<0.0||lighter>1.0){targetLuminance=darker;}else{targetLuminance=abs(luminance-lighter)<abs(darker-luminance)? lighter : darker;}return setLuminance(color,targetLuminance);}vec3 desaturateColor(vec3 color,float amount){float l=rgb2luminance(color);vec3 gray=vec3(l,l,l);return mix(color,gray,amount);}uniform vec4 uClearColor;uniform float uDesaturate;uniform float uFade;uniform float uAlpha;vec4 outputColor(vec4 color){vec3 ret=vec3(desaturateColor(color.rgb,uDesaturate));ret=mix(ret,uClearColor.rgb,uFade);return vec4(ret,color.a*uAlpha);}\n#define MODE_DRAFT 0u\n#define MODE_MEDIUM 1u\n#define MODE_HIGH_PASS_1 2u\n#define MODE_HIGH_PASS_2 3u\n#define MODE_PICKING 4u\n#define ONE_ALPHA 0.00392156862\nfloat lineAlpha(vec2 position,float w,vec2 viewportSize,float lineWidth){vec2 lineCenter=((position/w)*0.5+0.5)*viewportSize;float distOffset=(lineWidth-1.0)*0.5;float dist=smoothstep(lineWidth*0.5-0.5,lineWidth*0.5+0.5,distance(lineCenter,gl_FragCoord.xy));return(1.0-dist);}vec4 lineColor(vec3 color,vec2 position,float w,vec2 viewportSize,uint mode,float lineWidth){if(mode<MODE_HIGH_PASS_1){return outputColor(vec4(color,1.0));}float a=lineAlpha(position,w,viewportSize,lineWidth);if(mode==MODE_HIGH_PASS_1){if(a==1.0){return outputColor(vec4(color,a));}else{discard;}}if(a<ONE_ALPHA){discard;}return outputColor(vec4(color,a));}uniform vec2 uViewportSize;uniform uint uRenderMode;in vec3 vColor;in vec2 vProjectedPosition;in float vProjectedW;out vec4 fragColor;void main(){fragColor=lineColor(vColor,vProjectedPosition,vProjectedW,uViewportSize,uRenderMode);}"; // eslint-disable-line
 
 var dataVS$2 = "#version 300 es\n#define GLSLIFY 1\nlayout(location=0)in uint aSourceIndex;layout(location=1)in uint aTargetIndex;layout(location=2)in uint aSourceColor;layout(location=3)in uint aTargetColor;uniform sampler2D uGraphPoints;out vec3 vSource;out vec3 vTarget;flat out uint vSourceColor;flat out uint vTargetColor;vec4 valueForIndex(sampler2D tex,int index){int texWidth=textureSize(tex,0).x;int col=index % texWidth;int row=index/texWidth;return texelFetch(tex,ivec2(col,row),0);}uvec4 uvalueForIndex(usampler2D tex,int index){int texWidth=textureSize(tex,0).x;int col=index % texWidth;int row=index/texWidth;return texelFetch(tex,ivec2(col,row),0);}void main(){vec4 source=valueForIndex(uGraphPoints,int(aSourceIndex));vSource=source.xyz;vec4 target=valueForIndex(uGraphPoints,int(aTargetIndex));vTarget=target.xyz;vSourceColor=aSourceColor;vTargetColor=aTargetColor;}"; // eslint-disable-line
 
@@ -26297,14 +26792,10 @@ class Gravity extends Edges {
     render(context, mode, uniforms) {
         setDrawCallUniforms(this.drawCall, uniforms);
         setDrawCallUniforms(this.drawCall, this.localUniforms);
-        context.enable(PicoGL.BLEND);
-        context.depthRange(this.nearDepth, this.farDepth);
-        context.depthMask(false);
+        this.configureRenderContext(context, mode);
         switch (mode) {
             case RenderMode.PICKING:
                 // this.pickingDrawCall.draw();
-                break;
-            case RenderMode.HIGH_PASS_2:
                 break;
             default:
                 this.drawCall.draw();
@@ -26339,7 +26830,7 @@ class Gravity extends Edges {
 
 var edgeVS$3 = "#version 300 es\n#define GLSLIFY 1\nlayout(location=0)in vec3 aVertex;layout(location=1)in vec3 iOffsetA;layout(location=2)in vec3 iOffsetB;layout(location=3)in vec3 iControl;layout(location=4)in uint iColorA;layout(location=5)in uint iColorB;layout(location=6)in vec2 iColorMix;uniform mat4 uViewMatrix;uniform mat4 uSceneMatrix;uniform mat4 uProjectionMatrix;uniform vec2 uViewportSize;uniform float uPixelRatio;uniform sampler2D uColorPalette;uniform float uLineWidth;uniform float uSegments;flat out float fLineWidth;out vec3 vColor;out vec2 vProjectedPosition;out float vProjectedW;vec4 getColorByIndexFromTexture(sampler2D tex,int index){int texWidth=textureSize(tex,0).x;int col=index % texWidth;int row=index/texWidth;return texelFetch(tex,ivec2(col,row),0);}vec3 bezier(vec3 p0,vec3 p1,vec3 p2,float t){return p1+pow(1.0-t,2.0)*(p2-p1)+pow(t,2.0)*(p0-p1);}void main(){float t0=aVertex.y/uSegments;float t1=(aVertex.y+1.0)/uSegments;vec3 b0=bezier(iOffsetA,iControl,iOffsetB,t0);vec3 b1=bezier(iOffsetA,iControl,iOffsetB,t1);mat4 renderMatrix=uProjectionMatrix*uViewMatrix*uSceneMatrix;vec4 b0Projected=renderMatrix*vec4(b0,1.0);vec4 b1Projected=renderMatrix*vec4(b1,1.0);vec2 b0Screen=(b0Projected.xy/b0Projected.w)*uViewportSize*0.5;vec2 b1Screen=(b1Projected.xy/b1Projected.w)*uViewportSize*0.5;vec2 direction=normalize(b1Screen-b0Screen);vec2 normal=vec2(-direction.y,direction.x);fLineWidth=uLineWidth*uPixelRatio;float offsetWidth=fLineWidth+0.5;vec4 offset=vec4(((aVertex.x*normal*offsetWidth)/uViewportSize)*b0Projected.w,0.0,0.0);gl_Position=b0Projected+offset;vProjectedPosition=b0Projected.xy;vProjectedW=b0Projected.w;vec4 colorA=getColorByIndexFromTexture(uColorPalette,int(iColorA));vec4 colorB=getColorByIndexFromTexture(uColorPalette,int(iColorB));vec3 mixColorA=mix(colorA.rgb,colorB.rgb,iColorMix[1]);vec3 mixColorB=mix(colorA.rgb,colorB.rgb,iColorMix[0]);vColor=mix(mixColorA.rgb,mixColorB.rgb,t0);}"; // eslint-disable-line
 
-var edgeFS$3 = "#version 300 es\nprecision highp float;\n#define GLSLIFY 1\n#define MODE_DRAFT 0u\n#define MODE_MEDIUM 1u\n#define MODE_HIGH_PASS_1 2u\n#define MODE_HIGH_PASS_2 3u\n#define MODE_PICKING 4u\n#define ONE_ALPHA 0.00392156862\nfloat lineAlpha(vec2 position,float w,vec2 viewportSize,float alpha,float lineWidth){vec2 lineCenter=((position/w)*0.5+0.5)*viewportSize;float distOffset=(lineWidth-1.0)*0.5;float dist=smoothstep(lineWidth*0.5-0.5,lineWidth*0.5+0.5,distance(lineCenter,gl_FragCoord.xy));return alpha*(1.0-dist);}vec4 lineColor(vec3 color,vec2 position,float w,vec2 viewportSize,float alpha,uint mode,float lineWidth){if(mode<MODE_HIGH_PASS_1){return vec4(color,alpha);}float a=lineAlpha(position,w,viewportSize,alpha,lineWidth);if(a<ONE_ALPHA){discard;}return vec4(color,a);}uniform vec2 uViewportSize;uniform float uAlpha;uniform uint uRenderMode;flat in float fLineWidth;in vec3 vColor;in vec2 vProjectedPosition;in float vProjectedW;out vec4 fragColor;void main(){fragColor=lineColor(vColor,vProjectedPosition,vProjectedW,uViewportSize,uAlpha,uRenderMode,fLineWidth);}"; // eslint-disable-line
+var edgeFS$3 = "#version 300 es\nprecision highp float;\n#define GLSLIFY 1\nfloat luminance_x_1540259130(float x){return x<=0.04045 ? x/12.92 : pow((x+0.055)/1.055,2.4);}float color_l_1540259130(float l){return min(1.0,max(0.0,l<=0.0031308 ? l*12.92 : pow(l*1.055,1.0/2.4)-0.055));}float rgb2luminance(vec3 color){float r=luminance_x_1540259130(color.r);float g=luminance_x_1540259130(color.g);float b=luminance_x_1540259130(color.b);return 0.2126*r+0.7152*g+0.0722*b;}vec3 setLuminance(vec3 color,float luminance){float r=luminance_x_1540259130(color.r)*0.2126;float g=luminance_x_1540259130(color.g)*0.7152;float b=luminance_x_1540259130(color.b)*0.0722;float colorLuminance=r+g+b;float tr=luminance*(r/colorLuminance);float tg=luminance*(g/colorLuminance);float tb=luminance*(b/colorLuminance);float rr=color_l_1540259130(tr/0.2126);float rg=color_l_1540259130(tg/0.7152);float rb=color_l_1540259130(tb/0.0722);return vec3(rr,rg,rb);}float findDarker(float luminance,float contrast){return(contrast*luminance)+(0.05*contrast)-0.05;}float findLighter(float luminance,float contrast){return(luminance+0.05-(0.05*contrast))/contrast;}vec3 contrastingColor(vec3 color,float contrast){float luminance=rgb2luminance(color);float darker=findDarker(luminance,contrast);float lighter=findLighter(luminance,contrast);float targetLuminance;if(darker<0.0||darker>1.0){targetLuminance=lighter;}else if(lighter<0.0||lighter>1.0){targetLuminance=darker;}else{targetLuminance=abs(luminance-lighter)<abs(darker-luminance)? lighter : darker;}return setLuminance(color,targetLuminance);}vec3 desaturateColor(vec3 color,float amount){float l=rgb2luminance(color);vec3 gray=vec3(l,l,l);return mix(color,gray,amount);}uniform vec4 uClearColor;uniform float uDesaturate;uniform float uFade;uniform float uAlpha;vec4 outputColor(vec4 color){vec3 ret=vec3(desaturateColor(color.rgb,uDesaturate));ret=mix(ret,uClearColor.rgb,uFade);return vec4(ret,color.a*uAlpha);}\n#define MODE_DRAFT 0u\n#define MODE_MEDIUM 1u\n#define MODE_HIGH_PASS_1 2u\n#define MODE_HIGH_PASS_2 3u\n#define MODE_PICKING 4u\n#define ONE_ALPHA 0.00392156862\nfloat lineAlpha(vec2 position,float w,vec2 viewportSize,float lineWidth){vec2 lineCenter=((position/w)*0.5+0.5)*viewportSize;float distOffset=(lineWidth-1.0)*0.5;float dist=smoothstep(lineWidth*0.5-0.5,lineWidth*0.5+0.5,distance(lineCenter,gl_FragCoord.xy));return(1.0-dist);}vec4 lineColor(vec3 color,vec2 position,float w,vec2 viewportSize,uint mode,float lineWidth){if(mode<MODE_HIGH_PASS_1){return outputColor(vec4(color,1.0));}float a=lineAlpha(position,w,viewportSize,lineWidth);if(mode==MODE_HIGH_PASS_1){if(a==1.0){return outputColor(vec4(color,a));}else{discard;}}if(a<ONE_ALPHA){discard;}return outputColor(vec4(color,a));}uniform vec2 uViewportSize;uniform uint uRenderMode;flat in float fLineWidth;in vec3 vColor;in vec2 vProjectedPosition;in float vProjectedW;out vec4 fragColor;void main(){fragColor=lineColor(vColor,vProjectedPosition,vProjectedW,uViewportSize,uRenderMode,fLineWidth);}"; // eslint-disable-line
 
 var dataVS$3 = "#version 300 es\n#define GLSLIFY 1\nlayout(location=0)in uint aSourceIndex;layout(location=1)in uint aTargetIndex;layout(location=2)in uvec3 aControl;layout(location=3)in uint aSourceColor;layout(location=4)in uint aTargetColor;uniform sampler2D uGraphPoints;out vec3 vSource;out vec3 vTarget;out vec3 vControl;flat out uint vSourceColor;flat out uint vTargetColor;out vec2 vColorMix;vec4 valueForIndex(sampler2D tex,int index){int texWidth=textureSize(tex,0).x;int col=index % texWidth;int row=index/texWidth;return texelFetch(tex,ivec2(col,row),0);}uvec4 uvalueForIndex(usampler2D tex,int index){int texWidth=textureSize(tex,0).x;int col=index % texWidth;int row=index/texWidth;return texelFetch(tex,ivec2(col,row),0);}void main(){vec4 source=valueForIndex(uGraphPoints,int(aSourceIndex));vec4 target=valueForIndex(uGraphPoints,int(aTargetIndex));vec4 control=valueForIndex(uGraphPoints,int(aControl[0]));if(aControl[1]==0u){vSource=source.xyz;}else{vSource=(source.xyz+control.xyz)/2.0;}if(aControl[1]==aControl[2]-1u){vTarget=target.xyz;}else{vTarget=(target.xyz+control.xyz)/2.0;}vControl=control.xyz;vSourceColor=aSourceColor;vTargetColor=aTargetColor;vColorMix=vec2(float(aControl[1])/float(aControl[2]),float(aControl[1]+1u)/float(aControl[2]));}"; // eslint-disable-line
 
@@ -26394,17 +26885,12 @@ class CurvedPath extends Edges {
     render(context, mode, uniforms) {
         setDrawCallUniforms(this.drawCall, uniforms);
         setDrawCallUniforms(this.drawCall, this.localUniforms);
-        context.enable(PicoGL.BLEND);
-        context.depthRange(this.nearDepth, this.farDepth);
-        context.depthMask(false);
+        this.configureRenderContext(context, mode);
         switch (mode) {
             case RenderMode.PICKING:
                 // this.pickingDrawCall.draw();
                 break;
-            case RenderMode.HIGH_PASS_2:
-                break;
             default:
-                context.blendFuncSeparate(PicoGL.SRC_ALPHA, PicoGL.ONE, PicoGL.ONE, PicoGL.ONE);
                 this.drawCall.draw();
                 break;
         }
@@ -26457,7 +26943,7 @@ class CurvedPath extends Edges {
 
 var edgeVS$4 = "#version 300 es\n#define GLSLIFY 1\nlayout(location=0)in vec3 aVertex;layout(location=1)in vec3 iOffsetA;layout(location=2)in vec3 iOffsetB;layout(location=3)in vec3 iControl;layout(location=4)in uint iColorA;layout(location=5)in uint iColorB;layout(location=6)in vec2 iColorMix;uniform mat4 uViewMatrix;uniform mat4 uSceneMatrix;uniform mat4 uProjectionMatrix;uniform vec2 uViewportSize;uniform float uPixelRatio;uniform sampler2D uColorPalette;uniform float uLineWidth;uniform float uSegments;flat out float fLineWidth;out vec3 vColor;out vec2 vProjectedPosition;out float vProjectedW;vec4 getColorByIndexFromTexture(sampler2D tex,int index){int texWidth=textureSize(tex,0).x;int col=index % texWidth;int row=index/texWidth;return texelFetch(tex,ivec2(col,row),0);}vec3 bezier(vec3 p0,vec3 p1,vec3 p2,float t){return p1+pow(1.0-t,2.0)*(p2-p1)+pow(t,2.0)*(p0-p1);}void main(){float t0=aVertex.y/uSegments;float t1=(aVertex.y+1.0)/uSegments;vec3 b0=bezier(iOffsetA,iControl,iOffsetB,t0);vec3 b1=bezier(iOffsetA,iControl,iOffsetB,t1);mat4 renderMatrix=uProjectionMatrix*uViewMatrix*uSceneMatrix;vec4 b0Projected=renderMatrix*vec4(b0,1.0);vec4 b1Projected=renderMatrix*vec4(b1,1.0);vec2 b0Screen=(b0Projected.xy/b0Projected.w)*uViewportSize*0.5;vec2 b1Screen=(b1Projected.xy/b1Projected.w)*uViewportSize*0.5;vec2 direction=normalize(b1Screen-b0Screen);vec2 normal=vec2(-direction.y,direction.x);fLineWidth=uLineWidth*uPixelRatio;float offsetWidth=fLineWidth+0.5;vec4 offset=vec4(((aVertex.x*normal*offsetWidth)/uViewportSize)*b0Projected.w,0.0,0.0);gl_Position=b0Projected+offset;vProjectedPosition=b0Projected.xy;vProjectedW=b0Projected.w;vec4 colorA=getColorByIndexFromTexture(uColorPalette,int(iColorA));vec4 colorB=getColorByIndexFromTexture(uColorPalette,int(iColorB));vec3 mixColorA=mix(colorA.rgb,colorB.rgb,iColorMix[1]);vec3 mixColorB=mix(colorA.rgb,colorB.rgb,iColorMix[0]);vColor=mix(mixColorA.rgb,mixColorB.rgb,t0);}"; // eslint-disable-line
 
-var edgeFS$4 = "#version 300 es\nprecision highp float;\n#define GLSLIFY 1\n#define MODE_DRAFT 0u\n#define MODE_MEDIUM 1u\n#define MODE_HIGH_PASS_1 2u\n#define MODE_HIGH_PASS_2 3u\n#define MODE_PICKING 4u\n#define ONE_ALPHA 0.00392156862\nfloat lineAlpha(vec2 position,float w,vec2 viewportSize,float alpha,float lineWidth){vec2 lineCenter=((position/w)*0.5+0.5)*viewportSize;float distOffset=(lineWidth-1.0)*0.5;float dist=smoothstep(lineWidth*0.5-0.5,lineWidth*0.5+0.5,distance(lineCenter,gl_FragCoord.xy));return alpha*(1.0-dist);}vec4 lineColor(vec3 color,vec2 position,float w,vec2 viewportSize,float alpha,uint mode,float lineWidth){if(mode<MODE_HIGH_PASS_1){return vec4(color,alpha);}float a=lineAlpha(position,w,viewportSize,alpha,lineWidth);if(a<ONE_ALPHA){discard;}return vec4(color,a);}uniform vec2 uViewportSize;uniform float uAlpha;uniform uint uRenderMode;flat in float fLineWidth;in vec3 vColor;in vec2 vProjectedPosition;in float vProjectedW;out vec4 fragColor;void main(){fragColor=lineColor(vColor,vProjectedPosition,vProjectedW,uViewportSize,uAlpha,uRenderMode,fLineWidth);}"; // eslint-disable-line
+var edgeFS$4 = "#version 300 es\nprecision highp float;\n#define GLSLIFY 1\nfloat luminance_x_1540259130(float x){return x<=0.04045 ? x/12.92 : pow((x+0.055)/1.055,2.4);}float color_l_1540259130(float l){return min(1.0,max(0.0,l<=0.0031308 ? l*12.92 : pow(l*1.055,1.0/2.4)-0.055));}float rgb2luminance(vec3 color){float r=luminance_x_1540259130(color.r);float g=luminance_x_1540259130(color.g);float b=luminance_x_1540259130(color.b);return 0.2126*r+0.7152*g+0.0722*b;}vec3 setLuminance(vec3 color,float luminance){float r=luminance_x_1540259130(color.r)*0.2126;float g=luminance_x_1540259130(color.g)*0.7152;float b=luminance_x_1540259130(color.b)*0.0722;float colorLuminance=r+g+b;float tr=luminance*(r/colorLuminance);float tg=luminance*(g/colorLuminance);float tb=luminance*(b/colorLuminance);float rr=color_l_1540259130(tr/0.2126);float rg=color_l_1540259130(tg/0.7152);float rb=color_l_1540259130(tb/0.0722);return vec3(rr,rg,rb);}float findDarker(float luminance,float contrast){return(contrast*luminance)+(0.05*contrast)-0.05;}float findLighter(float luminance,float contrast){return(luminance+0.05-(0.05*contrast))/contrast;}vec3 contrastingColor(vec3 color,float contrast){float luminance=rgb2luminance(color);float darker=findDarker(luminance,contrast);float lighter=findLighter(luminance,contrast);float targetLuminance;if(darker<0.0||darker>1.0){targetLuminance=lighter;}else if(lighter<0.0||lighter>1.0){targetLuminance=darker;}else{targetLuminance=abs(luminance-lighter)<abs(darker-luminance)? lighter : darker;}return setLuminance(color,targetLuminance);}vec3 desaturateColor(vec3 color,float amount){float l=rgb2luminance(color);vec3 gray=vec3(l,l,l);return mix(color,gray,amount);}uniform vec4 uClearColor;uniform float uDesaturate;uniform float uFade;uniform float uAlpha;vec4 outputColor(vec4 color){vec3 ret=vec3(desaturateColor(color.rgb,uDesaturate));ret=mix(ret,uClearColor.rgb,uFade);return vec4(ret,color.a*uAlpha);}\n#define MODE_DRAFT 0u\n#define MODE_MEDIUM 1u\n#define MODE_HIGH_PASS_1 2u\n#define MODE_HIGH_PASS_2 3u\n#define MODE_PICKING 4u\n#define ONE_ALPHA 0.00392156862\nfloat lineAlpha(vec2 position,float w,vec2 viewportSize,float lineWidth){vec2 lineCenter=((position/w)*0.5+0.5)*viewportSize;float distOffset=(lineWidth-1.0)*0.5;float dist=smoothstep(lineWidth*0.5-0.5,lineWidth*0.5+0.5,distance(lineCenter,gl_FragCoord.xy));return(1.0-dist);}vec4 lineColor(vec3 color,vec2 position,float w,vec2 viewportSize,uint mode,float lineWidth){if(mode<MODE_HIGH_PASS_1){return outputColor(vec4(color,1.0));}float a=lineAlpha(position,w,viewportSize,lineWidth);if(mode==MODE_HIGH_PASS_1){if(a==1.0){return outputColor(vec4(color,a));}else{discard;}}if(a<ONE_ALPHA){discard;}return outputColor(vec4(color,a));}uniform vec2 uViewportSize;uniform uint uRenderMode;flat in float fLineWidth;in vec3 vColor;in vec2 vProjectedPosition;in float vProjectedW;out vec4 fragColor;void main(){fragColor=lineColor(vColor,vProjectedPosition,vProjectedW,uViewportSize,uRenderMode,fLineWidth);}"; // eslint-disable-line
 
 var dataVS$4 = "#version 300 es\n#define GLSLIFY 1\nlayout(location=0)in uint aSourceIndex;layout(location=1)in uint aTargetIndex;layout(location=2)in uint aSourceClusterIndex;layout(location=3)in uint aTargetClusterIndex;layout(location=4)in uint aSourceColor;layout(location=5)in uint aTargetColor;layout(location=6)in uint aIndex;uniform sampler2D uGraphPoints;out vec3 vSource;out vec3 vTarget;out vec3 vControl;flat out uint vSourceColor;flat out uint vTargetColor;out vec2 vColorMix;vec4 valueForIndex(sampler2D tex,int index){int texWidth=textureSize(tex,0).x;int col=index % texWidth;int row=index/texWidth;return texelFetch(tex,ivec2(col,row),0);}uvec4 uvalueForIndex(usampler2D tex,int index){int texWidth=textureSize(tex,0).x;int col=index % texWidth;int row=index/texWidth;return texelFetch(tex,ivec2(col,row),0);}void main(){vec4 source=valueForIndex(uGraphPoints,int(aSourceIndex));vec4 target=valueForIndex(uGraphPoints,int(aTargetIndex));vec4 sourceCluster=valueForIndex(uGraphPoints,int(aSourceClusterIndex));vec4 targetCluster=valueForIndex(uGraphPoints,int(aTargetClusterIndex));vec3 direction=normalize(vec3(targetCluster.xy,0.0)-vec3(sourceCluster.xy,0.0));vec3 sourceClusterEdge=sourceCluster.xyz+direction*sourceCluster[3];vec3 targetClusterEdge=targetCluster.xyz-direction*targetCluster[3];float edgeToEdge=length(targetClusterEdge-sourceClusterEdge);vec3 bundlePoint=sourceClusterEdge+direction*(edgeToEdge*0.5);vec3 sourceEdgeToNode=sourceClusterEdge-source.xyz-direction*source[3];float sourceNodeAdjacent=dot(normalize(sourceEdgeToNode),direction)*length(sourceEdgeToNode);vec3 sourceClusterControl=sourceClusterEdge-direction*min(sourceNodeAdjacent*0.75,sourceCluster[3]);vec3 sourceControlDirection=normalize(sourceClusterControl-source.xyz);vec3 sourcePoint=source.xyz+sourceControlDirection*source[3];vec3 targetEdgeToNode=target.xyz-targetClusterEdge-direction*target[3];float targetNodeAdjacent=dot(normalize(targetEdgeToNode),direction)*length(targetEdgeToNode);vec3 targetClusterControl=targetClusterEdge+direction*min(targetNodeAdjacent*0.75,targetCluster[3]);vec3 targetControlDirection=normalize(targetClusterControl-target.xyz);vec3 targetPoint=target.xyz+targetControlDirection*target[3];if(aIndex==0u){if(aSourceIndex==aSourceClusterIndex){vSource=sourcePoint;vControl=sourcePoint;vTarget=sourcePoint;}else{vSource=sourcePoint;vControl=sourceClusterControl;vTarget=(sourceClusterControl+bundlePoint)/2.0;}}else if(aIndex==1u){if(aSourceIndex==aSourceClusterIndex){vSource=sourcePoint;}else{vSource=(sourceClusterControl+bundlePoint)/2.0;}vControl=bundlePoint;if(aTargetIndex==aTargetClusterIndex){vTarget=targetPoint;}else{vTarget=(bundlePoint+targetClusterControl)/2.0;}}else{if(aTargetIndex==aTargetClusterIndex){vSource=targetPoint;vControl=targetPoint;vTarget=targetPoint;}else{vSource=(bundlePoint+targetClusterControl)/2.0;vControl=targetClusterControl;vTarget=targetPoint;}}vSourceColor=aSourceColor;vTargetColor=aTargetColor;vColorMix=vec2(float(aIndex)*0.25,float(aIndex+1u)*0.25);}"; // eslint-disable-line
 
@@ -26516,14 +27002,10 @@ class ClusterBundle extends Edges {
     render(context, mode, uniforms) {
         setDrawCallUniforms(this.drawCall, uniforms);
         setDrawCallUniforms(this.drawCall, this.localUniforms);
-        context.enable(PicoGL.BLEND);
-        context.depthRange(this.nearDepth, this.farDepth);
-        context.depthMask(false);
+        this.configureRenderContext(context, mode);
         switch (mode) {
             case RenderMode.PICKING:
                 // this.pickingDrawCall.draw();
-                break;
-            case RenderMode.HIGH_PASS_2:
                 break;
             default:
                 this.drawCall.draw();
@@ -26891,7 +27373,7 @@ class LabelAtlas {
     }
 }
 
-var nodeFS$8 = "#version 300 es\nprecision highp float;\n#define GLSLIFY 1\n#define MODE_DRAFT 0u\n#define MODE_MEDIUM 1u\n#define MODE_HIGH_PASS_1 2u\n#define MODE_HIGH_PASS_2 3u\n#define MODE_PICKING 4u\nuniform float uPixelRatio;uniform sampler2D uLabelTexture;uniform uint uRenderMode;flat in vec4 fColor;flat in vec2 fLabelSize;flat in float fPixelLength;in vec2 vFromCenter;in vec2 vUV;out vec4 fragColor;void main(){vec4 texPixel=texture(uLabelTexture,vUV);float smoothing=4.0/fLabelSize.y;float distance=texPixel.a;float alpha=smoothstep(0.5-smoothing,0.5+smoothing,distance);float threshold=uRenderMode==MODE_HIGH_PASS_1 ? 0.75 : 0.5;if(uRenderMode!=MODE_HIGH_PASS_2){if(alpha<threshold){discard;}fragColor=vec4(texPixel.rgb*fColor.rgb,1.0);}else{if(texPixel.a==1.0){discard;}fragColor=vec4(texPixel.rgb*fColor.rgb,alpha);}}"; // eslint-disable-line
+var nodeFS$8 = "#version 300 es\nprecision highp float;\n#define GLSLIFY 1\nfloat luminance_x(float x){return x<=0.04045 ? x/12.92 : pow((x+0.055)/1.055,2.4);}float color_l(float l){return min(1.0,max(0.0,l<=0.0031308 ? l*12.92 : pow(l*1.055,1.0/2.4)-0.055));}float rgb2luminance(vec3 color){float r=luminance_x(color.r);float g=luminance_x(color.g);float b=luminance_x(color.b);return 0.2126*r+0.7152*g+0.0722*b;}vec3 setLuminance(vec3 color,float luminance){float r=luminance_x(color.r)*0.2126;float g=luminance_x(color.g)*0.7152;float b=luminance_x(color.b)*0.0722;float colorLuminance=r+g+b;float tr=luminance*(r/colorLuminance);float tg=luminance*(g/colorLuminance);float tb=luminance*(b/colorLuminance);float rr=color_l(tr/0.2126);float rg=color_l(tg/0.7152);float rb=color_l(tb/0.0722);return vec3(rr,rg,rb);}float findDarker(float luminance,float contrast){return(contrast*luminance)+(0.05*contrast)-0.05;}float findLighter(float luminance,float contrast){return(luminance+0.05-(0.05*contrast))/contrast;}vec3 contrastingColor(vec3 color,float contrast){float luminance=rgb2luminance(color);float darker=findDarker(luminance,contrast);float lighter=findLighter(luminance,contrast);float targetLuminance;if(darker<0.0||darker>1.0){targetLuminance=lighter;}else if(lighter<0.0||lighter>1.0){targetLuminance=darker;}else{targetLuminance=abs(luminance-lighter)<abs(darker-luminance)? lighter : darker;}return setLuminance(color,targetLuminance);}vec3 desaturateColor(vec3 color,float amount){float l=rgb2luminance(color);vec3 gray=vec3(l,l,l);return mix(color,gray,amount);}uniform vec4 uClearColor;uniform float uDesaturate;uniform float uFade;uniform float uAlpha;vec4 outputColor(vec4 color){vec3 ret=vec3(desaturateColor(color.rgb,uDesaturate));ret=mix(ret,uClearColor.rgb,uFade);return vec4(ret,color.a*uAlpha);}\n#define MODE_DRAFT 0u\n#define MODE_MEDIUM 1u\n#define MODE_HIGH_PASS_1 2u\n#define MODE_HIGH_PASS_2 3u\n#define MODE_PICKING 4u\nuniform float uPixelRatio;uniform sampler2D uLabelTexture;uniform uint uRenderMode;flat in vec4 fColor;flat in vec2 fLabelSize;flat in float fPixelLength;in vec2 vFromCenter;in vec2 vUV;out vec4 fragColor;void main(){vec4 texPixel=texture(uLabelTexture,vUV);float smoothing=4.0/fLabelSize.y;float distance=texPixel.a;float alpha=smoothstep(0.5-smoothing,0.5+smoothing,distance);float threshold=uRenderMode==MODE_HIGH_PASS_1 ? 0.75 : 0.5;if(uRenderMode!=MODE_HIGH_PASS_2){if(alpha<threshold){discard;}fragColor=outputColor(vec4(texPixel.rgb*fColor.rgb,1.0));}else{if(texPixel.a==1.0){discard;}fragColor=outputColor(vec4(texPixel.rgb*fColor.rgb,alpha));}}"; // eslint-disable-line
 
 var nodeVS$1 = "#version 300 es\nprecision lowp usampler2D;\n#define GLSLIFY 1\nlayout(location=0)in vec3 aVertex;layout(location=1)in vec3 iPosition;layout(location=2)in float iRadius;layout(location=3)in uint iColor;layout(location=4)in uint iBox;uniform mat4 uViewMatrix;uniform mat4 uSceneMatrix;uniform mat4 uProjectionMatrix;uniform vec2 uViewportSize;uniform float uPixelRatio;uniform sampler2D uColorPalette;uniform usampler2D uLabelBoxes;uniform sampler2D uLabelTexture;uniform float uVisibilityThreshold;uniform vec2 uLabelPlacement;flat out vec4 fColor;flat out vec2 fLabelSize;flat out float fPixelLength;out vec2 vFromCenter;out vec2 vUV;vec4 valueForIndex(sampler2D tex,int index){int texWidth=textureSize(tex,0).x;int col=index % texWidth;int row=index/texWidth;return texelFetch(tex,ivec2(col,row),0);}uvec4 uvalueForIndex(usampler2D tex,int index){int texWidth=textureSize(tex,0).x;int col=index % texWidth;int row=index/texWidth;return texelFetch(tex,ivec2(col,row),0);}void main(){mat4 offsetMatrix=mat4(1.0);offsetMatrix[3]=vec4(iPosition,1.0);mat4 modelMatrix=uViewMatrix*uSceneMatrix*offsetMatrix;mat4 lookAtMatrix=mat4(modelMatrix);lookAtMatrix[0]=vec4(1.0,0.0,0.0,lookAtMatrix[0][3]);lookAtMatrix[1]=vec4(0.0,1.0,0.0,lookAtMatrix[1][3]);lookAtMatrix[2]=vec4(0.0,0.0,1.0,lookAtMatrix[2][3]);vec4 quadCenter=uProjectionMatrix*lookAtMatrix*vec4(0.0,0.0,0.0,1.0);vec2 screenQuadCenter=quadCenter.xy/quadCenter.w;vec4 quadSide=uProjectionMatrix*lookAtMatrix*vec4(iRadius,0.0,0.0,1.0);vec2 screenQuadSide=quadSide.xy/quadSide.w;float pixelRadius=length((screenQuadSide-screenQuadCenter)*uViewportSize*0.5);fColor=valueForIndex(uColorPalette,int(iColor));fPixelLength=1.0/max(1.0,pixelRadius);vFromCenter=aVertex.xy;vec4 box=vec4(uvalueForIndex(uLabelBoxes,int(iBox)));vec2 texSize=vec2(textureSize(uLabelTexture,0));vec2 uvMultiplier=vec2((aVertex.xy+1.0)/2.0);float u=(box[0]/texSize.x)+(box[2]/texSize.x)*uvMultiplier.x;float v=(box[1]/texSize.y)+(box[3]/texSize.y)*uvMultiplier.y;vUV=vec2(u,v);fLabelSize=vec2(box[2],box[3]);float visibilityThreshold=uVisibilityThreshold*uPixelRatio;vec3 visibilityMultiplier=vec3(smoothstep(visibilityThreshold*0.5,visibilityThreshold*0.6,pixelRadius),smoothstep(visibilityThreshold*0.5,visibilityThreshold*0.525,pixelRadius),1.0);float pixelToWorld=iRadius/pixelRadius;vec3 labelSize=vec3(box[2]*pixelToWorld,box[3]*pixelToWorld,0.0);mat4 renderMatrix=uProjectionMatrix*lookAtMatrix;float labelMargin=5.0*pixelToWorld;vec3 labelOffset=vec3((iRadius+labelSize.x*0.5+labelMargin)*uLabelPlacement.x,(iRadius+labelSize.y*0.5+labelMargin)*uLabelPlacement.y,0.01);vec4 worldVertex=renderMatrix*vec4(aVertex*labelSize*0.5*visibilityMultiplier+labelOffset,1.0);gl_Position=worldVertex;}"; // eslint-disable-line
 
@@ -26988,21 +27470,16 @@ class PointLabel extends Nodes {
         //
     }
     render(context, mode, uniforms) {
-        context.depthRange(this.nearDepth, this.farDepth);
+        this.configureRenderContext(context, mode);
         switch (mode) {
             case RenderMode.DRAFT:
             case RenderMode.MEDIUM:
             case RenderMode.HIGH_PASS_1:
-                context.disable(PicoGL.BLEND);
-                context.depthMask(true);
                 setDrawCallUniforms(this.drawCall, uniforms);
                 setDrawCallUniforms(this.drawCall, this.localUniforms);
                 this.drawCall.draw();
                 break;
             case RenderMode.HIGH_PASS_2:
-                context.enable(PicoGL.BLEND);
-                // context.blendFuncSeparate(PicoGL.ONE, PicoGL.ONE_MINUS_SRC_ALPHA, PicoGL.ONE, PicoGL.ONE_MINUS_SRC_ALPHA);
-                context.depthMask(false);
                 // context.depthFunc(PicoGL.LEQUAL);
                 setDrawCallUniforms(this.drawCall, uniforms);
                 setDrawCallUniforms(this.drawCall, this.localUniforms);
@@ -27039,7 +27516,7 @@ class PointLabel extends Nodes {
 
 var nodeVS$2 = "#version 300 es\nprecision lowp usampler2D;\n#define GLSLIFY 1\n#define M_PI 3.14159265359\n#define M_2PI 6.28318530718\nlayout(location=0)in vec3 aVertex;layout(location=1)in vec3 iPosition;layout(location=2)in float iRadius;layout(location=3)in uint iColor;layout(location=4)in uint iBox;uniform mat4 uViewMatrix;uniform mat4 uSceneMatrix;uniform mat4 uProjectionMatrix;uniform vec2 uViewportSize;uniform float uPixelRatio;uniform sampler2D uColorPalette;uniform usampler2D uLabelBoxes;uniform sampler2D uLabelTexture;uniform float uVisibilityThreshold;uniform vec2 uLabelPositioning;uniform int uRepeatLabel;uniform float uRepeatGap;uniform float uPlacementMargin;uniform float uLabelPlacement;uniform vec2 uLabelDirection;flat out vec4 fColor;flat out vec2 fLabelSize;flat out float fPixelRadius;flat out vec4 fUV;flat out float fLabelStep;out vec2 vFromCenter;vec4 valueForIndex(sampler2D tex,int index){int texWidth=textureSize(tex,0).x;int col=index % texWidth;int row=index/texWidth;return texelFetch(tex,ivec2(col,row),0);}uvec4 uvalueForIndex(usampler2D tex,int index){int texWidth=textureSize(tex,0).x;int col=index % texWidth;int row=index/texWidth;return texelFetch(tex,ivec2(col,row),0);}void main(){mat4 offsetMatrix=mat4(1.0);offsetMatrix[3]=vec4(iPosition,1.0);mat4 modelMatrix=uViewMatrix*uSceneMatrix*offsetMatrix;mat4 lookAtMatrix=mat4(modelMatrix);lookAtMatrix[0]=vec4(1.0,0.0,0.0,lookAtMatrix[0][3]);lookAtMatrix[1]=vec4(0.0,1.0,0.0,lookAtMatrix[1][3]);lookAtMatrix[2]=vec4(0.0,0.0,1.0,lookAtMatrix[2][3]);vec4 quadCenter=uProjectionMatrix*lookAtMatrix*vec4(0.0,0.0,0.0,1.0);vec2 screenQuadCenter=quadCenter.xy/quadCenter.w;vec4 quadSide=uProjectionMatrix*lookAtMatrix*vec4(iRadius,0.0,0.0,1.0);vec2 screenQuadSide=quadSide.xy/quadSide.w;float pixelRadius=length((screenQuadSide-screenQuadCenter)*uViewportSize*0.5);vec4 box=vec4(uvalueForIndex(uLabelBoxes,int(iBox)));float placementOffset=box[3]*uLabelPlacement+uPlacementMargin*(-1.0+2.0*uLabelPlacement)*uPixelRatio;fPixelRadius=pixelRadius+placementOffset;mat4 renderMatrix=uProjectionMatrix*lookAtMatrix;float visibilityMultiplier=pixelRadius>=uVisibilityThreshold*0.5*uPixelRatio ? 1.0 : 0.0;vec2 texSize=vec2(textureSize(uLabelTexture,0));fUV=vec4((box[0]/texSize.x),(box[1]/texSize.y),(box[2]/texSize.x),(box[3]/texSize.y));fLabelSize=vec2(box[2],box[3]);fColor=valueForIndex(uColorPalette,int(iColor));vFromCenter=aVertex.xy;float pixelLength=iRadius/pixelRadius;float textRadius=iRadius+pixelLength*placementOffset;vec3 labelOffset=vec3(0.0,0.0,0.01);vec4 worldVertex=renderMatrix*vec4(aVertex*textRadius*visibilityMultiplier+labelOffset,1.0);float repeatLabels=float(uint(uRepeatLabel));float repeatGap=uRepeatGap*uPixelRatio;float diameter=fPixelRadius*M_2PI;float maxLabels=min(repeatLabels,floor(diameter/(fLabelSize.x+repeatGap)));float maxLabelsLength=fLabelSize.x*maxLabels;float labelGap=(diameter-maxLabelsLength)/maxLabels;fLabelStep=fLabelSize.x+labelGap;gl_Position=worldVertex;}"; // eslint-disable-line
 
-var nodeFS$9 = "#version 300 es\nprecision highp float;\n#define GLSLIFY 1\n#define M_PI 3.14159265359\n#define M_2PI 6.28318530718\n#define MODE_DRAFT 0u\n#define MODE_MEDIUM 1u\n#define MODE_HIGH_PASS_1 2u\n#define MODE_HIGH_PASS_2 3u\n#define MODE_PICKING 4u\nfloat opRound(in float d,in float r){return d-r;}float opOnion(in float d,in float r){return abs(d)-r;}float sdCircle(in vec2 p,in float r){return length(p)-r;}float sdEquilateralTriangle(in vec2 p,in float r){const float k=sqrt(3.0);p.x=abs(p.x)-r;p.y=p.y+(r)/k;if(p.x+k*p.y>0.0){p=vec2(p.x-k*p.y,-k*p.x-p.y)/2.0;}p.x-=clamp(p.x,-2.0*r,0.0);return-length(p)*sign(p.y);}float sdPentagon(in vec2 p,in float r){const vec3 k=vec3(0.809016994,0.587785252,0.726542528);p.y=-(p.y)*1.25;p.x=abs(p.x)*1.25;p-=2.0*min(dot(vec2(-k.x,k.y),p),0.0)*vec2(-k.x,k.y);p-=2.0*min(dot(vec2(k.x,k.y),p),0.0)*vec2(k.x,k.y);p-=vec2(clamp(p.x,-r*k.z,r*k.z),r);return length(p)*sign(p.y);}float sdOctagon(in vec2 p,in float r){const vec3 k=vec3(-0.9238795325,0.3826834323,0.4142135623);p=abs(p)*1.1;p-=2.0*min(dot(vec2(k.x,k.y),p),0.0)*vec2(k.x,k.y);p-=2.0*min(dot(vec2(-k.x,k.y),p),0.0)*vec2(-k.x,k.y);p-=vec2(clamp(p.x,-k.z*r,k.z*r),r);return length(p)*sign(p.y);}float sdStar(in vec2 p,in float r,in uint n,in float m){float an=3.141593/float(n);float en=3.141593/m;vec2 acs=vec2(cos(an),sin(an));vec2 ecs=vec2(cos(en),sin(en));float bn=mod(atan(p.x,p.y),2.0*an)-an;p=length(p)*vec2(cos(bn),abs(sin(bn)));p-=r*acs;p+=ecs*clamp(-dot(p,ecs),0.0,r*acs.y/ecs.y);return length(p)*sign(p.x);}float sdCross(in vec2 p,in float w,in float r){p=abs(p);return length(p-min(p.x+p.y,w)*0.5)-r;}float sdPlus(in vec2 p,in vec2 b,float r){p=abs(p);p=(p.y>p.x)? p.yx : p.xy;vec2 q=p-b;float k=max(q.y,q.x);vec2 w=(k>0.0)? q : vec2(b.y-p.x,-k);return sign(k)*length(max(w,0.0))+r;}uniform float uPixelRatio;uniform sampler2D uLabelTexture;uniform uint uRenderMode;uniform vec2 uLabelDirection;uniform bool uMirror;flat in vec4 fColor;flat in vec2 fLabelSize;flat in float fPixelRadius;flat in vec4 fUV;flat in float fLabelStep;in vec2 vFromCenter;out vec4 fragColor;float cross_ish(vec2 a,vec2 b){return a.x*b.y-a.y*b.x;}void main(){float fromCenter=length(vFromCenter);float halfLabelWidth=fLabelSize.x*0.5;float halfLabelHeight=fLabelSize.y*0.5;float normalizedHeight=halfLabelHeight/fPixelRadius;float circle=fromCenter-(1.0-normalizedHeight);float ring=opOnion(circle,normalizedHeight);vec2 positionVector=uLabelDirection;float angle=atan(cross_ish(vFromCenter,positionVector),dot(vFromCenter,positionVector));float angleDistance=angle*fPixelRadius;/**try to compesate for float precission issues by substracting 2 pixels on each side,tested on:nvidia-linux-1920 x 1080-no scalingnvidia-windows-1440 x 900-no scalingamd-macOS-2880 x 1800-retina scalingamd-windows-1920 x 1080-no scalingamd-linux-1920 x 1080-no scalingTODO: Find a way to do this(and the UV calculation below)using discrete math*/if(ring>0.0||fract((abs(angleDistance)+halfLabelWidth-2.0)/fLabelStep)>=(fLabelSize.x-4.0)/fLabelStep){discard;}float uProgress=fract((angleDistance+halfLabelWidth)/fLabelStep)/(fLabelSize.x/fLabelStep);float u;if(uMirror){u=fUV[0]+fUV[2]*(1.0-uProgress);}else{u=fUV[0]+fUV[2]*uProgress;}float height=(1.0-fromCenter)*fPixelRadius;float v;if(uMirror){v=fUV[1]+fUV[3]*(height/fLabelSize.y);}else{v=fUV[1]+fUV[3]*(1.0-height/fLabelSize.y);}vec4 texPixel=texture(uLabelTexture,vec2(u,v));float smoothing=4.0/fLabelSize.y;float distance=texPixel.a;float alpha=smoothstep(0.5-smoothing,0.5+smoothing,distance);float threshold=uRenderMode==MODE_HIGH_PASS_1 ? 0.75 : 0.5;if(uRenderMode!=MODE_HIGH_PASS_2){if(alpha<threshold){discard;}fragColor=vec4(texPixel.rgb*fColor.rgb,1.0);}else{if(texPixel.a==1.0){discard;}fragColor=vec4(texPixel.rgb*fColor.rgb,alpha);}}"; // eslint-disable-line
+var nodeFS$9 = "#version 300 es\nprecision highp float;\n#define GLSLIFY 1\n#define M_PI 3.14159265359\n#define M_2PI 6.28318530718\nfloat luminance_x(float x){return x<=0.04045 ? x/12.92 : pow((x+0.055)/1.055,2.4);}float color_l(float l){return min(1.0,max(0.0,l<=0.0031308 ? l*12.92 : pow(l*1.055,1.0/2.4)-0.055));}float rgb2luminance(vec3 color){float r=luminance_x(color.r);float g=luminance_x(color.g);float b=luminance_x(color.b);return 0.2126*r+0.7152*g+0.0722*b;}vec3 setLuminance(vec3 color,float luminance){float r=luminance_x(color.r)*0.2126;float g=luminance_x(color.g)*0.7152;float b=luminance_x(color.b)*0.0722;float colorLuminance=r+g+b;float tr=luminance*(r/colorLuminance);float tg=luminance*(g/colorLuminance);float tb=luminance*(b/colorLuminance);float rr=color_l(tr/0.2126);float rg=color_l(tg/0.7152);float rb=color_l(tb/0.0722);return vec3(rr,rg,rb);}float findDarker(float luminance,float contrast){return(contrast*luminance)+(0.05*contrast)-0.05;}float findLighter(float luminance,float contrast){return(luminance+0.05-(0.05*contrast))/contrast;}vec3 contrastingColor(vec3 color,float contrast){float luminance=rgb2luminance(color);float darker=findDarker(luminance,contrast);float lighter=findLighter(luminance,contrast);float targetLuminance;if(darker<0.0||darker>1.0){targetLuminance=lighter;}else if(lighter<0.0||lighter>1.0){targetLuminance=darker;}else{targetLuminance=abs(luminance-lighter)<abs(darker-luminance)? lighter : darker;}return setLuminance(color,targetLuminance);}vec3 desaturateColor(vec3 color,float amount){float l=rgb2luminance(color);vec3 gray=vec3(l,l,l);return mix(color,gray,amount);}uniform vec4 uClearColor;uniform float uDesaturate;uniform float uFade;uniform float uAlpha;vec4 outputColor(vec4 color){vec3 ret=vec3(desaturateColor(color.rgb,uDesaturate));ret=mix(ret,uClearColor.rgb,uFade);return vec4(ret,color.a*uAlpha);}\n#define MODE_DRAFT 0u\n#define MODE_MEDIUM 1u\n#define MODE_HIGH_PASS_1 2u\n#define MODE_HIGH_PASS_2 3u\n#define MODE_PICKING 4u\nfloat opRound(in float d,in float r){return d-r;}float opOnion(in float d,in float r){return abs(d)-r;}float sdCircle(in vec2 p,in float r){return length(p)-r;}float sdEquilateralTriangle(in vec2 p,in float r){const float k=sqrt(3.0);p.x=abs(p.x)-r;p.y=p.y+(r)/k;if(p.x+k*p.y>0.0){p=vec2(p.x-k*p.y,-k*p.x-p.y)/2.0;}p.x-=clamp(p.x,-2.0*r,0.0);return-length(p)*sign(p.y);}float sdPentagon(in vec2 p,in float r){const vec3 k=vec3(0.809016994,0.587785252,0.726542528);p.y=-(p.y)*1.25;p.x=abs(p.x)*1.25;p-=2.0*min(dot(vec2(-k.x,k.y),p),0.0)*vec2(-k.x,k.y);p-=2.0*min(dot(vec2(k.x,k.y),p),0.0)*vec2(k.x,k.y);p-=vec2(clamp(p.x,-r*k.z,r*k.z),r);return length(p)*sign(p.y);}float sdOctagon(in vec2 p,in float r){const vec3 k=vec3(-0.9238795325,0.3826834323,0.4142135623);p=abs(p)*1.1;p-=2.0*min(dot(vec2(k.x,k.y),p),0.0)*vec2(k.x,k.y);p-=2.0*min(dot(vec2(-k.x,k.y),p),0.0)*vec2(-k.x,k.y);p-=vec2(clamp(p.x,-k.z*r,k.z*r),r);return length(p)*sign(p.y);}float sdStar(in vec2 p,in float r,in uint n,in float m){float an=3.141593/float(n);float en=3.141593/m;vec2 acs=vec2(cos(an),sin(an));vec2 ecs=vec2(cos(en),sin(en));float bn=mod(atan(p.x,p.y),2.0*an)-an;p=length(p)*vec2(cos(bn),abs(sin(bn)));p-=r*acs;p+=ecs*clamp(-dot(p,ecs),0.0,r*acs.y/ecs.y);return length(p)*sign(p.x);}float sdCross(in vec2 p,in float w,in float r){p=abs(p);return length(p-min(p.x+p.y,w)*0.5)-r;}float sdPlus(in vec2 p,in vec2 b,float r){p=abs(p);p=(p.y>p.x)? p.yx : p.xy;vec2 q=p-b;float k=max(q.y,q.x);vec2 w=(k>0.0)? q : vec2(b.y-p.x,-k);return sign(k)*length(max(w,0.0))+r;}uniform float uPixelRatio;uniform sampler2D uLabelTexture;uniform uint uRenderMode;uniform vec2 uLabelDirection;uniform bool uMirror;flat in vec4 fColor;flat in vec2 fLabelSize;flat in float fPixelRadius;flat in vec4 fUV;flat in float fLabelStep;in vec2 vFromCenter;out vec4 fragColor;float cross_ish(vec2 a,vec2 b){return a.x*b.y-a.y*b.x;}void main(){float fromCenter=length(vFromCenter);float halfLabelWidth=fLabelSize.x*0.5;float halfLabelHeight=fLabelSize.y*0.5;float normalizedHeight=halfLabelHeight/fPixelRadius;float circle=fromCenter-(1.0-normalizedHeight);float ring=opOnion(circle,normalizedHeight);vec2 positionVector=uLabelDirection;float angle=atan(cross_ish(vFromCenter,positionVector),dot(vFromCenter,positionVector));float angleDistance=angle*fPixelRadius;/**try to compesate for float precission issues by substracting 2 pixels on each side,tested on:nvidia-linux-1920 x 1080-no scalingnvidia-windows-1440 x 900-no scalingamd-macOS-2880 x 1800-retina scalingamd-windows-1920 x 1080-no scalingamd-linux-1920 x 1080-no scalingTODO: Find a way to do this(and the UV calculation below)using discrete math*/if(ring>0.0||fract((abs(angleDistance)+halfLabelWidth-2.0)/fLabelStep)>=(fLabelSize.x-4.0)/fLabelStep){discard;}float uProgress=fract((angleDistance+halfLabelWidth)/fLabelStep)/(fLabelSize.x/fLabelStep);float u;if(uMirror){u=fUV[0]+fUV[2]*(1.0-uProgress);}else{u=fUV[0]+fUV[2]*uProgress;}float height=(1.0-fromCenter)*fPixelRadius;float v;if(uMirror){v=fUV[1]+fUV[3]*(height/fLabelSize.y);}else{v=fUV[1]+fUV[3]*(1.0-height/fLabelSize.y);}vec4 texPixel=texture(uLabelTexture,vec2(u,v));float smoothing=4.0/fLabelSize.y;float distance=texPixel.a;float alpha=smoothstep(0.5-smoothing,0.5+smoothing,distance);float threshold=uRenderMode==MODE_HIGH_PASS_1 ? 0.75 : 0.5;if(uRenderMode!=MODE_HIGH_PASS_2){if(alpha<threshold){discard;}fragColor=outputColor(vec4(texPixel.rgb*fColor.rgb,1.0));}else{if(texPixel.a==1.0){discard;}fragColor=outputColor(vec4(texPixel.rgb*fColor.rgb,alpha));}}"; // eslint-disable-line
 
 var CircularLabelPlacement;
 (function (CircularLabelPlacement) {
@@ -27101,9 +27578,9 @@ class CircularLabel extends PointLabel {
     }
 }
 
-var nodeVS$3 = "#version 300 es\nprecision lowp usampler2D;\n#define GLSLIFY 1\n#define M_PI 3.14159265359\n#define M_2PI 6.28318530718\nlayout(location=0)in vec3 aVertex;layout(location=1)in vec3 iPosition;layout(location=2)in float iRadius;layout(location=3)in uint iColor;layout(location=4)in uint iBox;uniform mat4 uViewMatrix;uniform mat4 uSceneMatrix;uniform mat4 uProjectionMatrix;uniform vec2 uViewportSize;uniform float uPixelRatio;uniform sampler2D uColorPalette;uniform usampler2D uLabelBoxes;uniform sampler2D uLabelTexture;uniform float uVisibilityThreshold;uniform vec2 uLabelPositioning;uniform int uRepeatLabel;uniform float uRepeatGap;uniform float uPlacementMargin;uniform float uLabelPlacement;uniform vec2 uLabelDirection;flat out vec4 fColor;flat out vec3 fContrastColor;flat out vec2 fLabelSize;flat out float fPixelRadius;flat out float fPixelLength;flat out float fThickness;flat out vec4 fUV;flat out float fLabelStep;out vec2 vFromCenter;vec4 valueForIndex(sampler2D tex,int index){int texWidth=textureSize(tex,0).x;int col=index % texWidth;int row=index/texWidth;return texelFetch(tex,ivec2(col,row),0);}uvec4 uvalueForIndex(usampler2D tex,int index){int texWidth=textureSize(tex,0).x;int col=index % texWidth;int row=index/texWidth;return texelFetch(tex,ivec2(col,row),0);}float luminance_x(float x){return x<=0.04045 ? x/12.92 : pow((x+0.055)/1.055,2.4);}float color_l(float l){return min(1.0,max(0.0,l<=0.0031308 ? l*12.92 : pow(l*1.055,1.0/2.4)-0.055));}float rgb2luminance(vec3 color){float r=luminance_x(color.r);float g=luminance_x(color.g);float b=luminance_x(color.b);return 0.2126*r+0.7152*g+0.0722*b;}vec3 setLuminance(vec3 color,float luminance){float r=luminance_x(color.r)*0.2126;float g=luminance_x(color.g)*0.7152;float b=luminance_x(color.b)*0.0722;float colorLuminance=r+g+b;float tr=luminance*(r/colorLuminance);float tg=luminance*(g/colorLuminance);float tb=luminance*(b/colorLuminance);float rr=color_l(tr/0.2126);float rg=color_l(tg/0.7152);float rb=color_l(tb/0.0722);return vec3(rr,rg,rb);}float findDarker(float luminance,float contrast){return(contrast*luminance)+(0.05*contrast)-0.05;}float findLighter(float luminance,float contrast){return(luminance+0.05-(0.05*contrast))/contrast;}vec3 contrastingColor(vec3 color,float contrast){float luminance=rgb2luminance(color);float darker=findDarker(luminance,contrast);float lighter=findLighter(luminance,contrast);float targetLuminance;if(darker<0.0||darker>1.0){targetLuminance=lighter;}else if(lighter<0.0||lighter>1.0){targetLuminance=darker;}else{targetLuminance=abs(luminance-lighter)<abs(darker-luminance)? lighter : darker;}return setLuminance(color,targetLuminance);}void main(){mat4 offsetMatrix=mat4(1.0);offsetMatrix[3]=vec4(iPosition,1.0);mat4 modelMatrix=uViewMatrix*uSceneMatrix*offsetMatrix;mat4 lookAtMatrix=mat4(modelMatrix);lookAtMatrix[0]=vec4(1.0,0.0,0.0,lookAtMatrix[0][3]);lookAtMatrix[1]=vec4(0.0,1.0,0.0,lookAtMatrix[1][3]);lookAtMatrix[2]=vec4(0.0,0.0,1.0,lookAtMatrix[2][3]);vec4 quadCenter=uProjectionMatrix*lookAtMatrix*vec4(0.0,0.0,0.0,1.0);vec2 screenQuadCenter=quadCenter.xy/quadCenter.w;vec4 quadSide=uProjectionMatrix*lookAtMatrix*vec4(iRadius,0.0,0.0,1.0);vec2 screenQuadSide=quadSide.xy/quadSide.w;float pixelRadius=length((screenQuadSide-screenQuadCenter)*uViewportSize*0.5);vec4 box=vec4(uvalueForIndex(uLabelBoxes,int(iBox)));float visibilityThreshold=uVisibilityThreshold*uPixelRatio;float visibilityMultiplier=smoothstep(visibilityThreshold*0.5-box[3],visibilityThreshold*0.5,pixelRadius*0.5);float minThickness=max(2.0,min(pixelRadius*0.1,3.0*uPixelRatio));fThickness=(minThickness+(box[3]-minThickness)*visibilityMultiplier)*0.5;fPixelRadius=pixelRadius+fThickness;fPixelLength=1.0/fPixelRadius;mat4 renderMatrix=uProjectionMatrix*lookAtMatrix;vec2 texSize=vec2(textureSize(uLabelTexture,0));fUV=vec4((box[0]/texSize.x),(box[1]/texSize.y),(box[2]/texSize.x),(box[3]/texSize.y));fLabelSize=vec2(box[2],box[3]);fColor=valueForIndex(uColorPalette,int(iColor));fContrastColor=contrastingColor(fColor.rgb,7.0);vFromCenter=aVertex.xy;float pixelLength=iRadius/pixelRadius;float textRadius=iRadius+pixelLength*fThickness;vec4 worldVertex=renderMatrix*vec4(aVertex*textRadius,1.0);float repeatLabels=float(uint(uRepeatLabel));float repeatGap=uRepeatGap*uPixelRatio;float circumference=fPixelRadius*M_2PI;float maxLabels=min(repeatLabels,floor(circumference/(fLabelSize.x+repeatGap)));float maxLabelsLength=fLabelSize.x*maxLabels;float labelGap=(circumference-maxLabelsLength)/maxLabels;fLabelStep=fLabelSize.x+labelGap;gl_Position=worldVertex;}"; // eslint-disable-line
+var nodeVS$3 = "#version 300 es\nprecision lowp usampler2D;\n#define GLSLIFY 1\n#define M_PI 3.14159265359\n#define M_2PI 6.28318530718\nlayout(location=0)in vec3 aVertex;layout(location=1)in vec3 iPosition;layout(location=2)in float iRadius;layout(location=3)in uint iColor;layout(location=4)in uint iBox;uniform mat4 uViewMatrix;uniform mat4 uSceneMatrix;uniform mat4 uProjectionMatrix;uniform vec2 uViewportSize;uniform float uPixelRatio;uniform sampler2D uColorPalette;uniform usampler2D uLabelBoxes;uniform sampler2D uLabelTexture;uniform float uVisibilityThreshold;uniform vec2 uLabelPositioning;uniform int uRepeatLabel;uniform float uRepeatGap;uniform float uPlacementMargin;uniform float uLabelPlacement;uniform vec2 uLabelDirection;flat out vec4 fColor;flat out vec3 fContrastColor;flat out vec2 fLabelSize;flat out float fPixelRadius;flat out float fPixelLength;flat out float fThickness;flat out vec4 fUV;flat out float fLabelStep;out vec2 vFromCenter;vec4 valueForIndex(sampler2D tex,int index){int texWidth=textureSize(tex,0).x;int col=index % texWidth;int row=index/texWidth;return texelFetch(tex,ivec2(col,row),0);}uvec4 uvalueForIndex(usampler2D tex,int index){int texWidth=textureSize(tex,0).x;int col=index % texWidth;int row=index/texWidth;return texelFetch(tex,ivec2(col,row),0);}float luminance_x(float x){return x<=0.04045 ? x/12.92 : pow((x+0.055)/1.055,2.4);}float color_l(float l){return min(1.0,max(0.0,l<=0.0031308 ? l*12.92 : pow(l*1.055,1.0/2.4)-0.055));}float rgb2luminance(vec3 color){float r=luminance_x(color.r);float g=luminance_x(color.g);float b=luminance_x(color.b);return 0.2126*r+0.7152*g+0.0722*b;}vec3 setLuminance(vec3 color,float luminance){float r=luminance_x(color.r)*0.2126;float g=luminance_x(color.g)*0.7152;float b=luminance_x(color.b)*0.0722;float colorLuminance=r+g+b;float tr=luminance*(r/colorLuminance);float tg=luminance*(g/colorLuminance);float tb=luminance*(b/colorLuminance);float rr=color_l(tr/0.2126);float rg=color_l(tg/0.7152);float rb=color_l(tb/0.0722);return vec3(rr,rg,rb);}float findDarker(float luminance,float contrast){return(contrast*luminance)+(0.05*contrast)-0.05;}float findLighter(float luminance,float contrast){return(luminance+0.05-(0.05*contrast))/contrast;}vec3 contrastingColor(vec3 color,float contrast){float luminance=rgb2luminance(color);float darker=findDarker(luminance,contrast);float lighter=findLighter(luminance,contrast);float targetLuminance;if(darker<0.0||darker>1.0){targetLuminance=lighter;}else if(lighter<0.0||lighter>1.0){targetLuminance=darker;}else{targetLuminance=abs(luminance-lighter)<abs(darker-luminance)? lighter : darker;}return setLuminance(color,targetLuminance);}vec3 desaturateColor(vec3 color,float amount){float l=rgb2luminance(color);vec3 gray=vec3(l,l,l);return mix(color,gray,amount);}void main(){mat4 offsetMatrix=mat4(1.0);offsetMatrix[3]=vec4(iPosition,1.0);mat4 modelMatrix=uViewMatrix*uSceneMatrix*offsetMatrix;mat4 lookAtMatrix=mat4(modelMatrix);lookAtMatrix[0]=vec4(1.0,0.0,0.0,lookAtMatrix[0][3]);lookAtMatrix[1]=vec4(0.0,1.0,0.0,lookAtMatrix[1][3]);lookAtMatrix[2]=vec4(0.0,0.0,1.0,lookAtMatrix[2][3]);vec4 quadCenter=uProjectionMatrix*lookAtMatrix*vec4(0.0,0.0,0.0,1.0);vec2 screenQuadCenter=quadCenter.xy/quadCenter.w;vec4 quadSide=uProjectionMatrix*lookAtMatrix*vec4(iRadius,0.0,0.0,1.0);vec2 screenQuadSide=quadSide.xy/quadSide.w;float pixelRadius=length((screenQuadSide-screenQuadCenter)*uViewportSize*0.5);vec4 box=vec4(uvalueForIndex(uLabelBoxes,int(iBox)));float visibilityThreshold=uVisibilityThreshold*uPixelRatio;float visibilityMultiplier=smoothstep(visibilityThreshold*0.5-box[3],visibilityThreshold*0.5,pixelRadius*0.5);float minThickness=max(2.0,min(pixelRadius*0.1,3.0*uPixelRatio));fThickness=(minThickness+(box[3]-minThickness)*visibilityMultiplier)*0.5;fPixelRadius=pixelRadius+fThickness;fPixelLength=1.0/fPixelRadius;mat4 renderMatrix=uProjectionMatrix*lookAtMatrix;vec2 texSize=vec2(textureSize(uLabelTexture,0));fUV=vec4((box[0]/texSize.x),(box[1]/texSize.y),(box[2]/texSize.x),(box[3]/texSize.y));fLabelSize=vec2(box[2],box[3]);fColor=valueForIndex(uColorPalette,int(iColor));fContrastColor=contrastingColor(fColor.rgb,7.0);vFromCenter=aVertex.xy;float pixelLength=iRadius/pixelRadius;float textRadius=iRadius+pixelLength*fThickness;vec4 worldVertex=renderMatrix*vec4(aVertex*textRadius,1.0);float repeatLabels=float(uint(uRepeatLabel));float repeatGap=uRepeatGap*uPixelRatio;float circumference=fPixelRadius*M_2PI;float maxLabels=min(repeatLabels,floor(circumference/(fLabelSize.x+repeatGap)));float maxLabelsLength=fLabelSize.x*maxLabels;float labelGap=(circumference-maxLabelsLength)/maxLabels;fLabelStep=fLabelSize.x+labelGap;gl_Position=worldVertex;}"; // eslint-disable-line
 
-var nodeFS$a = "#version 300 es\nprecision highp float;\n#define GLSLIFY 1\n#define M_PI 3.14159265359\n#define M_2PI 6.28318530718\n#define MODE_DRAFT 0u\n#define MODE_MEDIUM 1u\n#define MODE_HIGH_PASS_1 2u\n#define MODE_HIGH_PASS_2 3u\n#define MODE_PICKING 4u\nfloat opRound(in float d,in float r){return d-r;}float opOnion(in float d,in float r){return abs(d)-r;}float sdCircle(in vec2 p,in float r){return length(p)-r;}float sdEquilateralTriangle(in vec2 p,in float r){const float k=sqrt(3.0);p.x=abs(p.x)-r;p.y=p.y+(r)/k;if(p.x+k*p.y>0.0){p=vec2(p.x-k*p.y,-k*p.x-p.y)/2.0;}p.x-=clamp(p.x,-2.0*r,0.0);return-length(p)*sign(p.y);}float sdPentagon(in vec2 p,in float r){const vec3 k=vec3(0.809016994,0.587785252,0.726542528);p.y=-(p.y)*1.25;p.x=abs(p.x)*1.25;p-=2.0*min(dot(vec2(-k.x,k.y),p),0.0)*vec2(-k.x,k.y);p-=2.0*min(dot(vec2(k.x,k.y),p),0.0)*vec2(k.x,k.y);p-=vec2(clamp(p.x,-r*k.z,r*k.z),r);return length(p)*sign(p.y);}float sdOctagon(in vec2 p,in float r){const vec3 k=vec3(-0.9238795325,0.3826834323,0.4142135623);p=abs(p)*1.1;p-=2.0*min(dot(vec2(k.x,k.y),p),0.0)*vec2(k.x,k.y);p-=2.0*min(dot(vec2(-k.x,k.y),p),0.0)*vec2(-k.x,k.y);p-=vec2(clamp(p.x,-k.z*r,k.z*r),r);return length(p)*sign(p.y);}float sdStar(in vec2 p,in float r,in uint n,in float m){float an=3.141593/float(n);float en=3.141593/m;vec2 acs=vec2(cos(an),sin(an));vec2 ecs=vec2(cos(en),sin(en));float bn=mod(atan(p.x,p.y),2.0*an)-an;p=length(p)*vec2(cos(bn),abs(sin(bn)));p-=r*acs;p+=ecs*clamp(-dot(p,ecs),0.0,r*acs.y/ecs.y);return length(p)*sign(p.x);}float sdCross(in vec2 p,in float w,in float r){p=abs(p);return length(p-min(p.x+p.y,w)*0.5)-r;}float sdPlus(in vec2 p,in vec2 b,float r){p=abs(p);p=(p.y>p.x)? p.yx : p.xy;vec2 q=p-b;float k=max(q.y,q.x);vec2 w=(k>0.0)? q : vec2(b.y-p.x,-k);return sign(k)*length(max(w,0.0))+r;}uniform float uPixelRatio;uniform sampler2D uLabelTexture;uniform uint uRenderMode;uniform vec2 uLabelDirection;uniform bool uMirror;flat in vec4 fColor;flat in vec3 fContrastColor;flat in vec2 fLabelSize;flat in float fPixelRadius;flat in float fPixelLength;flat in float fThickness;flat in vec4 fUV;flat in float fLabelStep;in vec2 vFromCenter;out vec4 fragColor;float cross_ish(vec2 a,vec2 b){return a.x*b.y-a.y*b.x;}void main(){float fromCenter=length(vFromCenter);float thickness=fThickness*fPixelLength;float antialias=min(thickness,fPixelLength*1.5);float radius=1.0-thickness;float circle=fromCenter-(1.0-thickness);float ring=opOnion(circle,thickness);float modeDistance=uRenderMode==MODE_HIGH_PASS_1 ?-antialias :-antialias*0.5;float ringThreshold=uRenderMode==MODE_HIGH_PASS_2 ? 0.0 : modeDistance;if(ring>ringThreshold){discard;}float halfLabelWidth=fLabelSize.x*0.5;float halfLabelHeight=fLabelSize.y*0.5;float normalizedHeight=halfLabelHeight/fPixelRadius;vec2 positionVector=uLabelDirection;float angle=atan(cross_ish(vFromCenter,positionVector),dot(vFromCenter,positionVector));float angleDistance=angle*fPixelRadius;float uProgress=min(1.0,max(0.0,fract((angleDistance+halfLabelWidth)/fLabelStep)/(fLabelSize.x/fLabelStep)));float u;if(uMirror){u=fUV[0]+fUV[2]*(1.0-uProgress);}else{u=fUV[0]+fUV[2]*min(1.0,max(0.0,uProgress));}float height=(1.0-fromCenter)*fPixelRadius;float v;if(uMirror){v=fUV[1]+fUV[3]*(height/fLabelSize.y);}else{v=fUV[1]+fUV[3]*(1.0-height/fLabelSize.y);}vec4 texPixel=texture(uLabelTexture,vec2(u,v));float smoothing=4.0/fLabelSize.y;float distance=texPixel.a;float labelMix=smoothstep(0.5-smoothing,0.5+smoothing,distance);float heightMultiplier=pow((fThickness*2.0)/fLabelSize.y,3.0);vec3 color=mix(fColor.rgb,fContrastColor,labelMix*heightMultiplier);if(uRenderMode==MODE_HIGH_PASS_2){if(ring<-antialias){discard;}fragColor=vec4(color,smoothstep(0.0,antialias,abs(ring)));}else{fragColor=vec4(color,1.0);}}"; // eslint-disable-line
+var nodeFS$a = "#version 300 es\nprecision highp float;\n#define GLSLIFY 1\n#define M_PI 3.14159265359\n#define M_2PI 6.28318530718\nfloat luminance_x(float x){return x<=0.04045 ? x/12.92 : pow((x+0.055)/1.055,2.4);}float color_l(float l){return min(1.0,max(0.0,l<=0.0031308 ? l*12.92 : pow(l*1.055,1.0/2.4)-0.055));}float rgb2luminance(vec3 color){float r=luminance_x(color.r);float g=luminance_x(color.g);float b=luminance_x(color.b);return 0.2126*r+0.7152*g+0.0722*b;}vec3 setLuminance(vec3 color,float luminance){float r=luminance_x(color.r)*0.2126;float g=luminance_x(color.g)*0.7152;float b=luminance_x(color.b)*0.0722;float colorLuminance=r+g+b;float tr=luminance*(r/colorLuminance);float tg=luminance*(g/colorLuminance);float tb=luminance*(b/colorLuminance);float rr=color_l(tr/0.2126);float rg=color_l(tg/0.7152);float rb=color_l(tb/0.0722);return vec3(rr,rg,rb);}float findDarker(float luminance,float contrast){return(contrast*luminance)+(0.05*contrast)-0.05;}float findLighter(float luminance,float contrast){return(luminance+0.05-(0.05*contrast))/contrast;}vec3 contrastingColor(vec3 color,float contrast){float luminance=rgb2luminance(color);float darker=findDarker(luminance,contrast);float lighter=findLighter(luminance,contrast);float targetLuminance;if(darker<0.0||darker>1.0){targetLuminance=lighter;}else if(lighter<0.0||lighter>1.0){targetLuminance=darker;}else{targetLuminance=abs(luminance-lighter)<abs(darker-luminance)? lighter : darker;}return setLuminance(color,targetLuminance);}vec3 desaturateColor(vec3 color,float amount){float l=rgb2luminance(color);vec3 gray=vec3(l,l,l);return mix(color,gray,amount);}uniform vec4 uClearColor;uniform float uDesaturate;uniform float uFade;uniform float uAlpha;vec4 outputColor(vec4 color){vec3 ret=vec3(desaturateColor(color.rgb,uDesaturate));ret=mix(ret,uClearColor.rgb,uFade);return vec4(ret,color.a*uAlpha);}\n#define MODE_DRAFT 0u\n#define MODE_MEDIUM 1u\n#define MODE_HIGH_PASS_1 2u\n#define MODE_HIGH_PASS_2 3u\n#define MODE_PICKING 4u\nfloat opRound(in float d,in float r){return d-r;}float opOnion(in float d,in float r){return abs(d)-r;}float sdCircle(in vec2 p,in float r){return length(p)-r;}float sdEquilateralTriangle(in vec2 p,in float r){const float k=sqrt(3.0);p.x=abs(p.x)-r;p.y=p.y+(r)/k;if(p.x+k*p.y>0.0){p=vec2(p.x-k*p.y,-k*p.x-p.y)/2.0;}p.x-=clamp(p.x,-2.0*r,0.0);return-length(p)*sign(p.y);}float sdPentagon(in vec2 p,in float r){const vec3 k=vec3(0.809016994,0.587785252,0.726542528);p.y=-(p.y)*1.25;p.x=abs(p.x)*1.25;p-=2.0*min(dot(vec2(-k.x,k.y),p),0.0)*vec2(-k.x,k.y);p-=2.0*min(dot(vec2(k.x,k.y),p),0.0)*vec2(k.x,k.y);p-=vec2(clamp(p.x,-r*k.z,r*k.z),r);return length(p)*sign(p.y);}float sdOctagon(in vec2 p,in float r){const vec3 k=vec3(-0.9238795325,0.3826834323,0.4142135623);p=abs(p)*1.1;p-=2.0*min(dot(vec2(k.x,k.y),p),0.0)*vec2(k.x,k.y);p-=2.0*min(dot(vec2(-k.x,k.y),p),0.0)*vec2(-k.x,k.y);p-=vec2(clamp(p.x,-k.z*r,k.z*r),r);return length(p)*sign(p.y);}float sdStar(in vec2 p,in float r,in uint n,in float m){float an=3.141593/float(n);float en=3.141593/m;vec2 acs=vec2(cos(an),sin(an));vec2 ecs=vec2(cos(en),sin(en));float bn=mod(atan(p.x,p.y),2.0*an)-an;p=length(p)*vec2(cos(bn),abs(sin(bn)));p-=r*acs;p+=ecs*clamp(-dot(p,ecs),0.0,r*acs.y/ecs.y);return length(p)*sign(p.x);}float sdCross(in vec2 p,in float w,in float r){p=abs(p);return length(p-min(p.x+p.y,w)*0.5)-r;}float sdPlus(in vec2 p,in vec2 b,float r){p=abs(p);p=(p.y>p.x)? p.yx : p.xy;vec2 q=p-b;float k=max(q.y,q.x);vec2 w=(k>0.0)? q : vec2(b.y-p.x,-k);return sign(k)*length(max(w,0.0))+r;}uniform float uPixelRatio;uniform sampler2D uLabelTexture;uniform uint uRenderMode;uniform vec2 uLabelDirection;uniform bool uMirror;flat in vec4 fColor;flat in vec3 fContrastColor;flat in vec2 fLabelSize;flat in float fPixelRadius;flat in float fPixelLength;flat in float fThickness;flat in vec4 fUV;flat in float fLabelStep;in vec2 vFromCenter;out vec4 fragColor;float cross_ish(vec2 a,vec2 b){return a.x*b.y-a.y*b.x;}void main(){float fromCenter=length(vFromCenter);float thickness=fThickness*fPixelLength;float antialias=min(thickness,fPixelLength*1.5);float radius=1.0-thickness;float circle=fromCenter-(1.0-thickness);float ring=opOnion(circle,thickness);float modeDistance=uRenderMode==MODE_HIGH_PASS_1 ?-antialias :-antialias*0.5;float ringThreshold=uRenderMode==MODE_HIGH_PASS_2 ? 0.0 : modeDistance;if(ring>ringThreshold){discard;}float halfLabelWidth=fLabelSize.x*0.5;float halfLabelHeight=fLabelSize.y*0.5;float normalizedHeight=halfLabelHeight/fPixelRadius;vec2 positionVector=uLabelDirection;float angle=atan(cross_ish(vFromCenter,positionVector),dot(vFromCenter,positionVector));float angleDistance=angle*fPixelRadius;float uProgress=min(1.0,max(0.0,fract((angleDistance+halfLabelWidth)/fLabelStep)/(fLabelSize.x/fLabelStep)));float u;if(uMirror){u=fUV[0]+fUV[2]*(1.0-uProgress);}else{u=fUV[0]+fUV[2]*min(1.0,max(0.0,uProgress));}float height=(1.0-fromCenter)*fPixelRadius;float v;if(uMirror){v=fUV[1]+fUV[3]*(height/fLabelSize.y);}else{v=fUV[1]+fUV[3]*(1.0-height/fLabelSize.y);}vec4 texPixel=texture(uLabelTexture,vec2(u,v));float smoothing=4.0/fLabelSize.y;float distance=texPixel.a;float labelMix=smoothstep(0.5-smoothing,0.5+smoothing,distance);float heightMultiplier=pow((fThickness*2.0)/fLabelSize.y,3.0);vec3 color=mix(fColor.rgb,fContrastColor,labelMix*heightMultiplier);if(uRenderMode==MODE_HIGH_PASS_2){if(ring<-antialias){discard;}fragColor=outputColor(vec4(color,smoothstep(0.0,antialias,abs(ring))));}else{fragColor=outputColor(vec4(color,1.0));}}"; // eslint-disable-line
 
 class RingLabel extends CircularLabel {
     getDrawShaders() {
@@ -27225,9 +27702,9 @@ class Layer extends EventEmitter {
         this.updateLabelsDepths();
     }
     render(context, mode, uniforms) {
-        this.renderLabels(context, mode, uniforms);
-        this.renderNodes(context, mode, uniforms);
         this.renderEdges(context, mode, uniforms);
+        this.renderNodes(context, mode, uniforms);
+        this.renderLabels(context, mode, uniforms);
     }
     renderNodes(context, mode, uniforms) {
         if (this._nodes && this._nodes.enabled) {
@@ -27326,7 +27803,7 @@ class GraferController extends EventEmitter {
             for (let ii = 0, nn = data.length; ii < nn; ++ii) {
                 data[ii].point = this.generateId();
             }
-            nodes.push(layers[i].nodes.data);
+            nodes.push(data);
         }
         return nodes;
     }
@@ -27613,31 +28090,51 @@ class DebugMenu {
         folder.addInput(layer, 'farDepth', { min: 0, max: 1, label: 'far' });
         if (layer.nodes) {
             const nodesFolder = folder.addFolder({ title: 'Nodes', expanded: false });
-            this.addNodesOptions(nodesFolder, layer);
+            this.addLayerElementOptions(nodesFolder, layer, 'nodes');
+        }
+        if (layer.labels) {
+            const labelsFolder = folder.addFolder({ title: 'Labels', expanded: false });
+            this.addLayerElementOptions(labelsFolder, layer, 'labels');
         }
         if (layer.edges) {
             const edgesFolder = folder.addFolder({ title: 'Edges', expanded: false });
-            this.addEdgesOptions(edgesFolder, layer);
+            this.addLayerElementOptions(edgesFolder, layer, 'edges');
         }
     }
-    addNodesOptions(folder, layer) {
-        const nodes = layer.nodes;
-        folder.addInput(nodes, 'enabled');
-        folder.addInput(nodes, 'pixelSizing', { label: 'pixel sizing ' });
-        folder.addInput(nodes, 'billboard', { label: 'billboarding' });
-        folder.addInput(nodes, 'minSize', { label: 'min size' });
-        folder.addInput(nodes, 'maxSize', { label: 'max size' });
-        folder.addInput(layer, 'nodesNearDepth', { min: 0, max: 1, label: 'near' });
-        folder.addInput(layer, 'nodesFarDepth', { min: 0, max: 1, label: 'far' });
-    }
-    addEdgesOptions(folder, layer) {
-        const edges = layer.edges;
-        folder.addInput(edges, 'enabled');
-        folder.addInput(edges, 'alpha', { min: 0, max: 1 });
-        folder.addInput(layer, 'edgesNearDepth', { min: 0, max: 1, label: 'near' });
-        folder.addInput(layer, 'edgesFarDepth', { min: 0, max: 1, label: 'far' });
-        if (edges instanceof Gravity) {
-            folder.addInput(edges, 'gravity', { min: -2, max: 2 });
+    addLayerElementOptions(folder, layer, key) {
+        const element = layer[key];
+        const options = {
+            enabled: [element, {}],
+            blendMode: [element, {
+                    options: {
+                        normal: LayerRenderableBlendMode.NORMAL,
+                        additive: LayerRenderableBlendMode.ADDITIVE,
+                        none: LayerRenderableBlendMode.NONE,
+                    },
+                }],
+            pixelSizing: [element, { label: 'pixel sizing ' }],
+            billboard: [element, { label: 'billboarding' }],
+            minSize: [element, { label: 'min size' }],
+            maxSize: [element, { label: 'max size' }],
+            gravity: [element, { min: -2, max: 2 }],
+            alpha: [element, { min: 0, max: 1 }],
+            fade: [element, { min: 0, max: 1 }],
+            desaturate: [element, { min: 0, max: 1 }],
+            [`${key}NearDepth`]: [layer, { min: 0, max: 1, label: 'near' }],
+            [`${key}FarDepth`]: [layer, { min: 0, max: 1, label: 'far' }],
+        };
+        // menu.addInput(result, 'clusterEdgesMode', {
+        //     options: {
+        //         bundle: 'bundle',
+        //         straight: 'straight',
+        //         curved: 'curved',
+        //     },
+        // });
+        const keys = Object.keys(options);
+        for (let i = 0, n = keys.length; i < n; ++i) {
+            if (keys[i] in options[keys[i]][0]) {
+                folder.addInput(options[keys[i]][0], keys[i], options[keys[i]][1]);
+            }
         }
     }
 }
@@ -27957,7 +28454,7 @@ async function parseJSONL$1(input, cb) {
     const file = await DataFile.fromLocalSource(input);
     // load 16MB chunks
     const sizeOf16MB = 16 * 1024 * 1024;
-    const byteLength = file.byteLength;
+    const byteLength = await file.byteLength;
     const decoder = new TextDecoder();
     const lineBreak = '\n'.charCodeAt(0);
     for (let offset = 0; offset <= byteLength; offset += sizeOf16MB) {
@@ -28118,7 +28615,7 @@ async function parseJSONL$2(input, cb) {
     const file = await DataFile.fromLocalSource(input);
     // load 16MB chunks
     const sizeOf16MB = 16 * 1024 * 1024;
-    const byteLength = file.byteLength;
+    const byteLength = await file.byteLength;
     const decoder = new TextDecoder();
     const lineBreak = '\n'.charCodeAt(0);
     for (let offset = 0; offset <= byteLength; offset += sizeOf16MB) {
@@ -28353,7 +28850,7 @@ async function loadGraph$1(container, info) {
                 },
             },
         };
-        layers.push(nodeLayer);
+        layers.unshift(nodeLayer);
         if (info.nodesFile) {
             const nodes = nodeLayer.nodes;
             await parseJSONL$2(info.nodesFile, json => {
@@ -28389,6 +28886,316 @@ async function loadGraph$1(container, info) {
 async function bundledEdgesLoader(container) {
     renderMenu$2(container, result => {
         loadGraph$1(container, result);
+    });
+}
+
+async function parseJSONL$3(input, cb) {
+    const file = await DataFile.fromLocalSource(input);
+    // load 16MB chunks
+    const sizeOf16MB = 16 * 1024 * 1024;
+    const byteLength = await file.byteLength;
+    const decoder = new TextDecoder();
+    const lineBreak = '\n'.charCodeAt(0);
+    for (let offset = 0; offset <= byteLength; offset += sizeOf16MB) {
+        const chunkEnd = Math.min(offset + sizeOf16MB, byteLength);
+        const chunk = await file.loadData(offset, chunkEnd);
+        const view = new DataView(chunk);
+        let start = 0;
+        for (let i = 0, n = chunk.byteLength; i < n; ++i) {
+            if (view.getUint8(i) === lineBreak || offset + i === byteLength) {
+                const statementBuffer = new Uint8Array(chunk, start, i - start);
+                start = i + 1;
+                const str = decoder.decode(statementBuffer);
+                const json = JSON.parse(str);
+                cb(json);
+            }
+        }
+        if (start < chunk.byteLength) {
+            offset -= chunk.byteLength - start;
+        }
+        // console.log(`${chunkEnd} / ${byteLength} - ${((chunkEnd/byteLength) * 100).toFixed(2)}%`);
+    }
+}
+function createFileInput$3(cb) {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.multiple = false;
+    input.addEventListener('change', cb);
+    return input;
+}
+function createDefaultFileInput(menu, result, key) {
+    const input = createFileInput$3(() => {
+        if (input.files.length) {
+            result[`${key}File`] = input.files[0];
+            result[key] = result[`${key}File`].name;
+        }
+        else {
+            result[key] = 'No file selected.';
+            result[`${key}File`] = null;
+        }
+    });
+    menu.addMonitor(result, key);
+    menu.addButton({ title: 'browse...' }).on('click', () => input.click());
+}
+function renderMenu$3(container, cb) {
+    render(html `<div id="menu" class="start_menu"></div>`, container);
+    const result = {
+        points: 'No file selected.',
+        pointsFile: null,
+        clusters: 'No file selected.',
+        clustersFile: null,
+        clusterEdges: 'No file selected.',
+        clusterEdgesFile: null,
+        nodes: 'No file selected.',
+        nodesFile: null,
+        nodeEdges: 'No file selected.',
+        nodeEdgesFile: null,
+        highlightsNodes: 'No file selected.',
+        highlightsNodesFile: null,
+        highlightsEdges: 'No file selected.',
+        highlightsEdgesFile: null,
+        highlightsParents: 'No file selected.',
+        highlightsParentsFile: null,
+        highlightsAncestors: 'No file selected.',
+        highlightsAncestorsFile: null,
+    };
+    const menu = new Tweakpane({
+        title: 'Grafer Loader',
+        container: document.querySelector('#menu'),
+    });
+    createDefaultFileInput(menu, result, 'points');
+    menu.addSeparator();
+    createDefaultFileInput(menu, result, 'clusters');
+    createDefaultFileInput(menu, result, 'clusterEdges');
+    menu.addSeparator();
+    createDefaultFileInput(menu, result, 'nodes');
+    createDefaultFileInput(menu, result, 'nodeEdges');
+    menu.addSeparator();
+    createDefaultFileInput(menu, result, 'highlightsNodes');
+    createDefaultFileInput(menu, result, 'highlightsEdges');
+    createDefaultFileInput(menu, result, 'highlightsParents');
+    createDefaultFileInput(menu, result, 'highlightsAncestors');
+    menu.addSeparator();
+    const loadBtn = menu.addButton({ title: 'load' });
+    loadBtn.on('click', () => {
+        cb(result);
+    });
+}
+async function loadGraph$2(container, info) {
+    if (info.pointsFile) {
+        render(html `<canvas class="grafer_container"></canvas>`, container);
+        const canvas = document.querySelector('.grafer_container');
+        const layers = [];
+        const points = {
+            data: [],
+        };
+        await parseJSONL$3(info.pointsFile, json => {
+            points.data.push(json);
+        });
+        const edges = {
+            type: 'ClusterBundle',
+            data: [],
+            options: {
+                alpha: 0.04,
+                nearDepth: 0.9,
+            },
+        };
+        const clusterLayer = {
+            name: 'Clusters',
+            labels: {
+                type: 'RingLabel',
+                data: [],
+                mappings: {
+                    background: () => false,
+                    fontSize: () => 14,
+                    padding: () => 0,
+                },
+                options: {
+                    visibilityThreshold: 160,
+                    repeatLabel: -1,
+                    repeatGap: 64,
+                },
+            },
+            edges,
+        };
+        layers.push(clusterLayer);
+        if (info.clustersFile) {
+            const nodes = clusterLayer.labels;
+            await parseJSONL$3(info.clustersFile, json => {
+                nodes.data.push(Object.assign({}, json, {
+                    color: 3,
+                }));
+            });
+        }
+        if (info.clusterEdgesFile) {
+            const edges = clusterLayer.edges;
+            await parseJSONL$3(info.clusterEdgesFile, json => {
+                edges.data.push(Object.assign({}, json, {
+                    sourceColor: 0,
+                    targetColor: 0,
+                }));
+            });
+        }
+        const nodeLayer = {
+            name: 'Nodes',
+            nodes: {
+                type: 'Circle',
+                data: [],
+            },
+            edges: {
+                data: [],
+                options: {
+                    alpha: 0.55,
+                    nearDepth: 0.9,
+                },
+            },
+            labels: {
+                type: 'PointLabel',
+                data: [],
+                mappings: {
+                    background: () => true,
+                    fontSize: () => 12,
+                    padding: () => [8, 5],
+                },
+                options: {
+                    visibilityThreshold: 8,
+                    labelPlacement: PointLabelPlacement.TOP,
+                },
+            },
+        };
+        layers.unshift(nodeLayer);
+        if (info.nodesFile) {
+            const nodes = nodeLayer.nodes;
+            await parseJSONL$3(info.nodesFile, json => {
+                nodes.data.push(Object.assign({}, json, {
+                    color: 1,
+                }));
+            });
+            nodeLayer.labels.data = nodes.data;
+        }
+        if (info.nodeEdgesFile) {
+            const edges = nodeLayer.edges;
+            await parseJSONL$3(info.nodeEdgesFile, json => {
+                edges.data.push(Object.assign({}, json, {
+                    sourceColor: 2,
+                    targetColor: 2,
+                }));
+            });
+        }
+        const highlightNodesLayer = {
+            name: 'Highlights',
+            nodes: {
+                type: 'Circle',
+                data: [],
+            },
+            edges: {
+                type: 'ClusterBundle',
+                data: [],
+                options: {
+                    alpha: 0.55,
+                    nearDepth: 0.9,
+                },
+            },
+            labels: {
+                type: 'PointLabel',
+                data: [],
+                mappings: {
+                    background: () => true,
+                    fontSize: () => 12,
+                    padding: () => [8, 5],
+                },
+                options: {
+                    visibilityThreshold: 8,
+                    labelPlacement: PointLabelPlacement.TOP,
+                },
+            },
+        };
+        layers.unshift(highlightNodesLayer);
+        if (info.highlightsNodesFile) {
+            await parseJSONL$3(info.highlightsNodesFile, json => {
+                highlightNodesLayer.nodes.data.push(Object.assign({}, json, {
+                    color: 1,
+                }));
+            });
+            highlightNodesLayer.labels.data = highlightNodesLayer.nodes.data;
+        }
+        if (info.highlightsEdgesFile) {
+            await parseJSONL$3(info.highlightsEdgesFile, json => {
+                highlightNodesLayer.edges.data.push(Object.assign({}, json, {
+                    sourceColor: 0,
+                    targetColor: 0,
+                }));
+            });
+        }
+        const highlightParentsLayer = {
+            name: 'Highlight Parents',
+            labels: {
+                type: 'RingLabel',
+                data: [],
+                mappings: {
+                    background: () => false,
+                    fontSize: () => 14,
+                    padding: () => 0,
+                },
+                options: {
+                    visibilityThreshold: 160,
+                    repeatLabel: -1,
+                    repeatGap: 64,
+                },
+            },
+        };
+        layers.unshift(highlightParentsLayer);
+        if (info.highlightsParentsFile) {
+            const nodes = highlightParentsLayer.labels;
+            await parseJSONL$3(info.highlightsParentsFile, json => {
+                nodes.data.push(Object.assign({}, json, {
+                    color: 3,
+                }));
+            });
+        }
+        const highlightAncestorsLayer = {
+            name: 'Highlight Ancestors',
+            labels: {
+                type: 'RingLabel',
+                data: [],
+                mappings: {
+                    background: () => false,
+                    fontSize: () => 14,
+                    padding: () => 0,
+                },
+                options: {
+                    visibilityThreshold: 160,
+                    repeatLabel: -1,
+                    repeatGap: 64,
+                },
+            },
+        };
+        layers.unshift(highlightAncestorsLayer);
+        if (info.highlightsAncestorsFile) {
+            const nodes = highlightAncestorsLayer.labels;
+            await parseJSONL$3(info.highlightsAncestorsFile, json => {
+                nodes.data.push(Object.assign({}, json, {
+                    color: 3,
+                }));
+            });
+        }
+        const colors = [
+            '#5e81ac',
+            '#d08770',
+            '#ebcb8b',
+            '#81a1c1',
+        ];
+        const controller = new GraferController(canvas, { points, colors, layers });
+        /* const debug = */ new DebugMenu(controller.viewport);
+        // debug.registerUX(dolly);
+        // debug.registerUX(truck);
+        // debug.registerUX(rotation);
+        // debug.registerUX(pan);
+    }
+}
+async function highlightsLoader(container) {
+    renderMenu$3(container, result => {
+        loadGraph$2(container, result);
     });
 }
 
@@ -29725,6 +30532,7 @@ const examples = {
     playground,
     layoutTester,
     bundledEdgesLoader,
+    highlightsLoader,
 };
 function getExample(examples, path) {
     let obj = examples;
