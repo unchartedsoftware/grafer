@@ -6,7 +6,7 @@ import {GraferContext} from '../../../renderer/GraferContext';
 import {GraphPoints} from '../../../data/GraphPoints';
 import {DataMappings} from '../../../data/DataTools';
 import {PickingManager} from '../../../UX/picking/PickingManager';
-import {LabelAtlas, LabelData} from '../LabelAtlas';
+import {LabelAtlas} from '../LabelAtlas';
 import {LabelNodeData} from '../point/PointLabel';
 
 export class RingLabel extends CircularLabel {
@@ -18,7 +18,7 @@ export class RingLabel extends CircularLabel {
         pickingManager: PickingManager,
         labelAtlas?: LabelAtlas
     ): void {
-        super.initialize(context, points, data, mappings, pickingManager);
+        super.initialize(context, points, data, mappings, pickingManager, labelAtlas);
         this.localUniforms.uPadding = 2.0;
     }
     protected getDrawShaders(): RenderableShaders {

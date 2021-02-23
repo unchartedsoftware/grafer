@@ -138,14 +138,13 @@ export class LabelAtlas {
         });
 
         this._boxesTexture = this.createTextureForBuffer(context, new Uint16Array(boxesBuffer), boxes.length, PicoGL.RGBA16UI);
-        console.log(boxesBuffer);
 
         const labelDataMappings: DataMappings<{ char: number }> = {
             char: (entry: any) => this.characterMap.get(entry),
         };
 
         const labelBuffer = packData(labels, labelDataMappings, kLabelDataTypes, true);
-        this._labelsTexture = this.createTextureForBuffer(context, new Uint16Array(labelBuffer), labels.length, PicoGL.R16UI)
+        this._labelsTexture = this.createTextureForBuffer(context, new Uint16Array(labelBuffer), labels.length, PicoGL.R16UI);
 
         // this.testFeedback(context);
     }
