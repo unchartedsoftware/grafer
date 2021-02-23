@@ -44,6 +44,7 @@ export const kLabelDataTypes: GLDataTypes<DataMappings<{ char: number }>> = {
 
 export class LabelAtlas {
     protected readonly fontSizeStep: number = 25;
+    protected readonly spaceSizeMap: Map<number, number> = new Map();
 
     public readonly labelPixelRatio: number;
     public readonly characterMap: Map<string, number>;
@@ -74,6 +75,7 @@ export class LabelAtlas {
         } else {
             this._boxesTexture = context.createTexture2D(1, 1);
             this._labelsTexture = context.createTexture2D(1, 1);
+            this._charactersTexture = context.createTexture2D(1, 1);
         }
     }
 
@@ -161,18 +163,21 @@ export class LabelAtlas {
     protected renderCharTexture(char: string, size: number, context: CanvasRenderingContext2D, canvas: HTMLCanvasElement): ImageData {
         const pixelRatio = this.labelPixelRatio;
 
-        context.font = `${size * pixelRatio}px monospace`;
-        context.imageSmoothingEnabled = false;
+        if (!this.spaceSizeMap.has(size)) {
+            context.font = `${size * pixelRatio}px monospace`;
+            context.imageSmoothingEnabled = false;
 
-        context.fillStyle = 'white';
-        context.textAlign = 'center';
-        context.textBaseline = 'middle';
+            context.fillStyle = 'white';
+            context.textAlign = 'center';
+            context.textBaseline = 'middle';
 
-        const metrics = context.measureText(char);
-        const textWidth = Math.abs(metrics.actualBoundingBoxLeft) + Math.abs(metrics.actualBoundingBoxRight);
+            const spaceMetrics = context.measureText(' ');
+            this.spaceSizeMap.set(size,  Math.abs(spaceMetrics.actualBoundingBoxLeft) + Math.abs(spaceMetrics.actualBoundingBoxRight));
+        }
+
+        const textWidth = this.spaceSizeMap.get(size);
         const textHeight = size * pixelRatio;
-        const textOffset = textWidth * 0.5 - metrics.actualBoundingBoxRight;
-        const textPadding = Math.min(textWidth, textHeight) * 0.25;
+        const textPadding = Math.min(textWidth, textHeight) * 0.15;
 
         canvas.width = textWidth + textPadding + kImageMargin * 2;
         canvas.height = size * pixelRatio + textPadding + kImageMargin * 2;
@@ -189,7 +194,7 @@ export class LabelAtlas {
         context.fillStyle = 'white';
         context.textAlign = 'center';
         context.textBaseline = 'middle';
-        context.fillText(char, canvas.width * 0.5 + textOffset, canvas.height * 0.5);
+        context.fillText(char, canvas.width * 0.5, canvas.height * 0.5);
 
         return context.getImageData(0, 0, canvas.width, canvas.height);
     }
