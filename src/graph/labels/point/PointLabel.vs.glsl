@@ -95,12 +95,13 @@ void main() {
     float pixelToWorld = iRadius / pixelRadius;
 
     // calculate the with and height of the label
-    vec3 labelSize = vec3((fLabelInfo[2] + uPadding * 2.0) * pixelToWorld, (fLabelInfo[3] + uPadding * 2.0) * pixelToWorld, 0.0);
+    float padding = uPadding * uPixelRatio;
+    vec3 labelSize = vec3((fLabelInfo[2] + padding * 2.0) * pixelToWorld, (fLabelInfo[3] + padding * 2.0) * pixelToWorld, 0.0);
 
     // compute the UV multiplier based on the vertices of the quad
     vec2 pixelMultiplier = vec2((aVertex.xy + 1.0) / 2.0);
     // send the pixel coords to the fragment shader
-    vPixelCoords = vec2(fLabelInfo[2] + uPadding * 2.0, fLabelInfo[3] + uPadding * 2.0) * pixelMultiplier;
+    vPixelCoords = vec2(fLabelInfo[2] + padding * 2.0, fLabelInfo[3] + padding * 2.0) * pixelMultiplier;
 
     // calculate the render matrix
     mat4 renderMatrix = uProjectionMatrix * lookAtMatrix;

@@ -82,7 +82,8 @@ void main() {
     fLabelInfo = vec4(iLabel);
 
     // send the pixel radius of this label to the fragment shader
-    float placementOffset = (fLabelInfo[3] + uPadding * 2.0) * uLabelPlacement + uPlacementMargin * (-1.0 + 2.0 * uLabelPlacement) * uPixelRatio;
+    float padding = uPadding * uPixelRatio;
+    float placementOffset = (fLabelInfo[3] + padding * 2.0) * uLabelPlacement + uPlacementMargin * (-1.0 + 2.0 * uLabelPlacement) * uPixelRatio;
     fPixelRadius = pixelRadius + placementOffset;
 
     // calculate the render matrix
@@ -107,10 +108,10 @@ void main() {
     float repeatLabels = float(uint(uRepeatLabel));
     float repeatGap = uRepeatGap * uPixelRatio;
     float diameter = fPixelRadius * M_2PI;
-    float maxLabels = min(repeatLabels, floor(diameter / (fLabelInfo[2] + repeatGap + uPadding * 2.0)));
-    float maxLabelsLength = (fLabelInfo[2] + uPadding * 2.0) * maxLabels;
+    float maxLabels = min(repeatLabels, floor(diameter / (fLabelInfo[2] + repeatGap + padding * 2.0)));
+    float maxLabelsLength = (fLabelInfo[2] + padding * 2.0) * maxLabels;
     float labelGap = (diameter - maxLabelsLength) / maxLabels;
-    fLabelStep = fLabelInfo[2] + labelGap + uPadding * 2.0;
+    fLabelStep = fLabelInfo[2] + labelGap + padding * 2.0;
 
     // set the render vertex location
     gl_Position = worldVertex;

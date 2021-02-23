@@ -36,32 +36,32 @@ float cross_ish(vec2 a, vec2 b)
 }
 
 void main() {
+    float padding = uPadding * uPixelRatio;
     float fromCenter = length(vFromCenter);
     float halfLabelWidth = fLabelInfo[2] * 0.5;
     float halfLabelHeight = fLabelInfo[3] * 0.5;
-    float normalizedHeight = (halfLabelHeight + uPadding) / fPixelRadius;
+    float normalizedHeight = (halfLabelHeight + padding) / fPixelRadius;
     float circle = fromCenter - (1.0 - normalizedHeight);
     float ring = opOnion(circle, normalizedHeight);
 
     vec2 positionVector = uLabelDirection;
     float angle = atan(cross_ish(vFromCenter, positionVector), dot(vFromCenter, positionVector));
     float angleDistance = angle * fPixelRadius;
-    float paddedLabelWidth = fLabelInfo[2] + uPadding * 2.0;
-    float offsetAngleDistance = angleDistance + halfLabelWidth + uPadding;
+    float paddedLabelWidth = fLabelInfo[2] + padding * 2.0;
+    float offsetAngleDistance = angleDistance + halfLabelWidth + padding;
 
     if (ring > 0.0 || fract(offsetAngleDistance / fLabelStep) >= paddedLabelWidth / fLabelStep) {
         discard;
     }
 
     float width = fract(offsetAngleDistance / fLabelStep) * fLabelStep;
-    float height = (1.0 - fromCenter) * fPixelRadius - uPadding;
+    float height = (1.0 - fromCenter) * fPixelRadius - padding;
     vec4 finalColor;
 
-    if (height < 0.0 || height > fLabelInfo[3] || width < uPadding || width > fLabelInfo[2] + uPadding) {
+    if (height < 0.0 || height > fLabelInfo[3] || width < padding || width > fLabelInfo[2] + padding) {
         finalColor = fBackgroundColor;
     } else {
-//        float uProgress = fract((angleDistance + halfLabelWidth) / fLabelStep) / (fLabelInfo[2] / fLabelStep);
-        float uProgress = (width - uPadding) / fLabelInfo[2];
+        float uProgress = (width - padding) / fLabelInfo[2];
         if (uMirror) {
             uProgress = 1.0 - uProgress;
         }

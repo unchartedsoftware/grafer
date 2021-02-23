@@ -25,12 +25,13 @@ in vec2 vPixelCoords;
 out vec4 fragColor;
 
 void main() {
+    float padding = uPadding * uPixelRatio;
     vec4 finalColor;
 
-    if (vPixelCoords.x < uPadding || vPixelCoords.y < uPadding || vPixelCoords.x > fLabelInfo[2] + uPadding || vPixelCoords.y > fLabelInfo[3] + uPadding) {
+    if (vPixelCoords.x < padding || vPixelCoords.y < padding || vPixelCoords.x > fLabelInfo[2] + padding || vPixelCoords.y > fLabelInfo[3] + padding) {
         finalColor = fBackgroundColor;
     } else {
-        vec2 uvMultiplier = (vPixelCoords - uPadding) / fLabelInfo.ba;
+        vec2 uvMultiplier = (vPixelCoords - padding) / fLabelInfo.ba;
         float u = fLabelInfo[0] + fLabelInfo[1] * uvMultiplier.x;
         float v = uvMultiplier.y;
 
