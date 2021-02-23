@@ -2,8 +2,8 @@ import Tweakpane from 'tweakpane';
 import {Viewport} from '../../renderer/Viewport';
 import {FolderApi} from 'tweakpane/dist/types/api/folder';
 import {Layer} from '../../graph/Layer';
-import {Gravity} from '../../graph/edges/gravity/Gravity';
 import {kButton2Index} from '../mouse/MouseHandler';
+import {LayerRenderableBlendMode} from '../../graph/LayerRenderable';
 
 export class DebugMenu {
     private viewport: Viewport;
@@ -57,34 +57,57 @@ export class DebugMenu {
 
         if (layer.nodes) {
             const nodesFolder = folder.addFolder({title: 'Nodes', expanded: false});
-            this.addNodesOptions(nodesFolder, layer);
+            this.addLayerElementOptions(nodesFolder, layer, 'nodes');
+        }
+
+        if (layer.labels) {
+            const labelsFolder = folder.addFolder({ title: 'Labels', expanded: false });
+            this.addLayerElementOptions(labelsFolder, layer, 'labels');
         }
 
         if (layer.edges) {
             const edgesFolder = folder.addFolder({ title: 'Edges', expanded: false });
-            this.addEdgesOptions(edgesFolder, layer);
+            this.addLayerElementOptions(edgesFolder, layer, 'edges');
         }
     }
 
-    private addNodesOptions(folder: FolderApi, layer: Layer): void {
-        const nodes = layer.nodes;
-        folder.addInput(nodes, 'enabled');
-        folder.addInput(nodes, 'pixelSizing', { label: 'pixel sizing ' });
-        folder.addInput(nodes, 'billboard', { label: 'billboarding' });
-        folder.addInput(nodes, 'minSize', { label: 'min size' });
-        folder.addInput(nodes, 'maxSize', { label: 'max size' });
-        folder.addInput(layer, 'nodesNearDepth', { min: 0, max: 1, label: 'near' });
-        folder.addInput(layer, 'nodesFarDepth', { min: 0, max: 1, label: 'far' });
-    }
+    private addLayerElementOptions(folder: FolderApi, layer: Layer, key: string): void {
+        const element = layer[key];
 
-    private addEdgesOptions(folder: FolderApi, layer: Layer): void {
-        const edges = layer.edges;
-        folder.addInput(edges, 'enabled');
-        folder.addInput(edges, 'alpha', { min: 0, max: 1 });
-        folder.addInput(layer, 'edgesNearDepth', { min: 0, max: 1, label: 'near' });
-        folder.addInput(layer, 'edgesFarDepth', { min: 0, max: 1, label: 'far' });
-        if (edges instanceof Gravity) {
-            folder.addInput(edges, 'gravity', { min: -2, max: 2 });
+        const options = {
+            enabled: [element, {}],
+            blendMode: [element, {
+                options: {
+                    normal: LayerRenderableBlendMode.NORMAL,
+                    additive: LayerRenderableBlendMode.ADDITIVE,
+                    none: LayerRenderableBlendMode.NONE,
+                },
+            }],
+            pixelSizing: [element, { label: 'pixel sizing ' }],
+            billboard: [element, { label: 'billboarding' }],
+            minSize: [element, { label: 'min size' }],
+            maxSize: [element, { label: 'max size' }],
+            gravity: [element, { min: -2, max: 2 }],
+            alpha: [element, { min: 0, max: 1 }],
+            fade: [element, { min: 0, max: 1 }],
+            desaturate: [element, { min: 0, max: 1 }],
+            [`${key}NearDepth`]: [layer, { min: 0, max: 1, label: 'near' }],
+            [`${key}FarDepth`]: [layer, { min: 0, max: 1, label: 'far' }],
+        };
+
+        // menu.addInput(result, 'clusterEdgesMode', {
+        //     options: {
+        //         bundle: 'bundle',
+        //         straight: 'straight',
+        //         curved: 'curved',
+        //     },
+        // });
+
+        const keys = Object.keys(options);
+        for (let i = 0, n = keys.length; i < n; ++i) {
+            if (keys[i] in options[keys[i]][0]) {
+                folder.addInput(options[keys[i]][0], keys[i], options[keys[i]][1]);
+            }
         }
     }
 }

@@ -60,3 +60,9 @@ vec3 contrastingColor(vec3 color, float contrast) {
 
     return setLuminance(color, targetLuminance);
 }
+
+vec3 desaturateColor(vec3 color, float amount) {
+    float l = rgb2luminance(color);
+    vec3 gray = vec3(l, l, l);
+    return mix(color, gray, amount);
+}

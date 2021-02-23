@@ -10,13 +10,21 @@ interface LayoutInfo {
     pointsFile: File;
     clusters: string;
     clustersFile: File;
-    clusterEdgesMode: 'bundle' | 'straight' | 'curved',
     clusterEdges: string;
     clusterEdgesFile: File;
     nodes: string;
     nodesFile: File;
     nodeEdges: string;
     nodeEdgesFile: File;
+
+    highlightsNodes: string;
+    highlightsNodesFile: File;
+    highlightsEdges: string;
+    highlightsEdgesFile: File;
+    highlightsParents: string;
+    highlightsParentsFile: File;
+    highlightsAncestors: string;
+    highlightsAncestorsFile: File;
 }
 
 async function parseJSONL(input, cb): Promise<void> {
@@ -61,6 +69,20 @@ function createFileInput(cb: () => void): HTMLInputElement {
     return input;
 }
 
+function createDefaultFileInput(menu: Tweakpane, result: LayoutInfo, key: string): void {
+    const input = createFileInput(() => {
+        if (input.files.length) {
+            result[`${key}File`] = input.files[0];
+            result[key] = result[`${key}File`].name;
+        } else {
+            result[key] = 'No file selected.';
+            result[`${key}File`] = null;
+        }
+    });
+    menu.addMonitor(result, key);
+    menu.addButton({ title: 'browse...' }).on('click', () => input.click());
+}
+
 function renderMenu(container: HTMLElement, cb: (result: LayoutInfo) => void): void {
     render(html`<div id="menu" class="start_menu"></div>`, container);
 
@@ -69,13 +91,21 @@ function renderMenu(container: HTMLElement, cb: (result: LayoutInfo) => void): v
         pointsFile: null,
         clusters: 'No file selected.',
         clustersFile: null,
-        clusterEdgesMode: 'curved',
         clusterEdges: 'No file selected.',
         clusterEdgesFile: null,
         nodes: 'No file selected.',
         nodesFile: null,
         nodeEdges: 'No file selected.',
         nodeEdgesFile: null,
+
+        highlightsNodes: 'No file selected.',
+        highlightsNodesFile: null,
+        highlightsEdges: 'No file selected.',
+        highlightsEdgesFile: null,
+        highlightsParents: 'No file selected.',
+        highlightsParentsFile: null,
+        highlightsAncestors: 'No file selected.',
+        highlightsAncestorsFile: null,
     };
 
     const menu = new Tweakpane({
@@ -83,77 +113,26 @@ function renderMenu(container: HTMLElement, cb: (result: LayoutInfo) => void): v
         container: document.querySelector('#menu'),
     });
 
-    const pointsInput = createFileInput(() => {
-        if (pointsInput.files.length) {
-            result.pointsFile = pointsInput.files[0];
-            result.points = result.pointsFile.name;
-        } else {
-            result.points = 'No file selected.';
-            result.pointsFile = null;
-        }
-    });
-    menu.addMonitor(result, 'points');
-    menu.addButton({ title: 'browse...' }).on('click', () => pointsInput.click());
+    createDefaultFileInput(menu, result, 'points');
 
     menu.addSeparator();
 
-    const clustersInput = createFileInput(() => {
-        if (clustersInput.files.length) {
-            result.clustersFile = clustersInput.files[0];
-            result.clusters = result.clustersFile.name;
-        } else {
-            result.clusters = 'No file selected.';
-            result.clustersFile = null;
-        }
-    });
-    menu.addMonitor(result, 'clusters');
-    menu.addButton({ title: 'browse...' }).on('click', () => clustersInput.click());
-
-    menu.addInput(result, 'clusterEdgesMode', {
-        options: {
-            bundle: 'bundle',
-            straight: 'straight',
-            curved: 'curved',
-        },
-    });
-
-    const clusterEdgesInput = createFileInput(() => {
-        if (clusterEdgesInput.files.length) {
-            result.clusterEdgesFile = clusterEdgesInput.files[0];
-            result.clusterEdges = result.clusterEdgesFile.name;
-        } else {
-            result.clusterEdges = 'No file selected.';
-            result.clusterEdgesFile = null;
-        }
-    });
-    menu.addMonitor(result, 'clusterEdges');
-    menu.addButton({ title: 'browse...' }).on('click', () => clusterEdgesInput.click());
+    createDefaultFileInput(menu, result, 'clusters');
+    createDefaultFileInput(menu, result, 'clusterEdges');
 
     menu.addSeparator();
 
-    const nodesInput = createFileInput(() => {
-        if (nodesInput.files.length) {
-            result.nodesFile = nodesInput.files[0];
-            result.nodes = result.nodesFile.name;
-        } else {
-            result.nodes = 'No file selected.';
-            result.nodesFile = null;
-        }
-    });
-    menu.addMonitor(result, 'nodes');
-    menu.addButton({ title: 'browse...' }).on('click', () => nodesInput.click());
+    createDefaultFileInput(menu, result, 'nodes');
+    createDefaultFileInput(menu, result, 'nodeEdges');
 
-    const nodeEdgesInput = createFileInput(() => {
-        if (nodeEdgesInput.files.length) {
-            result.nodeEdgesFile = nodeEdgesInput.files[0];
-            result.nodeEdges = result.nodeEdgesFile.name;
-        } else {
-            result.nodeEdges = 'No file selected.';
-            result.nodeEdgesFile = null;
-        }
-    });
-    menu.addMonitor(result, 'nodeEdges');
-    menu.addButton({ title: 'browse...' }).on('click', () => nodeEdgesInput.click());
+    menu.addSeparator();
+
+    createDefaultFileInput(menu, result, 'highlightsNodes');
+    createDefaultFileInput(menu, result, 'highlightsEdges');
+    createDefaultFileInput(menu, result, 'highlightsParents');
+    createDefaultFileInput(menu, result, 'highlightsAncestors');
+
+    menu.addSeparator();
 
     const loadBtn = menu.addButton({ title: 'load' });
     loadBtn.on('click', () => {
@@ -176,7 +155,7 @@ async function loadGraph(container: HTMLElement, info: LayoutInfo): Promise<void
             points.data.push(json);
         });
 
-        const clusterBundleEdges = {
+        const edges = {
             type: 'ClusterBundle',
             data: [],
             options: {
@@ -184,37 +163,6 @@ async function loadGraph(container: HTMLElement, info: LayoutInfo): Promise<void
                 nearDepth: 0.9,
             },
         };
-
-        const clusterStraightEdges = {
-            type: 'Straight',
-            data: [],
-            options: {
-                alpha: 0.04,
-                nearDepth: 0.9,
-            },
-            mappings: {
-                source: (entry): number => 'sourceCluster' in entry ? entry.sourceCluster : entry.source,
-                target: (entry): number => 'targetCluster' in entry ? entry.targetCluster : entry.target,
-            },
-        };
-
-        const clusterCurvedEdges = {
-            type: 'CurvedPath',
-            data: [],
-            options: {
-                alpha: 0.04,
-                nearDepth: 0.9,
-            },
-        };
-
-        let edges;
-        if (info.clusterEdgesMode === 'bundle') {
-            edges = clusterBundleEdges;
-        } else if (info.clusterEdgesMode === 'curved') {
-            edges = clusterCurvedEdges;
-        } else {
-            edges = clusterStraightEdges;
-        }
 
         const clusterLayer = {
             name: 'Clusters',
@@ -305,6 +253,110 @@ async function loadGraph(container: HTMLElement, info: LayoutInfo): Promise<void
             });
         }
 
+        const highlightNodesLayer = {
+            name: 'Highlights',
+            nodes: {
+                type: 'Circle',
+                data: [],
+            },
+            edges: {
+                type: 'ClusterBundle',
+                data: [],
+                options: {
+                    alpha: 0.55,
+                    nearDepth: 0.9,
+                },
+            },
+            labels: {
+                type: 'PointLabel',
+                data: [],
+                mappings: {
+                    background: (): boolean => true,
+                    fontSize: (): number => 12,
+                    padding: (): [number, number] => [8, 5],
+                },
+                options: {
+                    visibilityThreshold: 8,
+                    labelPlacement: PointLabelPlacement.TOP,
+                },
+            },
+        };
+        layers.unshift(highlightNodesLayer);
+
+        if (info.highlightsNodesFile) {
+            await parseJSONL(info.highlightsNodesFile, json => {
+                highlightNodesLayer.nodes.data.push(Object.assign({}, json, {
+                    color: 1,
+                }));
+            });
+            highlightNodesLayer.labels.data = highlightNodesLayer.nodes.data;
+        }
+
+        if (info.highlightsEdgesFile) {
+            await parseJSONL(info.highlightsEdgesFile, json => {
+                highlightNodesLayer.edges.data.push(Object.assign({}, json, {
+                    sourceColor: 0,
+                    targetColor: 0,
+                }));
+            });
+        }
+
+        const highlightParentsLayer = {
+            name: 'Highlight Parents',
+            labels: {
+                type: 'RingLabel',
+                data: [],
+                mappings: {
+                    background: (): boolean => false,
+                    fontSize: (): number => 14,
+                    padding: (): number => 0,
+                },
+                options: {
+                    visibilityThreshold: 160,
+                    repeatLabel: -1,
+                    repeatGap: 64,
+                },
+            },
+        };
+        layers.unshift(highlightParentsLayer);
+
+        if (info.highlightsParentsFile) {
+            const nodes = highlightParentsLayer.labels;
+            await parseJSONL(info.highlightsParentsFile, json => {
+                nodes.data.push(Object.assign({}, json, {
+                    color: 3,
+                }));
+            });
+        }
+
+        const highlightAncestorsLayer = {
+            name: 'Highlight Ancestors',
+            labels: {
+                type: 'RingLabel',
+                data: [],
+                mappings: {
+                    background: (): boolean => false,
+                    fontSize: (): number => 14,
+                    padding: (): number => 0,
+                },
+                options: {
+                    visibilityThreshold: 160,
+                    repeatLabel: -1,
+                    repeatGap: 64,
+                },
+            },
+        };
+        layers.unshift(highlightAncestorsLayer);
+
+        if (info.highlightsAncestorsFile) {
+            const nodes = highlightAncestorsLayer.labels;
+            await parseJSONL(info.highlightsAncestorsFile, json => {
+                nodes.data.push(Object.assign({}, json, {
+                    color: 3,
+                }));
+            });
+        }
+
         const colors = [
             '#5e81ac',
             '#d08770',
@@ -321,7 +373,7 @@ async function loadGraph(container: HTMLElement, info: LayoutInfo): Promise<void
     }
 }
 
-export async function bundledEdgesLoader(container: HTMLElement): Promise<void> {
+export async function highlightsLoader(container: HTMLElement): Promise<void> {
     renderMenu(container, result => {
         loadGraph(container, result);
     });

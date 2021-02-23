@@ -130,9 +130,9 @@ export class Layer extends EventEmitter implements GraphRenderable {
     }
 
     public render(context: App, mode: RenderMode, uniforms: RenderUniforms): void {
-        this.renderLabels(context, mode, uniforms);
-        this.renderNodes(context, mode, uniforms);
         this.renderEdges(context, mode, uniforms);
+        this.renderNodes(context, mode, uniforms);
+        this.renderLabels(context, mode, uniforms);
     }
 
     public renderNodes(context: App, mode: RenderMode, uniforms: RenderUniforms): void {

@@ -114,21 +114,14 @@ export class CurvedPath extends Edges<PathEdgeData, GLPathEdgeTypes> {
         setDrawCallUniforms(this.drawCall, uniforms);
         setDrawCallUniforms(this.drawCall, this.localUniforms);
 
-        context.enable(PicoGL.BLEND);
-
-        context.depthRange(this.nearDepth, this.farDepth);
-        context.depthMask(false);
+        this.configureRenderContext(context, mode);
 
         switch (mode) {
             case RenderMode.PICKING:
                 // this.pickingDrawCall.draw();
                 break;
 
-            case RenderMode.HIGH_PASS_2:
-                break;
-
             default:
-                context.blendFuncSeparate(PicoGL.SRC_ALPHA, PicoGL.ONE, PicoGL.ONE, PicoGL.ONE);
                 this.drawCall.draw();
                 break;
         }

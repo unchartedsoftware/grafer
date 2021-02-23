@@ -4,6 +4,7 @@ precision highp float;
 #define M_PI 3.14159265359
 #define M_2PI 6.28318530718
 
+#pragma glslify: import(../../../renderer/shaders/outputColor.glsl)
 #pragma glslify: import(../../../renderer/shaders/RenderMode.glsl)
 #pragma glslify: import(../../nodes/shaders/shapes.glsl)
 
@@ -82,9 +83,9 @@ void main() {
         if (ring < -antialias) {
             discard;
         }
-        fragColor = vec4(color, smoothstep(0.0, antialias, abs(ring)));
+        fragColor = outputColor(vec4(color, smoothstep(0.0, antialias, abs(ring))));
     } else {
-        fragColor = vec4(color, 1.0);
+        fragColor = outputColor(vec4(color, 1.0));
     }
 
 //    fragColor = vec4(1.0,0.0,1.0,1.0);

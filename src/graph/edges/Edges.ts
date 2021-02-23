@@ -35,13 +35,6 @@ export abstract class Edges<T_SRC extends BasicEdgeData, T_TGT> extends LayerRen
         return kBasicEdgeMappings;
     }
 
-    public get alpha(): number {
-        return this.localUniforms.uAlpha as number;
-    }
-    public set alpha(value: number) {
-        this.localUniforms.uAlpha = value;
-    }
-
     public get lineWidth(): number {
         return this.localUniforms.uLineWidth as number;
     }
@@ -50,10 +43,9 @@ export abstract class Edges<T_SRC extends BasicEdgeData, T_TGT> extends LayerRen
     }
 
     protected initialize(...args: any[]): void {
-        this.localUniforms = {
-            uAlpha: 1.0,
+        this.localUniforms = Object.assign({}, this.localUniforms, {
             uLineWidth: 1.5,
-        };
+        });
         super.initialize(...args);
     }
 

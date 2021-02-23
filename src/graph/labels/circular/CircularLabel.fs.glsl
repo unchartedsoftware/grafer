@@ -4,6 +4,7 @@ precision highp float;
 #define M_PI 3.14159265359
 #define M_2PI 6.28318530718
 
+#pragma glslify: import(../../../renderer/shaders/outputColor.glsl)
 #pragma glslify: import(../../../renderer/shaders/RenderMode.glsl)
 #pragma glslify: import(../../nodes/shaders/shapes.glsl)
 
@@ -80,11 +81,11 @@ void main() {
         if (alpha < threshold) {
             discard;
         }
-        fragColor = vec4(texPixel.rgb * fColor.rgb, 1.0);
+        fragColor = outputColor(vec4(texPixel.rgb * fColor.rgb, 1.0));
     } else {
         if (texPixel.a == 1.0) {
             discard;
         }
-        fragColor = vec4(texPixel.rgb * fColor.rgb, alpha);
+        fragColor = outputColor(vec4(texPixel.rgb * fColor.rgb, alpha));
     }
 }

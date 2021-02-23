@@ -1,5 +1,5 @@
 import {Renderable, RenderMode, RenderUniforms} from '../renderer/Renderable';
-import {App, PicoGL} from 'picogl';
+import {App} from 'picogl';
 import {mat4, quat, vec3} from 'gl-matrix';
 import {Layer} from './Layer';
 import {GraphPoints, PointData, PointDataMappings} from '../data/GraphPoints';
@@ -48,26 +48,23 @@ export class Graph extends GraphPoints implements Renderable {
         // render labels
         for (let i = 0, n = this._layers.length; i < n; ++i) {
             if (this._layers[i].enabled) {
-                context.blendFuncSeparate(PicoGL.SRC_ALPHA, PicoGL.ONE_MINUS_SRC_ALPHA, PicoGL.ONE, PicoGL.ONE);
-                this._layers[i].renderLabels(context, mode, uniforms);
+                this._layers[i].render(context, mode, uniforms);
             }
         }
 
-        // render nodes
-        for (let i = 0, n = this._layers.length; i < n; ++i) {
-            if (this._layers[i].enabled) {
-                context.blendFuncSeparate(PicoGL.SRC_ALPHA, PicoGL.ONE_MINUS_SRC_ALPHA, PicoGL.ONE, PicoGL.ONE);
-                this._layers[i].renderNodes(context, mode, uniforms);
-            }
-        }
-
-        // render edges
-        for (let i = 0, n = this._layers.length; i < n; ++i) {
-            if (this._layers[i].enabled) {
-                context.blendFuncSeparate(PicoGL.SRC_ALPHA, PicoGL.ONE_MINUS_SRC_ALPHA, PicoGL.ONE, PicoGL.ONE);
-                this._layers[i].renderEdges(context, mode, uniforms);
-            }
-        }
+        // // render nodes
+        // for (let i = 0, n = this._layers.length; i < n; ++i) {
+        //     if (this._layers[i].enabled) {
+        //         this._layers[i].renderNodes(context, mode, uniforms);
+        //     }
+        // }
+        //
+        // // render edges
+        // for (let i = 0, n = this._layers.length; i < n; ++i) {
+        //     if (this._layers[i].enabled) {
+        //         this._layers[i].renderEdges(context, mode, uniforms);
+        //     }
+        // }
 
         // if (this.picking) {
         //     this.picking.offscreenBuffer.blitToScreen(context);
