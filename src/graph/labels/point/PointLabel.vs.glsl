@@ -6,7 +6,7 @@ layout(location=0) in vec3 aVertex;
 layout(location=1) in vec3 iPosition;
 layout(location=2) in float iRadius;
 layout(location=3) in uint iColor;
-layout(location=4) in uint iBox;
+layout(location=4) in uvec4 iLabel;
 
 //layout(std140) uniform RenderUniforms {
     uniform mat4 uViewMatrix;
@@ -16,19 +16,26 @@ layout(location=4) in uint iBox;
     uniform float uPixelRatio;
     uniform sampler2D uColorPalette;
 //};
-uniform usampler2D uLabelBoxes;
-uniform sampler2D uLabelTexture;
+uniform usampler2D uLabelIndices;
+uniform usampler2D uCharBoxes;
+uniform sampler2D uCharTexture;
 uniform float uVisibilityThreshold;
 uniform vec2 uLabelPlacement;
+uniform bool uBackground;
+uniform float uPadding;
 
-flat out vec4 fColor;
-flat out vec2 fLabelSize;
+flat out vec4 fBackgroundColor;
+flat out vec4 fTextColor;
+flat out vec4 fLabelInfo;
 flat out float fPixelLength;
+flat out vec2 fCharTextureSize;
 out vec2 vFromCenter;
-out vec2 vUV;
+out vec2 vStringCoords;
+out vec2 vPixelCoords;
 
 
 #pragma glslify: import(../../../renderer/shaders/valueForIndex.glsl)
+#pragma glslify: import(../../../renderer/shaders/colorTools.glsl)
 
 void main() {
     // claculate the offset matrix, done as a matrix to be able to compute "billboard" vertices in the shader
@@ -53,29 +60,27 @@ void main() {
     // compute the pixel radius of this point for a size of 1 in world coordinates
     float pixelRadius = length((screenQuadSide - screenQuadCenter) * uViewportSize * 0.5);
 
+    // send the size of the char texture to the fragment shader
+    fCharTextureSize = vec2(textureSize(uCharTexture, 0));
 
     // send the render color to the fragment shader
-    fColor = valueForIndex(uColorPalette, int(iColor));
+    vec4 color = valueForIndex(uColorPalette, int(iColor));
+    if (uBackground) {
+        fBackgroundColor = vec4(color.rgb, 1.0);
+        fTextColor = vec4(contrastingColor(color.rgb, 7.0), 1.0);
+    } else {
+        fBackgroundColor = vec4(color.rgb, 0.0);
+        fTextColor = vec4(color.rgb, 1.0);
+    }
+
     // send the normalized length of a single pixel to the fragment shader
     fPixelLength = 1.0 / max(1.0, pixelRadius);
+
     // send the normalized distance from the center to the fragment shader
     vFromCenter = aVertex.xy;
 
-    // get the box of the label to render
-    vec4 box = vec4(uvalueForIndex(uLabelBoxes, int(iBox)));
-    // and the size of the texture
-    vec2 texSize = vec2(textureSize(uLabelTexture, 0));
-    // compute the UV multiplier based on the vertices of the quad
-    vec2 uvMultiplier = vec2((aVertex.xy + 1.0) / 2.0);
-    // compute the uv for the label
-    float u = (box[0] / texSize.x) + (box[2] / texSize.x) * uvMultiplier.x;
-    float v = (box[1] / texSize.y) + (box[3] / texSize.y) * uvMultiplier.y;
-
-    // send the uv to the fragment shader
-    vUV = vec2(u, v);
-
     // send the label size to the fragment shader
-    fLabelSize = vec2(box[2], box[3]);
+    fLabelInfo = vec4(iLabel);
 
     // compute the visibility multiplier
     float visibilityThreshold = uVisibilityThreshold * uPixelRatio;
@@ -90,7 +95,12 @@ void main() {
     float pixelToWorld = iRadius / pixelRadius;
 
     // calculate the with and height of the label
-    vec3 labelSize = vec3(box[2] * pixelToWorld, box[3] * pixelToWorld, 0.0);
+    vec3 labelSize = vec3((fLabelInfo[2] + uPadding * 2.0) * pixelToWorld, (fLabelInfo[3] + uPadding * 2.0) * pixelToWorld, 0.0);
+
+    // compute the UV multiplier based on the vertices of the quad
+    vec2 pixelMultiplier = vec2((aVertex.xy + 1.0) / 2.0);
+    // send the pixel coords to the fragment shader
+    vPixelCoords = vec2(fLabelInfo[2] + uPadding * 2.0, fLabelInfo[3] + uPadding * 2.0) * pixelMultiplier;
 
     // calculate the render matrix
     mat4 renderMatrix = uProjectionMatrix * lookAtMatrix;

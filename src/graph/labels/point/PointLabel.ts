@@ -22,7 +22,7 @@ import {GraferInputColor} from '../../../renderer/ColorRegistry';
 export interface LabelNodeData extends Omit<LabelData, 'label'> {
     point: number | string;
     color?: GraferInputColor;
-    label: string | ImageData | number;
+    label: string | ImageData | [number, number, number, number];
 }
 
 export const kLabelNodeMappings: DataMappings<LabelNodeData> = Object.assign({}, kLabelMappings, {
@@ -33,7 +33,7 @@ export const kLabelNodeMappings: DataMappings<LabelNodeData> = Object.assign({},
 export const kLabelNodeDataTypes: GLDataTypes<LabelNodeData> = {
     point: PicoGL.UNSIGNED_INT,
     color: PicoGL.UNSIGNED_INT,
-    label: PicoGL.UNSIGNED_INT,
+    label: [PicoGL.UNSIGNED_INT, PicoGL.UNSIGNED_INT, PicoGL.UNSIGNED_INT, PicoGL.UNSIGNED_INT],
 };
 
 export const kGLLabelNodeTypes = {
@@ -44,7 +44,7 @@ export const kGLLabelNodeTypes = {
     // TODO: Create a color texture and use indices here.
     color: PicoGL.UNSIGNED_INT,
 
-    box: PicoGL.UNSIGNED_INT,
+    label: [PicoGL.UNSIGNED_INT, PicoGL.UNSIGNED_INT, PicoGL.UNSIGNED_INT, PicoGL.UNSIGNED_INT],
 } as const;
 export type GLLabelNodeTypes = typeof kGLLabelNodeTypes;
 
@@ -95,11 +95,25 @@ export class PointLabel extends Nodes<LabelNodeData, GLLabelNodeTypes> {
         }
     }
 
+    public get renderBackground(): boolean {
+        return this.localUniforms.uBackground as boolean;
+    }
+    public set renderBackground(value: boolean) {
+        this.localUniforms.uBackground = value;
+    }
+
     public get visibilityThreshold(): number {
         return this.localUniforms.uVisibilityThreshold as number;
     }
     public set visibilityThreshold(value: number) {
         this.localUniforms.uVisibilityThreshold = value;
+    }
+
+    public get padding(): number {
+        return this.localUniforms.uPadding as number;
+    }
+    public set padding(value: number) {
+        this.localUniforms.uPadding = value;
     }
 
     constructor(
@@ -148,10 +162,13 @@ export class PointLabel extends Nodes<LabelNodeData, GLLabelNodeTypes> {
             uGraphPoints: this.dataTexture,
         });
 
-        this.localUniforms.uLabelBoxes = this.labelAtlas.dataTexture;
-        this.localUniforms.uLabelTexture = this.labelAtlas.labelsTexture;
+        this.localUniforms.uBackground = false;
+        this.localUniforms.uLabelIndices = this.labelAtlas.labelsTexture;
+        this.localUniforms.uCharBoxes = this.labelAtlas.boxesTexture;
+        this.localUniforms.uCharTexture = this.labelAtlas.charactersTexture;
         this.localUniforms.uVisibilityThreshold = 15;
         this.localUniforms.uLabelPlacement = [0, 0];
+        this.localUniforms.uPadding = 4.0;
     }
 
     public destroy(): void {
@@ -203,14 +220,22 @@ export class PointLabel extends Nodes<LabelNodeData, GLLabelNodeTypes> {
     protected getDataShader(): DataShader {
         return {
             vs: dataVS,
-            varyings: [ 'vPosition', 'vRadius', 'vColor', 'vBox' ],
+            varyings: [ 'vPosition', 'vRadius', 'vColor', 'vLabel' ],
         };
     }
 
     protected computeMappings(mappings: Partial<DataMappings<LabelNodeData>>): DataMappings<LabelNodeData> {
         const dataMappings = Object.assign({}, kLabelNodeMappings, super.computeMappings(mappings));
         const idMapping = dataMappings.id;
-        dataMappings.label = (entry: any, i): number => this.labelAtlas.labelMap.get(idMapping(entry, i));
+        dataMappings.label = (entry: any, i): [number, number, number, number] => {
+            const labelInfo = this.labelAtlas.labelMap.get(idMapping(entry, i));
+            return [
+                labelInfo.index,
+                labelInfo.length,
+                labelInfo.width,
+                labelInfo.height,
+            ];
+        };
 
         return dataMappings;
     }
