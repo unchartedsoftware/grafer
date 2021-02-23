@@ -1,27 +1,32 @@
 #version 300 es
 precision highp float;
+precision lowp usampler2D;
 
 #define M_PI 3.14159265359
 #define M_2PI 6.28318530718
 
+#pragma glslify: import(../../../renderer/shaders/valueForIndex.glsl)
 #pragma glslify: import(../../../renderer/shaders/outputColor.glsl)
 #pragma glslify: import(../../../renderer/shaders/RenderMode.glsl)
 #pragma glslify: import(../../nodes/shaders/shapes.glsl)
 
+uniform usampler2D uLabelIndices;
+uniform usampler2D uCharBoxes;
+uniform sampler2D uCharTexture;
 uniform float uPixelRatio;
-uniform sampler2D uLabelTexture;
 uniform uint uRenderMode;
 uniform vec2 uLabelDirection;
 uniform bool uMirror;
+uniform float uPadding;
 
-flat in vec4 fColor;
-flat in vec3 fContrastColor;
-flat in vec2 fLabelSize;
+flat in vec4 fBackgroundColor;
+flat in vec4 fTextColor;
 flat in float fPixelRadius;
+flat in float fLabelStep;
+flat in vec2 fCharTextureSize;
+flat in vec4 fLabelInfo;
 flat in float fPixelLength;
 flat in float fThickness;
-flat in vec4 fUV;
-flat in float fLabelStep;
 in vec2 vFromCenter;
 
 out vec4 fragColor;
@@ -32,6 +37,7 @@ float cross_ish(vec2 a, vec2 b)
 }
 
 void main() {
+    float padding = uPadding * uPixelRatio;
     float fromCenter = length(vFromCenter);
     float thickness = fThickness * fPixelLength;
     float antialias = min(thickness, fPixelLength * 1.5);
@@ -45,47 +51,57 @@ void main() {
         discard;
     }
 
-    float halfLabelWidth = fLabelSize.x * 0.5;
-    float halfLabelHeight = fLabelSize.y * 0.5;
-    float normalizedHeight = halfLabelHeight / fPixelRadius;
+    float halfLabelWidth = fLabelInfo[2] * 0.5;
+    float halfLabelHeight = fLabelInfo[3] * 0.5;
+    float normalizedHeight = (halfLabelHeight + padding) / fPixelRadius;
 
     vec2 positionVector = uLabelDirection;
     float angle = atan(cross_ish(vFromCenter, positionVector), dot(vFromCenter, positionVector));
     float angleDistance = angle * fPixelRadius;
+    float paddedLabelWidth = fLabelInfo[2] + padding * 2.0;
+    float offsetAngleDistance = angleDistance + halfLabelWidth + padding;
 
-    // clamp seems to be broken on linux nvidia drivers :/
-    float uProgress = min(1.0, max(0.0, fract((angleDistance + halfLabelWidth) / fLabelStep) / (fLabelSize.x / fLabelStep)));
-    float u;
-    if (uMirror) {
-        u = fUV[0] + fUV[2] * (1.0 - uProgress);
+    float width = fract(offsetAngleDistance / fLabelStep) * fLabelStep;
+    float height = (1.0 - fromCenter) * fPixelRadius - padding;
+    vec4 finalColor;
+
+    if (height < 0.0 || height > fLabelInfo[3] || width < padding || width > fLabelInfo[2] + padding) {
+        finalColor = fBackgroundColor;
     } else {
-        u = fUV[0] + fUV[2] * min(1.0, max(0.0, uProgress));
+        float uProgress = (width - padding) / fLabelInfo[2];
+        if (uMirror) {
+            uProgress = 1.0 - uProgress;
+        }
+        float stringProgress = fLabelInfo[0] + fLabelInfo[1] * uProgress;
+        float stringIndex = floor(stringProgress);
+        int charIndex = int(uivalueForIndex(uLabelIndices, int(stringIndex)));
+        vec4 charBox = vec4(uvalueForIndex(uCharBoxes, charIndex));
+        float charMult = stringProgress - stringIndex;
+
+        vec4 charBoxUV = charBox / vec4(fCharTextureSize, fCharTextureSize);
+
+        vec2 uv = vec2(charBoxUV[0] + charBoxUV[2] * charMult, charBoxUV[1] + charBoxUV[3] * fLabelInfo[1]);
+        if (uMirror) {
+            uv = vec2(charBoxUV[0] + charBoxUV[2] * charMult, charBoxUV[1] + charBoxUV[3] * (height / fLabelInfo[3]));
+        } else {
+            uv = vec2(charBoxUV[0] + charBoxUV[2] * charMult, charBoxUV[1] + charBoxUV[3] * (1.0 - height / fLabelInfo[3]));
+        }
+
+        vec4 texPixel = texture(uCharTexture, uv);
+
+        float smoothing = 7.0 / fLabelInfo[3];
+        float distance = texPixel.a;
+        float textEdge = smoothstep(0.5 - smoothing, 0.5 + smoothing, distance);
+        finalColor = mix(fBackgroundColor, fTextColor, textEdge);
     }
-
-    float height = (1.0 - fromCenter) * fPixelRadius;
-    float v;
-    if (uMirror) {
-        v = fUV[1] + fUV[3] * (height / fLabelSize.y);
-    } else {
-        v = fUV[1] + fUV[3] * (1.0 - height / fLabelSize.y);
-    }
-
-    vec4 texPixel = texture(uLabelTexture, vec2(u, v));
-
-    float smoothing = 4.0 / fLabelSize.y;
-    float distance = texPixel.a;
-    float labelMix = smoothstep(0.5 - smoothing, 0.5 + smoothing, distance);
-    float heightMultiplier = pow((fThickness * 2.0) / fLabelSize.y, 3.0);
-
-    vec3 color = mix(fColor.rgb, fContrastColor, labelMix * heightMultiplier);
 
     if (uRenderMode == MODE_HIGH_PASS_2) {
         if (ring < -antialias) {
             discard;
         }
-        fragColor = outputColor(vec4(color, smoothstep(0.0, antialias, abs(ring))));
+        fragColor = outputColor(vec4(finalColor.rgb, smoothstep(0.0, antialias, abs(ring))));
     } else {
-        fragColor = outputColor(vec4(color, 1.0));
+        fragColor = outputColor(vec4(finalColor.rgb, 1.0));
     }
 
 //    fragColor = vec4(1.0,0.0,1.0,1.0);
