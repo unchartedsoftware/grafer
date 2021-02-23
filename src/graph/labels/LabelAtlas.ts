@@ -6,42 +6,52 @@ import PicoGL, {App, Texture} from 'picogl';
 import testVS from './shaders/LabelAtlas.test.vs.glsl';
 import testFS from '../../data/shaders/noop.fs.glsl';
 
-const kImageMargin = 2;
+const kImageMargin = 12;
 const INF = 1e20;
 
 export interface LabelData {
     id?: number | string;
     label: string | ImageData;
-    font?: string;
     fontSize?: number;
     padding?: number | [number, number];
-    background?: boolean;
+}
+
+export interface LabelRenderInfo {
+    index: number;
+    length: number;
+    width: number;
+    height: number;
 }
 
 export const kLabelMappings: DataMappings<LabelData> = {
     id: (entry: LabelData, i) => 'id' in entry ? entry.id : i,
     label: (entry: LabelData, i) => 'label' in entry ? entry.label : `${i}`,
-    font: (entry: LabelData) => 'font' in entry ? entry.font : 'monospace',
     fontSize: (entry: LabelData) => 'fontSize' in entry ? entry.fontSize : 18,
     padding: (entry: LabelData) => 'padding' in entry ? entry.padding : [8, 5],
-    background: (entry: LabelData) => 'background' in entry ? entry.background : false,
 };
 
-export const kLabelBoxDataMappings: DataMappings<{ box: [number, number, number, number] }> = {
-    box: (entry: any) => [ entry.x, entry.y, entry.w, entry.h ],
+export const kCharBoxDataMappings: DataMappings<{ box: [number, number, number, number] }> = {
+    box: (entry: any) => [ entry.x + kImageMargin, entry.y + kImageMargin, entry.w - kImageMargin * 2, entry.h - kImageMargin * 2 ],
 };
 
-export const kLabelBoxDataTypes: GLDataTypes<typeof kLabelBoxDataMappings> = {
+export const kCharBoxDataTypes: GLDataTypes<typeof kCharBoxDataMappings> = {
     box: [PicoGL.UNSIGNED_SHORT, PicoGL.UNSIGNED_SHORT, PicoGL.UNSIGNED_SHORT, PicoGL.UNSIGNED_SHORT],
 };
 
-export class LabelAtlas {
-    public readonly labelPixelRatio: number;
-    public readonly labelMap: Map<number | string, number>;
+export const kLabelDataTypes: GLDataTypes<DataMappings<{ char: number }>> = {
+    char: PicoGL.UNSIGNED_SHORT,
+};
 
-    private _dataTexture: Texture;
-    public get dataTexture(): Texture {
-        return this._dataTexture;
+export class LabelAtlas {
+    protected readonly fontSizeStep: number = 25;
+
+    public readonly labelPixelRatio: number;
+    public readonly characterMap: Map<string, number>;
+    public readonly labelMap: Map<number | string, LabelRenderInfo>;
+
+    private _boxesTexture: Texture;
+    public get boxesTexture(): Texture {
+        return this._boxesTexture;
     }
 
     private _labelsTexture: Texture;
@@ -49,14 +59,20 @@ export class LabelAtlas {
         return this._labelsTexture;
     }
 
+    private _charactersTexture: Texture;
+    public get charactersTexture(): Texture {
+        return this._charactersTexture;
+    }
+
     constructor(context: GraferContext, data: unknown[], mappings: Partial<DataMappings<LabelData>>) {
         this.labelPixelRatio = window.devicePixelRatio;
+        this.characterMap = new Map();
         this.labelMap = new Map();
 
         if (data.length) {
             this.processData(context, data, Object.assign({}, kLabelMappings, mappings));
         } else {
-            this._dataTexture = context.createTexture2D(1, 1);
+            this._boxesTexture = context.createTexture2D(1, 1);
             this._labelsTexture = context.createTexture2D(1, 1);
         }
     }
@@ -66,121 +82,116 @@ export class LabelAtlas {
         canvas.setAttribute('style', 'font-smooth: never;-webkit-font-smoothing : none;');
 
         const ctx = canvas.getContext('2d');
+        const boxMap = new Map<string, any>();
         const boxes = [];
+        const labels = [];
+
         for (const [, entry] of dataIterator(data, mappings)) {
-            const image = this.computeDistanceField(this.renderLabelTexture(entry, ctx, canvas), entry.fontSize);
-            boxes.push({ id: entry.id, w: image.width + kImageMargin * 2, h: image.height + kImageMargin * 2, image });
+            if (typeof entry.label === 'string') {
+                const renderSize = Math.max(entry.fontSize, Math.floor(entry.fontSize / this.fontSizeStep) * this.fontSizeStep);
+                const renderScale = entry.fontSize / renderSize;
+
+                const labelInfo: LabelRenderInfo = {
+                    index: labels.length,
+                    length: entry.label.length,
+                    width: 0,
+                    height: 0,
+                };
+                this.labelMap.set(entry.id, labelInfo);
+
+                for (let i = 0, n = entry.label.length; i < n; ++i) {
+                    const char = entry.label.charAt(i);
+                    const charKey = `${char}-${renderSize}`;
+                    if (!this.characterMap.has(charKey)) {
+                        // const image = this.renderCharTexture(char, renderSize, ctx, canvas);
+                        const image = this.computeDistanceField(this.renderCharTexture(char, renderSize, ctx, canvas), renderSize);
+                        const box = { id: charKey, w: image.width, h: image.height, image };
+                        boxMap.set(charKey, box);
+                        boxes.push(box);
+                        this.characterMap.set(charKey, 0);
+                    }
+                    const box = boxMap.get(charKey);
+                    labelInfo.width += (box.image.width - kImageMargin * 2) * renderScale;
+                    labelInfo.height = Math.max(labelInfo.height, (box.image.height - kImageMargin * 2) * renderScale);
+
+                    labels.push(charKey);
+                }
+            }
         }
 
         const pack = potpack(boxes);
         const finalImage = ctx.createImageData(pack.w, pack.h);
 
-        const buffer = packData(boxes, kLabelBoxDataMappings, kLabelBoxDataTypes, true, ((i) => {
+        const boxesBuffer = packData(boxes, kCharBoxDataMappings, kCharBoxDataTypes, true, ((i) => {
             const box = boxes[i];
-            this.labelMap.set(box.id, i);
-            this.blitImageData(box.image, finalImage, box.x + kImageMargin, finalImage.height - box.y - box.h + kImageMargin);
+            this.characterMap.set(box.id, i);
+            this.blitImageData(box.image, finalImage, box.x, finalImage.height - box.y - box.h);
         }));
 
-        this._labelsTexture = context.createTexture2D(finalImage as unknown as HTMLImageElement, {
+        this._charactersTexture = context.createTexture2D(finalImage as unknown as HTMLImageElement, {
             flipY: true,
             // premultiplyAlpha: true,
             // magFilter: PicoGL.NEAREST,
             // minFilter: PicoGL.NEAREST,
         });
 
-        const uint16 = new Uint16Array(buffer);
-        const textureWidth = Math.pow(2 , Math.ceil(Math.log2(Math.ceil(Math.sqrt(data.length)))));
-        const textureHeight = Math.pow(2 , Math.ceil(Math.log2(Math.ceil(data.length / textureWidth))));
-        this._dataTexture = context.createTexture2D(textureWidth, textureHeight, {
-            internalFormat: PicoGL.RGBA16UI,
-        });
-        this._dataTexture.data(uint16);
+        this._boxesTexture = this.createTextureForBuffer(context, new Uint16Array(boxesBuffer), boxes.length, PicoGL.RGBA16UI);
+        console.log(boxesBuffer);
+
+        const labelDataMappings: DataMappings<{ char: number }> = {
+            char: (entry: any) => this.characterMap.get(entry),
+        };
+
+        const labelBuffer = packData(labels, labelDataMappings, kLabelDataTypes, true);
+        this._labelsTexture = this.createTextureForBuffer(context, new Uint16Array(labelBuffer), labels.length, PicoGL.R16UI)
 
         // this.testFeedback(context);
     }
 
-    protected renderLabelTexture(entry: LabelData, context: CanvasRenderingContext2D, canvas: HTMLCanvasElement): ImageData {
-        if (typeof entry.label === 'string') {
-            const label = entry.label || ' ';
-            const pixelRatio = this.labelPixelRatio;
-            const outlineWidth = 3;
-
-            let horizontalPadding;
-            let verticalPadding;
-            if (Array.isArray(entry.padding)) {
-                horizontalPadding = entry.padding[0];
-                verticalPadding = entry.padding.length > 1 ? entry.padding[1] : entry.padding[0];
-            } else {
-                horizontalPadding = entry.padding;
-                verticalPadding = entry.padding;
-            }
-
-            context.font = `${entry.fontSize * pixelRatio}px ${entry.font}`;
-            context.imageSmoothingEnabled = false;
-
-            canvas.width = context.measureText(label).width + horizontalPadding * 2 * pixelRatio;
-            canvas.height = entry.fontSize * pixelRatio + verticalPadding * 2 * pixelRatio;
-
-            context.fillStyle = '#ff0000';
-            context.fillRect(0, 0, canvas.width, canvas.height);
-
-            context.font = `${entry.fontSize * pixelRatio}px ${entry.font}`;
-
-            if (entry.background) {
-                context.fillStyle = '#00ff66';
-                context.lineWidth = outlineWidth;
-                context.strokeStyle = '#00ffcc';
-                this.roundRect(
-                    context,
-                    outlineWidth,
-                    outlineWidth,
-                    canvas.width - outlineWidth * 2,
-                    canvas.height - outlineWidth * 2,
-                    Math.min(10, canvas.height * 0.25, canvas.width * 0.25),
-                    true
-                );
-            }
-
-            context.fillStyle = '#00ffff';
-            context.textAlign = 'center';
-            context.textBaseline = 'middle';
-            context.fillText(label, canvas.width * 0.5, canvas.height * 0.5);
-
-            return context.getImageData(0, 0, canvas.width, canvas.height);
-        }
-
-        return entry.label;
+    protected createTextureForBuffer(context: GraferContext, data: ArrayBufferView, dataLength:number, format: GLenum): Texture {
+        const textureWidth = Math.pow(2 , Math.ceil(Math.log2(Math.ceil(Math.sqrt(dataLength)))));
+        const textureHeight = Math.pow(2 , Math.ceil(Math.log2(Math.ceil(dataLength / textureWidth))));
+        const texture = context.createTexture2D(textureWidth, textureHeight, {
+            internalFormat: format,
+        });
+        texture.data(data);
+        return texture;
     }
 
-    private roundRect(
-        context: CanvasRenderingContext2D,
-        x: number,
-        y: number,
-        width: number,
-        height: number,
-        radius = 5,
-        fill = true,
-        stroke = true
-    ): void {
-        context.beginPath();
-        context.moveTo(x + radius, y);
-        context.lineTo(x + width - radius, y);
-        context.quadraticCurveTo(x + width, y, x + width, y + radius);
-        context.lineTo(x + width, y + height - radius);
-        context.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
-        context.lineTo(x + radius, y + height);
-        context.quadraticCurveTo(x, y + height, x, y + height - radius);
-        context.lineTo(x, y + radius);
-        context.quadraticCurveTo(x, y, x + radius, y);
-        context.closePath();
+    protected renderCharTexture(char: string, size: number, context: CanvasRenderingContext2D, canvas: HTMLCanvasElement): ImageData {
+        const pixelRatio = this.labelPixelRatio;
 
-        if (stroke) {
-            context.stroke();
-        }
+        context.font = `${size * pixelRatio}px monospace`;
+        context.imageSmoothingEnabled = false;
 
-        if (fill) {
-            context.fill();
-        }
+        context.fillStyle = 'white';
+        context.textAlign = 'center';
+        context.textBaseline = 'middle';
+
+        const metrics = context.measureText(char);
+        const textWidth = Math.abs(metrics.actualBoundingBoxLeft) + Math.abs(metrics.actualBoundingBoxRight);
+        const textHeight = size * pixelRatio;
+        const textOffset = textWidth * 0.5 - metrics.actualBoundingBoxRight;
+        const textPadding = Math.min(textWidth, textHeight) * 0.25;
+
+        canvas.width = textWidth + textPadding + kImageMargin * 2;
+        canvas.height = size * pixelRatio + textPadding + kImageMargin * 2;
+
+        // context.fillStyle = `rgb(255,0,0)`;
+        // context.fillRect(0, 0, canvas.width, canvas.height);
+        //
+        // context.fillStyle = `rgb(0,255,0)`;
+        // context.fillRect(canvas.width * 0.5 - textWidth * 0.5, 0, textWidth, canvas.height);
+
+        context.font = `${size * pixelRatio}px monospace`;
+        context.imageSmoothingEnabled = false;
+
+        context.fillStyle = 'white';
+        context.textAlign = 'center';
+        context.textBaseline = 'middle';
+        context.fillText(char, canvas.width * 0.5 + textOffset, canvas.height * 0.5);
+
+        return context.getImageData(0, 0, canvas.width, canvas.height);
     }
 
     private blitImageData(src: ImageData, dst: ImageData, x: number, y: number): void {
@@ -204,8 +215,11 @@ export class LabelAtlas {
         const z = new Float64Array(maxDimension + 1);
         const v = new Uint16Array(maxDimension);
 
+        gridOuter.fill(INF, 0, dataLength);
+        gridInner.fill(0, 0, dataLength);
+
         for (let i = 0; i < dataLength; ++i) {
-            const a = imageData.data[i * 4 + 1] / 255; // alpha value from green channel
+            const a = imageData.data[i * 4 + 3] / 255; // alpha value
             gridOuter[i] = a === 1 ? 0 : a === 0 ? INF : Math.pow(Math.max(0, 0.5 - a), 2);
             gridInner[i] = a === 1 ? INF : a === 0 ? 0 : Math.pow(Math.max(0, a - 0.5), 2);
         }
@@ -213,19 +227,16 @@ export class LabelAtlas {
         this.edt(gridOuter, imageData.width, imageData.height, f, v, z);
         this.edt(gridInner, imageData.width, imageData.height, f, v, z);
 
-        const radius = fontSize / 3;
+        const radius = fontSize / 8;
         const data = imageData.data;
         for (let i = 0; i < dataLength; ++i) {
             const d = Math.sqrt(gridOuter[i]) - Math.sqrt(gridInner[i]);
             const p = i * 4;
-
-            const a = data[p + 3] / 255;
-            // de-multiply the alpha
-            const gray = Math.min(255, (data[p] + data[p + 2]) / a); // the sum between the red and blue channels
-            data[p] = gray;
-            data[p + 1] = gray;
-            data[p + 2] = gray;
-            data[p + 3] = Math.round(255 - 255 * (d / radius + 0.5));
+            const a = Math.round(255 - 255 * (d / radius + 0.5));
+            data[p] = 255;
+            data[p + 1] = 255;
+            data[p + 2] = 255;
+            data[p + 3] = a;
         }
 
         return imageData;
@@ -292,7 +303,7 @@ export class LabelAtlas {
 
         const drawCall = context.createDrawCall(program, vertexArray).transformFeedback(transformFeedback);
         drawCall.primitive(PicoGL.POINTS);
-        drawCall.texture('uDataTexture', this._dataTexture);
+        drawCall.texture('uDataTexture', this._boxesTexture);
         context.enable(PicoGL.RASTERIZER_DISCARD);
         drawCall.draw();
         context.disable(PicoGL.RASTERIZER_DISCARD);
