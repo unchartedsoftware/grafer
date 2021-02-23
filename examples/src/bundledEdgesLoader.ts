@@ -279,6 +279,7 @@ async function loadGraph(container: HTMLElement, info: LayoutInfo): Promise<void
                 options: {
                     visibilityThreshold: 8,
                     labelPlacement: PointLabelPlacement.TOP,
+                    renderBackground: true,
                 },
             },
         };
