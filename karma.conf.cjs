@@ -1,5 +1,3 @@
-const rollupConf = require('./rollup.config.cjs');
-
 module.exports = function (config) {
     config.set({
         frameworks: ['mocha', 'chai'],
@@ -8,12 +6,28 @@ module.exports = function (config) {
             {
                 pattern: 'tests/**/*.spec.ts',
                 watched: false,
+                type: 'js',
             },
         ],
         preprocessors: {
-            'tests/**/*.spec.ts': ['rollup'],
+            'tests/**/*.spec.ts': ['esbuild', 'sourcemap'],
         },
-        rollupPreprocessor: rollupConf({ 'config-test': true })[0],
+        esbuild: {
+            globalName: 'test_scripts',
+            plugins: [
+                {
+                    name: 'kill-glsl',
+                    setup(build) {
+                        build.onLoad({ filter: /\.(?:glsl)$/ }, () => {
+                            return {
+                                contents: '',
+                                loader: 'text',
+                            }
+                        });
+                    },
+                },
+            ],
+        },
         reporters: ['mocha'],
         port: 9876, // karma web server port
         colors: true,
