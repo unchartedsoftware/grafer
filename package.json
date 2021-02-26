@@ -68,7 +68,7 @@
         "karma": "^6.0.2",
         "karma-chai": "^0.1.0",
         "karma-chrome-launcher": "^3.1.0",
-        "karma-esbuild": "git+https://github.com/darionco/karma-esbuild.git#dist",
+        "karma-esbuild": "^1.1.5",
         "karma-mocha": "^2.0.1",
         "karma-mocha-reporter": "^2.2.5",
         "live-server": "^1.2.1",

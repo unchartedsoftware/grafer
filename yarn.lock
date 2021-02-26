@@ -2701,9 +2701,10 @@ karma-chrome-launcher@^3.1.0:
   dependencies:
     which "^1.2.1"
 
-"karma-esbuild@git+https://github.com/darionco/karma-esbuild.git#dist":
-  version "1.1.4"
-  resolved "git+https://github.com/darionco/karma-esbuild.git#8ebed3fe916c72aff594535659f5adbec8d5a745"
+karma-esbuild@^1.1.5:
+  version "1.1.5"
+  resolved "https://registry.npmjs.org/karma-esbuild/-/karma-esbuild-1.1.5.tgz#b946f678960e0ee01478db1ab5395be9fbcea011"
+  integrity sha512-1+N2s3wkPe7MzJcm8rki8o2yRscItTASS6qbNbQyVj2wdINjDyz3lMfd2eSmtLBzdkX1+snL1cLzFWp/Cm8XDg==
   dependencies:
     chokidar "^3.5.1"
     karma-sourcemap-loader "^0.3.8"
