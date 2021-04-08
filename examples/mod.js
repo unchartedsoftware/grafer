@@ -16042,7 +16042,7 @@ var App = class {
 // node_modules/picogl/build/module/picogl.js
 var webglInfoInitialized = false;
 var PicoGL = Object.assign({
-  version: "0.17.6",
+  version: "0.17.7",
   WEBGL_INFO,
   createApp(gl, contextAttributes) {
     if (gl.tagName === "CANVAS") {
