@@ -1,6 +1,6 @@
 {
     "name": "@uncharted.software/grafer",
-    "version": "0.3.0",
+    "version": "0.3.1",
     "description": "Large graph renderer",
     "main": "build/lib/mod.js",
     "types": "build/types/src/mod.d.ts",
