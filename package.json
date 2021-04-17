@@ -3,7 +3,7 @@
     "version": "0.3.1",
     "description": "Large graph renderer",
     "main": "build/lib/mod.js",
-    "types": "build/types/src/mod.d.ts",
+    "types": "build/types/mod.d.ts",
     "repository": "https://github.com/uncharted-aske/grafer.git",
     "author": "Uncharted Software",
     "license": "Apache-2.0",
