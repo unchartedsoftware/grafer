@@ -10,7 +10,7 @@ module.exports = function (config) {
             },
         ],
         preprocessors: {
-            'tests/**/*.spec.ts': ['esbuild', 'sourcemap'],
+            'tests/**/*.spec.ts': ['esbuild'],
         },
         esbuild: {
             globalName: 'test_scripts',
