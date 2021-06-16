@@ -10,6 +10,7 @@ import {GraferInputColor} from '../renderer/colors/ColorRegistry';
 import {PickingManager} from '../UX/picking/PickingManager';
 import {EventEmitter} from '@dekkai/event-emitter/build/lib/EventEmitter';
 import {GraferContext} from '../renderer/GraferContext';
+import {Edges} from '../graph/edges/Edges';
 
 export type GraferNodesType = keyof typeof GraphNodes.types;
 export type GraferEdgesType = keyof typeof GraphEdges.types;
@@ -285,7 +286,7 @@ export class GraferController extends EventEmitter {
                 };
             }
 
-            edges = new EdgesClass(context, graph, edgesData.data, edgesMappings, pickingManager);
+            edges = new (EdgesClass as new(...a: any) => Edges<any, any>)(context, graph, edgesData.data, edgesMappings, pickingManager);
 
             if ('options' in edgesData) {
                 const options = edgesData.options;
