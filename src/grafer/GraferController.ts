@@ -54,7 +54,7 @@ export interface GraferControllerOptions {
 
 const kDefaultOptions: GraferControllerOptions = {
     viewport: null,
-}
+};
 
 export class GraferController extends EventEmitter {
     private _viewport: Viewport;

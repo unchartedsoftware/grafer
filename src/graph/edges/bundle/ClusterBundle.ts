@@ -28,7 +28,7 @@ export interface ClusterBundleEdgeData {
     hyperEdgeStats?: [number, number],
 }
 
-const kClusterBundleEdgeNoOpMapping = () => null;
+const kClusterBundleEdgeNoOpMapping = (): null => null;
 export const kClusterBundleEdgeMappings: DataMappings<ClusterBundleEdgeData & { index: number[] }> = {
     id: (entry: ClusterBundleEdgeData, i) => 'id' in entry ? entry.id : i,
     source: (entry: ClusterBundleEdgeData) => entry.source,
@@ -188,7 +188,7 @@ export class ClusterBundle extends Edges<ClusterBundleEdgeData, GLClusterBundleE
                     return entry.hyperEdgeStats;
                 }
                 return [0, 0];
-            }
+            };
         }
 
         return edgesMappings as DataMappings<ClusterBundleEdgeData>;
@@ -217,6 +217,6 @@ export class ClusterBundle extends Edges<ClusterBundleEdgeData, GLClusterBundleE
         return [
             cb1,
             cb2,
-        ]
+        ];
     }
 }

@@ -8,7 +8,7 @@ import {
     RenderableShaders,
     RenderMode,
     RenderUniforms,
-    setDrawCallUniforms
+    setDrawCallUniforms,
 } from '../../../renderer/Renderable';
 import {App, DrawCall, PicoGL, Program, VertexArray, VertexBuffer} from 'picogl';
 import {DataMappings, DataShader, kDataMappingFlatten, printDataGL} from '../../../data/DataTools';
@@ -140,7 +140,7 @@ export class StraightPath extends Edges<CurvedPathEdgeData, GLCurvedPathEdgeType
 
         const getControl = (entry: CurvedPathEdgeData, i: number): number => this.points.getPointIndex(entry.control[i]);
 
-        edgesMappings.source[kDataMappingFlatten] = (entry, i, l): number => {
+        edgesMappings.source[kDataMappingFlatten] = (entry, i): number => {
             if (i === 0) {
                 return entry.source;
             }
@@ -152,7 +152,7 @@ export class StraightPath extends Edges<CurvedPathEdgeData, GLCurvedPathEdgeType
                 return entry.target;
             }
             return getControl(entry, i);
-        }
+        };
 
         return edgesMappings;
     }

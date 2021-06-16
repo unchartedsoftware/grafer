@@ -173,7 +173,7 @@ function getBasicLayer(name: string, nodeType: GraferNodesType, visibilityThresh
                 farDepth: 0.25,
             },
         },
-    }
+    };
 }
 
 async function makeCentroidLayers(layers: GraferLayerData[], file: File, levels: number = 4): Promise<Map<number, any>> {
@@ -270,7 +270,7 @@ async function loadGraph(container: HTMLElement, info: LayoutInfo): Promise<void
                 '#5e81ac',
                 '#d08770',
                 '#ebcb8b',
-                '#81a1c1',
+                '#81a1c1'
             );
         }
 
@@ -319,7 +319,7 @@ async function loadGraph(container: HTMLElement, info: LayoutInfo): Promise<void
             viewport: {
                 colorRegistryType: ColorRegistryType.indexed,
                 colorRegistryCapacity: colors.length,
-            }
+            },
         });
         /* const debug = */ new DebugMenu(controller.viewport);
         // debug.registerUX(dolly);

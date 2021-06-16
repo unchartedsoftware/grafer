@@ -18,7 +18,7 @@ export interface ViewportOptions {
 const kDefaultOptions: ViewportOptions = {
     colorRegistryType: ColorRegistryType.mapped,
     colorRegistryCapacity: 1024,
-}
+};
 
 export class Viewport {
     public readonly element: HTMLElement;
