@@ -1,4 +1,4 @@
-import {LitElement, customElement, html, query, PropertyValues, css, CSSResult} from 'lit-element';
+import {LitElement, customElement, html, queryAsync, PropertyValues, css, CSSResult} from 'lit-element';
 import {GraferController, GraferLayerData, GraferPointsData} from './GraferController';
 import {GraferInputColor} from '../renderer/colors/ColorRegistry';
 import {EventEmitter} from '@dekkai/event-emitter/build/lib/EventEmitter';
@@ -31,7 +31,6 @@ export class GraferView extends LitElement {
     private colors: GraferInputColor[];
     private layers: GraferLayerData[];
 
-    @query('#grafer_canvas', true)
     private canvas: HTMLCanvasElement;
 
     private _controller: GraferController = null;
@@ -45,6 +44,9 @@ export class GraferView extends LitElement {
 
     protected firstUpdated(_changedProperties: PropertyValues): void {
         super.firstUpdated(_changedProperties);
+
+        this.canvas = this.shadowRoot.getElementById('grafer_canvas') as HTMLCanvasElement;
+
         this._controller = new GraferController(this.canvas, {
             points: this.points,
             colors: this.colors,
