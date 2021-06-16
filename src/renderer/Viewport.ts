@@ -5,8 +5,20 @@ import {RenderMode, RenderUniforms} from './Renderable';
 import {Camera} from './Camera';
 import {Graph} from '../graph/Graph';
 import {MouseHandler} from '../UX/mouse/MouseHandler';
-import {ColorRegistry} from './ColorRegistry';
+import {ColorRegistry, ColorRegistryType} from './colors/ColorRegistry';
+import {ColorRegistryIndexed} from './colors/ColorRegistryIndexed';
 import RectObserver from './RectObserver';
+import {ColorRegistryMapped} from './colors/ColorRegistryMapped';
+
+export interface ViewportOptions {
+    colorRegistryType?: ColorRegistryType,
+    colorRegistryCapacity?: number,
+}
+
+const kDefaultOptions: ViewportOptions = {
+    colorRegistryType: ColorRegistryType.mapped,
+    colorRegistryCapacity: 1024,
+}
 
 export class Viewport {
     public readonly element: HTMLElement;
@@ -39,8 +51,9 @@ export class Viewport {
     private renderMode: RenderMode;
     private boundDelayedRender: () => void = this.delayedRender.bind(this);
 
-    constructor(element: HTMLElement) {
+    constructor(element: HTMLElement, options?: ViewportOptions) {
         const pixelRatio = window.devicePixelRatio;
+        const opts = Object.assign({}, kDefaultOptions, options);
         this.element = element;
 
         if (this.element instanceof HTMLCanvasElement) {
@@ -85,7 +98,11 @@ export class Viewport {
         });
         resizeObserver.observe(this.canvas);
 
-        this.colorRegisrty = new ColorRegistry(this.context);
+        if (opts.colorRegistryType === ColorRegistryType.mapped) {
+            this.colorRegisrty = new ColorRegistryMapped(this.context, opts.colorRegistryCapacity);
+        } else {
+            this.colorRegisrty = new ColorRegistryIndexed(this.context, opts.colorRegistryCapacity);
+        }
     }
 
     public resetContextFlags(): void {

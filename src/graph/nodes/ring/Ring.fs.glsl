@@ -15,7 +15,7 @@ in vec2 vFromCenter;
 out vec4 fragColor;
 
 void main() {
-    float thickness = max(fPixelLength, min(0.05, fPixelLength * 1.5 * uPixelRatio));
+    float thickness = max(fPixelLength, min(0.1, fPixelLength * 100.5 * uPixelRatio));
     float antialias = min(thickness, fPixelLength * 1.5);
     float radius = 1.0 - thickness;
     float ring = opOnion(sdCircle(vFromCenter, radius), thickness);

@@ -17,7 +17,7 @@ import {PickingManager} from '../../../UX/picking/PickingManager';
 import {GLCircleNodeTypes} from '../../nodes/circle/Circle';
 import {GraferContext} from '../../../renderer/GraferContext';
 import {kLabelMappings, LabelAtlas, LabelData} from '../LabelAtlas';
-import {GraferInputColor} from '../../../renderer/ColorRegistry';
+import {GraferInputColor} from '../../../renderer/colors/ColorRegistry';
 
 export interface LabelNodeData extends Omit<LabelData, 'label'> {
     point: number | string;

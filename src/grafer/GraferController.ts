@@ -1,4 +1,4 @@
-import {Viewport} from '../renderer/Viewport';
+import {Viewport, ViewportOptions} from '../renderer/Viewport';
 import {PointDataMappings} from '../data/GraphPoints';
 import {nodes as GraphNodes, edges as GraphEdges, labels as GraphLabels, Graph} from '../graph/mod';
 import {Layer} from '../graph/Layer';
@@ -6,7 +6,7 @@ import {DragTruck} from '../UX/mouse/drag/DragTruck';
 import {DragRotation} from '../UX/mouse/drag/DragRotation';
 import {ScrollDolly} from '../UX/mouse/scroll/ScrollDolly';
 import {DragPan} from '../UX/mouse/drag/DragPan';
-import {GraferInputColor} from '../renderer/ColorRegistry';
+import {GraferInputColor} from '../renderer/colors/ColorRegistry';
 import {PickingManager} from '../UX/picking/PickingManager';
 import {EventEmitter} from '@dekkai/event-emitter/build/lib/EventEmitter';
 import {GraferContext} from '../renderer/GraferContext';
@@ -48,6 +48,14 @@ export interface GraferControllerData {
     layers?: GraferLayerData[];
 }
 
+export interface GraferControllerOptions {
+    viewport?: ViewportOptions,
+}
+
+const kDefaultOptions: GraferControllerOptions = {
+    viewport: null,
+}
+
 export class GraferController extends EventEmitter {
     private _viewport: Viewport;
     public get viewport(): Viewport {
@@ -62,9 +70,11 @@ export class GraferController extends EventEmitter {
     }
     private _generateIdPrev: number;
 
-    constructor(canvas: HTMLCanvasElement, data?: GraferControllerData) {
+    constructor(canvas: HTMLCanvasElement, data?: GraferControllerData, options?: GraferControllerOptions) {
         super();
-        this._viewport = new Viewport(canvas);
+        const opts = Object.assign({}, kDefaultOptions, options);
+
+        this._viewport = new Viewport(canvas, opts.viewport);
         this._generateIdPrev = 0;
 
         const dolly = new ScrollDolly(this._viewport);

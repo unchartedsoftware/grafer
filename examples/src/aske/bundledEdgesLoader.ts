@@ -1,9 +1,9 @@
 import {html, render} from 'lit-html';
 import Tweakpane from 'tweakpane';
-import {GraferController} from '../../src/grafer/GraferController';
+import {GraferController} from '../../../src/grafer/GraferController';
 import {DataFile} from '@dekkai/data-source/build/lib/file/DataFile';
-import {DebugMenu} from '../../src/UX/debug/DebugMenu';
-import {PointLabelPlacement} from '../../src/graph/labels/point/PointLabel';
+import {DebugMenu} from '../../../src/UX/debug/DebugMenu';
+import {PointLabelPlacement} from '../../../src/graph/labels/point/PointLabel';
 
 interface LayoutInfo {
     points: string;

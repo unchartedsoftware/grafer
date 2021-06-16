@@ -1,6 +1,6 @@
 import {LitElement, customElement, html, query, PropertyValues, css, CSSResult} from 'lit-element';
 import {GraferController, GraferLayerData, GraferPointsData} from './GraferController';
-import {GraferInputColor} from '../renderer/ColorRegistry';
+import {GraferInputColor} from '../renderer/colors/ColorRegistry';
 import {EventEmitter} from '@dekkai/event-emitter/build/lib/EventEmitter';
 
 @customElement('grafer-view') // is this a good enough name?

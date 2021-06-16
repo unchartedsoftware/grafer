@@ -2,7 +2,7 @@ import PicoGL, {App} from 'picogl';
 import {LayerRenderable} from '../LayerRenderable';
 import {DataMappings, PackDataCB} from '../../data/DataTools';
 import {GLDataTypes} from '../../renderer/Renderable';
-import {GraferInputColor} from '../../renderer/ColorRegistry';
+import {GraferInputColor} from '../../renderer/colors/ColorRegistry';
 
 export interface BasicNodeData {
     id?: number | string;

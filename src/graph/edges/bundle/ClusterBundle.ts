@@ -3,8 +3,8 @@ import edgeFS from './ClusterBundle.fs.glsl';
 import dataVS from './ClusterBundle.data.vs.glsl';
 
 import {App, DrawCall, PicoGL, Program, VertexArray, VertexBuffer} from 'picogl';
-import {GraferInputColor} from '../../../renderer/ColorRegistry';
-import {DataMappings, DataShader, printDataGL} from '../../../data/DataTools';
+import {GraferInputColor} from '../../../renderer/colors/ColorRegistry';
+import {DataMappings, DataShader, PackDataCB, printDataGL} from '../../../data/DataTools';
 import {
     GLDataTypes,
     RenderableShaders,
@@ -25,8 +25,10 @@ export interface ClusterBundleEdgeData {
     targetCluster: number;
     sourceColor?: GraferInputColor,
     targetColor?: GraferInputColor,
+    hyperEdgeStats?: [number, number],
 }
 
+const kClusterBundleEdgeNoOpMapping = () => null;
 export const kClusterBundleEdgeMappings: DataMappings<ClusterBundleEdgeData & { index: number[] }> = {
     id: (entry: ClusterBundleEdgeData, i) => 'id' in entry ? entry.id : i,
     source: (entry: ClusterBundleEdgeData) => entry.source,
@@ -35,6 +37,7 @@ export const kClusterBundleEdgeMappings: DataMappings<ClusterBundleEdgeData & { 
     targetCluster: (entry: ClusterBundleEdgeData) => entry.targetCluster,
     sourceColor: (entry: ClusterBundleEdgeData) => 'sourceColor' in entry ? entry.sourceColor : 0, // first registered color
     targetColor: (entry: ClusterBundleEdgeData) => 'targetColor' in entry ? entry.targetColor : 0, // first registered color
+    hyperEdgeStats: kClusterBundleEdgeNoOpMapping, // this will be replaced in `computeMappings`
     index: () => [0, 1, 2],
 };
 
@@ -45,6 +48,7 @@ export const kClusterBundleEdgeDataTypes: GLDataTypes<ClusterBundleEdgeData & { 
     targetCluster: PicoGL.UNSIGNED_INT,
     sourceColor: PicoGL.UNSIGNED_INT,
     targetColor: PicoGL.UNSIGNED_INT,
+    hyperEdgeStats: [PicoGL.UNSIGNED_INT, PicoGL.UNSIGNED_INT],
     index: PicoGL.UNSIGNED_INT,
 };
 
@@ -59,6 +63,8 @@ export const kGLClusterBundleEdgeTypes = {
 export type GLClusterBundleEdgeTypes = typeof kGLClusterBundleEdgeTypes;
 
 export class ClusterBundle extends Edges<ClusterBundleEdgeData, GLClusterBundleEdgeTypes> {
+    protected hyperEdgeStats: Map<string, number> = null;
+
     protected program: Program;
     protected drawCall: DrawCall;
 
@@ -175,6 +181,42 @@ export class ClusterBundle extends Edges<ClusterBundleEdgeData, GLClusterBundleE
             return this.points.getPointIndex(targetClusterMapping(entry, i));
         };
 
+        if (edgesMappings.hyperEdgeStats === kClusterBundleEdgeNoOpMapping) {
+            this.hyperEdgeStats = new Map();
+            edgesMappings.hyperEdgeStats = (entry: ClusterBundleEdgeData): [number, number] => {
+                if ('hyperEdgeStats' in entry) {
+                    return entry.hyperEdgeStats;
+                }
+                return [0, 0];
+            }
+        }
+
         return edgesMappings as DataMappings<ClusterBundleEdgeData>;
+    }
+
+    protected packDataCB(): PackDataCB<ClusterBundleEdgeData> | PackDataCB<ClusterBundleEdgeData>[] {
+        if (!this.hyperEdgeStats) {
+            return null;
+        }
+
+        const cb1 = (i: number, entry: ClusterBundleEdgeData): void => {
+            const key = `${entry.sourceCluster}=>${entry.targetCluster}`;
+            let count = this.hyperEdgeStats.get(key);
+            if (count === null || count === undefined) {
+                count = 0;
+            }
+            this.hyperEdgeStats.set(key, count + 1);
+            entry.hyperEdgeStats[0] = count;
+        };
+
+        const cb2 = (i: number, entry: ClusterBundleEdgeData): void => {
+            const key = `${entry.sourceCluster}=>${entry.targetCluster}`;
+            entry.hyperEdgeStats[1] = this.hyperEdgeStats.get(key);
+        };
+
+        return [
+            cb1,
+            cb2,
+        ]
     }
 }

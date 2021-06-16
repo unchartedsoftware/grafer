@@ -17,7 +17,7 @@ import {
 } from '../../src/loaders/GraferLoader';
 import '../../src/grafer/GraferView';
 import {GraferController} from '../../src/grafer/GraferController';
-import {GraferInputColor} from '../../src/renderer/ColorRegistry';
+import {GraferInputColor} from '../../src/renderer/colors/ColorRegistry';
 import {DebugMenu} from '../../src/UX/debug/DebugMenu';
 
 interface FilesSelector {

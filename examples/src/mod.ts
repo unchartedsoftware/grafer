@@ -1,13 +1,11 @@
 import {renderMenu} from './renderMenu';
 import {playground} from './playground';
-import {layoutTester} from './layoutTester';
-import {bundledEdgesLoader} from './bundledEdgesLoader';
-import {highlightsLoader} from './highlightsLoader';
 import * as basic from './basic/mod';
 import * as data from './data/mod';
 import * as nodes from './nodes/mod';
 import * as edges from './edges/mod';
 import * as labels from './labels/mod';
+import * as aske from './aske/mod';
 import './HelpElements';
 
 const examples = {
@@ -16,10 +14,8 @@ const examples = {
     nodes,
     edges,
     labels,
+    aske,
     playground,
-    layoutTester,
-    bundledEdgesLoader,
-    highlightsLoader,
 };
 
 function getExample(examples, path): (HTMLElement) => void | null {

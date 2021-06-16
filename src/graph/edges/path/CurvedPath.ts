@@ -3,8 +3,8 @@ import edgeFS from './CurvedPath.fs.glsl';
 import dataVS from './CurvedPath.data.vs.glsl';
 
 import {App, DrawCall, PicoGL, Program, VertexArray, VertexBuffer} from 'picogl';
-import {GraferInputColor} from '../../../renderer/ColorRegistry';
-import {DataMappings, DataShader, kDataMappingFlatten} from '../../../data/DataTools';
+import {GraferInputColor} from '../../../renderer/colors/ColorRegistry';
+import {DataMappings, DataShader, kDataMappingFlatten, printDataGL} from '../../../data/DataTools';
 import {
     GLDataTypes,
     RenderableShaders,
@@ -17,7 +17,7 @@ import {GraphPoints} from '../../../data/GraphPoints';
 import {PickingManager} from '../../../UX/picking/PickingManager';
 import {GraferContext} from '../../../renderer/GraferContext';
 
-export interface PathEdgeData {
+export interface CurvedPathEdgeData {
     id?: number | string;
     source: number;
     target: number;
@@ -26,16 +26,16 @@ export interface PathEdgeData {
     targetColor?: GraferInputColor,
 }
 
-export const kPathEdgeMappings: DataMappings<PathEdgeData> = {
-    id: (entry: PathEdgeData, i) => 'id' in entry ? entry.id : i,
-    source: (entry: PathEdgeData) => entry.source,
-    target: (entry: PathEdgeData) => entry.target,
-    control: (entry: PathEdgeData) => entry.control,
-    sourceColor: (entry: PathEdgeData) => 'sourceColor' in entry ? entry.sourceColor : 0, // first registered color
-    targetColor: (entry: PathEdgeData) => 'targetColor' in entry ? entry.targetColor : 0, // first registered color
+export const kCurvedPathEdgeMappings: DataMappings<CurvedPathEdgeData> = {
+    id: (entry: CurvedPathEdgeData, i) => 'id' in entry ? entry.id : i,
+    source: (entry: CurvedPathEdgeData) => entry.source,
+    target: (entry: CurvedPathEdgeData) => entry.target,
+    control: (entry: CurvedPathEdgeData) => entry.control,
+    sourceColor: (entry: CurvedPathEdgeData) => 'sourceColor' in entry ? entry.sourceColor : 0, // first registered color
+    targetColor: (entry: CurvedPathEdgeData) => 'targetColor' in entry ? entry.targetColor : 0, // first registered color
 };
 
-export const kPathEdgeDataTypes: GLDataTypes<PathEdgeData> = {
+export const kCurvedPathEdgeDataTypes: GLDataTypes<CurvedPathEdgeData> = {
     source: PicoGL.UNSIGNED_INT,
     target: PicoGL.UNSIGNED_INT,
     control: [PicoGL.UNSIGNED_INT, PicoGL.UNSIGNED_INT, PicoGL.UNSIGNED_INT],
@@ -43,7 +43,7 @@ export const kPathEdgeDataTypes: GLDataTypes<PathEdgeData> = {
     targetColor: PicoGL.UNSIGNED_INT,
 };
 
-export const kGLPathEdgeTypes = {
+export const kGLCurvedPathEdgeTypes = {
     source: [PicoGL.FLOAT, PicoGL.FLOAT, PicoGL.FLOAT],
     target: [PicoGL.FLOAT, PicoGL.FLOAT, PicoGL.FLOAT],
     control: [PicoGL.FLOAT, PicoGL.FLOAT, PicoGL.FLOAT],
@@ -51,9 +51,9 @@ export const kGLPathEdgeTypes = {
     targetColor: PicoGL.UNSIGNED_INT,
     colorMix: [PicoGL.FLOAT, PicoGL.FLOAT],
 } as const;
-export type GLPathEdgeTypes = typeof kGLPathEdgeTypes;
+export type GLCurvedPathEdgeTypes = typeof kGLCurvedPathEdgeTypes;
 
-export class CurvedPath extends Edges<PathEdgeData, GLPathEdgeTypes> {
+export class CurvedPath extends Edges<CurvedPathEdgeData, GLCurvedPathEdgeTypes> {
     protected program: Program;
     protected drawCall: DrawCall;
 
@@ -64,7 +64,7 @@ export class CurvedPath extends Edges<PathEdgeData, GLPathEdgeTypes> {
         context: GraferContext,
         points: GraphPoints,
         data: unknown[],
-        mappings: Partial<DataMappings<PathEdgeData>>,
+        mappings: Partial<DataMappings<CurvedPathEdgeData>>,
         pickingManager: PickingManager,
         segments: number = 16
     ) {
@@ -75,7 +75,7 @@ export class CurvedPath extends Edges<PathEdgeData, GLPathEdgeTypes> {
         context: GraferContext,
         points: GraphPoints,
         data: unknown[],
-        mappings: Partial<DataMappings<PathEdgeData>>,
+        mappings: Partial<DataMappings<CurvedPathEdgeData>>,
         pickingManager: PickingManager,
         segments: number
     ): void {
@@ -101,7 +101,7 @@ export class CurvedPath extends Edges<PathEdgeData, GLPathEdgeTypes> {
             uGraphPoints: this.dataTexture,
         });
 
-        // printDataGL(context, this.targetVBO, data.length, kGLStraightEdgeTypes);
+        // printDataGL(context, this.targetVBO, data.length, kGLCurvedPathEdgeTypes);
 
         this.localUniforms.uSegments = segments;
     }
@@ -141,12 +141,12 @@ export class CurvedPath extends Edges<PathEdgeData, GLPathEdgeTypes> {
         };
     }
 
-    protected getGLSourceTypes(): GLDataTypes<PathEdgeData> {
-        return kPathEdgeDataTypes;
+    protected getGLSourceTypes(): GLDataTypes<CurvedPathEdgeData> {
+        return kCurvedPathEdgeDataTypes;
     }
 
-    protected getGLTargetTypes(): GLDataTypes<GLPathEdgeTypes> {
-        return kGLPathEdgeTypes;
+    protected getGLTargetTypes(): GLDataTypes<GLCurvedPathEdgeTypes> {
+        return kGLCurvedPathEdgeTypes;
     }
 
     protected getDataShader(): DataShader {
@@ -156,8 +156,8 @@ export class CurvedPath extends Edges<PathEdgeData, GLPathEdgeTypes> {
         };
     }
 
-    protected computeMappings(mappings: Partial<DataMappings<PathEdgeData>>): DataMappings<PathEdgeData> {
-        const edgesMappings = Object.assign({}, kPathEdgeMappings, super.computeMappings(mappings));
+    protected computeMappings(mappings: Partial<DataMappings<CurvedPathEdgeData>>): DataMappings<CurvedPathEdgeData> {
+        const edgesMappings = Object.assign({}, kCurvedPathEdgeMappings, super.computeMappings(mappings));
 
         // patches the mappings to get the points index from their IDs and account for flattening
         edgesMappings.control[kDataMappingFlatten] = (entry, i, l): number | number[] => {

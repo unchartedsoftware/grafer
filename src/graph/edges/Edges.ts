@@ -4,7 +4,7 @@ import {GraphPoints} from '../../data/GraphPoints';
 import {DataMappings} from '../../data/DataTools';
 import {PickingManager} from '../../UX/picking/PickingManager';
 import {GLDataTypes} from '../../renderer/Renderable';
-import {GraferInputColor} from '../../renderer/ColorRegistry';
+import {GraferInputColor} from '../../renderer/colors/ColorRegistry';
 import {GraferContext} from '../../renderer/GraferContext';
 
 export interface BasicEdgeData {

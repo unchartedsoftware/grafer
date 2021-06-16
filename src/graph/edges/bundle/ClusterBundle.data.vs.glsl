@@ -6,7 +6,8 @@ layout(location=2) in uint aSourceClusterIndex;
 layout(location=3) in uint aTargetClusterIndex;
 layout(location=4) in uint aSourceColor;
 layout(location=5) in uint aTargetColor;
-layout(location=6) in uint aIndex;
+layout(location=6) in uvec2 aHyperEdgeStats;
+layout(location=7) in uint aIndex;
 
 uniform sampler2D uGraphPoints;
 
@@ -26,8 +27,16 @@ void main() {
     vec4 targetCluster = valueForIndex(uGraphPoints, int(aTargetClusterIndex));
 
     vec3 direction = normalize(vec3(targetCluster.xy, 0.0) - vec3(sourceCluster.xy, 0.0));
-    vec3 sourceClusterEdge = sourceCluster.xyz + direction * sourceCluster[3];
-    vec3 targetClusterEdge = targetCluster.xyz - direction * targetCluster[3];
+    // assume 2D and ignore Z, future Dario, make this 3D!
+    vec3 perp = vec3(-direction.y, direction.x, direction.z);
+    float minClusterRadius = min(sourceCluster[3], targetCluster[3]);
+    float edgeWidth = minClusterRadius * 0.0005; // magic number
+    float maxOffset = minClusterRadius * 0.1; // magic number
+    float offsetLength = min(maxOffset, edgeWidth * float(aHyperEdgeStats[1]));
+    vec3 offset = (-perp * offsetLength * 0.5) + (perp * (offsetLength / float(aHyperEdgeStats[1])) * float(aHyperEdgeStats[0]));
+
+    vec3 sourceClusterEdge = sourceCluster.xyz + direction * sourceCluster[3] + offset;
+    vec3 targetClusterEdge = targetCluster.xyz - direction * targetCluster[3] + offset;
 
     float edgeToEdge = length(targetClusterEdge - sourceClusterEdge);
     vec3 bundlePoint = sourceClusterEdge + direction * (edgeToEdge * 0.5);
