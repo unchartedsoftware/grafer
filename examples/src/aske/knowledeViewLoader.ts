@@ -1,56 +1,12 @@
 import {html, render} from 'lit-html';
 import Tweakpane from 'tweakpane';
+import {convertDataToGraferV4, GroupCentroid, LayoutInfo} from './convertDataToGraferV4';
+
 import {GraferController, GraferLayerData, GraferNodesType} from '../../../src/grafer/GraferController';
-import {DataFile} from '@dekkai/data-source/build/lib/file/DataFile';
 import {DebugMenu} from '../../../src/UX/debug/DebugMenu';
 import {PointLabelPlacement} from '../../../src/graph/labels/point/PointLabel';
 import {ColorRegistryType} from '../../../src/renderer/colors/ColorRegistry';
 import chroma from 'chroma-js';
-
-interface LayoutInfo {
-    points: string;
-    pointsFile: File;
-    nodes: string;
-    nodesFile: File;
-    centroids: string;
-    centroidsFile: File;
-    colors: string,
-    colorsFile: File,
-}
-
-async function parseJSONL(input, cb): Promise<void> {
-    const file = await DataFile.fromLocalSource(input);
-
-    // load 16MB chunks
-    const sizeOf16MB = 16 * 1024 * 1024;
-    const byteLength = await file.byteLength;
-    const decoder = new TextDecoder();
-    const lineBreak = '\n'.charCodeAt(0);
-
-    for(let offset = 0; offset <= byteLength; offset += sizeOf16MB) {
-        const chunkEnd = Math.min(offset + sizeOf16MB, byteLength);
-        const chunk = await file.loadData(offset, chunkEnd);
-        const view = new DataView(chunk);
-        let start = 0;
-        for (let i = 0, n = chunk.byteLength; i < n; ++i) {
-            if (view.getUint8(i) === lineBreak || offset + i === byteLength) {
-                const statementBuffer = new Uint8Array(chunk, start, i - start);
-                start = i + 1;
-
-                const str = decoder.decode(statementBuffer);
-                const json = JSON.parse(str);
-
-                cb(json);
-            }
-        }
-
-        if (start < chunk.byteLength) {
-            offset -= chunk.byteLength - start;
-        }
-
-        // console.log(`${chunkEnd} / ${byteLength} - ${((chunkEnd/byteLength) * 100).toFixed(2)}%`);
-    }
-}
 
 function createFileInput(cb: () => void): HTMLInputElement {
     const input = document.createElement('input');
@@ -60,18 +16,39 @@ function createFileInput(cb: () => void): HTMLInputElement {
     return input;
 }
 
+function createFileMenu(menu: Tweakpane, result: LayoutInfo, key: string): void {
+    const input = createFileInput(() => {
+        if (input.files.length) {
+            result[`${key}File`] = input.files[0];
+            result[key] = result[`${key}File`].name;
+        } else {
+            result[key] = 'No file selected.';
+            result[`${key}File`] = null;
+        }
+    });
+    menu.addMonitor(result, key);
+    menu.addButton({ title: 'browse...' }).on('click', () => input.click());
+}
+
 function renderMenu(container: HTMLElement, cb: (result: LayoutInfo) => void): void {
     render(html`<div id="menu" class="start_menu"></div>`, container);
 
     const result: LayoutInfo = {
-        points: 'No file selected.',
-        pointsFile: null,
         nodes: 'No file selected.',
         nodesFile: null,
-        centroids: 'No file selected.',
-        centroidsFile: null,
-        colors: 'No file selected.',
-        colorsFile: null,
+        nodeAtts: 'No file selected.',
+        nodeAttsFile: null,
+        nodeLayout: 'No file selected.',
+        nodeLayoutFile: null,
+        groups: 'No file selected.',
+        groupsFile: null,
+        alpha: 18,
+        level: 0,
+        levelCount: 3,
+        maxLabelLength: 25,
+        topGroupThreshold: 500,
+        pointRadius: 20,
+        positionScale: 50000,
     };
 
     const menu = new Tweakpane({
@@ -79,60 +56,28 @@ function renderMenu(container: HTMLElement, cb: (result: LayoutInfo) => void): v
         container: document.querySelector('#menu'),
     });
 
-    const pointsInput = createFileInput(() => {
-        if (pointsInput.files.length) {
-            result.pointsFile = pointsInput.files[0];
-            result.points = result.pointsFile.name;
-        } else {
-            result.points = 'No file selected.';
-            result.pointsFile = null;
-        }
-    });
-    menu.addMonitor(result, 'points');
-    menu.addButton({ title: 'browse...' }).on('click', () => pointsInput.click());
-
+    createFileMenu(menu, result, 'nodes');
+    menu.addSeparator();
+    createFileMenu(menu, result, 'nodeAtts');
+    menu.addSeparator();
+    createFileMenu(menu, result, 'nodeLayout');
+    menu.addSeparator();
+    createFileMenu(menu, result, 'groups');
     menu.addSeparator();
 
-    const nodesInput = createFileInput(() => {
-        if (nodesInput.files.length) {
-            result.nodesFile = nodesInput.files[0];
-            result.nodes = result.nodesFile.name;
-        } else {
-            result.nodes = 'No file selected.';
-            result.nodesFile = null;
-        }
-    });
-    menu.addMonitor(result, 'nodes');
-    menu.addButton({ title: 'browse...' }).on('click', () => nodesInput.click());
-
+    menu.addInput(result, 'alpha');
     menu.addSeparator();
-
-    const centroidsInput = createFileInput(() => {
-        if (centroidsInput.files.length) {
-            result.centroidsFile = centroidsInput.files[0];
-            result.centroids = result.centroidsFile.name;
-        } else {
-            result.centroids = 'No file selected.';
-            result.centroidsFile = null;
-        }
-    });
-    menu.addMonitor(result, 'centroids');
-    menu.addButton({ title: 'browse...' }).on('click', () => centroidsInput.click());
-
+    menu.addInput(result, 'level');
     menu.addSeparator();
-
-    const colorsInput = createFileInput(() => {
-        if (colorsInput.files.length) {
-            result.colorsFile = colorsInput.files[0];
-            result.colors = result.colorsFile.name;
-        } else {
-            result.colors = 'No file selected.';
-            result.colorsFile = null;
-        }
-    });
-    menu.addMonitor(result, 'colors');
-    menu.addButton({ title: 'browse...' }).on('click', () => colorsInput.click());
-
+    menu.addInput(result, 'levelCount');
+    menu.addSeparator();
+    menu.addInput(result, 'maxLabelLength');
+    menu.addSeparator();
+    menu.addInput(result, 'topGroupThreshold');
+    menu.addSeparator();
+    menu.addInput(result, 'pointRadius');
+    menu.addSeparator();
+    menu.addInput(result, 'positionScale');
     menu.addSeparator();
 
     const loadBtn = menu.addButton({ title: 'load' });
@@ -176,7 +121,7 @@ function getBasicLayer(name: string, nodeType: GraferNodesType, visibilityThresh
     };
 }
 
-async function makeCentroidLayers(layers: GraferLayerData[], file: File, levels: number = 4): Promise<Map<number, any>> {
+function makeCentroidLayers(layers: GraferLayerData[], data: GroupCentroid[], levels: number = 4): Map<number, any> {
     const centroidLayersTop = [];
     const centroidLayers = [];
     for (let i = 0; i < levels; ++i) {
@@ -185,20 +130,20 @@ async function makeCentroidLayers(layers: GraferLayerData[], file: File, levels:
     }
 
     const centroidMap = new Map();
-    await parseJSONL(file, json => {
-        const nodes = json.top ? centroidLayersTop[json.level].nodes : centroidLayers[json.level].nodes;
-        nodes.data.push(json);
-        centroidMap.set(json.id, json);
-    });
+    for (const centroid of data) {
+        const nodes = centroid.top ? centroidLayersTop[centroid.level].nodes : centroidLayers[centroid.level].nodes;
+        nodes.data.push(centroid);
+        centroidMap.set(centroid.id, centroid);
+    }
 
     layers.push(...centroidLayersTop, ...centroidLayers);
 
     return centroidMap;
 }
 
-function computeColors(colors, colorMap, colorLevels, centroidMap): void {
+function computeColors(colors, colorMap, colorLevels, centroidMap, levelNumber = 0): void {
     // do level 0 for now
-    const level = colorLevels.get(2);
+    const level = colorLevels.get(levelNumber);
     const topStep = Math.floor(360 / level.top.length);
     const lowStep = Math.floor(topStep / Math.ceil(level.low.length / level.top.length + 1));
 
@@ -233,100 +178,97 @@ function computeColors(colors, colorMap, colorLevels, centroidMap): void {
 }
 
 async function loadGraph(container: HTMLElement, info: LayoutInfo): Promise<void> {
-    if (info.pointsFile) {
-        render(html`<canvas class="grafer_container"></canvas>`, container);
+    if (!info.nodesFile || !info.nodeAttsFile || !info.nodeLayoutFile || !info.groupsFile) {
+        return;
+    }
 
-        const canvas = document.querySelector('.grafer_container') as HTMLCanvasElement;
-        const layers = [];
+    const data = await convertDataToGraferV4(info);
+    console.log(data);
 
-        const colors = [];
-        const colorMap = new Map();
-        const colorLevels = new Map();
-        if (info.colorsFile) {
-            await parseJSONL(info.colorsFile, json => {
-                if (colors.length <= json.primary) {
-                    for (let i = colors.length; i <= json.primary; ++i) {
-                        colors.push(null);
-                    }
-                }
-                colorMap.set(json.id, json);
-                let colorLevel = colorLevels.get(json.level);
-                if (!colorLevel) {
-                    colorLevel = {
-                        top: [],
-                        low: [],
-                    };
-                    colorLevels.set(json.level, colorLevel);
-                }
-                if (json.top) {
-                    colorLevel.top.push(json);
-                } else {
-                    colorLevel.low.push(json);
-                }
+    render(html`<canvas class="grafer_container"></canvas>`, container);
 
-            });
-        } else {
-            colors.push(
-                '#5e81ac',
-                '#d08770',
-                '#ebcb8b',
-                '#81a1c1'
-            );
-        }
+    const canvas = document.querySelector('.grafer_container') as HTMLCanvasElement;
+    const layers = [];
 
-        const points = {
-            data: [],
-        };
+    const colors = [];
+    const colorMap = new Map();
+    const colorLevels = new Map();
 
-        await parseJSONL(info.pointsFile, json => {
-            points.data.push(json);
-        });
-
-        const nodeLayer = {
-            name: 'Nodes',
-            nodes: {
-                type: 'Circle',
-                data: [],
-                options: {
-                    pixelSizing: true,
-                },
-            },
-            edges: {
-                data: [],
-                options: {
-                    alpha: 0.55,
-                    nearDepth: 0.9,
-                },
-            },
-        };
-        layers.push(nodeLayer);
-
-        if (info.nodesFile) {
-            const nodes = nodeLayer.nodes;
-            await parseJSONL(info.nodesFile, json => {
-                nodes.data.push(json);
-            });
-        }
-
-        if (info.centroidsFile) {
-            const centroidMap = await makeCentroidLayers(layers, info.centroidsFile);
-            if (colorMap.size) {
-                computeColors(colors, colorMap, colorLevels, centroidMap);
+    for (const color of data.colors) {
+        if (colors.length <= color.primary) {
+            for (let i = colors.length; i <= color.primary; ++i) {
+                colors.push(null);
             }
         }
+        colorMap.set(color.id, color);
+        let colorLevel = colorLevels.get(color.level);
+        if (!colorLevel) {
+            colorLevel = {
+                top: [],
+                low: [],
+            };
+            colorLevels.set(color.level, colorLevel);
+        }
+        if (color.top) {
+            colorLevel.top.push(color);
+        } else {
+            colorLevel.low.push(color);
+        }
 
-        const controller = new GraferController(canvas, { points, colors, layers }, {
-            viewport: {
-                colorRegistryType: ColorRegistryType.indexed,
-                colorRegistryCapacity: colors.length,
-            },
-        });
-        /* const debug = */ new DebugMenu(controller.viewport);
-        // debug.registerUX(dolly);
-        // debug.registerUX(truck);
-        // debug.registerUX(rotation);
-        // debug.registerUX(pan);
     }
+
+    const points = {
+        data: data.points,
+    };
+
+    const nodeLayer = {
+        name: 'Nodes',
+        nodes: {
+            type: 'Circle',
+            data: data.nodes,
+            options: {
+                pixelSizing: true,
+            },
+        },
+        edges: {
+            data: data.shapes,
+            options: {
+                alpha: 0.55,
+                nearDepth: 0.9,
+            },
+        },
+    };
+    layers.push(nodeLayer);
+
+    const centroidMap = makeCentroidLayers(layers, data.centroids, info.levelCount);
+    if (colorMap.size) {
+        computeColors(colors, colorMap, colorLevels, centroidMap, info.level);
+    }
+
+    const controller = new GraferController(canvas, { points, colors, layers }, {
+        viewport: {
+            colorRegistryType: ColorRegistryType.indexed,
+            colorRegistryCapacity: colors.length,
+        },
+    });
+
+    // disable all centroid layers of levels other than the selected one
+    const graphLayers = controller.viewport.graph.layers;
+    for (const layer of graphLayers) {
+        const components = layer.name.split('_');
+        if (components[0] === 'Centroids') {
+            const level = parseInt(components[components.length - 1]);
+            if (level !== info.level) {
+                layer.enabled = false;
+            }
+        }
+    }
+
+    /* const debug = */ new DebugMenu(controller.viewport);
+    // debug.registerUX(dolly);
+    // debug.registerUX(truck);
+    // debug.registerUX(rotation);
+    // debug.registerUX(pan);
 }
 
 export async function knowledgeViewLoader(container: HTMLElement): Promise<void> {
