@@ -5,7 +5,7 @@ import {
     GroupCentroid,
     GroupHullEdge,
     KnowledgeNodeData,
-    LayoutInfo
+    LayoutInfo,
 } from './convertDataToGraferV4';
 
 import {GraferController, GraferLayerData, GraferNodesType} from '../../../src/grafer/GraferController';
@@ -242,8 +242,6 @@ async function loadGraph(container: HTMLElement, info: LayoutInfo): Promise<void
     }
 
     const data = await convertDataToGraferV4(info);
-    console.log(data);
-
     render(html`<canvas class="grafer_container"></canvas>`, container);
 
     const canvas = document.querySelector('.grafer_container') as HTMLCanvasElement;
