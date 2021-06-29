@@ -21399,6 +21399,7 @@ async function convertDataToGraferV4(info) {
   });
   console.log("Loading node attributes...");
   const noiseNodes = [];
+  const nodeLevelMap = new Map();
   lineNumber = 0;
   await parseJSONL3(info.nodeAttsFile, (json) => {
     if (lineNumber++) {
@@ -21411,8 +21412,10 @@ async function convertDataToGraferV4(info) {
           }
           group.computedChildren.push(json.node_id);
         }
+        nodeLevelMap.set(json.node_id, groups.get(groupIDs[groupIDs.length - 1]).level);
       } else {
         noiseNodes.push(json.node_id);
+        nodeLevelMap.set(json.node_id, -1);
       }
     }
   });
@@ -21472,7 +21475,8 @@ async function convertDataToGraferV4(info) {
       nodes.push({
         id: json.id,
         point: json.id,
-        color: nodeColors3.get(json.id)
+        color: nodeColors3.get(json.id),
+        level: nodeLevelMap.get(json.id)
       });
       nodeMap.set(json.id, json);
     }
@@ -21485,8 +21489,7 @@ async function convertDataToGraferV4(info) {
   }
   console.log("Computing alpha shapes...");
   const shapes = [];
-  {
-    const i = info.level;
+  for (let i = 0, n = groupLevels.length; i < n; ++i) {
     console.log(`Level ${i}...`);
     console.log("0%");
     for (let ii = 0, nn = groupLevels[i].length; ii < nn; ++ii) {
@@ -21499,8 +21502,8 @@ async function convertDataToGraferV4(info) {
       const cells = alphaShape(info.alpha, coors);
       for (const cell of cells) {
         const cellPoints = [];
-        for (let i2 = 0, n = cell.length; i2 < n; ++i2) {
-          const id = `s_${points2.size}_${n}`;
+        for (let i2 = 0, n2 = cell.length; i2 < n2; ++i2) {
+          const id = `s_${points2.size}_${n2}`;
           points2.set(id, {
             id,
             x: coors[cell[i2]][0] * info.positionScale,
@@ -21691,12 +21694,59 @@ function computeColors(colors2, colorMap, colorLevels, centroidMap, levelNumber 
     }
   }
 }
+function loadLevelLayers(nodes, shapes) {
+  const levelMap = new Map();
+  for (const node of nodes) {
+    if (!levelMap.has(node.level)) {
+      levelMap.set(node.level, {
+        name: `Level_${node.level === -1 ? "noise" : node.level}`,
+        nodes: {
+          type: "Circle",
+          data: [],
+          options: {
+            pixelSizing: true
+          }
+        },
+        edges: {
+          data: [],
+          options: {
+            alpha: 0.55,
+            nearDepth: 0.9
+          }
+        }
+      });
+    }
+    levelMap.get(node.level).nodes.data.push(node);
+  }
+  for (const shape of shapes) {
+    if (!levelMap.has(shape.level)) {
+      levelMap.set(shape.level, {
+        name: `Level_${shape.level === -1 ? "noise" : shape.level}`,
+        nodes: {
+          type: "Circle",
+          data: [],
+          options: {
+            pixelSizing: true
+          }
+        },
+        edges: {
+          data: [],
+          options: {
+            alpha: 0.55,
+            nearDepth: 0.9
+          }
+        }
+      });
+    }
+    levelMap.get(shape.level).edges.data.push(shape);
+  }
+  return levelMap.values();
+}
 async function loadGraph2(container, info) {
   if (!info.nodesFile || !info.nodeAttsFile || !info.nodeLayoutFile || !info.groupsFile) {
     return;
   }
   const data = await convertDataToGraferV4(info);
-  console.log(data);
   render(html`<canvas class="grafer_container"></canvas>`, container);
   const canvas = document.querySelector(".grafer_container");
   const layers = [];
@@ -21727,24 +21777,7 @@ async function loadGraph2(container, info) {
   const points2 = {
     data: data.points
   };
-  const nodeLayer = {
-    name: "Nodes",
-    nodes: {
-      type: "Circle",
-      data: data.nodes,
-      options: {
-        pixelSizing: true
-      }
-    },
-    edges: {
-      data: data.shapes,
-      options: {
-        alpha: 0.55,
-        nearDepth: 0.9
-      }
-    }
-  };
-  layers.push(nodeLayer);
+  layers.push(...loadLevelLayers(data.nodes, data.shapes));
   const centroidMap = makeCentroidLayers(layers, data.centroids, info.levelCount);
   if (colorMap.size) {
     computeColors(colors2, colorMap, colorLevels, centroidMap, info.level);
