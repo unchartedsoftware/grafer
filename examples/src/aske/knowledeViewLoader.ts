@@ -1,6 +1,12 @@
 import {html, render} from 'lit-html';
 import Tweakpane from 'tweakpane';
-import {convertDataToGraferV4, GroupCentroid, LayoutInfo} from './convertDataToGraferV4';
+import {
+    convertDataToGraferV4,
+    GroupCentroid,
+    GroupHullEdge,
+    KnowledgeNodeData,
+    LayoutInfo
+} from './convertDataToGraferV4';
 
 import {GraferController, GraferLayerData, GraferNodesType} from '../../../src/grafer/GraferController';
 import {DebugMenu} from '../../../src/UX/debug/DebugMenu';
@@ -142,7 +148,6 @@ function makeCentroidLayers(layers: GraferLayerData[], data: GroupCentroid[], le
 }
 
 function computeColors(colors, colorMap, colorLevels, centroidMap, levelNumber = 0): void {
-    // do level 0 for now
     const level = colorLevels.get(levelNumber);
     const topStep = Math.floor(360 / level.top.length);
     const lowStep = Math.floor(topStep / Math.ceil(level.low.length / level.top.length + 1));
@@ -175,6 +180,60 @@ function computeColors(colors, colorMap, colorLevels, centroidMap, levelNumber =
             colors[i] = gray;
         }
     }
+}
+
+function loadLevelLayers(nodes: KnowledgeNodeData[], shapes: GroupHullEdge[]): IterableIterator<any> {
+    const levelMap = new Map();
+
+    for (const node of nodes) {
+        if (!levelMap.has(node.level)) {
+            levelMap.set(node.level, {
+                name: `Level_${node.level === -1 ? 'noise' : node.level}`,
+                nodes: {
+                    type: 'Circle',
+                    data: [],
+                    options: {
+                        pixelSizing: true,
+                    },
+                },
+                edges: {
+                    data: [],
+                    options: {
+                        alpha: 0.55,
+                        nearDepth: 0.9,
+                    },
+                },
+            });
+        }
+
+        levelMap.get(node.level).nodes.data.push(node);
+    }
+
+    for (const shape of shapes) {
+        if (!levelMap.has(shape.level)) {
+            levelMap.set(shape.level, {
+                name: `Level_${shape.level === -1 ? 'noise' : shape.level}`,
+                nodes: {
+                    type: 'Circle',
+                    data: [],
+                    options: {
+                        pixelSizing: true,
+                    },
+                },
+                edges: {
+                    data: [],
+                    options: {
+                        alpha: 0.55,
+                        nearDepth: 0.9,
+                    },
+                },
+            });
+        }
+
+        levelMap.get(shape.level).edges.data.push(shape);
+    }
+
+    return levelMap.values();
 }
 
 async function loadGraph(container: HTMLElement, info: LayoutInfo): Promise<void> {
@@ -221,24 +280,24 @@ async function loadGraph(container: HTMLElement, info: LayoutInfo): Promise<void
         data: data.points,
     };
 
-    const nodeLayer = {
-        name: 'Nodes',
-        nodes: {
-            type: 'Circle',
-            data: data.nodes,
-            options: {
-                pixelSizing: true,
-            },
-        },
-        edges: {
-            data: data.shapes,
-            options: {
-                alpha: 0.55,
-                nearDepth: 0.9,
-            },
-        },
-    };
-    layers.push(nodeLayer);
+    // const nodeLayer = {
+    //     name: 'Nodes',
+    //     nodes: {
+    //         type: 'Circle',
+    //         data: data.nodes,
+    //         options: {
+    //             pixelSizing: true,
+    //         },
+    //     },
+    //     edges: {
+    //         data: data.shapes,
+    //         options: {
+    //             alpha: 0.55,
+    //             nearDepth: 0.9,
+    //         },
+    //     },
+    // };
+    layers.push(...loadLevelLayers(data.nodes, data.shapes));
 
     const centroidMap = makeCentroidLayers(layers, data.centroids, info.levelCount);
     if (colorMap.size) {

@@ -49,9 +49,13 @@ export interface GroupHullEdge {
     level: number;
 }
 
+export interface KnowledgeNodeData extends BasicNodeData {
+    level: number;
+}
+
 export interface GraferData {
     points: PointData[];
-    nodes: BasicNodeData[];
+    nodes: KnowledgeNodeData[];
     shapes: GroupHullEdge[];
     colors: GroupColor[];
     centroids: GroupCentroid[];
@@ -140,6 +144,7 @@ export async function convertDataToGraferV4(info: LayoutInfo): Promise<GraferDat
 
     console.log('Loading node attributes...');
     const noiseNodes = [];
+    const nodeLevelMap = new Map();
     lineNumber = 0;
     await parseJSONL(info.nodeAttsFile, json => {
         if (lineNumber++) {
@@ -152,8 +157,10 @@ export async function convertDataToGraferV4(info: LayoutInfo): Promise<GraferDat
                     }
                     group.computedChildren.push(json.node_id);
                 }
+                nodeLevelMap.set(json.node_id, groups.get(groupIDs[groupIDs.length - 1]).level);
             } else {
                 noiseNodes.push(json.node_id);
+                nodeLevelMap.set(json.node_id, -1);
             }
         }
     });
@@ -213,7 +220,7 @@ export async function convertDataToGraferV4(info: LayoutInfo): Promise<GraferDat
     }
 
     console.log('Loading nodes...');
-    const nodes: BasicNodeData[] = [];
+    const nodes: KnowledgeNodeData[] = [];
     const nodeMap = new Map();
     lineNumber = 0;
     await parseJSONL(info.nodesFile, json => {
@@ -223,6 +230,7 @@ export async function convertDataToGraferV4(info: LayoutInfo): Promise<GraferDat
                 point: json.id,
                 color: nodeColors.get(json.id),
                 // label: json.name.substr(0, 25),
+                level: nodeLevelMap.get(json.id),
             });
             nodeMap.set(json.id, json);
         }
@@ -239,9 +247,9 @@ export async function convertDataToGraferV4(info: LayoutInfo): Promise<GraferDat
     console.log('Computing alpha shapes...');
     const shapes: GroupHullEdge[] = [];
     // HACK: Only compute the specified level. Once this is a backend pipeline all levels should be computed.
-    // for (let i = 0, n = groupLevels.length; i < n; ++i) {
+    for (let i = 0, n = groupLevels.length; i < n; ++i)
     {
-        const i = info.level;
+        // const i = info.level;
         console.log(`Level ${i}...`);
         console.log('0%');
         for (let ii = 0, nn = groupLevels[i].length; ii < nn; ++ii) {
