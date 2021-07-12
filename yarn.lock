@@ -113,10 +113,10 @@
   dependencies:
     commander "^2.15.1"
 
-"@dekkai/data-source@^0.2.2":
-  version "0.2.2"
-  resolved "https://registry.yarnpkg.com/@dekkai/data-source/-/data-source-0.2.2.tgz#fcefef235ef90b3cf09a408a31711267c560417e"
-  integrity sha512-mowkXmmmfy5XZmmne4yQNxzE9z7ft5Ivi2+hcLcqCdb01GWDtjXJ+Hc4hfaz4U5FPUjod/3l0Lipq7NB99UPnA==
+"@dekkai/data-source@^0.2.3":
+  version "0.2.3"
+  resolved "https://registry.yarnpkg.com/@dekkai/data-source/-/data-source-0.2.3.tgz#ae5faab19407db1593ecd1552ddc1699217600c8"
+  integrity sha512-90Fcf3tGxNEP4jqVj4Q5xdqLc3CHyUp3CxxURXWkl2Ey20FXjN54QnwT7Y6dFA0DWvpnS4iNTXT/JbmnyDkjWg==
   dependencies:
     "@dekkai/env" "^1.1.0"
     "@dekkai/event-emitter" "^1.1.0"

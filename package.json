@@ -81,7 +81,7 @@
         "yargs": "^17.0.1"
     },
     "dependencies": {
-        "@dekkai/data-source": "^0.2.2",
+        "@dekkai/data-source": "^0.2.3",
         "@dekkai/event-emitter": "^1.1.0",
         "chroma-js": "^2.1.2",
         "dekkai": "^0.3.6",
