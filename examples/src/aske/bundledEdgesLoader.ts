@@ -1,9 +1,8 @@
 import {html, render} from 'lit-html';
 import Tweakpane from 'tweakpane';
-import {GraferController} from '../../../src/grafer/GraferController';
 import {DataFile} from '@dekkai/data-source/build/lib/file/DataFile';
 import {DebugMenu} from '../../../src/UX/debug/DebugMenu';
-import {PointLabelPlacement} from '../../../src/graph/labels/point/PointLabel';
+import {GraferController, graph} from '../../../src/mod.js';
 
 interface LayoutInfo {
     points: string;
@@ -278,7 +277,7 @@ async function loadGraph(container: HTMLElement, info: LayoutInfo): Promise<void
                 },
                 options: {
                     visibilityThreshold: 8,
-                    labelPlacement: PointLabelPlacement.TOP,
+                    labelPlacement: graph.labels.PointLabelPlacement.TOP,
                     renderBackground: true,
                 },
             },

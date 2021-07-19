@@ -1,7 +1,6 @@
 import {DataFile} from '@dekkai/data-source/build/lib/file/DataFile';
 import {LocalFileSource} from '@dekkai/data-source/build/lib/file/types';
-import {PointData} from '../../../src/data/GraphPoints';
-import {BasicNodeData} from '../../../src/graph/nodes/Nodes';
+import {data, graph} from '../../../src/mod.js';
 import alphaShape from 'https://cdn.skypack.dev/alpha-shape';
 
 export interface LayoutInfo {
@@ -49,12 +48,12 @@ export interface GroupHullEdge {
     level: number;
 }
 
-export interface KnowledgeNodeData extends BasicNodeData {
+export interface KnowledgeNodeData extends graph.nodes.BasicNodeData {
     level: number;
 }
 
 export interface GraferData {
-    points: PointData[];
+    points: data.PointData[];
     nodes: KnowledgeNodeData[];
     shapes: GroupHullEdge[];
     colors: GroupColor[];
@@ -103,7 +102,7 @@ export async function convertDataToGraferV4(info: LayoutInfo): Promise<GraferDat
 
     // load the points
     console.log('Loading points...');
-    const points: Map<string, PointData> = new Map();
+    const points: Map<string, data.PointData> = new Map();
     lineNumber = 0;
     await parseJSONL(info.nodeLayoutFile, json => {
         if (lineNumber++) {
