@@ -1,3 +1,4 @@
+export * as data from './data/mod';
 export * as renderer from './renderer/mod';
 export * as graph from './graph/mod';
 export * as loaders from './loaders/mod';
