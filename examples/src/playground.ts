@@ -1,24 +1,9 @@
 import {html, render} from 'lit-html';
 
-// import {Viewport} from '../../../src/renderer/Viewport';
-import {ScrollDolly} from '../../src/UX/mouse/scroll/ScrollDolly';
-import {DragTruck} from '../../src/UX/mouse/drag/DragTruck';
-import {DragRotation} from '../../src/UX/mouse/drag/DragRotation';
-import {DragPan} from '../../src/UX/mouse/drag/DragPan';
-
 import Tweakpane from 'tweakpane';
 import {FolderApi} from 'tweakpane/dist/types/api/folder';
 import {LocalJSONL} from '../../src/loaders/LocalJSONL';
-import {
-    GraferLoaderNodes,
-    GraferLoaderEdges,
-    normalizeNodeLayers,
-    GraferLoaderNodesStats,
-} from '../../src/loaders/GraferLoader';
-import '../../src/grafer/GraferView';
-import {GraferController} from '../../src/grafer/GraferController';
-import {GraferInputColor} from '../../src/renderer/colors/ColorRegistry';
-import {DebugMenu} from '../../src/UX/debug/DebugMenu';
+import {UX, loaders, renderer, GraferController} from '../../src/mod';
 
 interface FilesSelector {
     name: string;
@@ -32,14 +17,14 @@ interface FilesSelector {
 }
 
 interface LoadedLayer {
-    nodes: GraferLoaderNodes;
-    edges: GraferLoaderEdges;
+    nodes: loaders.GraferLoaderNodes;
+    edges: loaders.GraferLoaderEdges;
     meta: any[];
 }
 
 interface LoadLayersResult {
     layers: LoadedLayer[];
-    stats: GraferLoaderNodesStats;
+    stats: loaders.GraferLoaderNodesStats;
 }
 
 interface LoaderColor {
@@ -107,7 +92,7 @@ const kColorPresets = [
     { name: 'gradient', colors: kGradient },
 ];
 
-const colorsRgbToArr = (colors): GraferInputColor[] =>
+const colorsRgbToArr = (colors): renderer.colors.GraferInputColor[] =>
     colors.map(val => Object.values(val));
 
 function createColorsSelector(folder: FolderApi, colors: LoaderColor[]): void {
@@ -278,7 +263,7 @@ async function loadLayers(layers): Promise<LoadLayersResult> {
         });
     }
 
-    const stats = normalizeNodeLayers(loadedLayers.map(layer => layer.nodes));
+    const stats = loaders.normalizeNodeLayers(loadedLayers.map(layer => layer.nodes));
 
     for (let i = 0, n = layers.length; i < n; ++i) {
         if (layers[i].edgesFile) {
@@ -377,22 +362,22 @@ export async function playground(container: HTMLElement): Promise<void> {
             const grafer = new GraferController(canvas, { points, layers, colors: colorsArr });
             const {viewport} = grafer;
 
-            const dolly = new ScrollDolly(viewport);
+            const dolly = new UX.mouse.ScrollDolly(viewport);
             dolly.enabled = true;
 
-            const truck = new DragTruck(viewport);
+            const truck = new UX.mouse.DragTruck(viewport);
             truck.button = 'primary';
             truck.enabled = true;
 
-            const rotation = new DragRotation(viewport);
+            const rotation = new UX.mouse.DragRotation(viewport);
             rotation.button = 'secondary';
             rotation.enabled = true;
 
-            const pan = new DragPan(viewport);
+            const pan = new UX.mouse.DragPan(viewport);
             pan.button = 'auxiliary';
             pan.enabled = true;
 
-            const debug = new DebugMenu(viewport);
+            const debug = new UX.DebugMenu(viewport);
             debug.registerUX(dolly);
             debug.registerUX(truck);
             debug.registerUX(rotation);

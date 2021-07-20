@@ -7,10 +7,7 @@ import {
     KnowledgeNodeData,
     LayoutInfo,
 } from './convertDataToGraferV4';
-
-import {GraferController, GraferLayerData, GraferNodesType} from '../../../src/grafer/GraferController';
-import {DebugMenu} from '../../../src/UX/debug/DebugMenu';
-import {renderer, graph} from '../../../src/mod.js';
+import {renderer, graph, UX, GraferController, GraferLayerData, GraferNodesType} from '../../../src/mod';
 import chroma from 'chroma-js';
 
 function createFileInput(cb: () => void): HTMLInputElement {
@@ -320,7 +317,7 @@ async function loadGraph(container: HTMLElement, info: LayoutInfo): Promise<void
         }
     }
 
-    /* const debug = */ new DebugMenu(controller.viewport);
+    /* const debug = */ new UX.DebugMenu(controller.viewport);
     // debug.registerUX(dolly);
     // debug.registerUX(truck);
     // debug.registerUX(rotation);

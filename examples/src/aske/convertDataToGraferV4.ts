@@ -1,6 +1,6 @@
 import {DataFile} from '@dekkai/data-source/build/lib/file/DataFile';
 import {LocalFileSource} from '@dekkai/data-source/build/lib/file/types';
-import {data, graph} from '../../../src/mod.js';
+import {data, graph} from '../../../src/mod';
 import alphaShape from 'https://cdn.skypack.dev/alpha-shape';
 
 export interface LayoutInfo {
