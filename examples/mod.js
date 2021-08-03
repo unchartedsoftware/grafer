@@ -5,12 +5,7 @@ var __getOwnPropNames = Object.getOwnPropertyNames;
 var __getProtoOf = Object.getPrototypeOf;
 var __hasOwnProp = Object.prototype.hasOwnProperty;
 var __markAsModule = (target) => __defProp(target, "__esModule", { value: true });
-var __require = (x) => {
-  if (typeof require !== "undefined")
-    return require(x);
-  throw new Error('Dynamic require of "' + x + '" is not supported');
-};
-var __commonJS = (cb, mod) => function __require2() {
+var __commonJS = (cb, mod) => function __require() {
   return mod || (0, cb[Object.keys(cb)[0]])((mod = { exports: {} }).exports, mod), mod.exports;
 };
 var __export = (target, all) => {
@@ -18,16 +13,16 @@ var __export = (target, all) => {
   for (var name in all)
     __defProp(target, name, { get: all[name], enumerable: true });
 };
-var __reExport = (target, module2, desc) => {
-  if (module2 && typeof module2 === "object" || typeof module2 === "function") {
-    for (let key of __getOwnPropNames(module2))
+var __reExport = (target, module, desc) => {
+  if (module && typeof module === "object" || typeof module === "function") {
+    for (let key of __getOwnPropNames(module))
       if (!__hasOwnProp.call(target, key) && key !== "default")
-        __defProp(target, key, { get: () => module2[key], enumerable: !(desc = __getOwnPropDesc(module2, key)) || desc.enumerable });
+        __defProp(target, key, { get: () => module[key], enumerable: !(desc = __getOwnPropDesc(module, key)) || desc.enumerable });
   }
   return target;
 };
-var __toModule = (module2) => {
-  return __reExport(__markAsModule(__defProp(module2 != null ? __create(__getProtoOf(module2)) : {}, "default", module2 && module2.__esModule && "default" in module2 ? { get: () => module2.default, enumerable: true } : { value: module2, enumerable: true })), module2);
+var __toModule = (module) => {
+  return __reExport(__markAsModule(__defProp(module != null ? __create(__getProtoOf(module)) : {}, "default", module && module.__esModule && "default" in module ? { get: () => module.default, enumerable: true } : { value: module, enumerable: true })), module);
 };
 var __decorateClass = (decorators, target, key, kind) => {
   var result = kind > 1 ? void 0 : kind ? __getOwnPropDesc(target, key) : target;
@@ -41,9 +36,9 @@ var __decorateClass = (decorators, target, key, kind) => {
 
 // node_modules/tweakpane/dist/tweakpane.js
 var require_tweakpane = __commonJS({
-  "node_modules/tweakpane/dist/tweakpane.js"(exports, module2) {
+  "node_modules/tweakpane/dist/tweakpane.js"(exports, module) {
     (function(global, factory) {
-      typeof exports === "object" && typeof module2 !== "undefined" ? module2.exports = factory() : typeof define === "function" && define.amd ? define(factory) : (global = typeof globalThis !== "undefined" ? globalThis : global || self, global.Tweakpane = factory());
+      typeof exports === "object" && typeof module !== "undefined" ? module.exports = factory() : typeof define === "function" && define.amd ? define(factory) : (global = typeof globalThis !== "undefined" ? globalThis : global || self, global.Tweakpane = factory());
     })(exports, function() {
       "use strict";
       var extendStatics = function(d, b) {
@@ -5036,9 +5031,9 @@ var require_tweakpane = __commonJS({
 
 // node_modules/chroma-js/chroma.js
 var require_chroma = __commonJS({
-  "node_modules/chroma-js/chroma.js"(exports, module2) {
+  "node_modules/chroma-js/chroma.js"(exports, module) {
     (function(global, factory) {
-      typeof exports === "object" && typeof module2 !== "undefined" ? module2.exports = factory() : typeof define === "function" && define.amd ? define(factory) : global.chroma = factory();
+      typeof exports === "object" && typeof module !== "undefined" ? module.exports = factory() : typeof define === "function" && define.amd ? define(factory) : global.chroma = factory();
     })(exports, function() {
       "use strict";
       var limit = function(x, min5, max5) {
@@ -11472,18 +11467,25 @@ var LocalDataFile = class {
 // node_modules/@dekkai/env/build/lib/moduleLoader.js
 function checkDynamicImport() {
   try {
-    import(`${null}`).catch(() => false);
+    import(
+      /* webpackIgnore: true */
+      `${null}`
+    ).catch(() => false);
     return true;
   } catch {
     return false;
   }
 }
 var kSupportsDynamicImport = checkDynamicImport();
+var requireFunc = new Function("mod", "return require(mod)");
 async function loadModule(mod) {
   if (kSupportsDynamicImport) {
-    return await import(mod.toString());
+    return await import(
+      /* webpackIgnore: true */
+      mod.toString()
+    );
   } else if (isNodeJS()) {
-    return typeof module !== "undefined" && typeof module.require === "function" && module.require(mod.toString()) || typeof __non_webpack_require__ === "function" && __non_webpack_require__(mod.toString()) || typeof __require === "function" && __require(mod.toString());
+    return requireFunc(mod);
   }
   throw "ERROR: Can't load modules dynamically on this platform";
 }
@@ -12052,6 +12054,7 @@ async function loadNodes(file, palette = []) {
   };
   let count = 0;
   await parseJSONL(file, (json) => {
+    var _a2, _b;
     raw.push(json);
     json.z = json.hasOwnProperty("z") ? json.z : 0;
     const { x, y, z, id, ...node } = json;
@@ -12074,7 +12077,7 @@ async function loadNodes(file, palette = []) {
     cumulative.y += y;
     cumulative.z += z;
     ++count;
-    const group = (json.group ?? json.clusterID ?? [0])[0];
+    const group = ((_b = (_a2 = json.group) != null ? _a2 : json.clusterID) != null ? _b : [0])[0];
     if (group < palette.length) {
       colors2.push(...palette[group], 255);
     } else {
@@ -16293,15 +16296,16 @@ function writeValueToDataView(view, value, type, offset) {
   return GL_TYPE_SIZE[type];
 }
 function flattenEntry(entry, types4, typesInfo, mappings2, view, offset) {
+  var _a2, _b;
   const flatMappings = {};
   let flattenLength = 0;
   for (let i = 0, n = typesInfo.keys.length; i < n; ++i) {
     const key = typesInfo.keys[i];
     if (entry[kDataEntryNeedsFlatten].has(key)) {
-      flatMappings[key] = mappings2[key][kDataMappingFlatten] ?? ((entry2, i2) => entry2[key][i2]);
+      flatMappings[key] = (_a2 = mappings2[key][kDataMappingFlatten]) != null ? _a2 : (entry2, i2) => entry2[key][i2];
       flattenLength = entry[key].length;
     } else {
-      flatMappings[key] = mappings2[key][kDataMappingFlatten] ?? ((entry2) => entry2[key]);
+      flatMappings[key] = (_b = mappings2[key][kDataMappingFlatten]) != null ? _b : (entry2) => entry2[key];
     }
   }
   let flatOffset = 0;
@@ -19059,10 +19063,11 @@ var GraferController = class extends EventEmitter {
     }
   }
   concatenateNodesFromLayers(data) {
+    var _a2, _b, _c;
     const nodes = [];
     const layers = data.layers;
     for (let i = 0, n = layers.length; i < n; ++i) {
-      const data2 = layers[i].nodes?.data ?? layers[i].labels?.data;
+      const data2 = (_c = (_a2 = layers[i].nodes) == null ? void 0 : _a2.data) != null ? _c : (_b = layers[i].labels) == null ? void 0 : _b.data;
       for (let ii = 0, nn = data2.length; ii < nn; ++ii) {
         data2[ii].point = this.generateId();
       }
@@ -19089,7 +19094,7 @@ var GraferController = class extends EventEmitter {
     if (useColors && !this.hasColors) {
       throw new Error("No colors found.");
     }
-    useColors = useColors ?? this.hasColors;
+    useColors = useColors != null ? useColors : this.hasColors;
     const hasPoints = Boolean(this._viewport.graph);
     const graph = this._viewport.graph;
     const nodesData = layer.nodes;
