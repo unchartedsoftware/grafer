@@ -4,8 +4,21 @@ import {mat4, quat, vec3} from 'gl-matrix';
 import {Layer} from './Layer';
 import {GraphPoints, PointData, PointDataMappings} from '../data/GraphPoints';
 import {PickingManager} from '../UX/picking/PickingManager';
+import {EventEmitter} from '@dekkai/event-emitter/build/lib/EventEmitter';
 
-export class Graph extends GraphPoints implements Renderable {
+const kEvents  = {
+    preRender: Symbol('grafer_graph_pre_render'),
+    postRender: Symbol('grafer_graph_post_render'),
+};
+Object.freeze(kEvents);
+
+export type GraphEventsMap = { [K in keyof typeof kEvents]: ReturnType<() => { readonly 0: unique symbol }[0]> };
+
+export class Graph extends EventEmitter.mixin(GraphPoints) implements Renderable {
+    public static get events(): GraphEventsMap {
+        return kEvents as GraphEventsMap;
+    }
+
     public picking: PickingManager;
     public enabled: boolean = true;
 
@@ -41,34 +54,21 @@ export class Graph extends GraphPoints implements Renderable {
     }
 
     public render(context:App, mode: RenderMode, uniforms: RenderUniforms): void {
+        this.emit(kEvents.preRender, this, mode, uniforms);
         if (mode === RenderMode.PICKING && this.picking && this.picking.enabled) {
             this.picking.offscreenBuffer.prepareContext(context);
         }
 
-        // render labels
+        // render layers
         for (let i = 0, n = this._layers.length; i < n; ++i) {
             if (this._layers[i].enabled) {
                 this._layers[i].render(context, mode, uniforms);
             }
         }
-
-        // // render nodes
-        // for (let i = 0, n = this._layers.length; i < n; ++i) {
-        //     if (this._layers[i].enabled) {
-        //         this._layers[i].renderNodes(context, mode, uniforms);
-        //     }
-        // }
-        //
-        // // render edges
-        // for (let i = 0, n = this._layers.length; i < n; ++i) {
-        //     if (this._layers[i].enabled) {
-        //         this._layers[i].renderEdges(context, mode, uniforms);
-        //     }
-        // }
-
-        // if (this.picking) {
-        //     this.picking.offscreenBuffer.blitToScreen(context);
-        // }
+        if (this.picking && this.picking.enabled && this.picking.debugRender) {
+            this.picking.offscreenBuffer.blitToScreen(context);
+        }
+        this.emit(kEvents.postRender, this, mode, uniforms);
     }
 
     public resize(context: App): void {
