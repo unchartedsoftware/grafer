@@ -122,6 +122,7 @@ export class PointLabel extends Nodes<LabelNodeData, GLLabelNodeTypes> {
         data: unknown[],
         mappings: Partial<DataMappings<LabelNodeData>>,
         pickingManager: PickingManager,
+        font?: string,
         labelAtlas?: LabelAtlas
     );
     constructor(...args: any[]) {
@@ -134,12 +135,13 @@ export class PointLabel extends Nodes<LabelNodeData, GLLabelNodeTypes> {
         data: unknown[],
         mappings: Partial<DataMappings<LabelNodeData>>,
         pickingManager: PickingManager,
+        font: string = 'monospace',
         labelAtlas?: LabelAtlas
     ): void {
         if (labelAtlas) {
             this.labelAtlas = labelAtlas;
         } else {
-            this.labelAtlas = new LabelAtlas(context, data, mappings as Partial<DataMappings<LabelData>>);
+            this.labelAtlas = new LabelAtlas(context, data, mappings as Partial<DataMappings<LabelData>>, font);
         }
 
         super.initialize(context, points, data, mappings, pickingManager);

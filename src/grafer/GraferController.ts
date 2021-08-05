@@ -177,8 +177,8 @@ export class GraferController extends EventEmitter {
         }
         const edges = this.addEdges(edgesData, nodes, useColors);
 
-        const layersData = layerData.labels;
-        const labels = this.addLabels(layersData, useColors);
+        const labelsData = layerData.labels;
+        const labels = this.addLabels(labelsData, useColors);
 
         if (nodes || edges || labels) {
             const layer = new Layer(nodes, edges, labels, name);
@@ -241,7 +241,7 @@ export class GraferController extends EventEmitter {
                 };
             }
 
-            labels = new LabelsClass(context, graph, labelsData.data, labelsMappings, pickingManager);
+            labels = new LabelsClass(context, graph, labelsData.data, labelsMappings, pickingManager, labelsData.options?.font);
             if ('options' in labelsData) {
                 const options = labelsData.options;
                 const keys = Object.keys(options);

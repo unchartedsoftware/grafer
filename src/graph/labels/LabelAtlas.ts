@@ -65,13 +65,13 @@ export class LabelAtlas {
         return this._charactersTexture;
     }
 
-    constructor(context: GraferContext, data: unknown[], mappings: Partial<DataMappings<LabelData>>) {
+    constructor(context: GraferContext, data: unknown[], mappings: Partial<DataMappings<LabelData>>, font: string) {
         this.labelPixelRatio = window.devicePixelRatio;
         this.characterMap = new Map();
         this.labelMap = new Map();
 
         if (data.length) {
-            this.processData(context, data, Object.assign({}, kLabelMappings, mappings));
+            this.processData(context, data, Object.assign({}, kLabelMappings, mappings), font);
         } else {
             this._boxesTexture = context.createTexture2D(1, 1);
             this._labelsTexture = context.createTexture2D(1, 1);
@@ -79,7 +79,7 @@ export class LabelAtlas {
         }
     }
 
-    protected processData(context: GraferContext, data: unknown[], mappings: DataMappings<LabelData>): void {
+    protected async processData(context: GraferContext, data: unknown[], mappings: DataMappings<LabelData>, font: string): Promise<void> {
         const canvas = document.createElement('canvas');
         canvas.setAttribute('style', 'font-smooth: never;-webkit-font-smoothing : none;');
 
@@ -106,7 +106,7 @@ export class LabelAtlas {
                     const charKey = `${char}-${renderSize}`;
                     if (!this.characterMap.has(charKey)) {
                         // const image = this.renderCharTexture(char, renderSize, ctx, canvas);
-                        const image = this.computeDistanceField(this.renderCharTexture(char, renderSize, ctx, canvas), renderSize);
+                        const image = this.computeDistanceField(this.renderCharTexture(char, renderSize, ctx, canvas, font), renderSize);
                         const box = { id: charKey, w: image.width, h: image.height, image };
                         boxMap.set(charKey, box);
                         boxes.push(box);
@@ -159,11 +159,11 @@ export class LabelAtlas {
         return texture;
     }
 
-    protected renderCharTexture(char: string, size: number, context: CanvasRenderingContext2D, canvas: HTMLCanvasElement): ImageData {
+    protected renderCharTexture(char: string, size: number, context: CanvasRenderingContext2D, canvas: HTMLCanvasElement, font: string): ImageData {
         const pixelRatio = this.labelPixelRatio;
 
         if (!this.spaceSizeMap.has(size)) {
-            context.font = `${size * pixelRatio}px monospace`;
+            context.font = `${size * pixelRatio}px "${font}"`;
             context.imageSmoothingEnabled = false;
 
             context.fillStyle = 'white';
@@ -187,7 +187,7 @@ export class LabelAtlas {
         // context.fillStyle = `rgb(0,255,0)`;
         // context.fillRect(canvas.width * 0.5 - textWidth * 0.5, 0, textWidth, canvas.height);
 
-        context.font = `${size * pixelRatio}px monospace`;
+        context.font = `${size * pixelRatio}px "${font}"`;
         context.imageSmoothingEnabled = false;
 
         context.fillStyle = 'white';
