@@ -38,6 +38,7 @@ interface GraferLayerDataBase {
     nodes?: GraferNodesData;
     edges?: GraferEdgesData;
     labels?: GraferLabelsData;
+    options?: { [key: string]: any };
 }
 
 // layers should at least have one of nodes, edges or labels
@@ -158,7 +159,7 @@ export class GraferController extends EventEmitter {
         }
     }
 
-    public addLayer(layer: GraferLayerData, name: string, useColors?: boolean): void {
+    public addLayer(layerData: GraferLayerData, name: string, useColors?: boolean): void {
         if( useColors && !this.hasColors ) {
             throw new Error('No colors found.');
         }
@@ -167,22 +168,32 @@ export class GraferController extends EventEmitter {
         const hasPoints = Boolean(this._viewport.graph);
         const graph = this._viewport.graph;
 
-        const nodesData = layer.nodes;
+        const nodesData = layerData.nodes;
         const nodes = this.addNodes(nodesData, useColors);
 
-        const edgesData = layer.edges;
+        const edgesData = layerData.edges;
         if (edgesData && !nodes && !hasPoints) {
             throw new Error('Cannot load an edge-only layer in a graph without points!');
         }
         const edges = this.addEdges(edgesData, nodes, useColors);
 
-        const layersData = layer.labels;
+        const layersData = layerData.labels;
         const labels = this.addLabels(layersData, useColors);
 
         if (nodes || edges || labels) {
             const layer = new Layer(nodes, edges, labels, name);
             graph.layers.unshift(layer);
             layer.on(EventEmitter.omniEvent, (...args) => this.emit(...args));
+
+            if ('options' in layerData) {
+                const options = layerData.options;
+                const keys = Object.keys(options);
+                for (const key of keys) {
+                    if (key in layer) {
+                        layer[key] = options[key];
+                    }
+                }
+            }
         }
     }
 
