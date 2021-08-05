@@ -110,8 +110,10 @@ export class GraferController extends EventEmitter {
         this.loadLayers(data, pointsRadiusMapping);
 
         if (this._viewport.graph) {
-            this._viewport.camera.position = [0, 0, -this._viewport.graph.bbCornerLength * 2];
-            this._viewport.camera.farPlane = Math.max(this._viewport.graph.bbCornerLength * 4, 1000);
+            const bbCenter = this._viewport.graph.bbCenter;
+            const bbDiagonal = this._viewport.graph.bbDiagonal;
+            this._viewport.camera.position = [-bbCenter[0], -bbCenter[1], -bbCenter[2] - bbDiagonal];
+            this._viewport.camera.farPlane = Math.max(bbDiagonal * 2, 1000);
             this._viewport.render();
         }
     }
