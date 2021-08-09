@@ -40,11 +40,11 @@ export class PickingManager extends EventEmitter.mixin(UXModule) {
         return this._offscreenBuffer;
     }
 
-    private _debugRender: Boolean = false;
-    public get debugRender(): Boolean {
+    private _debugRender: boolean = false;
+    public get debugRender(): boolean {
         return this._debugRender;
     }
-    public set debugRender(value: Boolean) {
+    public set debugRender(value: boolean) {
         this._debugRender = value;
     }
 
