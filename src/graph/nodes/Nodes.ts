@@ -54,12 +54,13 @@ export abstract class Nodes<T_SRC extends BasicNodeData, T_TGT> extends LayerRen
     }
 
     protected initialize(...args: any[]): void {
+        super.initialize(...args);
         this.localUniforms = Object.assign({}, this.localUniforms, {
+            uGraphPoints: this.dataTexture,
             uPixelSizing: false,
             uBillboard: true,
             uOutline: 6.0,
         });
-        super.initialize(...args);
     }
 
     protected computeMappings(mappings: Partial<DataMappings<T_SRC>>): DataMappings<T_SRC> {

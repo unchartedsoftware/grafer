@@ -7,26 +7,20 @@ layout(location=2) in float aRadius; // optional atthe end
 uniform sampler2D uGraphPoints;
 uniform bool uUsePointRadius;
 
-out vec3 vPosition;
-out float vRadius;
+flat out uint vPositionIndex;
+flat out float vRadius;
 flat out uint vColor;
 
-vec4 getValueByIndexFromTexture(sampler2D tex, int index) {
-    int texWidth = textureSize(tex, 0).x;
-    int col = index % texWidth;
-    int row = index / texWidth;
-    return texelFetch(tex, ivec2(col, row), 0);
-}
+#pragma glslify: import(../../../renderer/shaders/valueForIndex.glsl)
 
 void main() {
-    vec4 value = getValueByIndexFromTexture(uGraphPoints, int(aPositionIndex));
-    vPosition = value.xyz;
-
+    vec4 value = valueForIndex(uGraphPoints, int(aPositionIndex));
     if (uUsePointRadius) {
         vRadius = value.w;
     } else {
         vRadius = aRadius;
     }
 
+    vPositionIndex = aPositionIndex;
     vColor = aColor;
 }

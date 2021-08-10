@@ -1,7 +1,7 @@
 #version 300 es
 
 layout(location=0) in vec3 aVertex;
-layout(location=1) in vec3 iPosition;
+layout(location=1) in uint iPositionIndex;
 layout(location=2) in float iRadius;
 layout(location=3) in uint iColor;
 layout(location=4) in uvec4 iPickingColor;
@@ -12,6 +12,7 @@ layout(location=4) in uvec4 iPickingColor;
     uniform mat4 uProjectionMatrix;
     uniform vec2 uViewportSize;
     uniform float uPixelRatio;
+    uniform sampler2D uGraphPoints;
     uniform sampler2D uColorPalette;
 //};
 
@@ -24,17 +25,12 @@ flat out vec4 fColor;
 flat out float fPixelLength;
 out vec2 vFromCenter;
 
-vec4 getColorByIndexFromTexture(sampler2D tex, int index) {
-    int texWidth = textureSize(tex, 0).x;
-    int col = index % texWidth;
-    int row = index / texWidth;
-    return texelFetch(tex, ivec2(col, row), 0);
-}
+#pragma glslify: import(../../../renderer/shaders/valueForIndex.glsl)
 
 void main() {
     // claculate the offset matrix, done as a matrix to be able to compute "billboard" vertices in the shader
     mat4 offsetMatrix = mat4(1.0);
-    offsetMatrix[3] = vec4(iPosition, 1.0);
+    offsetMatrix[3] = vec4(valueForIndex(uGraphPoints, int(iPositionIndex)).xyz, 1.0);
 
     // reset the rotation of the model-view matrix
     mat4 modelMatrix = uViewMatrix * uSceneMatrix * offsetMatrix;
@@ -67,7 +63,7 @@ void main() {
     vec4 worldVertex = renderMatrix * vec4(aVertex * iRadius * pixelRadiusMult, 1.0);
 
     // send the render color to the fragment shader
-    fColor = uPicking ? vec4(iPickingColor) / 255.0 : getColorByIndexFromTexture(uColorPalette, int(iColor));
+    fColor = uPicking ? vec4(iPickingColor) / 255.0 : valueForIndex(uColorPalette, int(iColor));
     // send the normalized length of a single pixel to the fragment shader
     fPixelLength = 1.0 / desiredPixelRadius;
     // send the normalized distance from the center to the fragment shader

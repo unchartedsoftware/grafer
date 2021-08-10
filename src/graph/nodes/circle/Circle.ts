@@ -6,7 +6,7 @@ import pickingFS from './Circle.picking.fs.glsl';
 import {BasicNodeData, kBasicNodeDataTypes, Nodes} from '../Nodes';
 import {App, DrawCall, PicoGL, Program, VertexArray, VertexBuffer} from 'picogl';
 import {GraphPoints} from '../../../data/GraphPoints';
-import {DataMappings, DataShader} from '../../../data/DataTools';
+import {DataMappings, DataShader, printDataGL} from '../../../data/DataTools';
 import {PickingColors, PickingEvent, PickingManager} from '../../../UX/picking/PickingManager';
 import {MouseCallback} from '../../../UX/mouse/MouseHandler';
 import {
@@ -19,11 +19,8 @@ import {
 import {GraferContext} from '../../../renderer/GraferContext';
 
 export const kGLCircleNodeTypes = {
-    // TODO: maybe use points indices?
-    position: [PicoGL.FLOAT, PicoGL.FLOAT, PicoGL.FLOAT],
-    // TODO: maybe skip and use vertex indices when point radius is used.
-    radius: PicoGL.FLOAT,
-    // TODO: Create a color texture and use indices here.
+    position:PicoGL.UNSIGNED_INT,
+    radius: PicoGL.FLOAT, // the radius must be computed since it can be overridden
     color: PicoGL.UNSIGNED_INT,
 } as const;
 export type GLCircleNodeTypes = typeof kGLCircleNodeTypes;
@@ -156,7 +153,7 @@ export class Circle extends Nodes<BasicNodeData, GLCircleNodeTypes> {
     protected getDataShader(): DataShader {
         return {
             vs: dataVS,
-            varyings: [ 'vPosition', 'vRadius', 'vColor' ],
+            varyings: [ 'vPositionIndex', 'vRadius', 'vColor' ],
         };
     }
 
