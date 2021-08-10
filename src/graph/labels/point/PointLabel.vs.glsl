@@ -3,10 +3,9 @@
 precision lowp usampler2D;
 
 layout(location=0) in vec3 aVertex;
-layout(location=1) in vec3 iPosition;
-layout(location=2) in float iRadius;
-layout(location=3) in uint iColor;
-layout(location=4) in uvec4 iLabel;
+layout(location=1) in uint iPoint;
+layout(location=2) in uint iColor;
+layout(location=3) in uvec4 iLabel;
 
 //layout(std140) uniform RenderUniforms {
     uniform mat4 uViewMatrix;
@@ -14,6 +13,7 @@ layout(location=4) in uvec4 iLabel;
     uniform mat4 uProjectionMatrix;
     uniform vec2 uViewportSize;
     uniform float uPixelRatio;
+    uniform sampler2D uGraphPoints;
     uniform sampler2D uColorPalette;
 //};
 uniform usampler2D uLabelIndices;
@@ -38,9 +38,12 @@ out vec2 vPixelCoords;
 #pragma glslify: import(../../../renderer/shaders/colorTools.glsl)
 
 void main() {
+    vec4 point = valueForIndex(uGraphPoints, int(iPoint));
+    vec3 position = point.xyz;
+    float radius = point.w;
     // claculate the offset matrix, done as a matrix to be able to compute "billboard" vertices in the shader
     mat4 offsetMatrix = mat4(1.0);
-    offsetMatrix[3] = vec4(iPosition, 1.0);
+    offsetMatrix[3] = vec4(position, 1.0);
 
     // reset the rotation of the model-view matrix
     mat4 modelMatrix = uViewMatrix * uSceneMatrix * offsetMatrix;
@@ -54,7 +57,7 @@ void main() {
     vec2 screenQuadCenter = quadCenter.xy / quadCenter.w;
 
     // the on-screen position of a side of this quad
-    vec4 quadSide = uProjectionMatrix * lookAtMatrix * vec4(iRadius, 0.0, 0.0, 1.0);
+    vec4 quadSide = uProjectionMatrix * lookAtMatrix * vec4(radius, 0.0, 0.0, 1.0);
     vec2 screenQuadSide = quadSide.xy / quadSide.w;
 
     // compute the pixel radius of this point for a size of 1 in world coordinates
@@ -92,7 +95,7 @@ void main() {
 //    float visibilityMultiplier = pixelRadius >= uVisibilityThreshold * 0.5 * uPixelRatio ? 1.0 : 0.0;
 
     // calculate the size of a pixel in worls coordinates with repsect to the point's position
-    float pixelToWorld = iRadius / pixelRadius;
+    float pixelToWorld = radius / pixelRadius;
 
     // calculate the with and height of the label
     float padding = uPadding * uPixelRatio;
@@ -109,8 +112,8 @@ void main() {
     // claculate the label offset
     float labelMargin = 5.0 * pixelToWorld; // pixels
     vec3 labelOffset = vec3(
-        (iRadius + labelSize.x * 0.5 + labelMargin) * uLabelPlacement.x,
-        (iRadius + labelSize.y * 0.5 + labelMargin) * uLabelPlacement.y,
+        (radius + labelSize.x * 0.5 + labelMargin) * uLabelPlacement.x,
+        (radius + labelSize.y * 0.5 + labelMargin) * uLabelPlacement.y,
         0.01
     );
 

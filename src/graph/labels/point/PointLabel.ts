@@ -37,13 +37,8 @@ export const kLabelNodeDataTypes: GLDataTypes<LabelNodeData> = {
 };
 
 export const kGLLabelNodeTypes = {
-    // TODO: maybe use points indices?
-    position: [PicoGL.FLOAT, PicoGL.FLOAT, PicoGL.FLOAT],
-    // TODO: maybe skip and use vertex indices when point radius is used.
-    radius: PicoGL.FLOAT,
-    // TODO: Create a color texture and use indices here.
+    point: PicoGL.UNSIGNED_INT,
     color: PicoGL.UNSIGNED_INT,
-
     label: [PicoGL.UNSIGNED_INT, PicoGL.UNSIGNED_INT, PicoGL.UNSIGNED_INT, PicoGL.UNSIGNED_INT],
 } as const;
 export type GLLabelNodeTypes = typeof kGLLabelNodeTypes;
@@ -222,7 +217,7 @@ export class PointLabel extends Nodes<LabelNodeData, GLLabelNodeTypes> {
     protected getDataShader(): DataShader {
         return {
             vs: dataVS,
-            varyings: [ 'vPosition', 'vRadius', 'vColor', 'vLabel' ],
+            varyings: [ 'fPoint', 'fColor', 'fLabel' ],
         };
     }
 

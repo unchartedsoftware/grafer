@@ -6,17 +6,12 @@ layout(location=2) in uvec4 aLabel;
 
 uniform sampler2D uGraphPoints;
 
-out vec3 vPosition;
-out float vRadius;
-flat out uint vColor;
-flat out uvec4 vLabel;
-
-#pragma glslify: import(../../../renderer/shaders/valueForIndex.glsl)
+flat out uint fPoint;
+flat out uint fColor;
+flat out uvec4 fLabel;
 
 void main() {
-    vec4 value = valueForIndex(uGraphPoints, int(aPositionIndex));
-    vPosition = value.xyz;
-    vRadius = value.w;
-    vColor = aColor;
-    vLabel = aLabel;
+    fPoint = aPositionIndex;
+    fColor = aColor;
+    fLabel = aLabel;
 }

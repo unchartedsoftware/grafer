@@ -6,10 +6,9 @@ precision lowp usampler2D;
 #define M_2PI 6.28318530718
 
 layout(location=0) in vec3 aVertex;
-layout(location=1) in vec3 iPosition;
-layout(location=2) in float iRadius;
-layout(location=3) in uint iColor;
-layout(location=4) in uvec4 iLabel;
+layout(location=1) in uint iPoint;
+layout(location=2) in uint iColor;
+layout(location=3) in uvec4 iLabel;
 
 //layout(std140) uniform RenderUniforms {
     uniform mat4 uViewMatrix;
@@ -17,6 +16,7 @@ layout(location=4) in uvec4 iLabel;
     uniform mat4 uProjectionMatrix;
     uniform vec2 uViewportSize;
     uniform float uPixelRatio;
+    uniform sampler2D uGraphPoints;
     uniform sampler2D uColorPalette;
 //};
 uniform sampler2D uCharTexture;
@@ -43,9 +43,12 @@ out vec2 vFromCenter;
 #pragma glslify: import(../../../renderer/shaders/colorTools.glsl)
 
 void main() {
+    vec4 point = valueForIndex(uGraphPoints, int(iPoint));
+    vec3 position = point.xyz;
+    float radius = point.w;
     // claculate the offset matrix, done as a matrix to be able to compute "billboard" vertices in the shader
     mat4 offsetMatrix = mat4(1.0);
-    offsetMatrix[3] = vec4(iPosition, 1.0);
+    offsetMatrix[3] = vec4(position, 1.0);
 
     // reset the rotation of the model-view matrix
     mat4 modelMatrix = uViewMatrix * uSceneMatrix * offsetMatrix;
@@ -59,7 +62,7 @@ void main() {
     vec2 screenQuadCenter = quadCenter.xy / quadCenter.w;
 
     // the on-screen position of a side of this quad
-    vec4 quadSide = uProjectionMatrix * lookAtMatrix * vec4(iRadius, 0.0, 0.0, 1.0);
+    vec4 quadSide = uProjectionMatrix * lookAtMatrix * vec4(radius, 0.0, 0.0, 1.0);
     vec2 screenQuadSide = quadSide.xy / quadSide.w;
 
     // compute the pixel radius of this point for a size of 1 in world coordinates
@@ -99,8 +102,8 @@ void main() {
     vFromCenter = aVertex.xy;
 
     // compute the vertex position and its screen position
-    float pixelLength = iRadius / pixelRadius;
-    float textRadius = iRadius + pixelLength * placementOffset;
+    float pixelLength = radius / pixelRadius;
+    float textRadius = radius + pixelLength * placementOffset;
     vec3 labelOffset = vec3(0.0, 0.0, 0.01); // offset the label forward a tiny bit so it's always in front
     vec4 worldVertex = renderMatrix * vec4(aVertex * textRadius * visibilityMultiplier + labelOffset, 1.0);
 
