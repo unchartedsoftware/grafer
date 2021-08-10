@@ -153,7 +153,7 @@ export class Circle extends Nodes<BasicNodeData, GLCircleNodeTypes> {
     protected getDataShader(): DataShader {
         return {
             vs: dataVS,
-            varyings: [ 'vPositionIndex', 'vRadius', 'vColor' ],
+            varyings: [ 'fPoint', 'fRadius', 'fColor' ],
         };
     }
 

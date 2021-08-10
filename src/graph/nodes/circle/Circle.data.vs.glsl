@@ -7,20 +7,20 @@ layout(location=2) in float aRadius; // optional atthe end
 uniform sampler2D uGraphPoints;
 uniform bool uUsePointRadius;
 
-flat out uint vPositionIndex;
-flat out float vRadius;
-flat out uint vColor;
+flat out uint fPoint;
+flat out float fRadius;
+flat out uint fColor;
 
 #pragma glslify: import(../../../renderer/shaders/valueForIndex.glsl)
 
 void main() {
     vec4 value = valueForIndex(uGraphPoints, int(aPositionIndex));
     if (uUsePointRadius) {
-        vRadius = value.w;
+        fRadius = value.w;
     } else {
-        vRadius = aRadius;
+        fRadius = aRadius;
     }
 
-    vPositionIndex = aPositionIndex;
-    vColor = aColor;
+    fPoint = aPositionIndex;
+    fColor = aColor;
 }
