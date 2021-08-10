@@ -85,8 +85,6 @@ export class DebugMenu {
             }],
             pixelSizing: [element, { label: 'pixel sizing ' }],
             billboard: [element, { label: 'billboarding' }],
-            minSize: [element, { label: 'min size' }],
-            maxSize: [element, { label: 'max size' }],
             gravity: [element, { min: -2, max: 2 }],
             alpha: [element, { min: 0, max: 1 }],
             fade: [element, { min: 0, max: 1 }],

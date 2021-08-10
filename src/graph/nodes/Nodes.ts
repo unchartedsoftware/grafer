@@ -32,27 +32,6 @@ export abstract class Nodes<T_SRC extends BasicNodeData, T_TGT> extends LayerRen
     protected map: Map<number | string, number | string>;
     protected idArray: (number | string)[];
 
-    public get constraintSize(): boolean {
-        return this.localUniforms.uConstraintSize as boolean;
-    }
-    public set constraintSize(value: boolean) {
-        this.localUniforms.uConstraintSize = value;
-    }
-
-    public get minSize(): number {
-        return this.localUniforms.uMinSize as number;
-    }
-    public set minSize(value: number) {
-        this.localUniforms.uMinSize = value;
-    }
-
-    public get maxSize(): number {
-        return this.localUniforms.uMaxSize as number;
-    }
-    public set maxSize(value: number) {
-        this.localUniforms.uMaxSize = value;
-    }
-
     public get pixelSizing(): boolean {
         return this.localUniforms.uPixelSizing as boolean;
     }
@@ -76,9 +55,6 @@ export abstract class Nodes<T_SRC extends BasicNodeData, T_TGT> extends LayerRen
 
     protected initialize(...args: any[]): void {
         this.localUniforms = Object.assign({}, this.localUniforms, {
-            uConstraintSize: true,
-            uMinSize: 1.0,
-            uMaxSize: 4.0,
             uPixelSizing: false,
             uBillboard: true,
             uOutline: 6.0,
