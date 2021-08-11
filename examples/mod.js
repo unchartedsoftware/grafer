@@ -8438,6 +8438,580 @@ if (typeof window !== "undefined") {
 }
 var html = (strings, ...values) => new TemplateResult(strings, values, "html", defaultTemplateProcessor);
 
+// examples/src/playground.ts
+var import_tweakpane2 = __toModule(require_tweakpane());
+
+// node_modules/@dekkai/env/build/lib/node.js
+var kIsNodeJS = Object.prototype.toString.call(typeof process !== "undefined" ? process : 0) === "[object process]";
+function isNodeJS() {
+  return kIsNodeJS;
+}
+
+// node_modules/@dekkai/env/build/lib/deno.js
+var kIsDeno = Boolean(typeof Deno !== "undefined");
+function isDeno() {
+  return kIsDeno;
+}
+
+// node_modules/@dekkai/data-source/build/lib/chunk/DataChunk.js
+var DataChunk = class {
+  constructor(source, start, end) {
+    this._buffer = null;
+    this.source = source;
+    this.start = start;
+    this.end = end;
+  }
+  get buffer() {
+    return this._buffer;
+  }
+  get byteLength() {
+    return Promise.resolve(this.end - this.start);
+  }
+  get loaded() {
+    return Boolean(this._buffer);
+  }
+  async load() {
+    if (!this._buffer) {
+      this._buffer = await this.loadData();
+      if (this._buffer === null) {
+        this.start = 0;
+        this.end = 0;
+      } else if (this.end - this.start > this._buffer.byteLength) {
+        this.end -= this.end - this.start - this._buffer.byteLength;
+      }
+    }
+  }
+  unload() {
+    this._buffer = null;
+  }
+  slice(start, end) {
+    return new DataChunk(this, start, end);
+  }
+  loadData(start = 0, end = this.end - this.start) {
+    return this.source.loadData(this.start + start, this.start + end);
+  }
+};
+
+// node_modules/@dekkai/data-source/build/lib/file/local/LocalDataFile.js
+var LocalDataFile = class {
+  slice(start, end) {
+    return new DataChunk(this, start, end);
+  }
+};
+
+// node_modules/@dekkai/env/build/lib/moduleLoader.js
+function checkDynamicImport() {
+  try {
+    import(
+      /* webpackIgnore: true */
+      `${null}`
+    ).catch(() => false);
+    return true;
+  } catch {
+    return false;
+  }
+}
+var kSupportsDynamicImport = checkDynamicImport();
+var requireFunc = new Function("mod", "return require(mod)");
+async function loadModule(mod) {
+  if (kSupportsDynamicImport) {
+    return await import(
+      /* webpackIgnore: true */
+      mod.toString()
+    );
+  } else if (isNodeJS()) {
+    return requireFunc(mod);
+  }
+  throw "ERROR: Can't load modules dynamically on this platform";
+}
+
+// node_modules/@dekkai/data-source/build/lib/file/local/LocalDataFileNode.js
+var gFS = null;
+var kFsPromise = (isNodeJS() ? loadModule("fs") : Promise.resolve(null)).then((fs) => gFS = fs);
+var LocalDataFileNode = class extends LocalDataFile {
+  constructor(handle, stats) {
+    super();
+    this.handle = handle;
+    this.stats = stats;
+  }
+  static async fromSource(source) {
+    await kFsPromise;
+    let handle;
+    if (source instanceof URL || typeof source === "string") {
+      handle = gFS.openSync(source);
+    } else if (typeof source === "number") {
+      handle = source;
+    } else {
+      throw `A LocalDataFileNode cannot be created from a ${typeof source} instance`;
+    }
+    const stats = gFS.fstatSync(handle);
+    return new LocalDataFileNode(handle, stats);
+  }
+  get byteLength() {
+    return Promise.resolve(this.stats.size);
+  }
+  close() {
+    const handle = this.handle;
+    kFsPromise.then(() => gFS.closeSync(handle));
+    this.handle = null;
+    this.stats = null;
+  }
+  async loadData(start = 0, end = this.stats.size) {
+    await kFsPromise;
+    const normalizedEnd = Math.min(end, this.stats.size);
+    const length5 = normalizedEnd - start;
+    const result = new Uint8Array(length5);
+    let loaded = 0;
+    while (loaded < length5) {
+      loaded += await this.loadDataIntoBuffer(result, loaded, start + loaded, normalizedEnd);
+    }
+    return result.buffer;
+  }
+  loadDataIntoBuffer(buffer, offset, start, end) {
+    return new Promise((resolve, reject) => {
+      const length5 = end - start;
+      gFS.read(this.handle, buffer, offset, length5, start, (err, bytesRead) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(bytesRead);
+        }
+      });
+    });
+  }
+};
+
+// node_modules/@dekkai/data-source/build/lib/file/local/LocalDataFileDeno.js
+var LocalDataFileDeno = class extends LocalDataFile {
+  constructor(file, info) {
+    super();
+    this.file = file;
+    this.info = info;
+  }
+  static async fromSource(source) {
+    if (!(source instanceof URL) && typeof source !== "string") {
+      throw `A LocalDataFileDeno cannot be created from a ${typeof source} instance`;
+    }
+    const stats = await Deno.stat(source);
+    if (!stats.isFile) {
+      throw `The path "${source} does not point to a file"`;
+    }
+    const file = await Deno.open(source, { read: true, write: false });
+    return new LocalDataFileDeno(file, stats);
+  }
+  get byteLength() {
+    return Promise.resolve(this.info.size);
+  }
+  close() {
+    Deno.close(this.file.rid);
+    this.file = null;
+    this.info = null;
+  }
+  async loadData(start = 0, end = this.info.size) {
+    const normalizedEnd = Math.min(end, this.info.size);
+    const length5 = normalizedEnd - start;
+    const result = new Uint8Array(length5);
+    let loaded = 0;
+    while (loaded < length5) {
+      loaded += await this.loadDataIntoBuffer(result, loaded, start + loaded, normalizedEnd);
+    }
+    return result.buffer;
+  }
+  async loadDataIntoBuffer(buffer, offset, start, end) {
+    const cursorPosition = await this.file.seek(start, Deno.SeekMode.Start);
+    if (cursorPosition !== start) {
+      throw "ERROR: Cannot seek to the desired position";
+    }
+    const result = new Uint8Array(end - start);
+    const bytesRead = await this.file.read(result);
+    buffer.set(result, offset);
+    return bytesRead;
+  }
+};
+
+// node_modules/@dekkai/data-source/build/lib/file/local/LocalDataFileBrowser.js
+var LocalDataFileBrowser = class extends LocalDataFile {
+  constructor(blob) {
+    super();
+    this.blob = blob;
+  }
+  static async fromSource(source) {
+    return new LocalDataFileBrowser(source);
+  }
+  get byteLength() {
+    return Promise.resolve(this.blob.size);
+  }
+  close() {
+    this.blob = null;
+  }
+  async loadData(start = 0, end = this.blob.size) {
+    const slice = this.blob.slice(start, Math.min(end, this.blob.size));
+    return await this.loadBlob(slice);
+  }
+  loadBlob(blob) {
+    return new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.onload = () => {
+        resolve(reader.result);
+      };
+      reader.readAsArrayBuffer(blob);
+    });
+  }
+};
+
+// node_modules/@dekkai/event-emitter/build/lib/EventEmitter.js
+var kOmniEvent = Symbol("EventEmitter::omni::event");
+var EventEmitterMixin = class {
+  static mixin(Parent) {
+    const ParentConstructor = Parent;
+    class EventEmitter2 extends ParentConstructor {
+      constructor() {
+        super(...arguments);
+        this.listeners = new Map();
+      }
+      static get omniEvent() {
+        return kOmniEvent;
+      }
+      on(type, callback) {
+        const queue = this.listeners.get(type);
+        if (queue) {
+          queue.add(callback);
+        } else {
+          this.listeners.set(type, new Set([callback]));
+        }
+      }
+      off(type, callback) {
+        const queue = this.listeners.get(type);
+        if (queue) {
+          queue.delete(callback);
+        }
+      }
+      emit(type, ...args) {
+        if (type === kOmniEvent) {
+          return;
+        }
+        if (this.listeners.has(type)) {
+          const stack = new Set(this.listeners.get(type));
+          for (const callback of stack) {
+            callback.call(this, type, ...args);
+          }
+        }
+        if (this.listeners.has(kOmniEvent)) {
+          const omni = new Set(this.listeners.get(kOmniEvent));
+          for (const callback of omni) {
+            callback.call(this, type, ...args);
+          }
+        }
+      }
+    }
+    return EventEmitter2;
+  }
+};
+var EventEmitter = class extends EventEmitterMixin.mixin(EventEmitterMixin) {
+};
+
+// node_modules/@dekkai/data-source/build/lib/file/remote/RemoteDataFile.js
+var RemoteDataFile = class extends EventEmitter {
+  slice(start, end) {
+    return new DataChunk(this, start, end);
+  }
+};
+RemoteDataFile.LOADING_START = Symbol("DataFileEvents::LoadingStart");
+RemoteDataFile.LOADING_PROGRESS = Symbol("DataFileEvents::LoadingProgress");
+RemoteDataFile.LOADING_COMPLETE = Symbol("DataFileEvents::LoadingComplete");
+
+// node_modules/@dekkai/data-source/build/lib/file/remote/RemoteDataFileBrowser.js
+var kSizeOf4MB = 1024 * 1024 * 4;
+var RemoteDataFileBrowser = class extends RemoteDataFile {
+  constructor(source) {
+    super();
+    this._byteLength = null;
+    this._bytesLoaded = 0;
+    this._onLoadingComplete = null;
+    this._isLoadingComplete = false;
+    this.buffer = null;
+    this.source = source;
+    this._onLoadingComplete = {
+      promise: null,
+      resolve: null,
+      reject: null,
+      started: false
+    };
+    this._onLoadingComplete.promise = new Promise((resolve, reject) => {
+      this._onLoadingComplete.resolve = resolve;
+      this._onLoadingComplete.reject = reject;
+    });
+  }
+  static async fromSource(source) {
+    const result = new RemoteDataFileBrowser(source);
+    await result.startDownloading();
+    return result;
+  }
+  get byteLength() {
+    if (this._byteLength === null) {
+      return new Promise((resolve) => {
+        const handleEvent = (e, byteLength) => {
+          this.off(RemoteDataFile.LOADING_START, handleEvent);
+          this._byteLength = byteLength;
+          resolve(byteLength);
+        };
+        this.on(RemoteDataFile.LOADING_START, handleEvent);
+      });
+    }
+    return Promise.resolve(this._byteLength);
+  }
+  get bytesLoaded() {
+    return this._bytesLoaded;
+  }
+  get onLoadingComplete() {
+    return this._onLoadingComplete.promise;
+  }
+  get isLoadingComplete() {
+    return this._isLoadingComplete;
+  }
+  async startDownloading() {
+    if (!this._onLoadingComplete.started) {
+      this._onLoadingComplete.started = true;
+      let response;
+      try {
+        response = await fetch(this.source);
+      } catch (e) {
+        this._onLoadingComplete.reject(e);
+        throw e;
+      }
+      if (!response.ok) {
+        const notOK = new Error("Network response was not ok");
+        this._onLoadingComplete.reject(notOK);
+        throw notOK;
+      }
+      setTimeout(() => this.readFileStream(response));
+    }
+  }
+  async loadData(start = 0, end = this._byteLength) {
+    if (this._isLoadingComplete && start >= this._byteLength) {
+      return new ArrayBuffer(0);
+    }
+    if (this._bytesLoaded >= end || this._isLoadingComplete) {
+      return this.buffer.slice(start, Math.min(end, this._bytesLoaded));
+    }
+    return new Promise((resolve) => {
+      const handleEvent = (e, loaded) => {
+        if (loaded >= end || e === RemoteDataFile.LOADING_COMPLETE) {
+          this.off(RemoteDataFile.LOADING_PROGRESS, handleEvent);
+          this.off(RemoteDataFile.LOADING_COMPLETE, handleEvent);
+          resolve(this.buffer.slice(start, Math.min(end, loaded)));
+        }
+      };
+      this.on(RemoteDataFile.LOADING_PROGRESS, handleEvent);
+      this.on(RemoteDataFile.LOADING_COMPLETE, handleEvent);
+    });
+  }
+  async readFileStream(response) {
+    const contentLength = response.headers.get("content-length");
+    if (contentLength !== null) {
+      this._byteLength = parseInt(contentLength, 10);
+      this.buffer = new ArrayBuffer(this._byteLength);
+    } else {
+      this._byteLength = -1;
+      this.buffer = new ArrayBuffer(kSizeOf4MB);
+    }
+    this._bytesLoaded = 0;
+    this.emit(RemoteDataFile.LOADING_START, this._byteLength);
+    if (this._byteLength === 0) {
+      this.emit(RemoteDataFile.LOADING_PROGRESS, this._bytesLoaded, this._byteLength);
+      this._isLoadingComplete = true;
+      this.emit(RemoteDataFile.LOADING_COMPLETE, this._byteLength);
+      this._onLoadingComplete.resolve(this._byteLength);
+    } else {
+      const reader = response.body.getReader();
+      let view = new Uint8Array(this.buffer);
+      while (true) {
+        try {
+          const result = await reader.read();
+          if (result.done) {
+            this._byteLength = this._bytesLoaded;
+            this._isLoadingComplete = true;
+            this.emit(RemoteDataFile.LOADING_COMPLETE, this._byteLength);
+            this._onLoadingComplete.resolve(this._byteLength);
+            break;
+          }
+          if (this.buffer.byteLength < this._bytesLoaded + result.value.byteLength) {
+            const oldView = view;
+            this.buffer = new ArrayBuffer(this._bytesLoaded + Math.max(result.value.byteLength, kSizeOf4MB));
+            view = new Uint8Array(this.buffer);
+            view.set(oldView, 0);
+          }
+          view.set(result.value, this._bytesLoaded);
+          this.emit(RemoteDataFile.LOADING_PROGRESS, this._bytesLoaded, this._byteLength);
+          this._bytesLoaded += result.value.length;
+        } catch (e) {
+          this._onLoadingComplete.reject(e);
+          throw e;
+        }
+      }
+    }
+  }
+};
+
+// node_modules/@dekkai/data-source/build/lib/file/remote/RemoteDataFileNode.js
+var gHTTP = null;
+var gHTTPS = null;
+var gURL = null;
+var kLibPromise = (isNodeJS() ? Promise.all([loadModule("http"), loadModule("https"), loadModule("url")]) : Promise.resolve([null, null])).then((libs) => {
+  gHTTP = libs[0];
+  gHTTPS = libs[1];
+  gURL = libs[2];
+});
+var kSizeOf4MB2 = 1024 * 1024 * 4;
+var RemoteDataFileNode = class extends RemoteDataFile {
+  constructor(source) {
+    super();
+    this._byteLength = null;
+    this._bytesLoaded = null;
+    this._onLoadingComplete = null;
+    this._isLoadingComplete = false;
+    this.buffer = null;
+    this.source = source;
+    this._onLoadingComplete = {
+      promise: null,
+      resolve: null,
+      reject: null,
+      started: false
+    };
+    this._onLoadingComplete.promise = new Promise((resolve, reject) => {
+      this._onLoadingComplete.resolve = resolve;
+      this._onLoadingComplete.reject = reject;
+    });
+  }
+  static async fromSource(source) {
+    const result = new RemoteDataFileNode(source);
+    await result.startDownloading();
+    return result;
+  }
+  get byteLength() {
+    if (this._byteLength === null) {
+      return new Promise((resolve) => {
+        const handleEvent = (e, byteLength) => {
+          this.off(RemoteDataFile.LOADING_START, handleEvent);
+          this._byteLength = byteLength;
+          resolve(byteLength);
+        };
+        this.on(RemoteDataFile.LOADING_START, handleEvent);
+      });
+    }
+    return Promise.resolve(this._byteLength);
+  }
+  get bytesLoaded() {
+    return this._bytesLoaded;
+  }
+  get onLoadingComplete() {
+    return this._onLoadingComplete.promise;
+  }
+  get isLoadingComplete() {
+    return this._isLoadingComplete;
+  }
+  startDownloading() {
+    return new Promise((resolve, reject) => {
+      kLibPromise.then(() => {
+        const url = this.source instanceof gURL.URL ? this.source : gURL.parse(this.source);
+        const protocol = url.protocol === "https" ? gHTTPS : gHTTP;
+        protocol.get(this.source, (response) => {
+          if (response.statusCode < 200 || response.statusCode >= 300) {
+            response.resume();
+            const notOK = new Error("Network response was not ok");
+            this._onLoadingComplete.reject(notOK);
+            reject(notOK);
+            return;
+          }
+          resolve();
+          setTimeout(() => this.readFileStream(response));
+        });
+      });
+    });
+  }
+  async loadData(start = 0, end = this._byteLength) {
+    if (this._isLoadingComplete && start >= this._byteLength) {
+      return new ArrayBuffer(0);
+    }
+    if (this._bytesLoaded >= end || this._isLoadingComplete) {
+      return this.buffer.slice(start, Math.min(end, this._bytesLoaded));
+    }
+    return new Promise((resolve) => {
+      const handleEvent = (e, loaded) => {
+        if (loaded >= end || e === RemoteDataFile.LOADING_COMPLETE) {
+          this.off(RemoteDataFile.LOADING_PROGRESS, handleEvent);
+          this.off(RemoteDataFile.LOADING_COMPLETE, handleEvent);
+          resolve(this.buffer.slice(start, Math.min(end, loaded)));
+        }
+      };
+      this.on(RemoteDataFile.LOADING_PROGRESS, handleEvent);
+      this.on(RemoteDataFile.LOADING_COMPLETE, handleEvent);
+    });
+  }
+  async readFileStream(response) {
+    const contentLength = response.headers["content-length"];
+    if (contentLength !== null && contentLength !== void 0) {
+      this._byteLength = parseInt(contentLength, 10);
+      this.buffer = new ArrayBuffer(this._byteLength);
+    } else {
+      this._byteLength = -1;
+      this.buffer = new ArrayBuffer(kSizeOf4MB2);
+    }
+    this._bytesLoaded = 0;
+    this.emit(RemoteDataFile.LOADING_START, this._byteLength);
+    if (this._byteLength === 0) {
+      this.emit(RemoteDataFile.LOADING_PROGRESS, this._bytesLoaded, this._byteLength);
+      this._isLoadingComplete = true;
+      this.emit(RemoteDataFile.LOADING_COMPLETE, this._byteLength);
+      this._onLoadingComplete.resolve(this._byteLength);
+      response.resume();
+    } else {
+      let view = new Uint8Array(this.buffer);
+      response.on("error", (error) => {
+        this._onLoadingComplete.reject(error);
+        throw error;
+      });
+      response.on("data", (chunk) => {
+        if (this.buffer.byteLength < this._bytesLoaded + chunk.byteLength) {
+          const oldView = view;
+          this.buffer = new ArrayBuffer(this._bytesLoaded + Math.max(chunk.byteLength, kSizeOf4MB2));
+          view = new Uint8Array(this.buffer);
+          view.set(oldView, 0);
+        }
+        view.set(chunk, this._bytesLoaded);
+        this.emit(RemoteDataFile.LOADING_PROGRESS, this._bytesLoaded, this._byteLength);
+        this._bytesLoaded += chunk.byteLength;
+      });
+      response.on("end", () => {
+        this._byteLength = this._bytesLoaded;
+        this._isLoadingComplete = true;
+        this.emit(RemoteDataFile.LOADING_COMPLETE, this._byteLength);
+        this._onLoadingComplete.resolve(this._byteLength);
+      });
+    }
+  }
+};
+
+// node_modules/@dekkai/data-source/build/lib/file/DataFile.js
+var DataFile = class {
+  static async fromLocalSource(source) {
+    if (isNodeJS()) {
+      return LocalDataFileNode.fromSource(source);
+    } else if (isDeno()) {
+      return LocalDataFileDeno.fromSource(source);
+    }
+    return LocalDataFileBrowser.fromSource(source);
+  }
+  static async fromRemoteSource(source) {
+    if (isNodeJS()) {
+      return RemoteDataFileNode.fromSource(source);
+    } else if (isDeno()) {
+      return RemoteDataFileBrowser.fromSource(source);
+    }
+    return RemoteDataFileBrowser.fromSource(source);
+  }
+};
+
 // node_modules/gl-matrix/esm/common.js
 var EPSILON = 1e-6;
 var ARRAY_TYPE = typeof Float32Array !== "undefined" ? Float32Array : Array;
@@ -11006,926 +11580,6 @@ var forEach3 = function() {
   };
 }();
 
-// node_modules/@dekkai/event-emitter/build/lib/EventEmitter.js
-var kOmniEvent = Symbol("EventEmitter::omni::event");
-var EventEmitterMixin = class {
-  static mixin(Parent) {
-    const ParentConstructor = Parent;
-    class EventEmitter2 extends ParentConstructor {
-      constructor() {
-        super(...arguments);
-        this.listeners = new Map();
-      }
-      static get omniEvent() {
-        return kOmniEvent;
-      }
-      on(type, callback) {
-        const queue = this.listeners.get(type);
-        if (queue) {
-          queue.add(callback);
-        } else {
-          this.listeners.set(type, new Set([callback]));
-        }
-      }
-      off(type, callback) {
-        const queue = this.listeners.get(type);
-        if (queue) {
-          queue.delete(callback);
-        }
-      }
-      emit(type, ...args) {
-        if (type === kOmniEvent) {
-          return;
-        }
-        if (this.listeners.has(type)) {
-          const stack = new Set(this.listeners.get(type));
-          for (const callback of stack) {
-            callback.call(this, type, ...args);
-          }
-        }
-        if (this.listeners.has(kOmniEvent)) {
-          const omni = new Set(this.listeners.get(kOmniEvent));
-          for (const callback of omni) {
-            callback.call(this, type, ...args);
-          }
-        }
-      }
-    }
-    return EventEmitter2;
-  }
-};
-var EventEmitter = class extends EventEmitterMixin.mixin(EventEmitterMixin) {
-};
-
-// src/UX/UXModule.ts
-var UXModule = class {
-  constructor() {
-    this._enabled = false;
-  }
-  get enabled() {
-    return this._enabled;
-  }
-  set enabled(value) {
-    if (value !== this._enabled) {
-      this._enabled = value;
-      if (this._enabled) {
-        this.hookEvents();
-      } else {
-        this.unhookEvents();
-      }
-    }
-  }
-};
-
-// src/UX/mouse/MouseHandler.ts
-var kEvents = {
-  move: Symbol("Grafer::UX::MouseHandler::move"),
-  down: Symbol("Grafer::UX::MouseHandler::down"),
-  up: Symbol("Grafer::UX::MouseHandler::up"),
-  click: Symbol("Grafer::UX::MouseHandler::click"),
-  wheel: Symbol("Grafer::UX::MouseHandler::wheel")
-};
-Object.freeze(kEvents);
-var kButton2Index = {
-  primary: 1,
-  secondary: 2,
-  auxiliary: 4,
-  fourth: 8,
-  fifth: 16
-};
-Object.freeze(kButton2Index);
-var kIndex2Button = {
-  1: "primary",
-  2: "secondary",
-  4: "auxiliary",
-  8: "fourth",
-  16: "fifth"
-};
-Object.freeze(kIndex2Button);
-var MouseHandler = class extends EventEmitter.mixin(UXModule) {
-  constructor(canvas, rect, pixelRatio, enabled = true) {
-    super();
-    this.boundHandler = this.handleMouseEvent.bind(this);
-    this.disableContextMenu = (e) => e.preventDefault();
-    this.canvas = canvas;
-    this.rect = rect;
-    this.pixelRatio = pixelRatio;
-    this.state = {
-      valid: false,
-      clientCoords: vec2_exports.create(),
-      canvasCoords: vec2_exports.create(),
-      glCoords: vec2_exports.create(),
-      deltaCoords: vec2_exports.create(),
-      wheel: 0,
-      buttons: {
-        primary: false,
-        secondary: false,
-        auxiliary: false,
-        fourth: false,
-        fifth: false
-      }
-    };
-    this.newState = {
-      valid: false,
-      clientCoords: vec2_exports.create(),
-      canvasCoords: vec2_exports.create(),
-      glCoords: vec2_exports.create(),
-      deltaCoords: vec2_exports.create(),
-      wheel: 0,
-      buttons: {
-        primary: false,
-        secondary: false,
-        auxiliary: false,
-        fourth: false,
-        fifth: false
-      }
-    };
-    this.enabled = enabled;
-  }
-  static get events() {
-    return kEvents;
-  }
-  on(type, callback) {
-    super.on(type, callback);
-  }
-  off(type, callback) {
-    super.off(type, callback);
-  }
-  resize(rect, pixelRatio) {
-    this.rect = rect;
-    this.pixelRatio = pixelRatio;
-    this.syntheticUpdate(kEvents.move);
-  }
-  hookEvents() {
-    this.canvas.addEventListener("mouseenter", this.boundHandler);
-    this.canvas.addEventListener("mouseleave", this.boundHandler);
-    this.canvas.addEventListener("mousemove", this.boundHandler);
-    this.canvas.addEventListener("mousedown", this.boundHandler);
-    this.canvas.addEventListener("mouseup", this.boundHandler);
-    this.canvas.addEventListener("click", this.boundHandler);
-    this.canvas.addEventListener("wheel", this.boundHandler);
-    this.canvas.addEventListener("contextmenu", this.disableContextMenu);
-  }
-  unhookEvents() {
-    this.canvas.removeEventListener("mouseenter", this.boundHandler);
-    this.canvas.removeEventListener("mouseleave", this.boundHandler);
-    this.canvas.removeEventListener("mousemove", this.boundHandler);
-    this.canvas.removeEventListener("mousedown", this.boundHandler);
-    this.canvas.removeEventListener("mouseup", this.boundHandler);
-    this.canvas.removeEventListener("click", this.boundHandler);
-    this.canvas.removeEventListener("wheel", this.boundHandler);
-    this.canvas.removeEventListener("contextmenu", this.disableContextMenu);
-  }
-  syntheticUpdate(event, buttonIndex) {
-    switch (event) {
-      case kEvents.up:
-      case kEvents.down:
-      case kEvents.click:
-        this.emitEvents([{
-          event,
-          args: [buttonIndex, kIndex2Button[buttonIndex]]
-        }]);
-        break;
-      case kEvents.move:
-        this.emitEvents([{
-          event,
-          args: [vec2_exports.fromValues(0, 0), this.state.canvasCoords]
-        }]);
-        break;
-      default:
-        break;
-    }
-  }
-  update(state) {
-    const events = [];
-    if (state.deltaCoords[0] !== 0 || state.deltaCoords[1] !== 0) {
-      if (state.valid) {
-        events.push({
-          event: kEvents.move,
-          args: [state.deltaCoords, state.canvasCoords]
-        });
-      }
-    }
-    const buttonKeys = Object.keys(state.buttons);
-    for (let i = 0, n = buttonKeys.length; i < n; ++i) {
-      const key = buttonKeys[i];
-      const pressed = state.valid && state.buttons[key];
-      if (this.state.buttons[key] !== pressed) {
-        this.state.buttons[key] = pressed;
-        events.push({
-          event: pressed ? kEvents.down : kEvents.up,
-          args: [kButton2Index[key], key, pressed]
-        });
-      }
-    }
-    this.setMouseState(state);
-    this.emitEvents(events);
-  }
-  emitEvents(entries) {
-    for (let i = 0, n = entries.length; i < n; ++i) {
-      this.emit(entries[i].event, this.state, ...entries[i].args);
-    }
-  }
-  setMouseState(state) {
-    this.state.valid = state.valid;
-    vec2_exports.copy(this.state.clientCoords, state.clientCoords);
-    vec2_exports.copy(this.state.canvasCoords, state.canvasCoords);
-    vec2_exports.copy(this.state.glCoords, state.glCoords);
-    vec2_exports.copy(this.state.deltaCoords, state.deltaCoords);
-    this.state.wheel = state.wheel;
-    Object.assign(this.state.buttons, state.buttons);
-  }
-  handleClickEvent(e, state) {
-    this.setMouseState(state);
-    this.emitEvents([{
-      event: kEvents.click,
-      args: [e.button, kIndex2Button[e.button]]
-    }]);
-  }
-  handleWheelEvent(e, state) {
-    this.setMouseState(state);
-    let delta;
-    if ("wheelDeltaY" in e) {
-      delta = -e.wheelDeltaY / 120;
-    } else {
-      delta = e.deltaY < 1 ? -1 : 1;
-    }
-    this.emitEvents([{
-      event: kEvents.wheel,
-      args: [delta]
-    }]);
-  }
-  handleMouseEvent(e) {
-    const client = this.newState.clientCoords;
-    const canvas = this.newState.canvasCoords;
-    const gl = this.newState.glCoords;
-    const delta = this.newState.deltaCoords;
-    const rect = this.rect;
-    vec2_exports.set(client, e.clientX, e.clientY);
-    vec2_exports.set(canvas, e.clientX - rect.left, e.clientY - rect.top);
-    vec2_exports.set(gl, (e.clientX - rect.left) * this.pixelRatio, (rect.bottom - e.clientY) * this.pixelRatio);
-    if (e.type === "mousemove") {
-      vec2_exports.set(delta, e.movementX, e.movementY);
-    } else {
-      vec2_exports.set(delta, 0, 0);
-    }
-    this.newState.valid = Boolean(canvas[0] >= rect.left && canvas[0] <= rect.right && canvas[1] >= 0 && canvas[1] <= rect.height);
-    this.newState.buttons.primary = Boolean(e.buttons & 1);
-    this.newState.buttons.secondary = Boolean(e.buttons & 2);
-    this.newState.buttons.auxiliary = Boolean(e.buttons & 4);
-    this.newState.buttons.fourth = Boolean(e.buttons & 8);
-    this.newState.buttons.fifth = Boolean(e.buttons & 16);
-    switch (e.type) {
-      case "click":
-        this.handleClickEvent(e, this.newState);
-        break;
-      case "wheel":
-        this.handleWheelEvent(e, this.newState);
-        break;
-      case "mouseleave":
-        this.newState.valid = false;
-      default:
-        this.update(this.newState);
-        break;
-    }
-  }
-};
-
-// src/UX/mouse/scroll/ScrollModule.ts
-var ScrollModule = class extends UXModule {
-  constructor(viewport, enabled = false) {
-    super();
-    this.speed = 4.5;
-    this.boundHandler = this.handleMouse.bind(this);
-    this.viewport = viewport;
-    this.enabled = enabled;
-  }
-  hookEvents() {
-    this.viewport.mouseHandler.on(MouseHandler.events.wheel, this.boundHandler);
-  }
-  unhookEvents() {
-    this.viewport.mouseHandler.off(MouseHandler.events.wheel, this.boundHandler);
-  }
-};
-
-// src/UX/mouse/scroll/ScrollDolly.ts
-var ScrollDolly = class extends ScrollModule {
-  handleMouse(event, state, delta) {
-    const invProjection = mat4_exports.invert(mat4_exports.create(), this.viewport.camera.projectionMatrix);
-    const invView = mat4_exports.invert(mat4_exports.create(), this.viewport.camera.viewMatrix);
-    const viewportCoords = vec2_exports.fromValues(state.canvasCoords[0] * this.viewport.pixelRatio, state.canvasCoords[1] * this.viewport.pixelRatio);
-    const worldCoords = vec2_exports.fromValues(2 * viewportCoords[0] / this.viewport.size[0] - 1, 1 - 2 * viewportCoords[1] / this.viewport.size[1]);
-    const rayClip = vec4_exports.fromValues(worldCoords[0], worldCoords[1], -1, 1);
-    const rayEye = vec4_exports.transformMat4(vec4_exports.create(), rayClip, invProjection);
-    rayEye[2] = -1;
-    rayEye[3] = 0;
-    const rayWorld4 = vec4_exports.transformMat4(vec4_exports.create(), rayEye, invView);
-    const rayWorld = vec3_exports.fromValues(rayWorld4[0], rayWorld4[1], rayWorld4[2]);
-    vec3_exports.normalize(rayWorld, rayWorld);
-    const position = this.viewport.camera.position;
-    const zMult = position[2] / rayWorld[2];
-    const rayZeroZ = vec3_exports.fromValues(position[0] + rayWorld[0] * zMult, position[1] + rayWorld[1] * zMult, 0);
-    const distance4 = Math.max(100, vec3_exports.distance(position, rayZeroZ));
-    const speed = this.speed * (distance4 / 100);
-    vec3_exports.scaleAndAdd(position, position, rayWorld, delta * speed);
-    this.viewport.camera.position = position;
-    this.viewport.render();
-  }
-};
-
-// src/UX/mouse/drag/DragModule.ts
-var DragModule = class extends UXModule {
-  constructor(viewport, enabled = false) {
-    super();
-    this.button = "primary";
-    this.boundHandler = this.handleMouse.bind(this);
-    this.viewport = viewport;
-    this.enabled = enabled;
-  }
-  hookEvents() {
-    this.viewport.mouseHandler.on(MouseHandler.events.move, this.boundHandler);
-  }
-  unhookEvents() {
-    this.viewport.mouseHandler.off(MouseHandler.events.move, this.boundHandler);
-  }
-};
-
-// src/UX/mouse/drag/DragTruck.ts
-var DragTruck = class extends DragModule {
-  handleMouse(event, state, delta) {
-    if (state.buttons[this.button]) {
-      const position = this.viewport.camera.position;
-      const rotated = vec3_exports.transformQuat(vec3_exports.create(), position, this.viewport.camera.rotation);
-      const distance4 = Math.abs(rotated[2]);
-      const vertical = this.viewport.camera.aovRad * distance4;
-      const pixelToWorld = vertical / this.viewport.rect.height;
-      const delta3 = vec3_exports.fromValues(delta[0] * pixelToWorld, delta[1] * -pixelToWorld, 0);
-      const inverse4 = quat_exports.invert(quat_exports.create(), this.viewport.camera.rotation);
-      vec3_exports.transformQuat(delta3, delta3, inverse4);
-      vec3_exports.add(position, position, delta3);
-      this.viewport.camera.position = position;
-      this.viewport.render();
-    }
-  }
-};
-
-// src/UX/mouse/drag/DragRotation.ts
-var DragRotation = class extends DragModule {
-  constructor() {
-    super(...arguments);
-    this.button = "secondary";
-  }
-  handleMouse(event, state, delta) {
-    if (state.buttons[this.button]) {
-      const side = Math.min(this.viewport.size[0], this.viewport.size[1]);
-      const rawRotation = quat_exports.fromEuler(quat_exports.create(), delta[1] / side * 90, delta[0] / side * 90, 0);
-      const camInverse = quat_exports.invert(quat_exports.create(), this.viewport.camera.rotation);
-      const rotation = quat_exports.mul(quat_exports.create(), camInverse, rawRotation);
-      quat_exports.mul(rotation, rotation, this.viewport.camera.rotation);
-      this.viewport.graph.rotate(rotation);
-      this.viewport.render();
-    }
-  }
-};
-
-// src/UX/mouse/drag/DragPan.ts
-var DragPan = class extends DragModule {
-  handleMouse(event, state, delta) {
-    if (state.buttons[this.button]) {
-      const aspect = this.viewport.size[0] / this.viewport.size[1];
-      const aov = this.viewport.camera.aov;
-      const rotationX = -aov * (delta[1] / this.viewport.rect.height);
-      const rotationY = -aov * (delta[0] / this.viewport.rect.width) * aspect;
-      const r = quat_exports.fromEuler(quat_exports.create(), rotationX, rotationY, 0);
-      this.viewport.camera.rotate(r);
-      this.viewport.render();
-    }
-  }
-};
-
-// examples/src/playground.ts
-var import_tweakpane2 = __toModule(require_tweakpane());
-
-// node_modules/@dekkai/env/build/lib/node.js
-var kIsNodeJS = Object.prototype.toString.call(typeof process !== "undefined" ? process : 0) === "[object process]";
-function isNodeJS() {
-  return kIsNodeJS;
-}
-
-// node_modules/@dekkai/env/build/lib/deno.js
-var kIsDeno = Boolean(typeof Deno !== "undefined");
-function isDeno() {
-  return kIsDeno;
-}
-
-// node_modules/@dekkai/data-source/build/lib/chunk/DataChunk.js
-var DataChunk = class {
-  constructor(source, start, end) {
-    this._buffer = null;
-    this.source = source;
-    this.start = start;
-    this.end = end;
-  }
-  get buffer() {
-    return this._buffer;
-  }
-  get byteLength() {
-    return Promise.resolve(this.end - this.start);
-  }
-  get loaded() {
-    return Boolean(this._buffer);
-  }
-  async load() {
-    if (!this._buffer) {
-      this._buffer = await this.loadData();
-      if (this._buffer === null) {
-        this.start = 0;
-        this.end = 0;
-      } else if (this.end - this.start > this._buffer.byteLength) {
-        this.end -= this.end - this.start - this._buffer.byteLength;
-      }
-    }
-  }
-  unload() {
-    this._buffer = null;
-  }
-  slice(start, end) {
-    return new DataChunk(this, start, end);
-  }
-  loadData(start = 0, end = this.end - this.start) {
-    return this.source.loadData(this.start + start, this.start + end);
-  }
-};
-
-// node_modules/@dekkai/data-source/build/lib/file/local/LocalDataFile.js
-var LocalDataFile = class {
-  slice(start, end) {
-    return new DataChunk(this, start, end);
-  }
-};
-
-// node_modules/@dekkai/env/build/lib/moduleLoader.js
-function checkDynamicImport() {
-  try {
-    import(
-      /* webpackIgnore: true */
-      `${null}`
-    ).catch(() => false);
-    return true;
-  } catch {
-    return false;
-  }
-}
-var kSupportsDynamicImport = checkDynamicImport();
-var requireFunc = new Function("mod", "return require(mod)");
-async function loadModule(mod) {
-  if (kSupportsDynamicImport) {
-    return await import(
-      /* webpackIgnore: true */
-      mod.toString()
-    );
-  } else if (isNodeJS()) {
-    return requireFunc(mod);
-  }
-  throw "ERROR: Can't load modules dynamically on this platform";
-}
-
-// node_modules/@dekkai/data-source/build/lib/file/local/LocalDataFileNode.js
-var gFS = null;
-var kFsPromise = (isNodeJS() ? loadModule("fs") : Promise.resolve(null)).then((fs) => gFS = fs);
-var LocalDataFileNode = class extends LocalDataFile {
-  constructor(handle, stats) {
-    super();
-    this.handle = handle;
-    this.stats = stats;
-  }
-  static async fromSource(source) {
-    await kFsPromise;
-    let handle;
-    if (source instanceof URL || typeof source === "string") {
-      handle = gFS.openSync(source);
-    } else if (typeof source === "number") {
-      handle = source;
-    } else {
-      throw `A LocalDataFileNode cannot be created from a ${typeof source} instance`;
-    }
-    const stats = gFS.fstatSync(handle);
-    return new LocalDataFileNode(handle, stats);
-  }
-  get byteLength() {
-    return Promise.resolve(this.stats.size);
-  }
-  close() {
-    const handle = this.handle;
-    kFsPromise.then(() => gFS.closeSync(handle));
-    this.handle = null;
-    this.stats = null;
-  }
-  async loadData(start = 0, end = this.stats.size) {
-    await kFsPromise;
-    const normalizedEnd = Math.min(end, this.stats.size);
-    const length5 = normalizedEnd - start;
-    const result = new Uint8Array(length5);
-    let loaded = 0;
-    while (loaded < length5) {
-      loaded += await this.loadDataIntoBuffer(result, loaded, start + loaded, normalizedEnd);
-    }
-    return result.buffer;
-  }
-  loadDataIntoBuffer(buffer, offset, start, end) {
-    return new Promise((resolve, reject) => {
-      const length5 = end - start;
-      gFS.read(this.handle, buffer, offset, length5, start, (err, bytesRead) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(bytesRead);
-        }
-      });
-    });
-  }
-};
-
-// node_modules/@dekkai/data-source/build/lib/file/local/LocalDataFileDeno.js
-var LocalDataFileDeno = class extends LocalDataFile {
-  constructor(file, info) {
-    super();
-    this.file = file;
-    this.info = info;
-  }
-  static async fromSource(source) {
-    if (!(source instanceof URL) && typeof source !== "string") {
-      throw `A LocalDataFileDeno cannot be created from a ${typeof source} instance`;
-    }
-    const stats = await Deno.stat(source);
-    if (!stats.isFile) {
-      throw `The path "${source} does not point to a file"`;
-    }
-    const file = await Deno.open(source, { read: true, write: false });
-    return new LocalDataFileDeno(file, stats);
-  }
-  get byteLength() {
-    return Promise.resolve(this.info.size);
-  }
-  close() {
-    Deno.close(this.file.rid);
-    this.file = null;
-    this.info = null;
-  }
-  async loadData(start = 0, end = this.info.size) {
-    const normalizedEnd = Math.min(end, this.info.size);
-    const length5 = normalizedEnd - start;
-    const result = new Uint8Array(length5);
-    let loaded = 0;
-    while (loaded < length5) {
-      loaded += await this.loadDataIntoBuffer(result, loaded, start + loaded, normalizedEnd);
-    }
-    return result.buffer;
-  }
-  async loadDataIntoBuffer(buffer, offset, start, end) {
-    const cursorPosition = await this.file.seek(start, Deno.SeekMode.Start);
-    if (cursorPosition !== start) {
-      throw "ERROR: Cannot seek to the desired position";
-    }
-    const result = new Uint8Array(end - start);
-    const bytesRead = await this.file.read(result);
-    buffer.set(result, offset);
-    return bytesRead;
-  }
-};
-
-// node_modules/@dekkai/data-source/build/lib/file/local/LocalDataFileBrowser.js
-var LocalDataFileBrowser = class extends LocalDataFile {
-  constructor(blob) {
-    super();
-    this.blob = blob;
-  }
-  static async fromSource(source) {
-    return new LocalDataFileBrowser(source);
-  }
-  get byteLength() {
-    return Promise.resolve(this.blob.size);
-  }
-  close() {
-    this.blob = null;
-  }
-  async loadData(start = 0, end = this.blob.size) {
-    const slice = this.blob.slice(start, Math.min(end, this.blob.size));
-    return await this.loadBlob(slice);
-  }
-  loadBlob(blob) {
-    return new Promise((resolve) => {
-      const reader = new FileReader();
-      reader.onload = () => {
-        resolve(reader.result);
-      };
-      reader.readAsArrayBuffer(blob);
-    });
-  }
-};
-
-// node_modules/@dekkai/data-source/build/lib/file/remote/RemoteDataFile.js
-var RemoteDataFile = class extends EventEmitter {
-  slice(start, end) {
-    return new DataChunk(this, start, end);
-  }
-};
-RemoteDataFile.LOADING_START = Symbol("DataFileEvents::LoadingStart");
-RemoteDataFile.LOADING_PROGRESS = Symbol("DataFileEvents::LoadingProgress");
-RemoteDataFile.LOADING_COMPLETE = Symbol("DataFileEvents::LoadingComplete");
-
-// node_modules/@dekkai/data-source/build/lib/file/remote/RemoteDataFileBrowser.js
-var kSizeOf4MB = 1024 * 1024 * 4;
-var RemoteDataFileBrowser = class extends RemoteDataFile {
-  constructor(source) {
-    super();
-    this._byteLength = null;
-    this._bytesLoaded = 0;
-    this._onLoadingComplete = null;
-    this._isLoadingComplete = false;
-    this.buffer = null;
-    this.source = source;
-    this._onLoadingComplete = {
-      promise: null,
-      resolve: null,
-      reject: null,
-      started: false
-    };
-    this._onLoadingComplete.promise = new Promise((resolve, reject) => {
-      this._onLoadingComplete.resolve = resolve;
-      this._onLoadingComplete.reject = reject;
-    });
-  }
-  static async fromSource(source) {
-    const result = new RemoteDataFileBrowser(source);
-    await result.startDownloading();
-    return result;
-  }
-  get byteLength() {
-    if (this._byteLength === null) {
-      return new Promise((resolve) => {
-        const handleEvent = (e, byteLength) => {
-          this.off(RemoteDataFile.LOADING_START, handleEvent);
-          this._byteLength = byteLength;
-          resolve(byteLength);
-        };
-        this.on(RemoteDataFile.LOADING_START, handleEvent);
-      });
-    }
-    return Promise.resolve(this._byteLength);
-  }
-  get bytesLoaded() {
-    return this._bytesLoaded;
-  }
-  get onLoadingComplete() {
-    return this._onLoadingComplete.promise;
-  }
-  get isLoadingComplete() {
-    return this._isLoadingComplete;
-  }
-  async startDownloading() {
-    if (!this._onLoadingComplete.started) {
-      this._onLoadingComplete.started = true;
-      let response;
-      try {
-        response = await fetch(this.source);
-      } catch (e) {
-        this._onLoadingComplete.reject(e);
-        throw e;
-      }
-      if (!response.ok) {
-        const notOK = new Error("Network response was not ok");
-        this._onLoadingComplete.reject(notOK);
-        throw notOK;
-      }
-      setTimeout(() => this.readFileStream(response));
-    }
-  }
-  async loadData(start = 0, end = this._byteLength) {
-    if (this._isLoadingComplete && start >= this._byteLength) {
-      return new ArrayBuffer(0);
-    }
-    if (this._bytesLoaded >= end || this._isLoadingComplete) {
-      return this.buffer.slice(start, Math.min(end, this._bytesLoaded));
-    }
-    return new Promise((resolve) => {
-      const handleEvent = (e, loaded) => {
-        if (loaded >= end || e === RemoteDataFile.LOADING_COMPLETE) {
-          this.off(RemoteDataFile.LOADING_PROGRESS, handleEvent);
-          this.off(RemoteDataFile.LOADING_COMPLETE, handleEvent);
-          resolve(this.buffer.slice(start, Math.min(end, loaded)));
-        }
-      };
-      this.on(RemoteDataFile.LOADING_PROGRESS, handleEvent);
-      this.on(RemoteDataFile.LOADING_COMPLETE, handleEvent);
-    });
-  }
-  async readFileStream(response) {
-    const contentLength = response.headers.get("content-length");
-    if (contentLength !== null) {
-      this._byteLength = parseInt(contentLength, 10);
-      this.buffer = new ArrayBuffer(this._byteLength);
-    } else {
-      this._byteLength = -1;
-      this.buffer = new ArrayBuffer(kSizeOf4MB);
-    }
-    this._bytesLoaded = 0;
-    this.emit(RemoteDataFile.LOADING_START, this._byteLength);
-    if (this._byteLength === 0) {
-      this.emit(RemoteDataFile.LOADING_PROGRESS, this._bytesLoaded, this._byteLength);
-      this._isLoadingComplete = true;
-      this.emit(RemoteDataFile.LOADING_COMPLETE, this._byteLength);
-      this._onLoadingComplete.resolve(this._byteLength);
-    } else {
-      const reader = response.body.getReader();
-      let view = new Uint8Array(this.buffer);
-      while (true) {
-        try {
-          const result = await reader.read();
-          if (result.done) {
-            this._byteLength = this._bytesLoaded;
-            this._isLoadingComplete = true;
-            this.emit(RemoteDataFile.LOADING_COMPLETE, this._byteLength);
-            this._onLoadingComplete.resolve(this._byteLength);
-            break;
-          }
-          if (this.buffer.byteLength < this._bytesLoaded + result.value.byteLength) {
-            const oldView = view;
-            this.buffer = new ArrayBuffer(this._bytesLoaded + Math.max(result.value.byteLength, kSizeOf4MB));
-            view = new Uint8Array(this.buffer);
-            view.set(oldView, 0);
-          }
-          view.set(result.value, this._bytesLoaded);
-          this.emit(RemoteDataFile.LOADING_PROGRESS, this._bytesLoaded, this._byteLength);
-          this._bytesLoaded += result.value.length;
-        } catch (e) {
-          this._onLoadingComplete.reject(e);
-          throw e;
-        }
-      }
-    }
-  }
-};
-
-// node_modules/@dekkai/data-source/build/lib/file/remote/RemoteDataFileNode.js
-var gHTTP = null;
-var gHTTPS = null;
-var gURL = null;
-var kLibPromise = (isNodeJS() ? Promise.all([loadModule("http"), loadModule("https"), loadModule("url")]) : Promise.resolve([null, null])).then((libs) => {
-  gHTTP = libs[0];
-  gHTTPS = libs[1];
-  gURL = libs[2];
-});
-var kSizeOf4MB2 = 1024 * 1024 * 4;
-var RemoteDataFileNode = class extends RemoteDataFile {
-  constructor(source) {
-    super();
-    this._byteLength = null;
-    this._bytesLoaded = null;
-    this._onLoadingComplete = null;
-    this._isLoadingComplete = false;
-    this.buffer = null;
-    this.source = source;
-    this._onLoadingComplete = {
-      promise: null,
-      resolve: null,
-      reject: null,
-      started: false
-    };
-    this._onLoadingComplete.promise = new Promise((resolve, reject) => {
-      this._onLoadingComplete.resolve = resolve;
-      this._onLoadingComplete.reject = reject;
-    });
-  }
-  static async fromSource(source) {
-    const result = new RemoteDataFileNode(source);
-    await result.startDownloading();
-    return result;
-  }
-  get byteLength() {
-    if (this._byteLength === null) {
-      return new Promise((resolve) => {
-        const handleEvent = (e, byteLength) => {
-          this.off(RemoteDataFile.LOADING_START, handleEvent);
-          this._byteLength = byteLength;
-          resolve(byteLength);
-        };
-        this.on(RemoteDataFile.LOADING_START, handleEvent);
-      });
-    }
-    return Promise.resolve(this._byteLength);
-  }
-  get bytesLoaded() {
-    return this._bytesLoaded;
-  }
-  get onLoadingComplete() {
-    return this._onLoadingComplete.promise;
-  }
-  get isLoadingComplete() {
-    return this._isLoadingComplete;
-  }
-  startDownloading() {
-    return new Promise((resolve, reject) => {
-      kLibPromise.then(() => {
-        const url = this.source instanceof gURL.URL ? this.source : gURL.parse(this.source);
-        const protocol = url.protocol === "https" ? gHTTPS : gHTTP;
-        protocol.get(this.source, (response) => {
-          if (response.statusCode < 200 || response.statusCode >= 300) {
-            response.resume();
-            const notOK = new Error("Network response was not ok");
-            this._onLoadingComplete.reject(notOK);
-            reject(notOK);
-            return;
-          }
-          resolve();
-          setTimeout(() => this.readFileStream(response));
-        });
-      });
-    });
-  }
-  async loadData(start = 0, end = this._byteLength) {
-    if (this._isLoadingComplete && start >= this._byteLength) {
-      return new ArrayBuffer(0);
-    }
-    if (this._bytesLoaded >= end || this._isLoadingComplete) {
-      return this.buffer.slice(start, Math.min(end, this._bytesLoaded));
-    }
-    return new Promise((resolve) => {
-      const handleEvent = (e, loaded) => {
-        if (loaded >= end || e === RemoteDataFile.LOADING_COMPLETE) {
-          this.off(RemoteDataFile.LOADING_PROGRESS, handleEvent);
-          this.off(RemoteDataFile.LOADING_COMPLETE, handleEvent);
-          resolve(this.buffer.slice(start, Math.min(end, loaded)));
-        }
-      };
-      this.on(RemoteDataFile.LOADING_PROGRESS, handleEvent);
-      this.on(RemoteDataFile.LOADING_COMPLETE, handleEvent);
-    });
-  }
-  async readFileStream(response) {
-    const contentLength = response.headers["content-length"];
-    if (contentLength !== null && contentLength !== void 0) {
-      this._byteLength = parseInt(contentLength, 10);
-      this.buffer = new ArrayBuffer(this._byteLength);
-    } else {
-      this._byteLength = -1;
-      this.buffer = new ArrayBuffer(kSizeOf4MB2);
-    }
-    this._bytesLoaded = 0;
-    this.emit(RemoteDataFile.LOADING_START, this._byteLength);
-    if (this._byteLength === 0) {
-      this.emit(RemoteDataFile.LOADING_PROGRESS, this._bytesLoaded, this._byteLength);
-      this._isLoadingComplete = true;
-      this.emit(RemoteDataFile.LOADING_COMPLETE, this._byteLength);
-      this._onLoadingComplete.resolve(this._byteLength);
-      response.resume();
-    } else {
-      let view = new Uint8Array(this.buffer);
-      response.on("error", (error) => {
-        this._onLoadingComplete.reject(error);
-        throw error;
-      });
-      response.on("data", (chunk) => {
-        if (this.buffer.byteLength < this._bytesLoaded + chunk.byteLength) {
-          const oldView = view;
-          this.buffer = new ArrayBuffer(this._bytesLoaded + Math.max(chunk.byteLength, kSizeOf4MB2));
-          view = new Uint8Array(this.buffer);
-          view.set(oldView, 0);
-        }
-        view.set(chunk, this._bytesLoaded);
-        this.emit(RemoteDataFile.LOADING_PROGRESS, this._bytesLoaded, this._byteLength);
-        this._bytesLoaded += chunk.byteLength;
-      });
-      response.on("end", () => {
-        this._byteLength = this._bytesLoaded;
-        this._isLoadingComplete = true;
-        this.emit(RemoteDataFile.LOADING_COMPLETE, this._byteLength);
-        this._onLoadingComplete.resolve(this._byteLength);
-      });
-    }
-  }
-};
-
-// node_modules/@dekkai/data-source/build/lib/file/DataFile.js
-var DataFile = class {
-  static async fromLocalSource(source) {
-    if (isNodeJS()) {
-      return LocalDataFileNode.fromSource(source);
-    } else if (isDeno()) {
-      return LocalDataFileDeno.fromSource(source);
-    }
-    return LocalDataFileBrowser.fromSource(source);
-  }
-  static async fromRemoteSource(source) {
-    if (isNodeJS()) {
-      return RemoteDataFileNode.fromSource(source);
-    } else if (isDeno()) {
-      return RemoteDataFileBrowser.fromSource(source);
-    }
-    return RemoteDataFileBrowser.fromSource(source);
-  }
-};
-
 // src/loaders/GraferLoader.ts
 function createGraferLoaderVec3(x = 0, y = 0, z = 0) {
   return { x, y, z };
@@ -12142,652 +11796,21 @@ var LocalJSONL = {
   loadMeta
 };
 
-// node_modules/lit-html/lib/modify-template.js
-var walkerNodeFilter = 133;
-function removeNodesFromTemplate(template, nodesToRemove) {
-  const { element: { content }, parts: parts2 } = template;
-  const walker = document.createTreeWalker(content, walkerNodeFilter, null, false);
-  let partIndex = nextActiveIndexInTemplateParts(parts2);
-  let part = parts2[partIndex];
-  let nodeIndex = -1;
-  let removeCount = 0;
-  const nodesToRemoveInTemplate = [];
-  let currentRemovingNode = null;
-  while (walker.nextNode()) {
-    nodeIndex++;
-    const node = walker.currentNode;
-    if (node.previousSibling === currentRemovingNode) {
-      currentRemovingNode = null;
-    }
-    if (nodesToRemove.has(node)) {
-      nodesToRemoveInTemplate.push(node);
-      if (currentRemovingNode === null) {
-        currentRemovingNode = node;
-      }
-    }
-    if (currentRemovingNode !== null) {
-      removeCount++;
-    }
-    while (part !== void 0 && part.index === nodeIndex) {
-      part.index = currentRemovingNode !== null ? -1 : part.index - removeCount;
-      partIndex = nextActiveIndexInTemplateParts(parts2, partIndex);
-      part = parts2[partIndex];
-    }
-  }
-  nodesToRemoveInTemplate.forEach((n) => n.parentNode.removeChild(n));
-}
-var countNodes = (node) => {
-  let count = node.nodeType === 11 ? 0 : 1;
-  const walker = document.createTreeWalker(node, walkerNodeFilter, null, false);
-  while (walker.nextNode()) {
-    count++;
-  }
-  return count;
-};
-var nextActiveIndexInTemplateParts = (parts2, startIndex = -1) => {
-  for (let i = startIndex + 1; i < parts2.length; i++) {
-    const part = parts2[i];
-    if (isTemplatePartActive(part)) {
-      return i;
-    }
-  }
-  return -1;
-};
-function insertNodeIntoTemplate(template, node, refNode = null) {
-  const { element: { content }, parts: parts2 } = template;
-  if (refNode === null || refNode === void 0) {
-    content.appendChild(node);
-    return;
-  }
-  const walker = document.createTreeWalker(content, walkerNodeFilter, null, false);
-  let partIndex = nextActiveIndexInTemplateParts(parts2);
-  let insertCount = 0;
-  let walkerIndex = -1;
-  while (walker.nextNode()) {
-    walkerIndex++;
-    const walkerNode = walker.currentNode;
-    if (walkerNode === refNode) {
-      insertCount = countNodes(node);
-      refNode.parentNode.insertBefore(node, refNode);
-    }
-    while (partIndex !== -1 && parts2[partIndex].index === walkerIndex) {
-      if (insertCount > 0) {
-        while (partIndex !== -1) {
-          parts2[partIndex].index += insertCount;
-          partIndex = nextActiveIndexInTemplateParts(parts2, partIndex);
-        }
-        return;
-      }
-      partIndex = nextActiveIndexInTemplateParts(parts2, partIndex);
-    }
-  }
-}
-
-// node_modules/lit-html/lib/shady-render.js
-var getTemplateCacheKey = (type, scopeName) => `${type}--${scopeName}`;
-var compatibleShadyCSSVersion = true;
-if (typeof window.ShadyCSS === "undefined") {
-  compatibleShadyCSSVersion = false;
-} else if (typeof window.ShadyCSS.prepareTemplateDom === "undefined") {
-  console.warn(`Incompatible ShadyCSS version detected. Please update to at least @webcomponents/webcomponentsjs@2.0.2 and @webcomponents/shadycss@1.3.1.`);
-  compatibleShadyCSSVersion = false;
-}
-var shadyTemplateFactory = (scopeName) => (result) => {
-  const cacheKey = getTemplateCacheKey(result.type, scopeName);
-  let templateCache = templateCaches.get(cacheKey);
-  if (templateCache === void 0) {
-    templateCache = {
-      stringsArray: new WeakMap(),
-      keyString: new Map()
-    };
-    templateCaches.set(cacheKey, templateCache);
-  }
-  let template = templateCache.stringsArray.get(result.strings);
-  if (template !== void 0) {
-    return template;
-  }
-  const key = result.strings.join(marker);
-  template = templateCache.keyString.get(key);
-  if (template === void 0) {
-    const element = result.getTemplateElement();
-    if (compatibleShadyCSSVersion) {
-      window.ShadyCSS.prepareTemplateDom(element, scopeName);
-    }
-    template = new Template(result, element);
-    templateCache.keyString.set(key, template);
-  }
-  templateCache.stringsArray.set(result.strings, template);
-  return template;
-};
-var TEMPLATE_TYPES = ["html", "svg"];
-var removeStylesFromLitTemplates = (scopeName) => {
-  TEMPLATE_TYPES.forEach((type) => {
-    const templates = templateCaches.get(getTemplateCacheKey(type, scopeName));
-    if (templates !== void 0) {
-      templates.keyString.forEach((template) => {
-        const { element: { content } } = template;
-        const styles = new Set();
-        Array.from(content.querySelectorAll("style")).forEach((s) => {
-          styles.add(s);
-        });
-        removeNodesFromTemplate(template, styles);
-      });
-    }
-  });
-};
-var shadyRenderSet = new Set();
-var prepareTemplateStyles = (scopeName, renderedDOM, template) => {
-  shadyRenderSet.add(scopeName);
-  const templateElement = !!template ? template.element : document.createElement("template");
-  const styles = renderedDOM.querySelectorAll("style");
-  const { length: length5 } = styles;
-  if (length5 === 0) {
-    window.ShadyCSS.prepareTemplateStyles(templateElement, scopeName);
-    return;
-  }
-  const condensedStyle = document.createElement("style");
-  for (let i = 0; i < length5; i++) {
-    const style2 = styles[i];
-    style2.parentNode.removeChild(style2);
-    condensedStyle.textContent += style2.textContent;
-  }
-  removeStylesFromLitTemplates(scopeName);
-  const content = templateElement.content;
-  if (!!template) {
-    insertNodeIntoTemplate(template, condensedStyle, content.firstChild);
-  } else {
-    content.insertBefore(condensedStyle, content.firstChild);
-  }
-  window.ShadyCSS.prepareTemplateStyles(templateElement, scopeName);
-  const style = content.querySelector("style");
-  if (window.ShadyCSS.nativeShadow && style !== null) {
-    renderedDOM.insertBefore(style.cloneNode(true), renderedDOM.firstChild);
-  } else if (!!template) {
-    content.insertBefore(condensedStyle, content.firstChild);
-    const removes = new Set();
-    removes.add(condensedStyle);
-    removeNodesFromTemplate(template, removes);
-  }
-};
-var render2 = (result, container, options) => {
-  if (!options || typeof options !== "object" || !options.scopeName) {
-    throw new Error("The `scopeName` option is required.");
-  }
-  const scopeName = options.scopeName;
-  const hasRendered = parts.has(container);
-  const needsScoping = compatibleShadyCSSVersion && container.nodeType === 11 && !!container.host;
-  const firstScopeRender = needsScoping && !shadyRenderSet.has(scopeName);
-  const renderContainer = firstScopeRender ? document.createDocumentFragment() : container;
-  render(result, renderContainer, Object.assign({ templateFactory: shadyTemplateFactory(scopeName) }, options));
-  if (firstScopeRender) {
-    const part = parts.get(renderContainer);
-    parts.delete(renderContainer);
-    const template = part.value instanceof TemplateInstance ? part.value.template : void 0;
-    prepareTemplateStyles(scopeName, renderContainer, template);
-    removeNodes(container, container.firstChild);
-    container.appendChild(renderContainer);
-    parts.set(container, part);
-  }
-  if (!hasRendered && needsScoping) {
-    window.ShadyCSS.styleElement(container.host);
-  }
-};
-
-// node_modules/lit-element/lib/updating-element.js
-var _a;
-window.JSCompiler_renameProperty = (prop, _obj) => prop;
-var defaultConverter = {
-  toAttribute(value, type) {
-    switch (type) {
-      case Boolean:
-        return value ? "" : null;
-      case Object:
-      case Array:
-        return value == null ? value : JSON.stringify(value);
-    }
-    return value;
-  },
-  fromAttribute(value, type) {
-    switch (type) {
-      case Boolean:
-        return value !== null;
-      case Number:
-        return value === null ? null : Number(value);
-      case Object:
-      case Array:
-        return JSON.parse(value);
-    }
-    return value;
-  }
-};
-var notEqual = (value, old) => {
-  return old !== value && (old === old || value === value);
-};
-var defaultPropertyDeclaration = {
-  attribute: true,
-  type: String,
-  converter: defaultConverter,
-  reflect: false,
-  hasChanged: notEqual
-};
-var STATE_HAS_UPDATED = 1;
-var STATE_UPDATE_REQUESTED = 1 << 2;
-var STATE_IS_REFLECTING_TO_ATTRIBUTE = 1 << 3;
-var STATE_IS_REFLECTING_TO_PROPERTY = 1 << 4;
-var finalized = "finalized";
-var UpdatingElement = class extends HTMLElement {
-  constructor() {
-    super();
-    this.initialize();
-  }
-  static get observedAttributes() {
-    this.finalize();
-    const attributes = [];
-    this._classProperties.forEach((v, p) => {
-      const attr = this._attributeNameForProperty(p, v);
-      if (attr !== void 0) {
-        this._attributeToPropertyMap.set(attr, p);
-        attributes.push(attr);
-      }
-    });
-    return attributes;
-  }
-  static _ensureClassProperties() {
-    if (!this.hasOwnProperty(JSCompiler_renameProperty("_classProperties", this))) {
-      this._classProperties = new Map();
-      const superProperties = Object.getPrototypeOf(this)._classProperties;
-      if (superProperties !== void 0) {
-        superProperties.forEach((v, k) => this._classProperties.set(k, v));
-      }
-    }
-  }
-  static createProperty(name, options = defaultPropertyDeclaration) {
-    this._ensureClassProperties();
-    this._classProperties.set(name, options);
-    if (options.noAccessor || this.prototype.hasOwnProperty(name)) {
-      return;
-    }
-    const key = typeof name === "symbol" ? Symbol() : `__${name}`;
-    const descriptor = this.getPropertyDescriptor(name, key, options);
-    if (descriptor !== void 0) {
-      Object.defineProperty(this.prototype, name, descriptor);
-    }
-  }
-  static getPropertyDescriptor(name, key, options) {
-    return {
-      get() {
-        return this[key];
-      },
-      set(value) {
-        const oldValue = this[name];
-        this[key] = value;
-        this.requestUpdateInternal(name, oldValue, options);
-      },
-      configurable: true,
-      enumerable: true
-    };
-  }
-  static getPropertyOptions(name) {
-    return this._classProperties && this._classProperties.get(name) || defaultPropertyDeclaration;
-  }
-  static finalize() {
-    const superCtor = Object.getPrototypeOf(this);
-    if (!superCtor.hasOwnProperty(finalized)) {
-      superCtor.finalize();
-    }
-    this[finalized] = true;
-    this._ensureClassProperties();
-    this._attributeToPropertyMap = new Map();
-    if (this.hasOwnProperty(JSCompiler_renameProperty("properties", this))) {
-      const props = this.properties;
-      const propKeys = [
-        ...Object.getOwnPropertyNames(props),
-        ...typeof Object.getOwnPropertySymbols === "function" ? Object.getOwnPropertySymbols(props) : []
-      ];
-      for (const p of propKeys) {
-        this.createProperty(p, props[p]);
-      }
-    }
-  }
-  static _attributeNameForProperty(name, options) {
-    const attribute = options.attribute;
-    return attribute === false ? void 0 : typeof attribute === "string" ? attribute : typeof name === "string" ? name.toLowerCase() : void 0;
-  }
-  static _valueHasChanged(value, old, hasChanged = notEqual) {
-    return hasChanged(value, old);
-  }
-  static _propertyValueFromAttribute(value, options) {
-    const type = options.type;
-    const converter = options.converter || defaultConverter;
-    const fromAttribute = typeof converter === "function" ? converter : converter.fromAttribute;
-    return fromAttribute ? fromAttribute(value, type) : value;
-  }
-  static _propertyValueToAttribute(value, options) {
-    if (options.reflect === void 0) {
-      return;
-    }
-    const type = options.type;
-    const converter = options.converter;
-    const toAttribute = converter && converter.toAttribute || defaultConverter.toAttribute;
-    return toAttribute(value, type);
-  }
-  initialize() {
-    this._updateState = 0;
-    this._updatePromise = new Promise((res) => this._enableUpdatingResolver = res);
-    this._changedProperties = new Map();
-    this._saveInstanceProperties();
-    this.requestUpdateInternal();
-  }
-  _saveInstanceProperties() {
-    this.constructor._classProperties.forEach((_v, p) => {
-      if (this.hasOwnProperty(p)) {
-        const value = this[p];
-        delete this[p];
-        if (!this._instanceProperties) {
-          this._instanceProperties = new Map();
-        }
-        this._instanceProperties.set(p, value);
-      }
-    });
-  }
-  _applyInstanceProperties() {
-    this._instanceProperties.forEach((v, p) => this[p] = v);
-    this._instanceProperties = void 0;
-  }
-  connectedCallback() {
-    this.enableUpdating();
-  }
-  enableUpdating() {
-    if (this._enableUpdatingResolver !== void 0) {
-      this._enableUpdatingResolver();
-      this._enableUpdatingResolver = void 0;
-    }
-  }
-  disconnectedCallback() {
-  }
-  attributeChangedCallback(name, old, value) {
-    if (old !== value) {
-      this._attributeToProperty(name, value);
-    }
-  }
-  _propertyToAttribute(name, value, options = defaultPropertyDeclaration) {
-    const ctor = this.constructor;
-    const attr = ctor._attributeNameForProperty(name, options);
-    if (attr !== void 0) {
-      const attrValue = ctor._propertyValueToAttribute(value, options);
-      if (attrValue === void 0) {
-        return;
-      }
-      this._updateState = this._updateState | STATE_IS_REFLECTING_TO_ATTRIBUTE;
-      if (attrValue == null) {
-        this.removeAttribute(attr);
-      } else {
-        this.setAttribute(attr, attrValue);
-      }
-      this._updateState = this._updateState & ~STATE_IS_REFLECTING_TO_ATTRIBUTE;
-    }
-  }
-  _attributeToProperty(name, value) {
-    if (this._updateState & STATE_IS_REFLECTING_TO_ATTRIBUTE) {
-      return;
-    }
-    const ctor = this.constructor;
-    const propName = ctor._attributeToPropertyMap.get(name);
-    if (propName !== void 0) {
-      const options = ctor.getPropertyOptions(propName);
-      this._updateState = this._updateState | STATE_IS_REFLECTING_TO_PROPERTY;
-      this[propName] = ctor._propertyValueFromAttribute(value, options);
-      this._updateState = this._updateState & ~STATE_IS_REFLECTING_TO_PROPERTY;
-    }
-  }
-  requestUpdateInternal(name, oldValue, options) {
-    let shouldRequestUpdate = true;
-    if (name !== void 0) {
-      const ctor = this.constructor;
-      options = options || ctor.getPropertyOptions(name);
-      if (ctor._valueHasChanged(this[name], oldValue, options.hasChanged)) {
-        if (!this._changedProperties.has(name)) {
-          this._changedProperties.set(name, oldValue);
-        }
-        if (options.reflect === true && !(this._updateState & STATE_IS_REFLECTING_TO_PROPERTY)) {
-          if (this._reflectingProperties === void 0) {
-            this._reflectingProperties = new Map();
-          }
-          this._reflectingProperties.set(name, options);
-        }
-      } else {
-        shouldRequestUpdate = false;
-      }
-    }
-    if (!this._hasRequestedUpdate && shouldRequestUpdate) {
-      this._updatePromise = this._enqueueUpdate();
-    }
-  }
-  requestUpdate(name, oldValue) {
-    this.requestUpdateInternal(name, oldValue);
-    return this.updateComplete;
-  }
-  async _enqueueUpdate() {
-    this._updateState = this._updateState | STATE_UPDATE_REQUESTED;
-    try {
-      await this._updatePromise;
-    } catch (e) {
-    }
-    const result = this.performUpdate();
-    if (result != null) {
-      await result;
-    }
-    return !this._hasRequestedUpdate;
-  }
-  get _hasRequestedUpdate() {
-    return this._updateState & STATE_UPDATE_REQUESTED;
-  }
-  get hasUpdated() {
-    return this._updateState & STATE_HAS_UPDATED;
-  }
-  performUpdate() {
-    if (!this._hasRequestedUpdate) {
-      return;
-    }
-    if (this._instanceProperties) {
-      this._applyInstanceProperties();
-    }
-    let shouldUpdate = false;
-    const changedProperties = this._changedProperties;
-    try {
-      shouldUpdate = this.shouldUpdate(changedProperties);
-      if (shouldUpdate) {
-        this.update(changedProperties);
-      } else {
-        this._markUpdated();
-      }
-    } catch (e) {
-      shouldUpdate = false;
-      this._markUpdated();
-      throw e;
-    }
-    if (shouldUpdate) {
-      if (!(this._updateState & STATE_HAS_UPDATED)) {
-        this._updateState = this._updateState | STATE_HAS_UPDATED;
-        this.firstUpdated(changedProperties);
-      }
-      this.updated(changedProperties);
-    }
-  }
-  _markUpdated() {
-    this._changedProperties = new Map();
-    this._updateState = this._updateState & ~STATE_UPDATE_REQUESTED;
-  }
-  get updateComplete() {
-    return this._getUpdateComplete();
-  }
-  _getUpdateComplete() {
-    return this.getUpdateComplete();
-  }
-  getUpdateComplete() {
-    return this._updatePromise;
-  }
-  shouldUpdate(_changedProperties) {
-    return true;
-  }
-  update(_changedProperties) {
-    if (this._reflectingProperties !== void 0 && this._reflectingProperties.size > 0) {
-      this._reflectingProperties.forEach((v, k) => this._propertyToAttribute(k, this[k], v));
-      this._reflectingProperties = void 0;
-    }
-    this._markUpdated();
-  }
-  updated(_changedProperties) {
-  }
-  firstUpdated(_changedProperties) {
-  }
-};
-_a = finalized;
-UpdatingElement[_a] = true;
-
-// node_modules/lit-element/lib/decorators.js
-var legacyCustomElement = (tagName, clazz) => {
-  window.customElements.define(tagName, clazz);
-  return clazz;
-};
-var standardCustomElement = (tagName, descriptor) => {
-  const { kind, elements } = descriptor;
-  return {
-    kind,
-    elements,
-    finisher(clazz) {
-      window.customElements.define(tagName, clazz);
-    }
-  };
-};
-var customElement = (tagName) => (classOrDescriptor) => typeof classOrDescriptor === "function" ? legacyCustomElement(tagName, classOrDescriptor) : standardCustomElement(tagName, classOrDescriptor);
-var ElementProto = Element.prototype;
-var legacyMatches = ElementProto.msMatchesSelector || ElementProto.webkitMatchesSelector;
-
-// node_modules/lit-element/lib/css-tag.js
-var supportsAdoptingStyleSheets = window.ShadowRoot && (window.ShadyCSS === void 0 || window.ShadyCSS.nativeShadow) && "adoptedStyleSheets" in Document.prototype && "replace" in CSSStyleSheet.prototype;
-var constructionToken = Symbol();
-var CSSResult = class {
-  constructor(cssText, safeToken) {
-    if (safeToken !== constructionToken) {
-      throw new Error("CSSResult is not constructable. Use `unsafeCSS` or `css` instead.");
-    }
-    this.cssText = cssText;
-  }
-  get styleSheet() {
-    if (this._styleSheet === void 0) {
-      if (supportsAdoptingStyleSheets) {
-        this._styleSheet = new CSSStyleSheet();
-        this._styleSheet.replaceSync(this.cssText);
-      } else {
-        this._styleSheet = null;
-      }
-    }
-    return this._styleSheet;
-  }
-  toString() {
-    return this.cssText;
-  }
-};
-var unsafeCSS = (value) => {
-  return new CSSResult(String(value), constructionToken);
-};
-var textFromCSSResult = (value) => {
-  if (value instanceof CSSResult) {
-    return value.cssText;
-  } else if (typeof value === "number") {
-    return value;
-  } else {
-    throw new Error(`Value passed to 'css' function must be a 'css' function result: ${value}. Use 'unsafeCSS' to pass non-literal values, but
-            take care to ensure page security.`);
-  }
-};
-var css = (strings, ...values) => {
-  const cssText = values.reduce((acc, v, idx) => acc + textFromCSSResult(v) + strings[idx + 1], strings[0]);
-  return new CSSResult(cssText, constructionToken);
-};
-
-// node_modules/lit-element/lit-element.js
-(window["litElementVersions"] || (window["litElementVersions"] = [])).push("2.5.1");
-var renderNotImplemented = {};
-var LitElement = class extends UpdatingElement {
-  static getStyles() {
-    return this.styles;
-  }
-  static _getUniqueStyles() {
-    if (this.hasOwnProperty(JSCompiler_renameProperty("_styles", this))) {
-      return;
-    }
-    const userStyles = this.getStyles();
-    if (Array.isArray(userStyles)) {
-      const addStyles = (styles2, set7) => styles2.reduceRight((set8, s) => Array.isArray(s) ? addStyles(s, set8) : (set8.add(s), set8), set7);
-      const set6 = addStyles(userStyles, new Set());
-      const styles = [];
-      set6.forEach((v) => styles.unshift(v));
-      this._styles = styles;
-    } else {
-      this._styles = userStyles === void 0 ? [] : [userStyles];
-    }
-    this._styles = this._styles.map((s) => {
-      if (s instanceof CSSStyleSheet && !supportsAdoptingStyleSheets) {
-        const cssText = Array.prototype.slice.call(s.cssRules).reduce((css2, rule) => css2 + rule.cssText, "");
-        return unsafeCSS(cssText);
-      }
-      return s;
-    });
-  }
-  initialize() {
-    super.initialize();
-    this.constructor._getUniqueStyles();
-    this.renderRoot = this.createRenderRoot();
-    if (window.ShadowRoot && this.renderRoot instanceof window.ShadowRoot) {
-      this.adoptStyles();
-    }
-  }
-  createRenderRoot() {
-    return this.attachShadow(this.constructor.shadowRootOptions);
-  }
-  adoptStyles() {
-    const styles = this.constructor._styles;
-    if (styles.length === 0) {
-      return;
-    }
-    if (window.ShadyCSS !== void 0 && !window.ShadyCSS.nativeShadow) {
-      window.ShadyCSS.ScopingShim.prepareAdoptedCssText(styles.map((s) => s.cssText), this.localName);
-    } else if (supportsAdoptingStyleSheets) {
-      this.renderRoot.adoptedStyleSheets = styles.map((s) => s instanceof CSSStyleSheet ? s : s.styleSheet);
-    } else {
-      this._needsShimAdoptedStyleSheets = true;
-    }
-  }
-  connectedCallback() {
-    super.connectedCallback();
-    if (this.hasUpdated && window.ShadyCSS !== void 0) {
-      window.ShadyCSS.styleElement(this);
-    }
-  }
-  update(changedProperties) {
-    const templateResult = this.render();
-    super.update(changedProperties);
-    if (templateResult !== renderNotImplemented) {
-      this.constructor.render(templateResult, this.renderRoot, { scopeName: this.localName, eventContext: this });
-    }
-    if (this._needsShimAdoptedStyleSheets) {
-      this._needsShimAdoptedStyleSheets = false;
-      this.constructor._styles.forEach((s) => {
-        const style = document.createElement("style");
-        style.textContent = s.cssText;
-        this.renderRoot.appendChild(style);
-      });
-    }
-  }
-  render() {
-    return renderNotImplemented;
-  }
-};
-LitElement["finalized"] = true;
-LitElement.render = render2;
-LitElement.shadowRootOptions = { mode: "open" };
+// src/data/mod.ts
+var mod_exports = {};
+__export(mod_exports, {
+  GraphPoints: () => GraphPoints,
+  PointsReader: () => PointsReader,
+  computeDataTypes: () => computeDataTypes,
+  concatenateData: () => concatenateData,
+  dataIterator: () => dataIterator,
+  extractData: () => extractData,
+  flattenEntry: () => flattenEntry,
+  kDataMappingFlatten: () => kDataMappingFlatten,
+  packData: () => packData,
+  printDataGL: () => printDataGL,
+  writeValueToDataView: () => writeValueToDataView
+});
 
 // node_modules/picogl/build/module/constants.js
 var GL = {
@@ -15859,6 +14882,324 @@ function configureVAO(vao, vbo, types4, typesInfo, attrIndex = 0, instanced = fa
   }
 }
 
+// src/data/DataTools.ts
+var kDataMappingFlatten = Symbol("graffer:data::mapping::flatten::key");
+var kDataEntryNeedsFlatten = Symbol("graffer:data::tools::needs::flatten");
+function* dataIterator(data, mappings2) {
+  const keys = Reflect.ownKeys(mappings2);
+  for (let i = 0, n = data.length; i < n; ++i) {
+    const entry = {};
+    for (const key of keys) {
+      if (mappings2[key] !== null) {
+        entry[key] = mappings2[key](data[i], i);
+      }
+    }
+    yield [i, entry];
+  }
+}
+function extractData(data, mappings2) {
+  const result = [];
+  for (const [, entry] of dataIterator(data, mappings2)) {
+    result.push(entry);
+  }
+  return result;
+}
+function concatenateData(data, mappings2) {
+  const result = [];
+  for (let i = 0, n = data.length; i < n; ++i) {
+    for (const [, entry] of dataIterator(data[i], mappings2)) {
+      result.push(entry);
+    }
+  }
+  return result;
+}
+function computeDataTypes(types4, mappings2) {
+  const keys = Object.keys(types4);
+  const result = {};
+  for (let i = 0, n = keys.length; i < n; ++i) {
+    if (keys[i] in mappings2 && mappings2[keys[i]] !== null) {
+      result[keys[i]] = types4[keys[i]];
+    }
+  }
+  return result;
+}
+function writeValueToDataView(view, value, type, offset) {
+  if (Array.isArray(value)) {
+    let writeOffset = 0;
+    for (let i = 0, n = value.length; i < n; ++i) {
+      GL_TYPE_SETTER[type[i]](view, offset + writeOffset, value[i]);
+      writeOffset += GL_TYPE_SIZE[type[i]];
+    }
+    return writeOffset;
+  }
+  GL_TYPE_SETTER[type](view, offset, value);
+  return GL_TYPE_SIZE[type];
+}
+function flattenEntry(entry, types4, typesInfo, mappings2, view, offset) {
+  var _a2, _b;
+  const flatMappings = {};
+  let flattenLength = 0;
+  for (let i = 0, n = typesInfo.keys.length; i < n; ++i) {
+    const key = typesInfo.keys[i];
+    if (entry[kDataEntryNeedsFlatten].has(key)) {
+      flatMappings[key] = (_a2 = mappings2[key][kDataMappingFlatten]) != null ? _a2 : (entry2, i2) => entry2[key][i2];
+      flattenLength = entry[key].length;
+    } else {
+      flatMappings[key] = (_b = mappings2[key][kDataMappingFlatten]) != null ? _b : (entry2) => entry2[key];
+    }
+  }
+  let flatOffset = 0;
+  for (let i = 0; i < flattenLength; ++i) {
+    for (let ii = 0, n = typesInfo.keys.length; ii < n; ++ii) {
+      const key = typesInfo.keys[ii];
+      flatOffset += writeValueToDataView(view, flatMappings[key](entry, i, flattenLength), types4[key], offset + flatOffset);
+    }
+  }
+  return flatOffset;
+}
+function packData(data, mappings2, types4, potLength, cb) {
+  const typesInfo = glDataTypesInfo(computeDataTypes(types4, mappings2));
+  const entries = [];
+  let dataLength = 0;
+  const cb1 = Array.isArray(cb) ? cb[0] : cb;
+  const cb2 = Array.isArray(cb) ? cb[1] : null;
+  for (const [index, entry] of dataIterator(data, mappings2)) {
+    let entryLength = 1;
+    for (let i = 0, n = typesInfo.keys.length; i < n; ++i) {
+      const value = entry[typesInfo.keys[i]];
+      if (Array.isArray(value) && (!Array.isArray(types4[typesInfo.keys[i]]) || mappings2[typesInfo.keys[i]][kDataMappingFlatten])) {
+        if (!entry[kDataEntryNeedsFlatten]) {
+          entry[kDataEntryNeedsFlatten] = new Set();
+        }
+        entry[kDataEntryNeedsFlatten].add(typesInfo.keys[i]);
+        entryLength = Math.max(entryLength, value.length);
+      }
+    }
+    entries.push(entry);
+    dataLength += entryLength;
+    if (cb1) {
+      cb1(index, entry);
+    }
+  }
+  dataLength = potLength ? Math.pow(2, Math.ceil(Math.log2(dataLength))) : dataLength;
+  const buffer = new ArrayBuffer(typesInfo.stride * dataLength);
+  const view = new DataView(buffer);
+  let offset = 0;
+  for (let i = 0, n = entries.length; i < n; ++i) {
+    const entry = entries[i];
+    if (cb2) {
+      cb2(i, entry);
+    }
+    if (entry[kDataEntryNeedsFlatten]) {
+      offset += flattenEntry(entry, types4, typesInfo, mappings2, view, offset);
+    } else {
+      for (let i2 = 0, n2 = typesInfo.keys.length; i2 < n2; ++i2) {
+        offset += writeValueToDataView(view, entry[typesInfo.keys[i2]], types4[typesInfo.keys[i2]], offset);
+      }
+    }
+  }
+  return buffer;
+}
+function printDataGL(context, vbo, count, types4) {
+  const gl = context.gl;
+  const typesInfo = glDataTypesInfo(types4);
+  const result = new ArrayBuffer(typesInfo.stride * count);
+  const view = new DataView(result);
+  gl.bindTransformFeedback(gl.TRANSFORM_FEEDBACK, null);
+  gl.bindBuffer(gl.ARRAY_BUFFER, vbo.buffer);
+  gl.getBufferSubData(gl.ARRAY_BUFFER, 0, view);
+  let off = 0;
+  for (let i = 0; i < count; ++i) {
+    for (let ii = 0, nn = typesInfo.keys.length; ii < nn; ++ii) {
+      const type = Array.isArray(types4[typesInfo.keys[ii]]) ? types4[typesInfo.keys[ii]] : [types4[typesInfo.keys[ii]]];
+      const values = [];
+      for (let iii = 0, nnn = type.length; iii < nnn; ++iii) {
+        values.push(GL_TYPE_GETTER[type[iii]](view, off));
+        off += GL_TYPE_SIZE[type[iii]];
+      }
+      console.log(`ELEMENT[${i}] ATTR[${ii}]: ${values}`);
+    }
+  }
+}
+
+// src/data/shaders/GraphPoints.test.vs.glsl
+var GraphPoints_test_vs_default = "#version 300 es\n#define GLSLIFY 1\n\nlayout(location=0) in uint aIndex;\n\nuniform sampler2D uDataTexture;\n\nflat out vec3 vPosition;\nflat out float vRadius;\nflat out float vYolo;\n\nvec4 getValueByIndexFromTexture(sampler2D tex, int index) {\n    int texWidth = textureSize(tex, 0).x;\n    int col = index % texWidth;\n    int row = index / texWidth;\n    return texelFetch(tex, ivec2(col, row), 0);\n}\n\nvoid main() {\n    vec4 value = getValueByIndexFromTexture(uDataTexture, int(aIndex));\n    vPosition = value.xyz;\n    vRadius = value.w;\n    vYolo = value.w / 10.0;\n}\n";
+
+// src/data/shaders/noop.fs.glsl
+var noop_fs_default = "#version 300 es\n#define GLSLIFY 1\nvoid main() {}\n";
+
+// src/data/GraphPoints.ts
+var kDefaultMappings = {
+  id: (entry, i) => "id" in entry ? entry.id : i,
+  x: (entry) => entry.x,
+  y: (entry) => entry.y,
+  z: (entry) => "z" in entry ? entry.z : 0,
+  radius: (entry) => "radius" in entry ? entry.radius : 0
+};
+var kGLTypes = {
+  x: picogl_default.FLOAT,
+  y: picogl_default.FLOAT,
+  z: picogl_default.FLOAT,
+  radius: picogl_default.FLOAT
+};
+var GraphPoints = class {
+  static createGraphFromNodes(context, nodes, mappings2 = {}) {
+    let pointIndex = 0;
+    const dataMappings = Object.assign({}, kDefaultMappings, {
+      id: () => pointIndex++
+    }, mappings2);
+    const points2 = concatenateData(nodes, dataMappings);
+    return new this(context, points2);
+  }
+  get dataTexture() {
+    return this._dataTexture;
+  }
+  get dataBuffer() {
+    return this._dataBuffer;
+  }
+  get dataView() {
+    return this._dataView;
+  }
+  constructor(context, data, mappings2 = {}) {
+    this.map = new Map();
+    this.bb = {
+      min: vec3_exports.fromValues(Number.MAX_SAFE_INTEGER, Number.MAX_SAFE_INTEGER, Number.MAX_SAFE_INTEGER),
+      max: vec3_exports.fromValues(Number.MIN_SAFE_INTEGER, Number.MIN_SAFE_INTEGER, Number.MIN_SAFE_INTEGER)
+    };
+    this.bbCenter = vec3_exports.create();
+    const dataMappings = Object.assign({}, kDefaultMappings, mappings2);
+    this._dataBuffer = packData(data, dataMappings, kGLTypes, true, (i, entry) => {
+      this.map.set(entry.id, i);
+      this.bb.min[0] = Math.min(this.bb.min[0], entry.x - entry.radius);
+      this.bb.min[1] = Math.min(this.bb.min[1], entry.y - entry.radius);
+      this.bb.min[2] = Math.min(this.bb.min[2], entry.z);
+      this.bb.max[0] = Math.max(this.bb.max[0], entry.x + entry.radius);
+      this.bb.max[1] = Math.max(this.bb.max[1], entry.y + entry.radius);
+      this.bb.max[2] = Math.max(this.bb.max[2], entry.z);
+    });
+    this._dataView = new DataView(this._dataBuffer);
+    const diagonalVec = vec3_exports.sub(vec3_exports.create(), this.bb.max, this.bb.min);
+    this.bbDiagonal = vec3_exports.length(diagonalVec);
+    this.bbCenter = vec3_exports.add(vec3_exports.create(), this.bb.min, vec3_exports.mul(vec3_exports.create(), diagonalVec, vec3_exports.fromValues(0.5, 0.5, 0.5)));
+    const textureWidth = Math.pow(2, Math.ceil(Math.log2(Math.ceil(Math.sqrt(data.length)))));
+    const textureHeight = Math.pow(2, Math.ceil(Math.log2(Math.ceil(data.length / textureWidth))));
+    this._dataTexture = context.createTexture2D(textureWidth, textureHeight, {
+      internalFormat: picogl_default.RGBA32F
+    });
+    const float32 = new Float32Array(this._dataBuffer);
+    this._dataTexture.data(float32);
+  }
+  destroy() {
+    this._dataTexture.delete();
+    this.map.clear();
+    this._dataTexture = null;
+    this._dataBuffer = null;
+    this.map = null;
+  }
+  getPointIndex(id) {
+    return this.map.get(id);
+  }
+  testFeedback(context) {
+    const program = context.createProgram(GraphPoints_test_vs_default, noop_fs_default, { transformFeedbackVaryings: ["vPosition", "vRadius", "vYolo"], transformFeedbackMode: picogl_default.INTERLEAVED_ATTRIBS });
+    const pointsTarget = context.createVertexBuffer(picogl_default.FLOAT, 4, 40);
+    const pointsIndices = context.createVertexBuffer(picogl_default.UNSIGNED_BYTE, 1, new Uint8Array([
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+    ]));
+    const transformFeedback = context.createTransformFeedback().feedbackBuffer(0, pointsTarget);
+    const vertexArray = context.createVertexArray().vertexAttributeBuffer(0, pointsIndices);
+    const drawCall = context.createDrawCall(program, vertexArray).transformFeedback(transformFeedback);
+    drawCall.primitive(picogl_default.POINTS);
+    drawCall.texture("uDataTexture", this._dataTexture);
+    context.enable(picogl_default.RASTERIZER_DISCARD);
+    drawCall.draw();
+    context.disable(picogl_default.RASTERIZER_DISCARD);
+    printDataGL(context, pointsTarget, 6, {
+      position: [picogl_default.FLOAT, picogl_default.FLOAT, picogl_default.FLOAT],
+      radius: picogl_default.FLOAT,
+      yolo: picogl_default.FLOAT
+    });
+  }
+};
+
+// src/data/PointsReader.ts
+var PointsReader = class {
+  get dataTexture() {
+    return this.points.dataTexture;
+  }
+  constructor(...args) {
+    this.initialize(...args);
+  }
+  initialize(context, points2, data, mappings2) {
+    this.points = points2;
+    this.ingestData(context, data, mappings2);
+    this.initializeTargetBuffers(context, this.dataBuffer.byteLength / this.dataStride);
+    this.initializeDataDrawCall(context);
+  }
+  ingestData(context, data, mappings2) {
+    const dataMappings = this.computeMappings(mappings2);
+    const types4 = computeDataTypes(this.getGLSourceTypes(), dataMappings);
+    this.dataBuffer = packData(data, dataMappings, types4, false, this.packDataCB());
+    this.dataView = new DataView(this.dataBuffer);
+    const typesInfo = glDataTypesInfo(types4);
+    this.dataStride = typesInfo.stride;
+    this.sourceVBO = context.createInterleavedBuffer(this.dataStride, this.dataView);
+    this.sourceVAO = context.createVertexArray();
+    configureVAO(this.sourceVAO, this.sourceVBO, types4, typesInfo);
+  }
+  initializeTargetBuffers(context, dataLength) {
+    const targetTypes = this.getGLTargetTypes();
+    const stride = glDataTypesInfo(targetTypes).stride;
+    this.targetVBO = context.createInterleavedBuffer(stride, dataLength * stride);
+    this.targetTFO = context.createTransformFeedback().feedbackBuffer(0, this.targetVBO);
+  }
+  initializeDataDrawCall(context) {
+    const dataShader = this.getDataShader();
+    this.dataProgram = context.createProgram(dataShader.vs, noop_fs_default, {
+      transformFeedbackVaryings: dataShader.varyings,
+      transformFeedbackMode: PicoGL.INTERLEAVED_ATTRIBS
+    });
+    this.dataDrawCall = context.createDrawCall(this.dataProgram, this.sourceVAO).transformFeedback(this.targetTFO);
+    this.dataDrawCall.primitive(PicoGL.POINTS);
+  }
+  compute(context, uniforms) {
+    setDrawCallUniforms(this.dataDrawCall, uniforms);
+    context.enable(PicoGL.RASTERIZER_DISCARD);
+    this.dataDrawCall.draw();
+    context.disable(PicoGL.RASTERIZER_DISCARD);
+  }
+  configureTargetVAO(vao, attrIndex = 1) {
+    const types4 = this.getGLTargetTypes();
+    const typesInfo = glDataTypesInfo(types4);
+    configureVAO(vao, this.targetVBO, types4, typesInfo, attrIndex, true);
+  }
+  packDataCB() {
+    return () => null;
+  }
+};
+
+// src/renderer/mod.ts
+var mod_exports3 = {};
+__export(mod_exports3, {
+  Camera: () => Camera,
+  GL_TYPE_GETTER: () => GL_TYPE_GETTER,
+  GL_TYPE_SETTER: () => GL_TYPE_SETTER,
+  GL_TYPE_SIZE: () => GL_TYPE_SIZE,
+  OffscreenBuffer: () => OffscreenBuffer,
+  RenderMode: () => RenderMode,
+  Viewport: () => Viewport,
+  colors: () => mod_exports2,
+  configureVAO: () => configureVAO,
+  glDataTypeSize: () => glDataTypeSize,
+  glDataTypesInfo: () => glDataTypesInfo,
+  glIntegerType: () => glIntegerType,
+  setDrawCallUniforms: () => setDrawCallUniforms
+});
+
 // src/renderer/Camera.ts
 var Camera = class {
   constructor(viewportSize, position = vec3_exports.fromValues(0, 0, -1)) {
@@ -15948,6 +15289,240 @@ var Camera = class {
   }
   calculateProjectionMatrix() {
     mat4_exports.perspective(this._projectionMatrix, this._aovRad, this._aspect, this._nearPlane, this._farPlane);
+  }
+};
+
+// src/UX/UXModule.ts
+var UXModule = class {
+  constructor() {
+    this._enabled = false;
+  }
+  get enabled() {
+    return this._enabled;
+  }
+  set enabled(value) {
+    if (value !== this._enabled) {
+      this._enabled = value;
+      if (this._enabled) {
+        this.hookEvents();
+      } else {
+        this.unhookEvents();
+      }
+    }
+  }
+};
+
+// src/UX/mouse/MouseHandler.ts
+var kEvents = {
+  move: Symbol("Grafer::UX::MouseHandler::move"),
+  down: Symbol("Grafer::UX::MouseHandler::down"),
+  up: Symbol("Grafer::UX::MouseHandler::up"),
+  click: Symbol("Grafer::UX::MouseHandler::click"),
+  wheel: Symbol("Grafer::UX::MouseHandler::wheel")
+};
+Object.freeze(kEvents);
+var kButton2Index = {
+  primary: 1,
+  secondary: 2,
+  auxiliary: 4,
+  fourth: 8,
+  fifth: 16
+};
+Object.freeze(kButton2Index);
+var kIndex2Button = {
+  1: "primary",
+  2: "secondary",
+  4: "auxiliary",
+  8: "fourth",
+  16: "fifth"
+};
+Object.freeze(kIndex2Button);
+var MouseHandler = class extends EventEmitter.mixin(UXModule) {
+  constructor(canvas, rect, pixelRatio, enabled = true) {
+    super();
+    this.boundHandler = this.handleMouseEvent.bind(this);
+    this.disableContextMenu = (e) => e.preventDefault();
+    this.canvas = canvas;
+    this.rect = rect;
+    this.pixelRatio = pixelRatio;
+    this.state = {
+      valid: false,
+      clientCoords: vec2_exports.create(),
+      canvasCoords: vec2_exports.create(),
+      glCoords: vec2_exports.create(),
+      deltaCoords: vec2_exports.create(),
+      wheel: 0,
+      buttons: {
+        primary: false,
+        secondary: false,
+        auxiliary: false,
+        fourth: false,
+        fifth: false
+      }
+    };
+    this.newState = {
+      valid: false,
+      clientCoords: vec2_exports.create(),
+      canvasCoords: vec2_exports.create(),
+      glCoords: vec2_exports.create(),
+      deltaCoords: vec2_exports.create(),
+      wheel: 0,
+      buttons: {
+        primary: false,
+        secondary: false,
+        auxiliary: false,
+        fourth: false,
+        fifth: false
+      }
+    };
+    this.enabled = enabled;
+  }
+  static get events() {
+    return kEvents;
+  }
+  on(type, callback) {
+    super.on(type, callback);
+  }
+  off(type, callback) {
+    super.off(type, callback);
+  }
+  resize(rect, pixelRatio) {
+    this.rect = rect;
+    this.pixelRatio = pixelRatio;
+    this.syntheticUpdate(kEvents.move);
+  }
+  hookEvents() {
+    this.canvas.addEventListener("mouseenter", this.boundHandler);
+    this.canvas.addEventListener("mouseleave", this.boundHandler);
+    this.canvas.addEventListener("mousemove", this.boundHandler);
+    this.canvas.addEventListener("mousedown", this.boundHandler);
+    this.canvas.addEventListener("mouseup", this.boundHandler);
+    this.canvas.addEventListener("click", this.boundHandler);
+    this.canvas.addEventListener("wheel", this.boundHandler);
+    this.canvas.addEventListener("contextmenu", this.disableContextMenu);
+  }
+  unhookEvents() {
+    this.canvas.removeEventListener("mouseenter", this.boundHandler);
+    this.canvas.removeEventListener("mouseleave", this.boundHandler);
+    this.canvas.removeEventListener("mousemove", this.boundHandler);
+    this.canvas.removeEventListener("mousedown", this.boundHandler);
+    this.canvas.removeEventListener("mouseup", this.boundHandler);
+    this.canvas.removeEventListener("click", this.boundHandler);
+    this.canvas.removeEventListener("wheel", this.boundHandler);
+    this.canvas.removeEventListener("contextmenu", this.disableContextMenu);
+  }
+  syntheticUpdate(event, buttonIndex) {
+    switch (event) {
+      case kEvents.up:
+      case kEvents.down:
+      case kEvents.click:
+        this.emitEvents([{
+          event,
+          args: [buttonIndex, kIndex2Button[buttonIndex]]
+        }]);
+        break;
+      case kEvents.move:
+        this.emitEvents([{
+          event,
+          args: [vec2_exports.fromValues(0, 0), this.state.canvasCoords]
+        }]);
+        break;
+      default:
+        break;
+    }
+  }
+  update(state) {
+    const events = [];
+    if (state.deltaCoords[0] !== 0 || state.deltaCoords[1] !== 0) {
+      if (state.valid) {
+        events.push({
+          event: kEvents.move,
+          args: [state.deltaCoords, state.canvasCoords]
+        });
+      }
+    }
+    const buttonKeys = Object.keys(state.buttons);
+    for (let i = 0, n = buttonKeys.length; i < n; ++i) {
+      const key = buttonKeys[i];
+      const pressed = state.valid && state.buttons[key];
+      if (this.state.buttons[key] !== pressed) {
+        this.state.buttons[key] = pressed;
+        events.push({
+          event: pressed ? kEvents.down : kEvents.up,
+          args: [kButton2Index[key], key, pressed]
+        });
+      }
+    }
+    this.setMouseState(state);
+    this.emitEvents(events);
+  }
+  emitEvents(entries) {
+    for (let i = 0, n = entries.length; i < n; ++i) {
+      this.emit(entries[i].event, this.state, ...entries[i].args);
+    }
+  }
+  setMouseState(state) {
+    this.state.valid = state.valid;
+    vec2_exports.copy(this.state.clientCoords, state.clientCoords);
+    vec2_exports.copy(this.state.canvasCoords, state.canvasCoords);
+    vec2_exports.copy(this.state.glCoords, state.glCoords);
+    vec2_exports.copy(this.state.deltaCoords, state.deltaCoords);
+    this.state.wheel = state.wheel;
+    Object.assign(this.state.buttons, state.buttons);
+  }
+  handleClickEvent(e, state) {
+    this.setMouseState(state);
+    this.emitEvents([{
+      event: kEvents.click,
+      args: [e.button, kIndex2Button[e.button]]
+    }]);
+  }
+  handleWheelEvent(e, state) {
+    this.setMouseState(state);
+    let delta;
+    if ("wheelDeltaY" in e) {
+      delta = -e.wheelDeltaY / 120;
+    } else {
+      delta = e.deltaY < 1 ? -1 : 1;
+    }
+    this.emitEvents([{
+      event: kEvents.wheel,
+      args: [delta]
+    }]);
+  }
+  handleMouseEvent(e) {
+    const client = this.newState.clientCoords;
+    const canvas = this.newState.canvasCoords;
+    const gl = this.newState.glCoords;
+    const delta = this.newState.deltaCoords;
+    const rect = this.rect;
+    vec2_exports.set(client, e.clientX, e.clientY);
+    vec2_exports.set(canvas, e.clientX - rect.left, e.clientY - rect.top);
+    vec2_exports.set(gl, (e.clientX - rect.left) * this.pixelRatio, (rect.bottom - e.clientY) * this.pixelRatio);
+    if (e.type === "mousemove") {
+      vec2_exports.set(delta, e.movementX, e.movementY);
+    } else {
+      vec2_exports.set(delta, 0, 0);
+    }
+    this.newState.valid = Boolean(canvas[0] >= rect.left && canvas[0] <= rect.right && canvas[1] >= 0 && canvas[1] <= rect.height);
+    this.newState.buttons.primary = Boolean(e.buttons & 1);
+    this.newState.buttons.secondary = Boolean(e.buttons & 2);
+    this.newState.buttons.auxiliary = Boolean(e.buttons & 4);
+    this.newState.buttons.fourth = Boolean(e.buttons & 8);
+    this.newState.buttons.fifth = Boolean(e.buttons & 16);
+    switch (e.type) {
+      case "click":
+        this.handleClickEvent(e, this.newState);
+        break;
+      case "wheel":
+        this.handleWheelEvent(e, this.newState);
+        break;
+      case "mouseleave":
+        this.newState.valid = false;
+      default:
+        this.update(this.newState);
+        break;
+    }
   }
 };
 
@@ -16243,258 +15818,70 @@ var Viewport = class {
   }
 };
 
-// src/graph/mod.ts
-var mod_exports4 = {};
-__export(mod_exports4, {
-  Graph: () => Graph,
-  edges: () => mod_exports2,
-  labels: () => mod_exports3,
-  nodes: () => mod_exports
+// src/renderer/OffscreenBuffer.ts
+var OffscreenBuffer = class {
+  constructor(context) {
+    this._clearColor = vec4_exports.create();
+    this.context = context;
+    this.resize(context);
+  }
+  get clearColor() {
+    return this._clearColor;
+  }
+  set clearColor(value) {
+    vec4_exports.copy(this._clearColor, value);
+  }
+  resize(context) {
+    if (this.frameBuffer) {
+      this.frameBuffer.delete();
+    }
+    if (this.colorTarget) {
+      this.colorTarget.delete();
+    }
+    if (this.depthTarget) {
+      this.depthTarget.delete();
+    }
+    this.colorTarget = context.createTexture2D(context.width, context.height);
+    this.depthTarget = context.createRenderbuffer(context.width, context.height, PicoGL.DEPTH_COMPONENT16);
+    this.frameBuffer = context.createFramebuffer().colorTarget(0, this.colorTarget).depthTarget(this.depthTarget);
+  }
+  prepareContext(context) {
+    context.depthMask(true);
+    context.readFramebuffer(this.frameBuffer);
+    context.drawFramebuffer(this.frameBuffer).clearMask(PicoGL.COLOR_BUFFER_BIT | PicoGL.DEPTH_BUFFER_BIT).clearColor(...this._clearColor).clear().depthMask(true);
+  }
+  blitToBuffer(context, target, mask = PicoGL.COLOR_BUFFER_BIT) {
+    context.drawFramebuffer(target.frameBuffer);
+    context.readFramebuffer(this.frameBuffer);
+    context.blitFramebuffer(mask);
+  }
+  blitToScreen(context, mask = PicoGL.COLOR_BUFFER_BIT) {
+    context.defaultDrawFramebuffer();
+    context.readFramebuffer(this.frameBuffer);
+    context.blitFramebuffer(mask);
+  }
+  readPixel(x, y, buffer) {
+    this.context.defaultDrawFramebuffer().readFramebuffer(this.frameBuffer).readPixel(x, y, buffer);
+  }
+};
+
+// src/renderer/colors/mod.ts
+var mod_exports2 = {};
+__export(mod_exports2, {
+  ColorRegistry: () => ColorRegistry,
+  ColorRegistryIndexed: () => ColorRegistryIndexed,
+  ColorRegistryMapped: () => ColorRegistryMapped,
+  ColorRegistryType: () => ColorRegistryType
 });
 
-// src/data/shaders/GraphPoints.test.vs.glsl
-var GraphPoints_test_vs_default = "#version 300 es\n#define GLSLIFY 1\n\nlayout(location=0) in uint aIndex;\n\nuniform sampler2D uDataTexture;\n\nflat out vec3 vPosition;\nflat out float vRadius;\nflat out float vYolo;\n\nvec4 getValueByIndexFromTexture(sampler2D tex, int index) {\n    int texWidth = textureSize(tex, 0).x;\n    int col = index % texWidth;\n    int row = index / texWidth;\n    return texelFetch(tex, ivec2(col, row), 0);\n}\n\nvoid main() {\n    vec4 value = getValueByIndexFromTexture(uDataTexture, int(aIndex));\n    vPosition = value.xyz;\n    vRadius = value.w;\n    vYolo = value.w / 10.0;\n}\n";
-
-// src/data/shaders/noop.fs.glsl
-var noop_fs_default = "#version 300 es\n#define GLSLIFY 1\nvoid main() {}\n";
-
-// src/data/DataTools.ts
-var kDataMappingFlatten = Symbol("graffer:data::mapping::flatten::key");
-var kDataEntryNeedsFlatten = Symbol("graffer:data::tools::needs::flatten");
-function* dataIterator(data, mappings2) {
-  const keys = Reflect.ownKeys(mappings2);
-  for (let i = 0, n = data.length; i < n; ++i) {
-    const entry = {};
-    for (const key of keys) {
-      if (mappings2[key] !== null) {
-        entry[key] = mappings2[key](data[i], i);
-      }
-    }
-    yield [i, entry];
-  }
-}
-function extractData(data, mappings2) {
-  const result = [];
-  for (const [, entry] of dataIterator(data, mappings2)) {
-    result.push(entry);
-  }
-  return result;
-}
-function concatenateData(data, mappings2) {
-  const result = [];
-  for (let i = 0, n = data.length; i < n; ++i) {
-    for (const [, entry] of dataIterator(data[i], mappings2)) {
-      result.push(entry);
-    }
-  }
-  return result;
-}
-function computeDataTypes(types4, mappings2) {
-  const keys = Object.keys(types4);
-  const result = {};
-  for (let i = 0, n = keys.length; i < n; ++i) {
-    if (keys[i] in mappings2 && mappings2[keys[i]] !== null) {
-      result[keys[i]] = types4[keys[i]];
-    }
-  }
-  return result;
-}
-function writeValueToDataView(view, value, type, offset) {
-  if (Array.isArray(value)) {
-    let writeOffset = 0;
-    for (let i = 0, n = value.length; i < n; ++i) {
-      GL_TYPE_SETTER[type[i]](view, offset + writeOffset, value[i]);
-      writeOffset += GL_TYPE_SIZE[type[i]];
-    }
-    return writeOffset;
-  }
-  GL_TYPE_SETTER[type](view, offset, value);
-  return GL_TYPE_SIZE[type];
-}
-function flattenEntry(entry, types4, typesInfo, mappings2, view, offset) {
-  var _a2, _b;
-  const flatMappings = {};
-  let flattenLength = 0;
-  for (let i = 0, n = typesInfo.keys.length; i < n; ++i) {
-    const key = typesInfo.keys[i];
-    if (entry[kDataEntryNeedsFlatten].has(key)) {
-      flatMappings[key] = (_a2 = mappings2[key][kDataMappingFlatten]) != null ? _a2 : (entry2, i2) => entry2[key][i2];
-      flattenLength = entry[key].length;
-    } else {
-      flatMappings[key] = (_b = mappings2[key][kDataMappingFlatten]) != null ? _b : (entry2) => entry2[key];
-    }
-  }
-  let flatOffset = 0;
-  for (let i = 0; i < flattenLength; ++i) {
-    for (let ii = 0, n = typesInfo.keys.length; ii < n; ++ii) {
-      const key = typesInfo.keys[ii];
-      flatOffset += writeValueToDataView(view, flatMappings[key](entry, i, flattenLength), types4[key], offset + flatOffset);
-    }
-  }
-  return flatOffset;
-}
-function packData(data, mappings2, types4, potLength, cb) {
-  const typesInfo = glDataTypesInfo(computeDataTypes(types4, mappings2));
-  const entries = [];
-  let dataLength = 0;
-  const cb1 = Array.isArray(cb) ? cb[0] : cb;
-  const cb2 = Array.isArray(cb) ? cb[1] : null;
-  for (const [index, entry] of dataIterator(data, mappings2)) {
-    let entryLength = 1;
-    for (let i = 0, n = typesInfo.keys.length; i < n; ++i) {
-      const value = entry[typesInfo.keys[i]];
-      if (Array.isArray(value) && (!Array.isArray(types4[typesInfo.keys[i]]) || mappings2[typesInfo.keys[i]][kDataMappingFlatten])) {
-        if (!entry[kDataEntryNeedsFlatten]) {
-          entry[kDataEntryNeedsFlatten] = new Set();
-        }
-        entry[kDataEntryNeedsFlatten].add(typesInfo.keys[i]);
-        entryLength = Math.max(entryLength, value.length);
-      }
-    }
-    entries.push(entry);
-    dataLength += entryLength;
-    if (cb1) {
-      cb1(index, entry);
-    }
-  }
-  dataLength = potLength ? Math.pow(2, Math.ceil(Math.log2(dataLength))) : dataLength;
-  const buffer = new ArrayBuffer(typesInfo.stride * dataLength);
-  const view = new DataView(buffer);
-  let offset = 0;
-  for (let i = 0, n = entries.length; i < n; ++i) {
-    const entry = entries[i];
-    if (cb2) {
-      cb2(i, entry);
-    }
-    if (entry[kDataEntryNeedsFlatten]) {
-      offset += flattenEntry(entry, types4, typesInfo, mappings2, view, offset);
-    } else {
-      for (let i2 = 0, n2 = typesInfo.keys.length; i2 < n2; ++i2) {
-        offset += writeValueToDataView(view, entry[typesInfo.keys[i2]], types4[typesInfo.keys[i2]], offset);
-      }
-    }
-  }
-  return buffer;
-}
-function printDataGL(context, vbo, count, types4) {
-  const gl = context.gl;
-  const typesInfo = glDataTypesInfo(types4);
-  const result = new ArrayBuffer(typesInfo.stride * count);
-  const view = new DataView(result);
-  gl.bindTransformFeedback(gl.TRANSFORM_FEEDBACK, null);
-  gl.bindBuffer(gl.ARRAY_BUFFER, vbo.buffer);
-  gl.getBufferSubData(gl.ARRAY_BUFFER, 0, view);
-  let off = 0;
-  for (let i = 0; i < count; ++i) {
-    for (let ii = 0, nn = typesInfo.keys.length; ii < nn; ++ii) {
-      const type = Array.isArray(types4[typesInfo.keys[ii]]) ? types4[typesInfo.keys[ii]] : [types4[typesInfo.keys[ii]]];
-      const values = [];
-      for (let iii = 0, nnn = type.length; iii < nnn; ++iii) {
-        values.push(GL_TYPE_GETTER[type[iii]](view, off));
-        off += GL_TYPE_SIZE[type[iii]];
-      }
-      console.log(`ELEMENT[${i}] ATTR[${ii}]: ${values}`);
-    }
-  }
-}
-
-// src/data/GraphPoints.ts
-var kDefaultMappings = {
-  id: (entry, i) => "id" in entry ? entry.id : i,
-  x: (entry) => entry.x,
-  y: (entry) => entry.y,
-  z: (entry) => "z" in entry ? entry.z : 0,
-  radius: (entry) => "radius" in entry ? entry.radius : 0
-};
-var kGLTypes = {
-  x: picogl_default.FLOAT,
-  y: picogl_default.FLOAT,
-  z: picogl_default.FLOAT,
-  radius: picogl_default.FLOAT
-};
-var GraphPoints = class {
-  static createGraphFromNodes(context, nodes, mappings2 = {}) {
-    let pointIndex = 0;
-    const dataMappings = Object.assign({}, kDefaultMappings, {
-      id: () => pointIndex++
-    }, mappings2);
-    const points2 = concatenateData(nodes, dataMappings);
-    return new this(context, points2);
-  }
-  get dataTexture() {
-    return this._dataTexture;
-  }
-  get dataBuffer() {
-    return this._dataBuffer;
-  }
-  get dataView() {
-    return this._dataView;
-  }
-  constructor(context, data, mappings2 = {}) {
-    this.map = new Map();
-    this.bb = {
-      min: vec3_exports.fromValues(Number.MAX_SAFE_INTEGER, Number.MAX_SAFE_INTEGER, Number.MAX_SAFE_INTEGER),
-      max: vec3_exports.fromValues(Number.MIN_SAFE_INTEGER, Number.MIN_SAFE_INTEGER, Number.MIN_SAFE_INTEGER)
-    };
-    this.bbCenter = vec3_exports.create();
-    const dataMappings = Object.assign({}, kDefaultMappings, mappings2);
-    this._dataBuffer = packData(data, dataMappings, kGLTypes, true, (i, entry) => {
-      this.map.set(entry.id, i);
-      this.bb.min[0] = Math.min(this.bb.min[0], entry.x - entry.radius);
-      this.bb.min[1] = Math.min(this.bb.min[1], entry.y - entry.radius);
-      this.bb.min[2] = Math.min(this.bb.min[2], entry.z);
-      this.bb.max[0] = Math.max(this.bb.max[0], entry.x + entry.radius);
-      this.bb.max[1] = Math.max(this.bb.max[1], entry.y + entry.radius);
-      this.bb.max[2] = Math.max(this.bb.max[2], entry.z);
-    });
-    this._dataView = new DataView(this._dataBuffer);
-    const diagonalVec = vec3_exports.sub(vec3_exports.create(), this.bb.max, this.bb.min);
-    this.bbDiagonal = vec3_exports.length(diagonalVec);
-    this.bbCenter = vec3_exports.add(vec3_exports.create(), this.bb.min, vec3_exports.mul(vec3_exports.create(), diagonalVec, vec3_exports.fromValues(0.5, 0.5, 0.5)));
-    const textureWidth = Math.pow(2, Math.ceil(Math.log2(Math.ceil(Math.sqrt(data.length)))));
-    const textureHeight = Math.pow(2, Math.ceil(Math.log2(Math.ceil(data.length / textureWidth))));
-    this._dataTexture = context.createTexture2D(textureWidth, textureHeight, {
-      internalFormat: picogl_default.RGBA32F
-    });
-    const float32 = new Float32Array(this._dataBuffer);
-    this._dataTexture.data(float32);
-  }
-  destroy() {
-    this._dataTexture.delete();
-    this.map.clear();
-    this._dataTexture = null;
-    this._dataBuffer = null;
-    this.map = null;
-  }
-  getPointIndex(id) {
-    return this.map.get(id);
-  }
-  testFeedback(context) {
-    const program = context.createProgram(GraphPoints_test_vs_default, noop_fs_default, { transformFeedbackVaryings: ["vPosition", "vRadius", "vYolo"], transformFeedbackMode: picogl_default.INTERLEAVED_ATTRIBS });
-    const pointsTarget = context.createVertexBuffer(picogl_default.FLOAT, 4, 40);
-    const pointsIndices = context.createVertexBuffer(picogl_default.UNSIGNED_BYTE, 1, new Uint8Array([
-      0,
-      1,
-      2,
-      3,
-      4,
-      5
-    ]));
-    const transformFeedback = context.createTransformFeedback().feedbackBuffer(0, pointsTarget);
-    const vertexArray = context.createVertexArray().vertexAttributeBuffer(0, pointsIndices);
-    const drawCall = context.createDrawCall(program, vertexArray).transformFeedback(transformFeedback);
-    drawCall.primitive(picogl_default.POINTS);
-    drawCall.texture("uDataTexture", this._dataTexture);
-    context.enable(picogl_default.RASTERIZER_DISCARD);
-    drawCall.draw();
-    context.disable(picogl_default.RASTERIZER_DISCARD);
-    printDataGL(context, pointsTarget, 6, {
-      position: [picogl_default.FLOAT, picogl_default.FLOAT, picogl_default.FLOAT],
-      radius: picogl_default.FLOAT,
-      yolo: picogl_default.FLOAT
-    });
-  }
-};
+// src/graph/mod.ts
+var mod_exports7 = {};
+__export(mod_exports7, {
+  Graph: () => Graph,
+  edges: () => mod_exports5,
+  labels: () => mod_exports6,
+  nodes: () => mod_exports4
+});
 
 // src/graph/Graph.ts
 var kEvents2 = {
@@ -16572,8 +15959,8 @@ var Graph = class extends EventEmitter.mixin(GraphPoints) {
 };
 
 // src/graph/nodes/mod.ts
-var mod_exports = {};
-__export(mod_exports, {
+var mod_exports4 = {};
+__export(mod_exports4, {
   Circle: () => Circle,
   Cross: () => Cross,
   Nodes: () => Nodes,
@@ -16600,62 +15987,6 @@ var Circle_data_vs_default = "#version 300 es\n#define GLSLIFY 1\n\nlayout(locat
 
 // src/graph/nodes/circle/Circle.picking.fs.glsl
 var Circle_picking_fs_default = "#version 300 es\nprecision highp float;\n#define GLSLIFY 1\n\nflat in vec4 fColor;\nflat in float fPixelLength;\nin vec2 vFromCenter;\n\nout vec4 fragColor;\n\nvoid main() {\n    float fromCenter = length(vFromCenter);\n    if (fromCenter > 1.0) {\n        discard;\n    }\n    fragColor = fColor;\n}\n";
-
-// src/data/PointsReader.ts
-var PointsReader = class {
-  get dataTexture() {
-    return this.points.dataTexture;
-  }
-  constructor(...args) {
-    this.initialize(...args);
-  }
-  initialize(context, points2, data, mappings2) {
-    this.points = points2;
-    this.ingestData(context, data, mappings2);
-    this.initializeTargetBuffers(context, this.dataBuffer.byteLength / this.dataStride);
-    this.initializeDataDrawCall(context);
-  }
-  ingestData(context, data, mappings2) {
-    const dataMappings = this.computeMappings(mappings2);
-    const types4 = computeDataTypes(this.getGLSourceTypes(), dataMappings);
-    this.dataBuffer = packData(data, dataMappings, types4, false, this.packDataCB());
-    this.dataView = new DataView(this.dataBuffer);
-    const typesInfo = glDataTypesInfo(types4);
-    this.dataStride = typesInfo.stride;
-    this.sourceVBO = context.createInterleavedBuffer(this.dataStride, this.dataView);
-    this.sourceVAO = context.createVertexArray();
-    configureVAO(this.sourceVAO, this.sourceVBO, types4, typesInfo);
-  }
-  initializeTargetBuffers(context, dataLength) {
-    const targetTypes = this.getGLTargetTypes();
-    const stride = glDataTypesInfo(targetTypes).stride;
-    this.targetVBO = context.createInterleavedBuffer(stride, dataLength * stride);
-    this.targetTFO = context.createTransformFeedback().feedbackBuffer(0, this.targetVBO);
-  }
-  initializeDataDrawCall(context) {
-    const dataShader = this.getDataShader();
-    this.dataProgram = context.createProgram(dataShader.vs, noop_fs_default, {
-      transformFeedbackVaryings: dataShader.varyings,
-      transformFeedbackMode: PicoGL.INTERLEAVED_ATTRIBS
-    });
-    this.dataDrawCall = context.createDrawCall(this.dataProgram, this.sourceVAO).transformFeedback(this.targetTFO);
-    this.dataDrawCall.primitive(PicoGL.POINTS);
-  }
-  compute(context, uniforms) {
-    setDrawCallUniforms(this.dataDrawCall, uniforms);
-    context.enable(PicoGL.RASTERIZER_DISCARD);
-    this.dataDrawCall.draw();
-    context.disable(PicoGL.RASTERIZER_DISCARD);
-  }
-  configureTargetVAO(vao, attrIndex = 1) {
-    const types4 = this.getGLTargetTypes();
-    const typesInfo = glDataTypesInfo(types4);
-    configureVAO(vao, this.targetVBO, types4, typesInfo, attrIndex, true);
-  }
-  packDataCB() {
-    return () => null;
-  }
-};
 
 // src/graph/LayerRenderable.ts
 var LayerRenderableBlendMode;
@@ -16829,53 +16160,6 @@ var Nodes = class extends LayerRenderable {
   }
   getEntryPointID(id) {
     return this.map.get(id);
-  }
-};
-
-// src/renderer/OffscreenBuffer.ts
-var OffscreenBuffer = class {
-  constructor(context) {
-    this._clearColor = vec4_exports.create();
-    this.context = context;
-    this.resize(context);
-  }
-  get clearColor() {
-    return this._clearColor;
-  }
-  set clearColor(value) {
-    vec4_exports.copy(this._clearColor, value);
-  }
-  resize(context) {
-    if (this.frameBuffer) {
-      this.frameBuffer.delete();
-    }
-    if (this.colorTarget) {
-      this.colorTarget.delete();
-    }
-    if (this.depthTarget) {
-      this.depthTarget.delete();
-    }
-    this.colorTarget = context.createTexture2D(context.width, context.height);
-    this.depthTarget = context.createRenderbuffer(context.width, context.height, PicoGL.DEPTH_COMPONENT16);
-    this.frameBuffer = context.createFramebuffer().colorTarget(0, this.colorTarget).depthTarget(this.depthTarget);
-  }
-  prepareContext(context) {
-    context.depthMask(true);
-    context.readFramebuffer(this.frameBuffer);
-    context.drawFramebuffer(this.frameBuffer).clearMask(PicoGL.COLOR_BUFFER_BIT | PicoGL.DEPTH_BUFFER_BIT).clearColor(...this._clearColor).clear().depthMask(true);
-  }
-  blitToBuffer(context, target, mask = PicoGL.COLOR_BUFFER_BIT) {
-    context.drawFramebuffer(target.frameBuffer);
-    context.readFramebuffer(this.frameBuffer);
-    context.blitFramebuffer(mask);
-  }
-  blitToScreen(context, mask = PicoGL.COLOR_BUFFER_BIT) {
-    context.defaultDrawFramebuffer();
-    context.readFramebuffer(this.frameBuffer);
-    context.blitFramebuffer(mask);
-  }
-  readPixel(x, y, buffer) {
-    this.context.defaultDrawFramebuffer().readFramebuffer(this.frameBuffer).readPixel(x, y, buffer);
   }
 };
 
@@ -17294,8 +16578,8 @@ var types = {
 };
 
 // src/graph/edges/mod.ts
-var mod_exports2 = {};
-__export(mod_exports2, {
+var mod_exports5 = {};
+__export(mod_exports5, {
   ClusterBundle: () => ClusterBundle,
   CurvedPath: () => CurvedPath,
   Dashed: () => Dashed,
@@ -17935,8 +17219,8 @@ var types2 = {
 };
 
 // src/graph/labels/mod.ts
-var mod_exports3 = {};
-__export(mod_exports3, {
+var mod_exports6 = {};
+__export(mod_exports6, {
   CircularLabel: () => CircularLabel,
   CircularLabelPlacement: () => CircularLabelPlacement,
   LabelAtlas: () => LabelAtlas,
@@ -18908,6 +18192,240 @@ var types3 = {
   RingLabel
 };
 
+// src/loaders/mod.ts
+var mod_exports8 = {};
+__export(mod_exports8, {
+  LocalJSONL: () => LocalJSONL,
+  createGraferLoaderDomain: () => createGraferLoaderDomain,
+  createGraferLoaderVec3: () => createGraferLoaderVec3,
+  mergeGraferLoaderDomain: () => mergeGraferLoaderDomain,
+  normalizeNodeLayers: () => normalizeNodeLayers,
+  setGraferLoaderDomain: () => setGraferLoaderDomain
+});
+
+// src/UX/mod.ts
+var mod_exports11 = {};
+__export(mod_exports11, {
+  DebugMenu: () => DebugMenu,
+  mouse: () => mod_exports9,
+  picking: () => mod_exports10
+});
+
+// src/UX/mouse/mod.ts
+var mod_exports9 = {};
+__export(mod_exports9, {
+  DragModule: () => DragModule,
+  DragPan: () => DragPan,
+  DragRotation: () => DragRotation,
+  DragTruck: () => DragTruck,
+  MouseHandler: () => MouseHandler,
+  ScrollDolly: () => ScrollDolly,
+  kButton2Index: () => kButton2Index,
+  kIndex2Button: () => kIndex2Button
+});
+
+// src/UX/mouse/drag/DragModule.ts
+var DragModule = class extends UXModule {
+  constructor(viewport, enabled = false) {
+    super();
+    this.button = "primary";
+    this.boundHandler = this.handleMouse.bind(this);
+    this.viewport = viewport;
+    this.enabled = enabled;
+  }
+  hookEvents() {
+    this.viewport.mouseHandler.on(MouseHandler.events.move, this.boundHandler);
+  }
+  unhookEvents() {
+    this.viewport.mouseHandler.off(MouseHandler.events.move, this.boundHandler);
+  }
+};
+
+// src/UX/mouse/drag/DragPan.ts
+var DragPan = class extends DragModule {
+  handleMouse(event, state, delta) {
+    if (state.buttons[this.button]) {
+      const aspect = this.viewport.size[0] / this.viewport.size[1];
+      const aov = this.viewport.camera.aov;
+      const rotationX = -aov * (delta[1] / this.viewport.rect.height);
+      const rotationY = -aov * (delta[0] / this.viewport.rect.width) * aspect;
+      const r = quat_exports.fromEuler(quat_exports.create(), rotationX, rotationY, 0);
+      this.viewport.camera.rotate(r);
+      this.viewport.render();
+    }
+  }
+};
+
+// src/UX/mouse/drag/DragRotation.ts
+var DragRotation = class extends DragModule {
+  constructor() {
+    super(...arguments);
+    this.button = "secondary";
+  }
+  handleMouse(event, state, delta) {
+    if (state.buttons[this.button]) {
+      const side = Math.min(this.viewport.size[0], this.viewport.size[1]);
+      const rawRotation = quat_exports.fromEuler(quat_exports.create(), delta[1] / side * 90, delta[0] / side * 90, 0);
+      const camInverse = quat_exports.invert(quat_exports.create(), this.viewport.camera.rotation);
+      const rotation = quat_exports.mul(quat_exports.create(), camInverse, rawRotation);
+      quat_exports.mul(rotation, rotation, this.viewport.camera.rotation);
+      this.viewport.graph.rotate(rotation);
+      this.viewport.render();
+    }
+  }
+};
+
+// src/UX/mouse/drag/DragTruck.ts
+var DragTruck = class extends DragModule {
+  handleMouse(event, state, delta) {
+    if (state.buttons[this.button]) {
+      const position = this.viewport.camera.position;
+      const rotated = vec3_exports.transformQuat(vec3_exports.create(), position, this.viewport.camera.rotation);
+      const distance4 = Math.abs(rotated[2]);
+      const vertical = this.viewport.camera.aovRad * distance4;
+      const pixelToWorld = vertical / this.viewport.rect.height;
+      const delta3 = vec3_exports.fromValues(delta[0] * pixelToWorld, delta[1] * -pixelToWorld, 0);
+      const inverse4 = quat_exports.invert(quat_exports.create(), this.viewport.camera.rotation);
+      vec3_exports.transformQuat(delta3, delta3, inverse4);
+      vec3_exports.add(position, position, delta3);
+      this.viewport.camera.position = position;
+      this.viewport.render();
+    }
+  }
+};
+
+// src/UX/mouse/scroll/ScrollModule.ts
+var ScrollModule = class extends UXModule {
+  constructor(viewport, enabled = false) {
+    super();
+    this.speed = 4.5;
+    this.boundHandler = this.handleMouse.bind(this);
+    this.viewport = viewport;
+    this.enabled = enabled;
+  }
+  hookEvents() {
+    this.viewport.mouseHandler.on(MouseHandler.events.wheel, this.boundHandler);
+  }
+  unhookEvents() {
+    this.viewport.mouseHandler.off(MouseHandler.events.wheel, this.boundHandler);
+  }
+};
+
+// src/UX/mouse/scroll/ScrollDolly.ts
+var ScrollDolly = class extends ScrollModule {
+  handleMouse(event, state, delta) {
+    const invProjection = mat4_exports.invert(mat4_exports.create(), this.viewport.camera.projectionMatrix);
+    const invView = mat4_exports.invert(mat4_exports.create(), this.viewport.camera.viewMatrix);
+    const viewportCoords = vec2_exports.fromValues(state.canvasCoords[0] * this.viewport.pixelRatio, state.canvasCoords[1] * this.viewport.pixelRatio);
+    const worldCoords = vec2_exports.fromValues(2 * viewportCoords[0] / this.viewport.size[0] - 1, 1 - 2 * viewportCoords[1] / this.viewport.size[1]);
+    const rayClip = vec4_exports.fromValues(worldCoords[0], worldCoords[1], -1, 1);
+    const rayEye = vec4_exports.transformMat4(vec4_exports.create(), rayClip, invProjection);
+    rayEye[2] = -1;
+    rayEye[3] = 0;
+    const rayWorld4 = vec4_exports.transformMat4(vec4_exports.create(), rayEye, invView);
+    const rayWorld = vec3_exports.fromValues(rayWorld4[0], rayWorld4[1], rayWorld4[2]);
+    vec3_exports.normalize(rayWorld, rayWorld);
+    const position = this.viewport.camera.position;
+    const zMult = position[2] / rayWorld[2];
+    const rayZeroZ = vec3_exports.fromValues(position[0] + rayWorld[0] * zMult, position[1] + rayWorld[1] * zMult, 0);
+    const distance4 = Math.max(100, vec3_exports.distance(position, rayZeroZ));
+    const speed = this.speed * (distance4 / 100);
+    vec3_exports.scaleAndAdd(position, position, rayWorld, delta * speed);
+    this.viewport.camera.position = position;
+    this.viewport.render();
+  }
+};
+
+// src/UX/picking/mod.ts
+var mod_exports10 = {};
+__export(mod_exports10, {
+  PickingManager: () => PickingManager
+});
+
+// src/UX/debug/DebugMenu.ts
+var import_tweakpane = __toModule(require_tweakpane());
+var DebugMenu = class {
+  constructor(viewport) {
+    this.viewport = viewport;
+    const layers = viewport.graph.layers;
+    this.pane = new import_tweakpane.default({ title: "Debug Menu", expanded: false });
+    for (let i = 0, n = layers.length; i < n; ++i) {
+      const layer = layers[i];
+      const layerFolder = this.pane.addFolder({ title: layer.name, expanded: false });
+      this.addLayerOptions(layerFolder, layer);
+    }
+    this.uxFolder = null;
+    this.pane.on("change", () => {
+      this.viewport.render();
+    });
+  }
+  registerUX(ux) {
+    if (!this.uxFolder) {
+      this.uxFolder = this.pane.addFolder({ title: "UX", expanded: false });
+    }
+    const folder = this.uxFolder.addFolder({ title: ux.constructor.name, expanded: false });
+    folder.addInput(ux, "enabled");
+    if ("button" in ux) {
+      const keys = Object.keys(kButton2Index);
+      const options = {};
+      for (let i = 0, n = keys.length; i < n; ++i) {
+        options[keys[i]] = keys[i];
+      }
+      folder.addInput(ux, "button", { options });
+    }
+    if ("speed" in ux) {
+      folder.addInput(ux, "speed", { min: -100, max: 100 });
+    }
+  }
+  addLayerOptions(folder, layer) {
+    folder.addInput(layer, "enabled");
+    folder.addInput(layer, "nearDepth", { min: 0, max: 1, label: "near" });
+    folder.addInput(layer, "farDepth", { min: 0, max: 1, label: "far" });
+    if (layer.nodes) {
+      const nodesFolder = folder.addFolder({ title: "Nodes", expanded: false });
+      this.addLayerElementOptions(nodesFolder, layer, "nodes");
+    }
+    if (layer.labels) {
+      const labelsFolder = folder.addFolder({ title: "Labels", expanded: false });
+      this.addLayerElementOptions(labelsFolder, layer, "labels");
+    }
+    if (layer.edges) {
+      const edgesFolder = folder.addFolder({ title: "Edges", expanded: false });
+      this.addLayerElementOptions(edgesFolder, layer, "edges");
+    }
+  }
+  addLayerElementOptions(folder, layer, key) {
+    const element = layer[key];
+    const options = {
+      enabled: [element, {}],
+      blendMode: [element, {
+        options: {
+          normal: LayerRenderableBlendMode.NORMAL,
+          additive: LayerRenderableBlendMode.ADDITIVE,
+          none: LayerRenderableBlendMode.NONE
+        }
+      }],
+      pixelSizing: [element, { label: "pixel sizing " }],
+      billboard: [element, { label: "billboarding" }],
+      minSize: [element, { label: "min size" }],
+      maxSize: [element, { label: "max size" }],
+      gravity: [element, { min: -2, max: 2 }],
+      alpha: [element, { min: 0, max: 1 }],
+      fade: [element, { min: 0, max: 1 }],
+      desaturate: [element, { min: 0, max: 1 }],
+      brightness: [element, { min: -1, max: 1 }],
+      [`${key}NearDepth`]: [layer, { min: 0, max: 1, label: "near" }],
+      [`${key}FarDepth`]: [layer, { min: 0, max: 1, label: "far" }]
+    };
+    const keys = Object.keys(options);
+    for (let i = 0, n = keys.length; i < n; ++i) {
+      if (keys[i] in options[keys[i]][0]) {
+        folder.addInput(options[keys[i]][0], keys[i], options[keys[i]][1]);
+      }
+    }
+  }
+};
+
 // src/graph/Layer.ts
 var Layer = class extends EventEmitter {
   constructor(nodes, edges, labels, name = "Layer") {
@@ -19196,7 +18714,7 @@ var GraferController = class extends EventEmitter {
     let labels = null;
     if (labelsData) {
       const labelsType = labelsData.type ? labelsData.type : "PointLabel";
-      const LabelsClass = mod_exports3.types[labelsType] || mod_exports3.PointLabel;
+      const LabelsClass = mod_exports6.types[labelsType] || mod_exports6.PointLabel;
       const labelsMappings = Object.assign({}, LabelsClass.defaultMappings, labelsData.mappings);
       if (!hasColors) {
         const colorMapping = labelsMappings.color;
@@ -19229,7 +18747,7 @@ var GraferController = class extends EventEmitter {
     let edges = null;
     if (edgesData) {
       const edgesType = edgesData.type ? edgesData.type : "Straight";
-      const EdgesClass = mod_exports2.types[edgesType] || mod_exports2.Straight;
+      const EdgesClass = mod_exports5.types[edgesType] || mod_exports5.Straight;
       const edgesMappings = Object.assign({}, EdgesClass.defaultMappings, edgesData.mappings);
       if (!hasPoints) {
         const sourceMapping = edgesMappings.source;
@@ -19279,7 +18797,7 @@ var GraferController = class extends EventEmitter {
     let nodes = null;
     if (nodesData) {
       const nodesType = nodesData.type ? nodesData.type : "Circle";
-      const NodesClass = mod_exports.types[nodesType] || mod_exports.Circle;
+      const NodesClass = mod_exports4.types[nodesType] || mod_exports4.Circle;
       const nodesMappings = Object.assign({}, NodesClass.defaultMappings, nodesData.mappings);
       if (!hasColors) {
         const colorMapping = nodesMappings.color;
@@ -19323,6 +18841,653 @@ var GraferController = class extends EventEmitter {
     }
   }
 };
+
+// node_modules/lit-html/lib/modify-template.js
+var walkerNodeFilter = 133;
+function removeNodesFromTemplate(template, nodesToRemove) {
+  const { element: { content }, parts: parts2 } = template;
+  const walker = document.createTreeWalker(content, walkerNodeFilter, null, false);
+  let partIndex = nextActiveIndexInTemplateParts(parts2);
+  let part = parts2[partIndex];
+  let nodeIndex = -1;
+  let removeCount = 0;
+  const nodesToRemoveInTemplate = [];
+  let currentRemovingNode = null;
+  while (walker.nextNode()) {
+    nodeIndex++;
+    const node = walker.currentNode;
+    if (node.previousSibling === currentRemovingNode) {
+      currentRemovingNode = null;
+    }
+    if (nodesToRemove.has(node)) {
+      nodesToRemoveInTemplate.push(node);
+      if (currentRemovingNode === null) {
+        currentRemovingNode = node;
+      }
+    }
+    if (currentRemovingNode !== null) {
+      removeCount++;
+    }
+    while (part !== void 0 && part.index === nodeIndex) {
+      part.index = currentRemovingNode !== null ? -1 : part.index - removeCount;
+      partIndex = nextActiveIndexInTemplateParts(parts2, partIndex);
+      part = parts2[partIndex];
+    }
+  }
+  nodesToRemoveInTemplate.forEach((n) => n.parentNode.removeChild(n));
+}
+var countNodes = (node) => {
+  let count = node.nodeType === 11 ? 0 : 1;
+  const walker = document.createTreeWalker(node, walkerNodeFilter, null, false);
+  while (walker.nextNode()) {
+    count++;
+  }
+  return count;
+};
+var nextActiveIndexInTemplateParts = (parts2, startIndex = -1) => {
+  for (let i = startIndex + 1; i < parts2.length; i++) {
+    const part = parts2[i];
+    if (isTemplatePartActive(part)) {
+      return i;
+    }
+  }
+  return -1;
+};
+function insertNodeIntoTemplate(template, node, refNode = null) {
+  const { element: { content }, parts: parts2 } = template;
+  if (refNode === null || refNode === void 0) {
+    content.appendChild(node);
+    return;
+  }
+  const walker = document.createTreeWalker(content, walkerNodeFilter, null, false);
+  let partIndex = nextActiveIndexInTemplateParts(parts2);
+  let insertCount = 0;
+  let walkerIndex = -1;
+  while (walker.nextNode()) {
+    walkerIndex++;
+    const walkerNode = walker.currentNode;
+    if (walkerNode === refNode) {
+      insertCount = countNodes(node);
+      refNode.parentNode.insertBefore(node, refNode);
+    }
+    while (partIndex !== -1 && parts2[partIndex].index === walkerIndex) {
+      if (insertCount > 0) {
+        while (partIndex !== -1) {
+          parts2[partIndex].index += insertCount;
+          partIndex = nextActiveIndexInTemplateParts(parts2, partIndex);
+        }
+        return;
+      }
+      partIndex = nextActiveIndexInTemplateParts(parts2, partIndex);
+    }
+  }
+}
+
+// node_modules/lit-html/lib/shady-render.js
+var getTemplateCacheKey = (type, scopeName) => `${type}--${scopeName}`;
+var compatibleShadyCSSVersion = true;
+if (typeof window.ShadyCSS === "undefined") {
+  compatibleShadyCSSVersion = false;
+} else if (typeof window.ShadyCSS.prepareTemplateDom === "undefined") {
+  console.warn(`Incompatible ShadyCSS version detected. Please update to at least @webcomponents/webcomponentsjs@2.0.2 and @webcomponents/shadycss@1.3.1.`);
+  compatibleShadyCSSVersion = false;
+}
+var shadyTemplateFactory = (scopeName) => (result) => {
+  const cacheKey = getTemplateCacheKey(result.type, scopeName);
+  let templateCache = templateCaches.get(cacheKey);
+  if (templateCache === void 0) {
+    templateCache = {
+      stringsArray: new WeakMap(),
+      keyString: new Map()
+    };
+    templateCaches.set(cacheKey, templateCache);
+  }
+  let template = templateCache.stringsArray.get(result.strings);
+  if (template !== void 0) {
+    return template;
+  }
+  const key = result.strings.join(marker);
+  template = templateCache.keyString.get(key);
+  if (template === void 0) {
+    const element = result.getTemplateElement();
+    if (compatibleShadyCSSVersion) {
+      window.ShadyCSS.prepareTemplateDom(element, scopeName);
+    }
+    template = new Template(result, element);
+    templateCache.keyString.set(key, template);
+  }
+  templateCache.stringsArray.set(result.strings, template);
+  return template;
+};
+var TEMPLATE_TYPES = ["html", "svg"];
+var removeStylesFromLitTemplates = (scopeName) => {
+  TEMPLATE_TYPES.forEach((type) => {
+    const templates = templateCaches.get(getTemplateCacheKey(type, scopeName));
+    if (templates !== void 0) {
+      templates.keyString.forEach((template) => {
+        const { element: { content } } = template;
+        const styles = new Set();
+        Array.from(content.querySelectorAll("style")).forEach((s) => {
+          styles.add(s);
+        });
+        removeNodesFromTemplate(template, styles);
+      });
+    }
+  });
+};
+var shadyRenderSet = new Set();
+var prepareTemplateStyles = (scopeName, renderedDOM, template) => {
+  shadyRenderSet.add(scopeName);
+  const templateElement = !!template ? template.element : document.createElement("template");
+  const styles = renderedDOM.querySelectorAll("style");
+  const { length: length5 } = styles;
+  if (length5 === 0) {
+    window.ShadyCSS.prepareTemplateStyles(templateElement, scopeName);
+    return;
+  }
+  const condensedStyle = document.createElement("style");
+  for (let i = 0; i < length5; i++) {
+    const style2 = styles[i];
+    style2.parentNode.removeChild(style2);
+    condensedStyle.textContent += style2.textContent;
+  }
+  removeStylesFromLitTemplates(scopeName);
+  const content = templateElement.content;
+  if (!!template) {
+    insertNodeIntoTemplate(template, condensedStyle, content.firstChild);
+  } else {
+    content.insertBefore(condensedStyle, content.firstChild);
+  }
+  window.ShadyCSS.prepareTemplateStyles(templateElement, scopeName);
+  const style = content.querySelector("style");
+  if (window.ShadyCSS.nativeShadow && style !== null) {
+    renderedDOM.insertBefore(style.cloneNode(true), renderedDOM.firstChild);
+  } else if (!!template) {
+    content.insertBefore(condensedStyle, content.firstChild);
+    const removes = new Set();
+    removes.add(condensedStyle);
+    removeNodesFromTemplate(template, removes);
+  }
+};
+var render2 = (result, container, options) => {
+  if (!options || typeof options !== "object" || !options.scopeName) {
+    throw new Error("The `scopeName` option is required.");
+  }
+  const scopeName = options.scopeName;
+  const hasRendered = parts.has(container);
+  const needsScoping = compatibleShadyCSSVersion && container.nodeType === 11 && !!container.host;
+  const firstScopeRender = needsScoping && !shadyRenderSet.has(scopeName);
+  const renderContainer = firstScopeRender ? document.createDocumentFragment() : container;
+  render(result, renderContainer, Object.assign({ templateFactory: shadyTemplateFactory(scopeName) }, options));
+  if (firstScopeRender) {
+    const part = parts.get(renderContainer);
+    parts.delete(renderContainer);
+    const template = part.value instanceof TemplateInstance ? part.value.template : void 0;
+    prepareTemplateStyles(scopeName, renderContainer, template);
+    removeNodes(container, container.firstChild);
+    container.appendChild(renderContainer);
+    parts.set(container, part);
+  }
+  if (!hasRendered && needsScoping) {
+    window.ShadyCSS.styleElement(container.host);
+  }
+};
+
+// node_modules/lit-element/lib/updating-element.js
+var _a;
+window.JSCompiler_renameProperty = (prop, _obj) => prop;
+var defaultConverter = {
+  toAttribute(value, type) {
+    switch (type) {
+      case Boolean:
+        return value ? "" : null;
+      case Object:
+      case Array:
+        return value == null ? value : JSON.stringify(value);
+    }
+    return value;
+  },
+  fromAttribute(value, type) {
+    switch (type) {
+      case Boolean:
+        return value !== null;
+      case Number:
+        return value === null ? null : Number(value);
+      case Object:
+      case Array:
+        return JSON.parse(value);
+    }
+    return value;
+  }
+};
+var notEqual = (value, old) => {
+  return old !== value && (old === old || value === value);
+};
+var defaultPropertyDeclaration = {
+  attribute: true,
+  type: String,
+  converter: defaultConverter,
+  reflect: false,
+  hasChanged: notEqual
+};
+var STATE_HAS_UPDATED = 1;
+var STATE_UPDATE_REQUESTED = 1 << 2;
+var STATE_IS_REFLECTING_TO_ATTRIBUTE = 1 << 3;
+var STATE_IS_REFLECTING_TO_PROPERTY = 1 << 4;
+var finalized = "finalized";
+var UpdatingElement = class extends HTMLElement {
+  constructor() {
+    super();
+    this.initialize();
+  }
+  static get observedAttributes() {
+    this.finalize();
+    const attributes = [];
+    this._classProperties.forEach((v, p) => {
+      const attr = this._attributeNameForProperty(p, v);
+      if (attr !== void 0) {
+        this._attributeToPropertyMap.set(attr, p);
+        attributes.push(attr);
+      }
+    });
+    return attributes;
+  }
+  static _ensureClassProperties() {
+    if (!this.hasOwnProperty(JSCompiler_renameProperty("_classProperties", this))) {
+      this._classProperties = new Map();
+      const superProperties = Object.getPrototypeOf(this)._classProperties;
+      if (superProperties !== void 0) {
+        superProperties.forEach((v, k) => this._classProperties.set(k, v));
+      }
+    }
+  }
+  static createProperty(name, options = defaultPropertyDeclaration) {
+    this._ensureClassProperties();
+    this._classProperties.set(name, options);
+    if (options.noAccessor || this.prototype.hasOwnProperty(name)) {
+      return;
+    }
+    const key = typeof name === "symbol" ? Symbol() : `__${name}`;
+    const descriptor = this.getPropertyDescriptor(name, key, options);
+    if (descriptor !== void 0) {
+      Object.defineProperty(this.prototype, name, descriptor);
+    }
+  }
+  static getPropertyDescriptor(name, key, options) {
+    return {
+      get() {
+        return this[key];
+      },
+      set(value) {
+        const oldValue = this[name];
+        this[key] = value;
+        this.requestUpdateInternal(name, oldValue, options);
+      },
+      configurable: true,
+      enumerable: true
+    };
+  }
+  static getPropertyOptions(name) {
+    return this._classProperties && this._classProperties.get(name) || defaultPropertyDeclaration;
+  }
+  static finalize() {
+    const superCtor = Object.getPrototypeOf(this);
+    if (!superCtor.hasOwnProperty(finalized)) {
+      superCtor.finalize();
+    }
+    this[finalized] = true;
+    this._ensureClassProperties();
+    this._attributeToPropertyMap = new Map();
+    if (this.hasOwnProperty(JSCompiler_renameProperty("properties", this))) {
+      const props = this.properties;
+      const propKeys = [
+        ...Object.getOwnPropertyNames(props),
+        ...typeof Object.getOwnPropertySymbols === "function" ? Object.getOwnPropertySymbols(props) : []
+      ];
+      for (const p of propKeys) {
+        this.createProperty(p, props[p]);
+      }
+    }
+  }
+  static _attributeNameForProperty(name, options) {
+    const attribute = options.attribute;
+    return attribute === false ? void 0 : typeof attribute === "string" ? attribute : typeof name === "string" ? name.toLowerCase() : void 0;
+  }
+  static _valueHasChanged(value, old, hasChanged = notEqual) {
+    return hasChanged(value, old);
+  }
+  static _propertyValueFromAttribute(value, options) {
+    const type = options.type;
+    const converter = options.converter || defaultConverter;
+    const fromAttribute = typeof converter === "function" ? converter : converter.fromAttribute;
+    return fromAttribute ? fromAttribute(value, type) : value;
+  }
+  static _propertyValueToAttribute(value, options) {
+    if (options.reflect === void 0) {
+      return;
+    }
+    const type = options.type;
+    const converter = options.converter;
+    const toAttribute = converter && converter.toAttribute || defaultConverter.toAttribute;
+    return toAttribute(value, type);
+  }
+  initialize() {
+    this._updateState = 0;
+    this._updatePromise = new Promise((res) => this._enableUpdatingResolver = res);
+    this._changedProperties = new Map();
+    this._saveInstanceProperties();
+    this.requestUpdateInternal();
+  }
+  _saveInstanceProperties() {
+    this.constructor._classProperties.forEach((_v, p) => {
+      if (this.hasOwnProperty(p)) {
+        const value = this[p];
+        delete this[p];
+        if (!this._instanceProperties) {
+          this._instanceProperties = new Map();
+        }
+        this._instanceProperties.set(p, value);
+      }
+    });
+  }
+  _applyInstanceProperties() {
+    this._instanceProperties.forEach((v, p) => this[p] = v);
+    this._instanceProperties = void 0;
+  }
+  connectedCallback() {
+    this.enableUpdating();
+  }
+  enableUpdating() {
+    if (this._enableUpdatingResolver !== void 0) {
+      this._enableUpdatingResolver();
+      this._enableUpdatingResolver = void 0;
+    }
+  }
+  disconnectedCallback() {
+  }
+  attributeChangedCallback(name, old, value) {
+    if (old !== value) {
+      this._attributeToProperty(name, value);
+    }
+  }
+  _propertyToAttribute(name, value, options = defaultPropertyDeclaration) {
+    const ctor = this.constructor;
+    const attr = ctor._attributeNameForProperty(name, options);
+    if (attr !== void 0) {
+      const attrValue = ctor._propertyValueToAttribute(value, options);
+      if (attrValue === void 0) {
+        return;
+      }
+      this._updateState = this._updateState | STATE_IS_REFLECTING_TO_ATTRIBUTE;
+      if (attrValue == null) {
+        this.removeAttribute(attr);
+      } else {
+        this.setAttribute(attr, attrValue);
+      }
+      this._updateState = this._updateState & ~STATE_IS_REFLECTING_TO_ATTRIBUTE;
+    }
+  }
+  _attributeToProperty(name, value) {
+    if (this._updateState & STATE_IS_REFLECTING_TO_ATTRIBUTE) {
+      return;
+    }
+    const ctor = this.constructor;
+    const propName = ctor._attributeToPropertyMap.get(name);
+    if (propName !== void 0) {
+      const options = ctor.getPropertyOptions(propName);
+      this._updateState = this._updateState | STATE_IS_REFLECTING_TO_PROPERTY;
+      this[propName] = ctor._propertyValueFromAttribute(value, options);
+      this._updateState = this._updateState & ~STATE_IS_REFLECTING_TO_PROPERTY;
+    }
+  }
+  requestUpdateInternal(name, oldValue, options) {
+    let shouldRequestUpdate = true;
+    if (name !== void 0) {
+      const ctor = this.constructor;
+      options = options || ctor.getPropertyOptions(name);
+      if (ctor._valueHasChanged(this[name], oldValue, options.hasChanged)) {
+        if (!this._changedProperties.has(name)) {
+          this._changedProperties.set(name, oldValue);
+        }
+        if (options.reflect === true && !(this._updateState & STATE_IS_REFLECTING_TO_PROPERTY)) {
+          if (this._reflectingProperties === void 0) {
+            this._reflectingProperties = new Map();
+          }
+          this._reflectingProperties.set(name, options);
+        }
+      } else {
+        shouldRequestUpdate = false;
+      }
+    }
+    if (!this._hasRequestedUpdate && shouldRequestUpdate) {
+      this._updatePromise = this._enqueueUpdate();
+    }
+  }
+  requestUpdate(name, oldValue) {
+    this.requestUpdateInternal(name, oldValue);
+    return this.updateComplete;
+  }
+  async _enqueueUpdate() {
+    this._updateState = this._updateState | STATE_UPDATE_REQUESTED;
+    try {
+      await this._updatePromise;
+    } catch (e) {
+    }
+    const result = this.performUpdate();
+    if (result != null) {
+      await result;
+    }
+    return !this._hasRequestedUpdate;
+  }
+  get _hasRequestedUpdate() {
+    return this._updateState & STATE_UPDATE_REQUESTED;
+  }
+  get hasUpdated() {
+    return this._updateState & STATE_HAS_UPDATED;
+  }
+  performUpdate() {
+    if (!this._hasRequestedUpdate) {
+      return;
+    }
+    if (this._instanceProperties) {
+      this._applyInstanceProperties();
+    }
+    let shouldUpdate = false;
+    const changedProperties = this._changedProperties;
+    try {
+      shouldUpdate = this.shouldUpdate(changedProperties);
+      if (shouldUpdate) {
+        this.update(changedProperties);
+      } else {
+        this._markUpdated();
+      }
+    } catch (e) {
+      shouldUpdate = false;
+      this._markUpdated();
+      throw e;
+    }
+    if (shouldUpdate) {
+      if (!(this._updateState & STATE_HAS_UPDATED)) {
+        this._updateState = this._updateState | STATE_HAS_UPDATED;
+        this.firstUpdated(changedProperties);
+      }
+      this.updated(changedProperties);
+    }
+  }
+  _markUpdated() {
+    this._changedProperties = new Map();
+    this._updateState = this._updateState & ~STATE_UPDATE_REQUESTED;
+  }
+  get updateComplete() {
+    return this._getUpdateComplete();
+  }
+  _getUpdateComplete() {
+    return this.getUpdateComplete();
+  }
+  getUpdateComplete() {
+    return this._updatePromise;
+  }
+  shouldUpdate(_changedProperties) {
+    return true;
+  }
+  update(_changedProperties) {
+    if (this._reflectingProperties !== void 0 && this._reflectingProperties.size > 0) {
+      this._reflectingProperties.forEach((v, k) => this._propertyToAttribute(k, this[k], v));
+      this._reflectingProperties = void 0;
+    }
+    this._markUpdated();
+  }
+  updated(_changedProperties) {
+  }
+  firstUpdated(_changedProperties) {
+  }
+};
+_a = finalized;
+UpdatingElement[_a] = true;
+
+// node_modules/lit-element/lib/decorators.js
+var legacyCustomElement = (tagName, clazz) => {
+  window.customElements.define(tagName, clazz);
+  return clazz;
+};
+var standardCustomElement = (tagName, descriptor) => {
+  const { kind, elements } = descriptor;
+  return {
+    kind,
+    elements,
+    finisher(clazz) {
+      window.customElements.define(tagName, clazz);
+    }
+  };
+};
+var customElement = (tagName) => (classOrDescriptor) => typeof classOrDescriptor === "function" ? legacyCustomElement(tagName, classOrDescriptor) : standardCustomElement(tagName, classOrDescriptor);
+var ElementProto = Element.prototype;
+var legacyMatches = ElementProto.msMatchesSelector || ElementProto.webkitMatchesSelector;
+
+// node_modules/lit-element/lib/css-tag.js
+var supportsAdoptingStyleSheets = window.ShadowRoot && (window.ShadyCSS === void 0 || window.ShadyCSS.nativeShadow) && "adoptedStyleSheets" in Document.prototype && "replace" in CSSStyleSheet.prototype;
+var constructionToken = Symbol();
+var CSSResult = class {
+  constructor(cssText, safeToken) {
+    if (safeToken !== constructionToken) {
+      throw new Error("CSSResult is not constructable. Use `unsafeCSS` or `css` instead.");
+    }
+    this.cssText = cssText;
+  }
+  get styleSheet() {
+    if (this._styleSheet === void 0) {
+      if (supportsAdoptingStyleSheets) {
+        this._styleSheet = new CSSStyleSheet();
+        this._styleSheet.replaceSync(this.cssText);
+      } else {
+        this._styleSheet = null;
+      }
+    }
+    return this._styleSheet;
+  }
+  toString() {
+    return this.cssText;
+  }
+};
+var unsafeCSS = (value) => {
+  return new CSSResult(String(value), constructionToken);
+};
+var textFromCSSResult = (value) => {
+  if (value instanceof CSSResult) {
+    return value.cssText;
+  } else if (typeof value === "number") {
+    return value;
+  } else {
+    throw new Error(`Value passed to 'css' function must be a 'css' function result: ${value}. Use 'unsafeCSS' to pass non-literal values, but
+            take care to ensure page security.`);
+  }
+};
+var css = (strings, ...values) => {
+  const cssText = values.reduce((acc, v, idx) => acc + textFromCSSResult(v) + strings[idx + 1], strings[0]);
+  return new CSSResult(cssText, constructionToken);
+};
+
+// node_modules/lit-element/lit-element.js
+(window["litElementVersions"] || (window["litElementVersions"] = [])).push("2.5.1");
+var renderNotImplemented = {};
+var LitElement = class extends UpdatingElement {
+  static getStyles() {
+    return this.styles;
+  }
+  static _getUniqueStyles() {
+    if (this.hasOwnProperty(JSCompiler_renameProperty("_styles", this))) {
+      return;
+    }
+    const userStyles = this.getStyles();
+    if (Array.isArray(userStyles)) {
+      const addStyles = (styles2, set7) => styles2.reduceRight((set8, s) => Array.isArray(s) ? addStyles(s, set8) : (set8.add(s), set8), set7);
+      const set6 = addStyles(userStyles, new Set());
+      const styles = [];
+      set6.forEach((v) => styles.unshift(v));
+      this._styles = styles;
+    } else {
+      this._styles = userStyles === void 0 ? [] : [userStyles];
+    }
+    this._styles = this._styles.map((s) => {
+      if (s instanceof CSSStyleSheet && !supportsAdoptingStyleSheets) {
+        const cssText = Array.prototype.slice.call(s.cssRules).reduce((css2, rule) => css2 + rule.cssText, "");
+        return unsafeCSS(cssText);
+      }
+      return s;
+    });
+  }
+  initialize() {
+    super.initialize();
+    this.constructor._getUniqueStyles();
+    this.renderRoot = this.createRenderRoot();
+    if (window.ShadowRoot && this.renderRoot instanceof window.ShadowRoot) {
+      this.adoptStyles();
+    }
+  }
+  createRenderRoot() {
+    return this.attachShadow(this.constructor.shadowRootOptions);
+  }
+  adoptStyles() {
+    const styles = this.constructor._styles;
+    if (styles.length === 0) {
+      return;
+    }
+    if (window.ShadyCSS !== void 0 && !window.ShadyCSS.nativeShadow) {
+      window.ShadyCSS.ScopingShim.prepareAdoptedCssText(styles.map((s) => s.cssText), this.localName);
+    } else if (supportsAdoptingStyleSheets) {
+      this.renderRoot.adoptedStyleSheets = styles.map((s) => s instanceof CSSStyleSheet ? s : s.styleSheet);
+    } else {
+      this._needsShimAdoptedStyleSheets = true;
+    }
+  }
+  connectedCallback() {
+    super.connectedCallback();
+    if (this.hasUpdated && window.ShadyCSS !== void 0) {
+      window.ShadyCSS.styleElement(this);
+    }
+  }
+  update(changedProperties) {
+    const templateResult = this.render();
+    super.update(changedProperties);
+    if (templateResult !== renderNotImplemented) {
+      this.constructor.render(templateResult, this.renderRoot, { scopeName: this.localName, eventContext: this });
+    }
+    if (this._needsShimAdoptedStyleSheets) {
+      this._needsShimAdoptedStyleSheets = false;
+      this.constructor._styles.forEach((s) => {
+        const style = document.createElement("style");
+        style.textContent = s.cssText;
+        this.renderRoot.appendChild(style);
+      });
+    }
+  }
+  render() {
+    return renderNotImplemented;
+  }
+};
+LitElement["finalized"] = true;
+LitElement.render = render2;
+LitElement.shadowRootOptions = { mode: "open" };
 
 // src/grafer/GraferView.ts
 var GraferView = class extends LitElement {
@@ -19376,90 +19541,6 @@ var GraferView = class extends LitElement {
 GraferView = __decorateClass([
   customElement("grafer-view")
 ], GraferView);
-
-// src/UX/debug/DebugMenu.ts
-var import_tweakpane = __toModule(require_tweakpane());
-var DebugMenu = class {
-  constructor(viewport) {
-    this.viewport = viewport;
-    const layers = viewport.graph.layers;
-    this.pane = new import_tweakpane.default({ title: "Debug Menu", expanded: false });
-    for (let i = 0, n = layers.length; i < n; ++i) {
-      const layer = layers[i];
-      const layerFolder = this.pane.addFolder({ title: layer.name, expanded: false });
-      this.addLayerOptions(layerFolder, layer);
-    }
-    this.uxFolder = null;
-    this.pane.on("change", () => {
-      this.viewport.render();
-    });
-  }
-  registerUX(ux) {
-    if (!this.uxFolder) {
-      this.uxFolder = this.pane.addFolder({ title: "UX", expanded: false });
-    }
-    const folder = this.uxFolder.addFolder({ title: ux.constructor.name, expanded: false });
-    folder.addInput(ux, "enabled");
-    if ("button" in ux) {
-      const keys = Object.keys(kButton2Index);
-      const options = {};
-      for (let i = 0, n = keys.length; i < n; ++i) {
-        options[keys[i]] = keys[i];
-      }
-      folder.addInput(ux, "button", { options });
-    }
-    if ("speed" in ux) {
-      folder.addInput(ux, "speed", { min: -100, max: 100 });
-    }
-  }
-  addLayerOptions(folder, layer) {
-    folder.addInput(layer, "enabled");
-    folder.addInput(layer, "nearDepth", { min: 0, max: 1, label: "near" });
-    folder.addInput(layer, "farDepth", { min: 0, max: 1, label: "far" });
-    if (layer.nodes) {
-      const nodesFolder = folder.addFolder({ title: "Nodes", expanded: false });
-      this.addLayerElementOptions(nodesFolder, layer, "nodes");
-    }
-    if (layer.labels) {
-      const labelsFolder = folder.addFolder({ title: "Labels", expanded: false });
-      this.addLayerElementOptions(labelsFolder, layer, "labels");
-    }
-    if (layer.edges) {
-      const edgesFolder = folder.addFolder({ title: "Edges", expanded: false });
-      this.addLayerElementOptions(edgesFolder, layer, "edges");
-    }
-  }
-  addLayerElementOptions(folder, layer, key) {
-    const element = layer[key];
-    const options = {
-      enabled: [element, {}],
-      blendMode: [element, {
-        options: {
-          normal: LayerRenderableBlendMode.NORMAL,
-          additive: LayerRenderableBlendMode.ADDITIVE,
-          none: LayerRenderableBlendMode.NONE
-        }
-      }],
-      pixelSizing: [element, { label: "pixel sizing " }],
-      billboard: [element, { label: "billboarding" }],
-      minSize: [element, { label: "min size" }],
-      maxSize: [element, { label: "max size" }],
-      gravity: [element, { min: -2, max: 2 }],
-      alpha: [element, { min: 0, max: 1 }],
-      fade: [element, { min: 0, max: 1 }],
-      desaturate: [element, { min: 0, max: 1 }],
-      brightness: [element, { min: -1, max: 1 }],
-      [`${key}NearDepth`]: [layer, { min: 0, max: 1, label: "near" }],
-      [`${key}FarDepth`]: [layer, { min: 0, max: 1, label: "far" }]
-    };
-    const keys = Object.keys(options);
-    for (let i = 0, n = keys.length; i < n; ++i) {
-      if (keys[i] in options[keys[i]][0]) {
-        folder.addInput(options[keys[i]][0], keys[i], options[keys[i]][1]);
-      }
-    }
-  }
-};
 
 // examples/src/playground.ts
 var kPolarNight = [
@@ -19659,7 +19740,7 @@ async function loadLayers(layers) {
       meta: null
     });
   }
-  const stats = normalizeNodeLayers(loadedLayers.map((layer) => layer.nodes));
+  const stats = mod_exports8.normalizeNodeLayers(loadedLayers.map((layer) => layer.nodes));
   for (let i = 0, n = layers.length; i < n; ++i) {
     if (layers[i].edgesFile) {
       loadedLayers[i].edges = await LocalJSONL.loadEdges(layers[i].edgesFile, loadedLayers[i].nodes);
@@ -19739,18 +19820,18 @@ async function playground(container) {
       };
       const grafer = new GraferController(canvas, { points: points2, layers, colors: colorsArr });
       const { viewport } = grafer;
-      const dolly = new ScrollDolly(viewport);
+      const dolly = new mod_exports11.mouse.ScrollDolly(viewport);
       dolly.enabled = true;
-      const truck = new DragTruck(viewport);
+      const truck = new mod_exports11.mouse.DragTruck(viewport);
       truck.button = "primary";
       truck.enabled = true;
-      const rotation = new DragRotation(viewport);
+      const rotation = new mod_exports11.mouse.DragRotation(viewport);
       rotation.button = "secondary";
       rotation.enabled = true;
-      const pan = new DragPan(viewport);
+      const pan = new mod_exports11.mouse.DragPan(viewport);
       pan.button = "auxiliary";
       pan.enabled = true;
-      const debug = new DebugMenu(viewport);
+      const debug = new mod_exports11.DebugMenu(viewport);
       debug.registerUX(dolly);
       debug.registerUX(truck);
       debug.registerUX(rotation);
@@ -19764,15 +19845,15 @@ async function playground(container) {
 }
 
 // examples/src/basic/mod.ts
-var mod_exports7 = {};
-__export(mod_exports7, {
-  html: () => mod_exports5,
-  js: () => mod_exports6
+var mod_exports14 = {};
+__export(mod_exports14, {
+  html: () => mod_exports12,
+  js: () => mod_exports13
 });
 
 // examples/src/basic/html/mod.ts
-var mod_exports5 = {};
-__export(mod_exports5, {
+var mod_exports12 = {};
+__export(mod_exports12, {
   edgeColors: () => edgeColors,
   minimal: () => minimal,
   minimal3D: () => minimal3D,
@@ -19988,8 +20069,8 @@ async function picking(container) {
 }
 
 // examples/src/basic/js/mod.ts
-var mod_exports6 = {};
-__export(mod_exports6, {
+var mod_exports13 = {};
+__export(mod_exports13, {
   edgeColors: () => edgeColors2,
   minimal: () => minimal2,
   minimal3D: () => minimal3D2,
@@ -20206,14 +20287,14 @@ async function picking2(container) {
     console.log(`${event.description} => layer:"${detail.layer}" ${detail.type}:"${detail.id}"`);
   };
   const controller = new GraferController(canvas, { layers });
-  controller.on(PickingManager.events.hoverOn, printEvent);
-  controller.on(PickingManager.events.hoverOff, printEvent);
-  controller.on(PickingManager.events.click, printEvent);
+  controller.on(mod_exports11.picking.PickingManager.events.hoverOn, printEvent);
+  controller.on(mod_exports11.picking.PickingManager.events.hoverOff, printEvent);
+  controller.on(mod_exports11.picking.PickingManager.events.click, printEvent);
 }
 
 // examples/src/data/mod.ts
-var mod_exports8 = {};
-__export(mod_exports8, {
+var mod_exports15 = {};
+__export(mod_exports15, {
   colors: () => colors,
   mappings: () => mappings,
   points: () => points,
@@ -20381,8 +20462,8 @@ async function mappings(container) {
 }
 
 // examples/src/nodes/mod.ts
-var mod_exports9 = {};
-__export(mod_exports9, {
+var mod_exports16 = {};
+__export(mod_exports16, {
   circle: () => circle,
   cross: () => cross4,
   octagon: () => octagon,
@@ -20640,8 +20721,8 @@ async function plus(container) {
 }
 
 // examples/src/edges/mod.ts
-var mod_exports10 = {};
-__export(mod_exports10, {
+var mod_exports17 = {};
+__export(mod_exports17, {
   bundling: () => bundling,
   circuitBoard: () => circuitBoard,
   curvedPaths: () => curvedPaths,
@@ -20944,8 +21025,8 @@ async function bundling(container) {
 }
 
 // examples/src/labels/mod.ts
-var mod_exports11 = {};
-__export(mod_exports11, {
+var mod_exports18 = {};
+__export(mod_exports18, {
   circularLabel: () => circularLabel,
   pointLabel: () => pointLabel,
   ringLabel: () => ringLabel
@@ -21128,89 +21209,6 @@ __export(mod_exports19, {
 
 // examples/src/aske/bundledEdgesLoader.ts
 var import_tweakpane3 = __toModule(require_tweakpane());
-
-// src/data/mod.ts
-var mod_exports12 = {};
-__export(mod_exports12, {
-  GraphPoints: () => GraphPoints,
-  PointsReader: () => PointsReader,
-  computeDataTypes: () => computeDataTypes,
-  concatenateData: () => concatenateData,
-  dataIterator: () => dataIterator,
-  extractData: () => extractData,
-  flattenEntry: () => flattenEntry,
-  kDataMappingFlatten: () => kDataMappingFlatten,
-  packData: () => packData,
-  printDataGL: () => printDataGL,
-  writeValueToDataView: () => writeValueToDataView
-});
-
-// src/renderer/mod.ts
-var mod_exports14 = {};
-__export(mod_exports14, {
-  Camera: () => Camera,
-  GL_TYPE_GETTER: () => GL_TYPE_GETTER,
-  GL_TYPE_SETTER: () => GL_TYPE_SETTER,
-  GL_TYPE_SIZE: () => GL_TYPE_SIZE,
-  OffscreenBuffer: () => OffscreenBuffer,
-  RenderMode: () => RenderMode,
-  Viewport: () => Viewport,
-  colors: () => mod_exports13,
-  configureVAO: () => configureVAO,
-  glDataTypeSize: () => glDataTypeSize,
-  glDataTypesInfo: () => glDataTypesInfo,
-  glIntegerType: () => glIntegerType,
-  setDrawCallUniforms: () => setDrawCallUniforms
-});
-
-// src/renderer/colors/mod.ts
-var mod_exports13 = {};
-__export(mod_exports13, {
-  ColorRegistry: () => ColorRegistry,
-  ColorRegistryIndexed: () => ColorRegistryIndexed,
-  ColorRegistryMapped: () => ColorRegistryMapped,
-  ColorRegistryType: () => ColorRegistryType
-});
-
-// src/loaders/mod.ts
-var mod_exports15 = {};
-__export(mod_exports15, {
-  LocalJSONL: () => LocalJSONL,
-  createGraferLoaderDomain: () => createGraferLoaderDomain,
-  createGraferLoaderVec3: () => createGraferLoaderVec3,
-  mergeGraferLoaderDomain: () => mergeGraferLoaderDomain,
-  normalizeNodeLayers: () => normalizeNodeLayers,
-  setGraferLoaderDomain: () => setGraferLoaderDomain
-});
-
-// src/UX/mod.ts
-var mod_exports18 = {};
-__export(mod_exports18, {
-  DebugMenu: () => DebugMenu,
-  mouse: () => mod_exports16,
-  picking: () => mod_exports17
-});
-
-// src/UX/mouse/mod.ts
-var mod_exports16 = {};
-__export(mod_exports16, {
-  DragModule: () => DragModule,
-  DragPan: () => DragPan,
-  DragRotation: () => DragRotation,
-  DragTruck: () => DragTruck,
-  MouseHandler: () => MouseHandler,
-  ScrollDolly: () => ScrollDolly,
-  kButton2Index: () => kButton2Index,
-  kIndex2Button: () => kIndex2Button
-});
-
-// src/UX/picking/mod.ts
-var mod_exports17 = {};
-__export(mod_exports17, {
-  PickingManager: () => PickingManager
-});
-
-// examples/src/aske/bundledEdgesLoader.ts
 async function parseJSONL2(input, cb) {
   const file = await DataFile.fromLocalSource(input);
   const sizeOf16MB = 16 * 1024 * 1024;
@@ -21437,7 +21435,7 @@ async function loadGraph(container, info) {
         },
         options: {
           visibilityThreshold: 8,
-          labelPlacement: mod_exports4.labels.PointLabelPlacement.TOP,
+          labelPlacement: mod_exports7.labels.PointLabelPlacement.TOP,
           renderBackground: true
         }
       }
@@ -21468,7 +21466,7 @@ async function loadGraph(container, info) {
       "#81a1c1"
     ];
     const controller = new GraferController(canvas, { points: points2, colors: colors2, layers });
-    new DebugMenu(controller.viewport);
+    new mod_exports11.DebugMenu(controller.viewport);
   }
 }
 async function bundledEdgesLoader(container) {
@@ -21789,7 +21787,7 @@ function getBasicLayer(name, nodeType, visibilityThreshold, pixelSizing = true) 
       },
       options: {
         visibilityThreshold,
-        labelPlacement: mod_exports4.labels.PointLabelPlacement.CENTER,
+        labelPlacement: mod_exports7.labels.PointLabelPlacement.CENTER,
         renderBackground: true,
         nearDepth: 0,
         farDepth: 0.25
@@ -21934,7 +21932,7 @@ async function loadGraph2(container, info) {
   }
   const controller = new GraferController(canvas, { points: points2, colors: colors2, layers }, {
     viewport: {
-      colorRegistryType: mod_exports14.colors.ColorRegistryType.indexed,
+      colorRegistryType: mod_exports3.colors.ColorRegistryType.indexed,
       colorRegistryCapacity: colors2.length
     }
   });
@@ -21948,7 +21946,7 @@ async function loadGraph2(container, info) {
       }
     }
   }
-  new DebugMenu(controller.viewport);
+  new mod_exports11.DebugMenu(controller.viewport);
 }
 async function knowledgeViewLoader(container) {
   renderMenu3(container, (result) => {
@@ -21989,11 +21987,11 @@ MouseInteractions = __decorateClass([
 
 // examples/src/mod.ts
 var examples = {
-  basic: mod_exports7,
-  data: mod_exports8,
-  nodes: mod_exports9,
-  edges: mod_exports10,
-  labels: mod_exports11,
+  basic: mod_exports14,
+  data: mod_exports15,
+  nodes: mod_exports16,
+  edges: mod_exports17,
+  labels: mod_exports18,
   aske: mod_exports19,
   playground
 };
