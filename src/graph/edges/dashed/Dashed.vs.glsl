@@ -1,8 +1,8 @@
 #version 300 es
 
 layout(location=0) in vec3 aVertex;
-layout(location=1) in vec3 iOffsetA;
-layout(location=2) in vec3 iOffsetB;
+layout(location=1) in uint iPointA;
+layout(location=2) in uint iPointB;
 layout(location=3) in uint iColorA;
 layout(location=4) in uint iColorB;
 
@@ -11,6 +11,7 @@ uniform mat4 uSceneMatrix;
 uniform mat4 uProjectionMatrix;
 uniform vec2 uViewportSize;
 uniform float uPixelRatio;
+uniform sampler2D uGraphPoints;
 uniform sampler2D uColorPalette;
 uniform uint uDashLength;
 
@@ -22,32 +23,35 @@ out float vDashLength;
 out vec2 vProjectedPosition;
 out float vProjectedW;
 
-vec4 getColorByIndexFromTexture(sampler2D tex, int index) {
-    int texWidth = textureSize(tex, 0).x;
-    int col = index % texWidth;
-    int row = index / texWidth;
-    return texelFetch(tex, ivec2(col, row), 0);
-}
+#pragma glslify: valueForIndex = require(../../../renderer/shaders/valueForIndex.glsl)
 
 void main() {
+    vec4 pointA = valueForIndex(uGraphPoints, int(iPointA));
+    vec4 pointB = valueForIndex(uGraphPoints, int(iPointB));
+
+    vec3 direction = normalize(pointB.xyz - pointA.xyz);
+
+    vec3 offsetA = pointA.xyz + direction * pointA[3];
+    vec3 offsetB = pointB.xyz - direction * pointB[3];
+
     float multA = aVertex.y;
     float multB = 1.0 - aVertex.y;
 
-    vec4 colorA = getColorByIndexFromTexture(uColorPalette, int(iColorA));
-    vec4 colorB = getColorByIndexFromTexture(uColorPalette, int(iColorB));
+    vec4 colorA = valueForIndex(uColorPalette, int(iColorA));
+    vec4 colorB = valueForIndex(uColorPalette, int(iColorB));
 
     vColor = colorA.rgb * multA + colorB.rgb * multB;
 
     mat4 renderMatrix = uProjectionMatrix * uViewMatrix * uSceneMatrix;
 
-    vec4 aProjected = renderMatrix * vec4(iOffsetA, 1.0);
+    vec4 aProjected = renderMatrix * vec4(offsetA, 1.0);
     vec2 aScreen = (aProjected.xy / aProjected.w) * (uViewportSize / 2.0);
 
-    vec4 bProjected = renderMatrix * vec4(iOffsetB, 1.0);
+    vec4 bProjected = renderMatrix * vec4(offsetB, 1.0);
     vec2 bScreen = (bProjected.xy / bProjected.w) * (uViewportSize / 2.0);
 
-    vec2 direction = normalize(bScreen - aScreen);
-    vec2 perp = vec2(-direction.y, direction.x);
+    vec2 screenDirection = normalize(bScreen - aScreen);
+    vec2 perp = vec2(-screenDirection.y, screenDirection.x);
 
     fLineWidth = uLineWidth * uPixelRatio;
     float offsetWidth = fLineWidth + 0.5;

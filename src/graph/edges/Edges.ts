@@ -43,10 +43,11 @@ export abstract class Edges<T_SRC extends BasicEdgeData, T_TGT> extends LayerRen
     }
 
     protected initialize(...args: any[]): void {
+        super.initialize(...args);
         this.localUniforms = Object.assign({}, this.localUniforms, {
+            uGraphPoints: this.dataTexture,
             uLineWidth: 1.5,
         });
-        super.initialize(...args);
     }
 
     constructor(

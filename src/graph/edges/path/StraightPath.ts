@@ -26,8 +26,8 @@ export const kStraightPathEdgeDataTypes: GLDataTypes<CurvedPathEdgeData> = {
 };
 
 export const kGLStraightPathEdgeTypes = {
-    source: [PicoGL.FLOAT, PicoGL.FLOAT, PicoGL.FLOAT],
-    target: [PicoGL.FLOAT, PicoGL.FLOAT, PicoGL.FLOAT],
+    source: PicoGL.UNSIGNED_INT,
+    target: PicoGL.UNSIGNED_INT,
     sourceColor: PicoGL.UNSIGNED_INT,
     targetColor: PicoGL.UNSIGNED_INT,
     colorMix: [PicoGL.FLOAT, PicoGL.FLOAT],
@@ -117,7 +117,7 @@ export class StraightPath extends Edges<CurvedPathEdgeData, GLCurvedPathEdgeType
     protected getDataShader(): DataShader {
         return {
             vs: dataVS,
-            varyings: [ 'vSource', 'vTarget', 'vSourceColor', 'vTargetColor', 'vColorMix' ],
+            varyings: [ 'fSource', 'fTarget', 'fSourceColor', 'fTargetColor', 'fColorMix' ],
         };
     }
 

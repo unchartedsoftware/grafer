@@ -8,23 +8,18 @@ layout(location=4) in uint aTargetColor;
 
 uniform sampler2D uGraphPoints;
 
-out vec3 vSource;
-out vec3 vTarget;
-flat out uint vSourceColor;
-flat out uint vTargetColor;
-out vec2 vColorMix;
-
-#pragma glslify: valueForIndex = require(../../../renderer/shaders/valueForIndex.glsl)
+flat out uint fSource;
+flat out uint fTarget;
+flat out uint fSourceColor;
+flat out uint fTargetColor;
+flat out vec2 fColorMix;
 
 void main() {
-    vec4 source = valueForIndex(uGraphPoints, int(aSourceIndex));
-    vec4 target = valueForIndex(uGraphPoints, int(aTargetIndex));
+    fSource = aSourceIndex;
+    fTarget = aTargetIndex;
 
-    vSource = source.xyz;
-    vTarget = target.xyz;
+    fSourceColor = aSourceColor;
+    fTargetColor = aTargetColor;
 
-    vSourceColor = aSourceColor;
-    vTargetColor = aTargetColor;
-
-    vColorMix = vec2(float(aControl[0]) / float(aControl[1]), float(aControl[0] + 1u) / float(aControl[1]));
+    fColorMix = vec2(float(aControl[0]) / float(aControl[1]), float(aControl[0] + 1u) / float(aControl[1]));
 }

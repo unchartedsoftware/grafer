@@ -16,8 +16,8 @@ import {
 } from '../../../renderer/Renderable';
 
 export const kGLStraightEdgeTypes = {
-    source: [PicoGL.FLOAT, PicoGL.FLOAT, PicoGL.FLOAT],
-    target: [PicoGL.FLOAT, PicoGL.FLOAT, PicoGL.FLOAT],
+    source: PicoGL.UNSIGNED_INT,
+    target: PicoGL.UNSIGNED_INT,
     sourceColor: PicoGL.UNSIGNED_INT,
     targetColor: PicoGL.UNSIGNED_INT,
 } as const;
@@ -53,9 +53,7 @@ export class Straight extends Edges<BasicEdgeData, GLStraightEdgeTypes> {
         this.program = context.createProgram(shaders.vs, shaders.fs);
         this.drawCall = context.createDrawCall(this.program, this.edgesVAO).primitive(PicoGL.TRIANGLE_STRIP);
 
-        this.compute(context, {
-            uGraphPoints: this.dataTexture,
-        });
+        this.compute(context, {});
 
         // printDataGL(context, this.targetVBO, data.length, kGLStraightEdgeTypes);
     }
@@ -106,7 +104,7 @@ export class Straight extends Edges<BasicEdgeData, GLStraightEdgeTypes> {
     protected getDataShader(): DataShader {
         return {
             vs: dataVS,
-            varyings: [ 'vSource', 'vTarget', 'vSourceColor', 'vTargetColor' ],
+            varyings: [ 'fSource', 'fTarget', 'fSourceColor', 'fTargetColor' ],
         };
     }
 }

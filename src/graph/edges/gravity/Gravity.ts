@@ -18,8 +18,8 @@ import {
 import {GraferContext} from '../../../renderer/GraferContext';
 
 export const kGLGravityEdgeTypes = {
-    source: [PicoGL.FLOAT, PicoGL.FLOAT, PicoGL.FLOAT],
-    target: [PicoGL.FLOAT, PicoGL.FLOAT, PicoGL.FLOAT],
+    source: PicoGL.UNSIGNED_INT,
+    target: PicoGL.UNSIGNED_INT,
     sourceColor: PicoGL.UNSIGNED_INT,
     targetColor: PicoGL.UNSIGNED_INT,
 } as const;
@@ -75,9 +75,7 @@ export class Gravity extends Edges<BasicEdgeData, GLGravityEdgeTypes> {
         this.program = context.createProgram(shaders.vs, shaders.fs);
         this.drawCall = context.createDrawCall(this.program, this.edgesVAO).primitive(PicoGL.LINE_STRIP);
 
-        this.compute(context, {
-            uGraphPoints: this.dataTexture,
-        });
+        this.compute(context, {});
 
         // printDataGL(context, this.targetVBO, data.length, kGLStraightEdgeTypes);
     }
@@ -128,7 +126,7 @@ export class Gravity extends Edges<BasicEdgeData, GLGravityEdgeTypes> {
     protected getDataShader(): DataShader {
         return {
             vs: dataVS,
-            varyings: [ 'vSource', 'vTarget', 'vSourceColor', 'vTargetColor' ],
+            varyings: [ 'fSource', 'fTarget', 'fSourceColor', 'fTargetColor' ],
         };
     }
 }
