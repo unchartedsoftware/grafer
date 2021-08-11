@@ -1,8 +1,7 @@
 import {html, render} from 'lit-html';
 import Tweakpane from 'tweakpane';
 import {DataFile} from '@dekkai/data-source/build/lib/file/DataFile';
-import {DebugMenu} from '../../../src/UX/debug/DebugMenu';
-import {GraferController, graph} from '../../../src/mod.js';
+import {GraferController, graph, UX} from '../../../src/mod';
 
 interface LayoutInfo {
     points: string;
@@ -313,7 +312,7 @@ async function loadGraph(container: HTMLElement, info: LayoutInfo): Promise<void
         ];
 
         const controller = new GraferController(canvas, { points, colors, layers });
-        /* const debug = */ new DebugMenu(controller.viewport);
+        /* const debug = */ new UX.DebugMenu(controller.viewport);
         // debug.registerUX(dolly);
         // debug.registerUX(truck);
         // debug.registerUX(rotation);

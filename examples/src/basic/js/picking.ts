@@ -1,7 +1,5 @@
 import {html, render} from 'lit-html';
-import '../../../../src/grafer/GraferView';
-import {GraferController} from '../../../../src/grafer/GraferController';
-import {PickingManager} from '../../../../src/UX/picking/PickingManager';
+import {GraferController, UX} from '../../../../src/mod';
 
 export async function picking(container: HTMLElement): Promise<void> {
     render(html`<canvas class="grafer_container"></canvas><mouse-interactions></mouse-interactions>`, container);
@@ -39,7 +37,7 @@ export async function picking(container: HTMLElement): Promise<void> {
     };
 
     const controller = new GraferController(canvas, { layers });
-    controller.on(PickingManager.events.hoverOn, printEvent);
-    controller.on(PickingManager.events.hoverOff, printEvent);
-    controller.on(PickingManager.events.click, printEvent);
+    controller.on(UX.picking.PickingManager.events.hoverOn, printEvent);
+    controller.on(UX.picking.PickingManager.events.hoverOff, printEvent);
+    controller.on(UX.picking.PickingManager.events.click, printEvent);
 }

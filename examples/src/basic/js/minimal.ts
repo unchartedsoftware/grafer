@@ -1,5 +1,5 @@
 import {html, render} from 'lit-html';
-import {GraferController} from '../../../../src/grafer/GraferController';
+import {GraferController} from '../../../../src/mod';
 
 export async function minimal(container: HTMLElement): Promise<void> {
     render(html`<canvas class="grafer_container"></canvas><mouse-interactions></mouse-interactions>`, container);
