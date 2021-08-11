@@ -16243,6 +16243,15 @@ var Viewport = class {
   }
 };
 
+// src/graph/mod.ts
+var mod_exports4 = {};
+__export(mod_exports4, {
+  Graph: () => Graph,
+  edges: () => mod_exports2,
+  labels: () => mod_exports3,
+  nodes: () => mod_exports
+});
+
 // src/data/shaders/GraphPoints.test.vs.glsl
 var GraphPoints_test_vs_default = "#version 300 es\n#define GLSLIFY 1\n\nlayout(location=0) in uint aIndex;\n\nuniform sampler2D uDataTexture;\n\nflat out vec3 vPosition;\nflat out float vRadius;\nflat out float vYolo;\n\nvec4 getValueByIndexFromTexture(sampler2D tex, int index) {\n    int texWidth = textureSize(tex, 0).x;\n    int col = index % texWidth;\n    int row = index / texWidth;\n    return texelFetch(tex, ivec2(col, row), 0);\n}\n\nvoid main() {\n    vec4 value = getValueByIndexFromTexture(uDataTexture, int(aIndex));\n    vPosition = value.xyz;\n    vRadius = value.w;\n    vYolo = value.w / 10.0;\n}\n";
 
@@ -16263,6 +16272,13 @@ function* dataIterator(data, mappings2) {
     }
     yield [i, entry];
   }
+}
+function extractData(data, mappings2) {
+  const result = [];
+  for (const [, entry] of dataIterator(data, mappings2)) {
+    result.push(entry);
+  }
+  return result;
 }
 function concatenateData(data, mappings2) {
   const result = [];
@@ -19748,15 +19764,15 @@ async function playground(container) {
 }
 
 // examples/src/basic/mod.ts
-var mod_exports6 = {};
-__export(mod_exports6, {
-  html: () => mod_exports4,
-  js: () => mod_exports5
+var mod_exports7 = {};
+__export(mod_exports7, {
+  html: () => mod_exports5,
+  js: () => mod_exports6
 });
 
 // examples/src/basic/html/mod.ts
-var mod_exports4 = {};
-__export(mod_exports4, {
+var mod_exports5 = {};
+__export(mod_exports5, {
   edgeColors: () => edgeColors,
   minimal: () => minimal,
   minimal3D: () => minimal3D,
@@ -19972,8 +19988,8 @@ async function picking(container) {
 }
 
 // examples/src/basic/js/mod.ts
-var mod_exports5 = {};
-__export(mod_exports5, {
+var mod_exports6 = {};
+__export(mod_exports6, {
   edgeColors: () => edgeColors2,
   minimal: () => minimal2,
   minimal3D: () => minimal3D2,
@@ -20196,8 +20212,8 @@ async function picking2(container) {
 }
 
 // examples/src/data/mod.ts
-var mod_exports7 = {};
-__export(mod_exports7, {
+var mod_exports8 = {};
+__export(mod_exports8, {
   colors: () => colors,
   mappings: () => mappings,
   points: () => points,
@@ -20365,8 +20381,8 @@ async function mappings(container) {
 }
 
 // examples/src/nodes/mod.ts
-var mod_exports8 = {};
-__export(mod_exports8, {
+var mod_exports9 = {};
+__export(mod_exports9, {
   circle: () => circle,
   cross: () => cross4,
   octagon: () => octagon,
@@ -20624,8 +20640,8 @@ async function plus(container) {
 }
 
 // examples/src/edges/mod.ts
-var mod_exports9 = {};
-__export(mod_exports9, {
+var mod_exports10 = {};
+__export(mod_exports10, {
   bundling: () => bundling,
   circuitBoard: () => circuitBoard,
   curvedPaths: () => curvedPaths,
@@ -20928,8 +20944,8 @@ async function bundling(container) {
 }
 
 // examples/src/labels/mod.ts
-var mod_exports10 = {};
-__export(mod_exports10, {
+var mod_exports11 = {};
+__export(mod_exports11, {
   circularLabel: () => circularLabel,
   pointLabel: () => pointLabel,
   ringLabel: () => ringLabel
@@ -21104,14 +21120,97 @@ async function ringLabel(container) {
 }
 
 // examples/src/aske/mod.ts
-var mod_exports11 = {};
-__export(mod_exports11, {
+var mod_exports19 = {};
+__export(mod_exports19, {
   bundledEdgesLoader: () => bundledEdgesLoader,
   knowledgeViewLoader: () => knowledgeViewLoader
 });
 
 // examples/src/aske/bundledEdgesLoader.ts
 var import_tweakpane3 = __toModule(require_tweakpane());
+
+// src/data/mod.ts
+var mod_exports12 = {};
+__export(mod_exports12, {
+  GraphPoints: () => GraphPoints,
+  PointsReader: () => PointsReader,
+  computeDataTypes: () => computeDataTypes,
+  concatenateData: () => concatenateData,
+  dataIterator: () => dataIterator,
+  extractData: () => extractData,
+  flattenEntry: () => flattenEntry,
+  kDataMappingFlatten: () => kDataMappingFlatten,
+  packData: () => packData,
+  printDataGL: () => printDataGL,
+  writeValueToDataView: () => writeValueToDataView
+});
+
+// src/renderer/mod.ts
+var mod_exports14 = {};
+__export(mod_exports14, {
+  Camera: () => Camera,
+  GL_TYPE_GETTER: () => GL_TYPE_GETTER,
+  GL_TYPE_SETTER: () => GL_TYPE_SETTER,
+  GL_TYPE_SIZE: () => GL_TYPE_SIZE,
+  OffscreenBuffer: () => OffscreenBuffer,
+  RenderMode: () => RenderMode,
+  Viewport: () => Viewport,
+  colors: () => mod_exports13,
+  configureVAO: () => configureVAO,
+  glDataTypeSize: () => glDataTypeSize,
+  glDataTypesInfo: () => glDataTypesInfo,
+  glIntegerType: () => glIntegerType,
+  setDrawCallUniforms: () => setDrawCallUniforms
+});
+
+// src/renderer/colors/mod.ts
+var mod_exports13 = {};
+__export(mod_exports13, {
+  ColorRegistry: () => ColorRegistry,
+  ColorRegistryIndexed: () => ColorRegistryIndexed,
+  ColorRegistryMapped: () => ColorRegistryMapped,
+  ColorRegistryType: () => ColorRegistryType
+});
+
+// src/loaders/mod.ts
+var mod_exports15 = {};
+__export(mod_exports15, {
+  LocalJSONL: () => LocalJSONL,
+  createGraferLoaderDomain: () => createGraferLoaderDomain,
+  createGraferLoaderVec3: () => createGraferLoaderVec3,
+  mergeGraferLoaderDomain: () => mergeGraferLoaderDomain,
+  normalizeNodeLayers: () => normalizeNodeLayers,
+  setGraferLoaderDomain: () => setGraferLoaderDomain
+});
+
+// src/UX/mod.ts
+var mod_exports18 = {};
+__export(mod_exports18, {
+  DebugMenu: () => DebugMenu,
+  mouse: () => mod_exports16,
+  picking: () => mod_exports17
+});
+
+// src/UX/mouse/mod.ts
+var mod_exports16 = {};
+__export(mod_exports16, {
+  DragModule: () => DragModule,
+  DragPan: () => DragPan,
+  DragRotation: () => DragRotation,
+  DragTruck: () => DragTruck,
+  MouseHandler: () => MouseHandler,
+  ScrollDolly: () => ScrollDolly,
+  kButton2Index: () => kButton2Index,
+  kIndex2Button: () => kIndex2Button
+});
+
+// src/UX/picking/mod.ts
+var mod_exports17 = {};
+__export(mod_exports17, {
+  PickingManager: () => PickingManager
+});
+
+// examples/src/aske/bundledEdgesLoader.ts
 async function parseJSONL2(input, cb) {
   const file = await DataFile.fromLocalSource(input);
   const sizeOf16MB = 16 * 1024 * 1024;
@@ -21338,7 +21437,7 @@ async function loadGraph(container, info) {
         },
         options: {
           visibilityThreshold: 8,
-          labelPlacement: PointLabelPlacement.TOP,
+          labelPlacement: mod_exports4.labels.PointLabelPlacement.TOP,
           renderBackground: true
         }
       }
@@ -21690,7 +21789,7 @@ function getBasicLayer(name, nodeType, visibilityThreshold, pixelSizing = true) 
       },
       options: {
         visibilityThreshold,
-        labelPlacement: PointLabelPlacement.CENTER,
+        labelPlacement: mod_exports4.labels.PointLabelPlacement.CENTER,
         renderBackground: true,
         nearDepth: 0,
         farDepth: 0.25
@@ -21835,7 +21934,7 @@ async function loadGraph2(container, info) {
   }
   const controller = new GraferController(canvas, { points: points2, colors: colors2, layers }, {
     viewport: {
-      colorRegistryType: ColorRegistryType.indexed,
+      colorRegistryType: mod_exports14.colors.ColorRegistryType.indexed,
       colorRegistryCapacity: colors2.length
     }
   });
@@ -21890,12 +21989,12 @@ MouseInteractions = __decorateClass([
 
 // examples/src/mod.ts
 var examples = {
-  basic: mod_exports6,
-  data: mod_exports7,
-  nodes: mod_exports8,
-  edges: mod_exports9,
-  labels: mod_exports10,
-  aske: mod_exports11,
+  basic: mod_exports7,
+  data: mod_exports8,
+  nodes: mod_exports9,
+  edges: mod_exports10,
+  labels: mod_exports11,
+  aske: mod_exports19,
   playground
 };
 function getExample(examples2, path) {
