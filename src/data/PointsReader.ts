@@ -21,7 +21,7 @@ export abstract class PointsReader<T_SRC, T_TGT> {
     protected targetTFO: TransformFeedback;
 
     protected get dataTexture(): Texture {
-        return this.points.dataTexture;
+        return this.points.texture;
     }
 
     protected constructor(context: GraferContext, points: GraphPoints, data: unknown[], mappings: Partial<DataMappings<T_SRC>>);
