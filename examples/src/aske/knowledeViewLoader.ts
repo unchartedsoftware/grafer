@@ -10,8 +10,7 @@ import {
 
 import {GraferController, GraferLayerData, GraferNodesType} from '../../../src/grafer/GraferController';
 import {DebugMenu} from '../../../src/UX/debug/DebugMenu';
-import {PointLabelPlacement} from '../../../src/graph/labels/point/PointLabel';
-import {ColorRegistryType} from '../../../src/renderer/colors/ColorRegistry';
+import {renderer, graph} from '../../../src/mod.js';
 import chroma from 'chroma-js';
 
 function createFileInput(cb: () => void): HTMLInputElement {
@@ -118,7 +117,7 @@ function getBasicLayer(name: string, nodeType: GraferNodesType, visibilityThresh
             },
             options: {
                 visibilityThreshold,
-                labelPlacement: PointLabelPlacement.CENTER,
+                labelPlacement: graph.labels.PointLabelPlacement.CENTER,
                 renderBackground: true,
                 nearDepth: 0.0,
                 farDepth: 0.25,
@@ -304,7 +303,7 @@ async function loadGraph(container: HTMLElement, info: LayoutInfo): Promise<void
 
     const controller = new GraferController(canvas, { points, colors, layers }, {
         viewport: {
-            colorRegistryType: ColorRegistryType.indexed,
+            colorRegistryType: renderer.colors.ColorRegistryType.indexed,
             colorRegistryCapacity: colors.length,
         },
     });
