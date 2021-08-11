@@ -23,7 +23,7 @@ function addNewPoints(controller: GraferController): void {
     const layer = {
         nodes: {
             data: nodeData,
-        }
+        },
     };
     controller.addLayer(layer, `newNodes_${gPointCount}`);
     controller.render();
