@@ -38,6 +38,7 @@ interface GraferLayerDataBase {
     nodes?: GraferNodesData;
     edges?: GraferEdgesData;
     labels?: GraferLabelsData;
+    options?: { [key: string]: any };
 }
 
 // layers should at least have one of nodes, edges or labels
@@ -110,8 +111,10 @@ export class GraferController extends EventEmitter {
         this.loadLayers(data, pointsRadiusMapping);
 
         if (this._viewport.graph) {
-            this._viewport.camera.position = [0, 0, -this._viewport.graph.bbCornerLength * 2];
-            this._viewport.camera.farPlane = Math.max(this._viewport.graph.bbCornerLength * 4, 1000);
+            const bbCenter = this._viewport.graph.bbCenter;
+            const bbDiagonal = this._viewport.graph.bbDiagonal;
+            this._viewport.camera.position = [-bbCenter[0], -bbCenter[1], -bbCenter[2] - bbDiagonal];
+            this._viewport.camera.farPlane = Math.max(bbDiagonal * 2, 1000);
             this._viewport.render();
         }
     }
@@ -156,7 +159,7 @@ export class GraferController extends EventEmitter {
         }
     }
 
-    public addLayer(layer: GraferLayerData, name: string, useColors?: boolean): void {
+    public addLayer(layerData: GraferLayerData, name: string, useColors?: boolean): void {
         if( useColors && !this.hasColors ) {
             throw new Error('No colors found.');
         }
@@ -165,22 +168,32 @@ export class GraferController extends EventEmitter {
         const hasPoints = Boolean(this._viewport.graph);
         const graph = this._viewport.graph;
 
-        const nodesData = layer.nodes;
+        const nodesData = layerData.nodes;
         const nodes = this.addNodes(nodesData, useColors);
 
-        const edgesData = layer.edges;
+        const edgesData = layerData.edges;
         if (edgesData && !nodes && !hasPoints) {
             throw new Error('Cannot load an edge-only layer in a graph without points!');
         }
         const edges = this.addEdges(edgesData, nodes, useColors);
 
-        const layersData = layer.labels;
-        const labels = this.addLabels(layersData, useColors);
+        const labelsData = layerData.labels;
+        const labels = this.addLabels(labelsData, useColors);
 
         if (nodes || edges || labels) {
             const layer = new Layer(nodes, edges, labels, name);
             graph.layers.unshift(layer);
             layer.on(EventEmitter.omniEvent, (...args) => this.emit(...args));
+
+            if ('options' in layerData) {
+                const options = layerData.options;
+                const keys = Object.keys(options);
+                for (const key of keys) {
+                    if (key in layer) {
+                        layer[key] = options[key];
+                    }
+                }
+            }
         }
     }
 
@@ -228,7 +241,7 @@ export class GraferController extends EventEmitter {
                 };
             }
 
-            labels = new LabelsClass(context, graph, labelsData.data, labelsMappings, pickingManager);
+            labels = new LabelsClass(context, graph, labelsData.data, labelsMappings, pickingManager, labelsData.options?.font);
             if ('options' in labelsData) {
                 const options = labelsData.options;
                 const keys = Object.keys(options);

@@ -67,6 +67,13 @@ export abstract class Nodes<T_SRC extends BasicNodeData, T_TGT> extends LayerRen
         this.localUniforms.uBillboard = value;
     }
 
+    public get outline(): number {
+        return this.localUniforms.uOutline as number;
+    }
+    public set outline(value: number) {
+        this.localUniforms.uOutline = value;
+    }
+
     protected initialize(...args: any[]): void {
         this.localUniforms = Object.assign({}, this.localUniforms, {
             uConstraintSize: true,
@@ -74,6 +81,7 @@ export abstract class Nodes<T_SRC extends BasicNodeData, T_TGT> extends LayerRen
             uMaxSize: 4.0,
             uPixelSizing: false,
             uBillboard: true,
+            uOutline: 6.0,
         });
         super.initialize(...args);
     }

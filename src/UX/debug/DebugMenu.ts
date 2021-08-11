@@ -91,6 +91,7 @@ export class DebugMenu {
             alpha: [element, { min: 0, max: 1 }],
             fade: [element, { min: 0, max: 1 }],
             desaturate: [element, { min: 0, max: 1 }],
+            brightness: [element, { min: -1, max: 1 }],
             [`${key}NearDepth`]: [layer, { min: 0, max: 1, label: 'near' }],
             [`${key}FarDepth`]: [layer, { min: 0, max: 1, label: 'far' }],
         };

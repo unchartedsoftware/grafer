@@ -47,6 +47,13 @@ export abstract class LayerRenderable<T_SRC, T_TGT> extends PointsReaderEmitter<
         this.localUniforms.uDesaturate = value;
     }
 
+    public get brightness(): number {
+        return this.localUniforms.uBrightness as number;
+    }
+    public set brightness(value: number) {
+        this.localUniforms.uBrightness = value;
+    }
+
     protected pickingManager: PickingManager;
     protected localUniforms: GenericUniforms;
 
@@ -78,6 +85,7 @@ export abstract class LayerRenderable<T_SRC, T_TGT> extends PointsReaderEmitter<
             uAlpha: 1.0,
             uFade: 0.0,
             uDesaturate: 0.0,
+            uBrightness: 0.0,
         });
         super.initialize(context, points, data, mappings);
     }

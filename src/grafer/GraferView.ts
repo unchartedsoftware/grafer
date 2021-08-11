@@ -1,4 +1,4 @@
-import {LitElement, customElement, html, queryAsync, PropertyValues, css, CSSResult} from 'lit-element';
+import {LitElement, customElement, html, PropertyValues, css, CSSResult} from 'lit-element';
 import {GraferController, GraferLayerData, GraferPointsData} from './GraferController';
 import {GraferInputColor} from '../renderer/colors/ColorRegistry';
 import {EventEmitter} from '@dekkai/event-emitter/build/lib/EventEmitter';

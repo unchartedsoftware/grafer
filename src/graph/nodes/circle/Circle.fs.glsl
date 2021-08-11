@@ -7,6 +7,7 @@ precision highp float;
 
 uniform float uPixelRatio;
 uniform uint uRenderMode;
+uniform float uOutline;
 
 flat in vec4 fColor;
 flat in float fPixelLength;
@@ -17,7 +18,7 @@ out vec4 fragColor;
 void main() {
     float antialias = fPixelLength * 1.5;
     float sd = sdCircle(vFromCenter, 1.0);
-    float outline = opOnion(sd, min(0.15, fPixelLength * 6.0 * uPixelRatio));
+    float outline = opOnion(sd, min(0.15, fPixelLength * uOutline * uPixelRatio));
     float modeDistance = uRenderMode == MODE_HIGH_PASS_1 ? -antialias : -antialias * 0.5;
     float distance = uRenderMode == MODE_HIGH_PASS_2 ? 0.0 : modeDistance;
 

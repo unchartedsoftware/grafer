@@ -15,8 +15,6 @@ layout(location=4) in uvec4 iPickingColor;
     uniform sampler2D uColorPalette;
 //};
 
-uniform float uMinSize;
-uniform float uMaxSize;
 uniform bool uPixelSizing;
 uniform bool uBillboard;
 

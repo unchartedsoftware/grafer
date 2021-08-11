@@ -113,18 +113,18 @@
   dependencies:
     commander "^2.15.1"
 
-"@dekkai/data-source@^0.2.1":
-  version "0.2.1"
-  resolved "https://registry.yarnpkg.com/@dekkai/data-source/-/data-source-0.2.1.tgz#4b770690c78000be775596e100fe139becd9c104"
-  integrity sha512-UYVUXl2X2f957CMtQDAcEk8xdqa4Ut566lJlYUwM/UIuvhvprmw+kljE6KnlM4t9DcdlCgrG1WssDHrtaukyZA==
+"@dekkai/data-source@^0.2.3":
+  version "0.2.3"
+  resolved "https://registry.yarnpkg.com/@dekkai/data-source/-/data-source-0.2.3.tgz#ae5faab19407db1593ecd1552ddc1699217600c8"
+  integrity sha512-90Fcf3tGxNEP4jqVj4Q5xdqLc3CHyUp3CxxURXWkl2Ey20FXjN54QnwT7Y6dFA0DWvpnS4iNTXT/JbmnyDkjWg==
   dependencies:
-    "@dekkai/env" "^1.0.1"
+    "@dekkai/env" "^1.1.0"
     "@dekkai/event-emitter" "^1.1.0"
 
-"@dekkai/env@^1.0.1":
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/@dekkai/env/-/env-1.0.1.tgz#b91ce8e3cbcab71420301688df983e156a687692"
-  integrity sha512-dE9y9DVIVZYJ2xq7FWNK4zo61ZZLR/LPR4FTtEp4VgbaNBLMtm5VkD5ZECwtY/0ey7XvWrEocvxHtiiaglYv+w==
+"@dekkai/env@^1.1.0":
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/@dekkai/env/-/env-1.1.0.tgz#dc7854fd288ae12fda4fff937ba88043c5c155a5"
+  integrity sha512-z1t0bXV1QFwsA2Ur7N6/7qRbrcJ043dYYAqWsOAzMUna4CZiz9vsAFTBNT19ZRY50uf59tR/SOWkj/CnAy6jqg==
 
 "@dekkai/event-emitter@^1.1.0":
   version "1.1.0"

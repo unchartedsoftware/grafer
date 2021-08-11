@@ -59,8 +59,8 @@ export class GraphPoints {
     private map: Map<number | string, number>;
 
     public bb: { min: vec3, max: vec3 };
-    public bbCorner: vec3;
-    public bbCornerLength: number;
+    public bbCenter: vec3;
+    public bbDiagonal: number;
 
     constructor(context: App, data: PointData[]);
     constructor(context: App, data: unknown[], mappings: Partial<PointDataMappings>);
@@ -70,27 +70,25 @@ export class GraphPoints {
             min: vec3.fromValues(Number.MAX_SAFE_INTEGER, Number.MAX_SAFE_INTEGER, Number. MAX_SAFE_INTEGER),
             max: vec3.fromValues(Number.MIN_SAFE_INTEGER, Number.MIN_SAFE_INTEGER, Number.MIN_SAFE_INTEGER),
         };
-        this.bbCorner = vec3.fromValues(Number.MIN_SAFE_INTEGER, Number.MIN_SAFE_INTEGER, Number.MIN_SAFE_INTEGER);
+        this.bbCenter = vec3.create();
 
         const dataMappings: PointDataMappings = Object.assign({}, kDefaultMappings, mappings);
         this._dataBuffer = packData(data, dataMappings, kGLTypes, true, (i, entry) => {
             this.map.set(entry.id, i);
 
-            this.bb.min[0] = Math.min(this.bb.min[0], entry.x);
-            this.bb.min[1] = Math.min(this.bb.min[1], entry.y);
+            this.bb.min[0] = Math.min(this.bb.min[0], entry.x - entry.radius);
+            this.bb.min[1] = Math.min(this.bb.min[1], entry.y - entry.radius);
             this.bb.min[2] = Math.min(this.bb.min[2], entry.z);
 
-            this.bb.max[0] = Math.max(this.bb.max[0], entry.x);
-            this.bb.max[1] = Math.max(this.bb.max[1], entry.y);
+            this.bb.max[0] = Math.max(this.bb.max[0], entry.x + entry.radius);
+            this.bb.max[1] = Math.max(this.bb.max[1], entry.y + entry.radius);
             this.bb.max[2] = Math.max(this.bb.max[2], entry.z);
-
-            this.bbCorner[0] = Math.max(this.bbCorner[0], Math.abs(entry.x));
-            this.bbCorner[1] = Math.max(this.bbCorner[1], Math.abs(entry.y));
-            this.bbCorner[2] = Math.max(this.bbCorner[2], Math.abs(entry.z));
         });
         this._dataView = new DataView(this._dataBuffer);
 
-        this.bbCornerLength = vec3.length(this.bbCorner);
+        const diagonalVec = vec3.sub(vec3.create(), this.bb.max, this.bb.min);
+        this.bbDiagonal = vec3.length(diagonalVec);
+        this.bbCenter = vec3.add(vec3.create(), this.bb.min, vec3.mul(vec3.create(), diagonalVec, vec3.fromValues(0.5, 0.5, 0.5)));
 
         // calculate the smallest texture rectangle with POT sides, is this optimization needed? - probably not
         const textureWidth = Math.pow(2 , Math.ceil(Math.log2(Math.ceil(Math.sqrt(data.length)))));

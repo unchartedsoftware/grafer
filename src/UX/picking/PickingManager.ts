@@ -40,6 +40,14 @@ export class PickingManager extends EventEmitter.mixin(UXModule) {
         return this._offscreenBuffer;
     }
 
+    private _debugRender: boolean = false;
+    public get debugRender(): boolean {
+        return this._debugRender;
+    }
+    public set debugRender(value: boolean) {
+        this._debugRender = value;
+    }
+
     private mouseHandler: MouseHandler;
     private boundMouseHandler: MouseMoveHandler = this.handleMouse.bind(this);
 
