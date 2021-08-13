@@ -111,6 +111,19 @@ export class GraphPoints extends DataTexture {
         return this.map.get(id);
     }
 
+    public getPointByIndex(index: number): [number, number, number, number] {
+        return [
+            this._dataView.getFloat32(index * 16, true),
+            this._dataView.getFloat32(index * 16 + 4, true),
+            this._dataView.getFloat32(index * 16 + 8, true),
+            this._dataView.getFloat32(index * 16 + 12, true),
+        ];
+    }
+
+    public getPointByID(id: number | string): [number, number, number, number] {
+        return this.getPointByIndex(this.getPointIndex(id));
+    }
+
     public addPoints(data: unknown[], mappings: Partial<PointDataMappings> = {}): void {
         this.resizeTexture(this._length + data.length);
 
