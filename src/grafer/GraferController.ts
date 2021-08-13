@@ -241,7 +241,7 @@ export class GraferController extends EventEmitter {
                 };
             }
 
-            labels = new LabelsClass(context, graph, labelsData.data, labelsMappings, pickingManager, labelsData.options?.font);
+            labels = new LabelsClass(context, graph, labelsData.data, labelsMappings, pickingManager, labelsData.options?.font, labelsData.options?.bold);
             if ('options' in labelsData) {
                 const options = labelsData.options;
                 const keys = Object.keys(options);

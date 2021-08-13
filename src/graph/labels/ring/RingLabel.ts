@@ -17,9 +17,10 @@ export class RingLabel extends CircularLabel {
         mappings: Partial<DataMappings<LabelNodeData>>,
         pickingManager: PickingManager,
         font: string = 'monospace',
+        bold: boolean = false,
         labelAtlas?: LabelAtlas
     ): void {
-        super.initialize(context, points, data, mappings, pickingManager, font, labelAtlas);
+        super.initialize(context, points, data, mappings, pickingManager, font, bold, labelAtlas);
         this.localUniforms.uPadding = 2.0;
     }
     protected getDrawShaders(): RenderableShaders {
