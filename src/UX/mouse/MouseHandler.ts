@@ -40,6 +40,8 @@ export interface MouseState {
     canvasCoords: vec2;
     glCoords: vec2;
     deltaCoords: vec2;
+    clickPositionDelta: vec2;
+    clickValid: boolean;
     wheel: number;
     buttons: {
         primary: boolean;
@@ -74,6 +76,8 @@ export class MouseHandler extends EventEmitter.mixin(UXModule) {
     private boundHandler: (e: MouseEvent) => void = this.handleMouseEvent.bind(this);
     private disableContextMenu: (e: Event) => void = (e: Event) => e.preventDefault();
 
+    public clickDragThreshold: number = 10;
+
     constructor(canvas: HTMLCanvasElement, rect: DOMRectReadOnly, pixelRatio: number, enabled: boolean = true) {
         super();
         this.canvas = canvas;
@@ -86,6 +90,8 @@ export class MouseHandler extends EventEmitter.mixin(UXModule) {
             canvasCoords: vec2.create(),
             glCoords: vec2.create(),
             deltaCoords: vec2.create(),
+            clickPositionDelta: vec2.create(),
+            clickValid: false,
             wheel: 0,
             buttons: {
                 primary: false,
@@ -102,6 +108,8 @@ export class MouseHandler extends EventEmitter.mixin(UXModule) {
             canvasCoords: vec2.create(),
             glCoords: vec2.create(),
             deltaCoords: vec2.create(),
+            clickPositionDelta: vec2.create(),
+            clickValid: false,
             wheel: 0,
             buttons: {
                 primary: false,
@@ -135,7 +143,8 @@ export class MouseHandler extends EventEmitter.mixin(UXModule) {
         this.canvas.addEventListener('mousemove', this.boundHandler);
         this.canvas.addEventListener('mousedown', this.boundHandler);
         this.canvas.addEventListener('mouseup', this.boundHandler);
-        this.canvas.addEventListener('click', this.boundHandler);
+        // click needs to be emulated because it triggers even after dragging for a long distance
+        // this.canvas.addEventListener('click', this.boundHandler);
         this.canvas.addEventListener('wheel', this.boundHandler);
 
         this.canvas.addEventListener('contextmenu', this.disableContextMenu);
@@ -147,7 +156,7 @@ export class MouseHandler extends EventEmitter.mixin(UXModule) {
         this.canvas.removeEventListener('mousemove', this.boundHandler);
         this.canvas.removeEventListener('mousedown', this.boundHandler);
         this.canvas.removeEventListener('mouseup', this.boundHandler);
-        this.canvas.removeEventListener('click', this.boundHandler);
+        // this.canvas.removeEventListener('click', this.boundHandler);
         this.canvas.removeEventListener('wheel', this.boundHandler);
 
         this.canvas.removeEventListener('contextmenu', this.disableContextMenu);
@@ -215,6 +224,8 @@ export class MouseHandler extends EventEmitter.mixin(UXModule) {
         vec2.copy(this.state.canvasCoords, state.canvasCoords);
         vec2.copy(this.state.glCoords, state.glCoords);
         vec2.copy(this.state.deltaCoords, state.deltaCoords);
+        vec2.copy(this.state.clickPositionDelta, state.clickPositionDelta);
+        this.state.clickValid = state.clickValid;
         this.state.wheel = state.wheel;
         Object.assign(this.state.buttons, state.buttons);
     }
@@ -256,6 +267,12 @@ export class MouseHandler extends EventEmitter.mixin(UXModule) {
 
         if (e.type === 'mousemove') {
             vec2.set(delta, e.movementX, e.movementY);
+            if (this.state.clickValid) {
+                vec2.add(this.newState.clickPositionDelta, this.state.clickPositionDelta, delta);
+                if (vec2.length(this.newState.clickPositionDelta) > this.clickDragThreshold) {
+                    this.newState.clickValid = false;
+                }
+            }
         } else {
             vec2.set(delta, 0, 0);
         }
@@ -272,9 +289,25 @@ export class MouseHandler extends EventEmitter.mixin(UXModule) {
         this.newState.buttons.fifth = Boolean(e.buttons & 16);
 
         switch (e.type) {
-            case 'click':
-                this.handleClickEvent(e, this.newState);
+            case 'mousedown':
+                if (this.newState.buttons.primary) {
+                    this.newState.clickValid = true;
+                    vec2.set(this.newState.clickPositionDelta, 0, 0);
+                }
+                this.update(this.newState);
                 break;
+
+            case 'mouseup':
+                if (this.state.clickValid) {
+                    this.handleClickEvent(e, this.newState);
+                }
+                this.update(this.newState);
+                break;
+
+            // click has to be simulated because it triggers on the canvas even after dragging
+            // case 'click':
+            //     this.handleClickEvent(e, this.newState);
+            //     break;
 
             case 'wheel':
                 this.handleWheelEvent(e as WheelEvent, this.newState);
