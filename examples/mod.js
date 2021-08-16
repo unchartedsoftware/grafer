@@ -5091,18 +5091,18 @@ var require_chroma = __commonJS({
         }
         return null;
       };
-      var PI = Math.PI;
+      var PI2 = Math.PI;
       var utils = {
         clip_rgb,
         limit,
         type,
         unpack,
         last,
-        PI,
-        TWOPI: PI * 2,
-        PITHIRD: PI / 3,
-        DEG2RAD: PI / 180,
-        RAD2DEG: 180 / PI
+        PI: PI2,
+        TWOPI: PI2 * 2,
+        PITHIRD: PI2 / 3,
+        DEG2RAD: PI2 / 180,
+        RAD2DEG: 180 / PI2
       };
       var input = {
         format: {},
@@ -5686,7 +5686,7 @@ var require_chroma = __commonJS({
       var unpack$d = utils.unpack;
       var TWOPI = utils.TWOPI;
       var min4 = Math.min;
-      var sqrt = Math.sqrt;
+      var sqrt2 = Math.sqrt;
       var acos = Math.acos;
       var rgb2hsi = function() {
         var args = [], len5 = arguments.length;
@@ -5707,7 +5707,7 @@ var require_chroma = __commonJS({
           h = NaN;
         } else {
           h = (r - g + (r - b)) / 2;
-          h /= sqrt((r - g) * (r - g) + (r - b) * (g - b));
+          h /= sqrt2((r - g) * (r - g) + (r - b) * (g - b));
           h = acos(h);
           if (b > g) {
             h = TWOPI - h;
@@ -5721,7 +5721,7 @@ var require_chroma = __commonJS({
       var limit$1 = utils.limit;
       var TWOPI$1 = utils.TWOPI;
       var PITHIRD = utils.PITHIRD;
-      var cos = Math.cos;
+      var cos2 = Math.cos;
       var hsi2rgb = function() {
         var args = [], len5 = arguments.length;
         while (len5--)
@@ -5746,17 +5746,17 @@ var require_chroma = __commonJS({
         h /= 360;
         if (h < 1 / 3) {
           b = (1 - s) / 3;
-          r = (1 + s * cos(TWOPI$1 * h) / cos(PITHIRD - TWOPI$1 * h)) / 3;
+          r = (1 + s * cos2(TWOPI$1 * h) / cos2(PITHIRD - TWOPI$1 * h)) / 3;
           g = 1 - (b + r);
         } else if (h < 2 / 3) {
           h -= 1 / 3;
           r = (1 - s) / 3;
-          g = (1 + s * cos(TWOPI$1 * h) / cos(PITHIRD - TWOPI$1 * h)) / 3;
+          g = (1 + s * cos2(TWOPI$1 * h) / cos2(PITHIRD - TWOPI$1 * h)) / 3;
           b = 1 - (r + g);
         } else {
           h -= 2 / 3;
           g = (1 - s) / 3;
-          b = (1 + s * cos(TWOPI$1 * h) / cos(PITHIRD - TWOPI$1 * h)) / 3;
+          b = (1 + s * cos2(TWOPI$1 * h) / cos2(PITHIRD - TWOPI$1 * h)) / 3;
           r = 1 - (g + b);
         }
         r = limit$1(i2 * r * 3);
@@ -5941,7 +5941,7 @@ var require_chroma = __commonJS({
         t3: 8856452e-9
       };
       var unpack$k = utils.unpack;
-      var pow2 = Math.pow;
+      var pow3 = Math.pow;
       var rgb2lab = function() {
         var args = [], len5 = arguments.length;
         while (len5--)
@@ -5961,11 +5961,11 @@ var require_chroma = __commonJS({
         if ((r /= 255) <= 0.04045) {
           return r / 12.92;
         }
-        return pow2((r + 0.055) / 1.055, 2.4);
+        return pow3((r + 0.055) / 1.055, 2.4);
       };
       var xyz_lab = function(t) {
         if (t > labConstants.t3) {
-          return pow2(t, 1 / 3);
+          return pow3(t, 1 / 3);
         }
         return t / labConstants.t2 + labConstants.t0;
       };
@@ -6071,7 +6071,7 @@ var require_chroma = __commonJS({
       var rgb2lch_1 = rgb2lch;
       var unpack$p = utils.unpack;
       var DEG2RAD = utils.DEG2RAD;
-      var sin = Math.sin;
+      var sin2 = Math.sin;
       var cos$1 = Math.cos;
       var lch2lab = function() {
         var args = [], len5 = arguments.length;
@@ -6085,7 +6085,7 @@ var require_chroma = __commonJS({
           h = 0;
         }
         h = h * DEG2RAD;
-        return [l, cos$1(h) * c, sin(h) * c];
+        return [l, cos$1(h) * c, sin2(h) * c];
       };
       var lch2lab_1 = lch2lab;
       var unpack$q = utils.unpack;
@@ -15028,6 +15028,43 @@ var GraphPoints_test_vs_default = "#version 300 es\n#define GLSLIFY 1\n\nlayout(
 // src/data/shaders/noop.fs.glsl
 var noop_fs_default = "#version 300 es\n#define GLSLIFY 1\nvoid main() {}\n";
 
+// src/renderer/DataTexture.ts
+var DataTexture = class {
+  get texture() {
+    this.update();
+    return this._texture;
+  }
+  get capacity() {
+    return this.textureSize[0] * this.textureSize[1];
+  }
+  constructor(context, initialCapacity = 1024) {
+    this.context = context;
+    this.textureSize = vec2_exports.create();
+    this.resizeTexture(initialCapacity);
+  }
+  destroy() {
+    this._texture.delete();
+    this.context = null;
+    this.textureSize = null;
+    this._texture = null;
+  }
+  createTexture(width, height) {
+    return this.context.createTexture2D(width, height);
+  }
+  resizeTexture(capacity) {
+    if (this.capacity < capacity) {
+      const textureWidth = Math.pow(2, Math.ceil(Math.log2(Math.ceil(Math.sqrt(capacity)))));
+      const textureHeight = Math.pow(2, Math.ceil(Math.log2(Math.ceil(capacity / textureWidth))));
+      this.textureSize = vec2_exports.fromValues(textureWidth, textureHeight);
+      if (this._texture) {
+        this._texture.resize(textureWidth, textureHeight);
+      } else {
+        this._texture = this.createTexture(textureWidth, textureHeight);
+      }
+    }
+  }
+};
+
 // src/data/GraphPoints.ts
 var kDefaultMappings = {
   id: (entry, i) => "id" in entry ? entry.id : i,
@@ -15042,7 +15079,25 @@ var kGLTypes = {
   z: picogl_default.FLOAT,
   radius: picogl_default.FLOAT
 };
-var GraphPoints = class {
+var GraphPoints = class extends DataTexture {
+  constructor(context, data, mappings2 = {}) {
+    super(context, data.length);
+    this._length = 0;
+    this.dirty = false;
+    this.map = new Map();
+    this.bb = {
+      min: vec3_exports.fromValues(Number.MAX_SAFE_INTEGER, Number.MAX_SAFE_INTEGER, Number.MAX_SAFE_INTEGER),
+      max: vec3_exports.fromValues(Number.MIN_SAFE_INTEGER, Number.MIN_SAFE_INTEGER, Number.MIN_SAFE_INTEGER)
+    };
+    this.bbCenter = vec3_exports.create();
+    this._dataBuffer = this.packData(data, mappings2, true);
+    this._dataView = new DataView(this._dataBuffer);
+    const diagonalVec = vec3_exports.sub(vec3_exports.create(), this.bb.max, this.bb.min);
+    this.bbDiagonal = vec3_exports.length(diagonalVec);
+    this.bbCenter = vec3_exports.add(vec3_exports.create(), this.bb.min, vec3_exports.mul(vec3_exports.create(), diagonalVec, vec3_exports.fromValues(0.5, 0.5, 0.5)));
+    this._length = data.length;
+    this.dirty = true;
+  }
   static createGraphFromNodes(context, nodes, mappings2 = {}) {
     let pointIndex = 0;
     const dataMappings = Object.assign({}, kDefaultMappings, {
@@ -15051,25 +15106,65 @@ var GraphPoints = class {
     const points2 = concatenateData(nodes, dataMappings);
     return new this(context, points2);
   }
-  get dataTexture() {
-    return this._dataTexture;
-  }
   get dataBuffer() {
     return this._dataBuffer;
   }
   get dataView() {
     return this._dataView;
   }
-  constructor(context, data, mappings2 = {}) {
-    this.map = new Map();
-    this.bb = {
-      min: vec3_exports.fromValues(Number.MAX_SAFE_INTEGER, Number.MAX_SAFE_INTEGER, Number.MAX_SAFE_INTEGER),
-      max: vec3_exports.fromValues(Number.MIN_SAFE_INTEGER, Number.MIN_SAFE_INTEGER, Number.MIN_SAFE_INTEGER)
-    };
-    this.bbCenter = vec3_exports.create();
+  get length() {
+    return this._length;
+  }
+  destroy() {
+    super.destroy();
+    this.map.clear();
+    this._dataBuffer = null;
+    this.map = null;
+  }
+  update() {
+    if (this.dirty) {
+      const float32 = new Float32Array(this._dataBuffer);
+      this._texture.data(float32);
+    }
+    this.dirty = false;
+  }
+  getPointIndex(id) {
+    return this.map.get(id);
+  }
+  getPointByIndex(index) {
+    return [
+      this._dataView.getFloat32(index * 16, true),
+      this._dataView.getFloat32(index * 16 + 4, true),
+      this._dataView.getFloat32(index * 16 + 8, true),
+      this._dataView.getFloat32(index * 16 + 12, true)
+    ];
+  }
+  getPointByID(id) {
+    return this.getPointByIndex(this.getPointIndex(id));
+  }
+  addPoints(data, mappings2 = {}) {
+    this.resizeTexture(this._length + data.length);
+    const mergeBuffer = new ArrayBuffer(this.capacity * 16);
+    const mergeBytes = new Uint8Array(mergeBuffer);
+    const dataBuffer = this.packData(data, mappings2, false);
+    const dataBytes = new Uint8Array(dataBuffer);
+    const oldBytes = new Uint8Array(this._dataBuffer, 0, this._length * 16);
+    mergeBytes.set(oldBytes);
+    mergeBytes.set(dataBytes, oldBytes.length);
+    this._dataBuffer = mergeBuffer;
+    this._dataView = new DataView(this._dataBuffer);
+    this._length += data.length;
+    this.dirty = true;
+  }
+  createTexture(width, height) {
+    return this.context.createTexture2D(width, height, {
+      internalFormat: picogl_default.RGBA32F
+    });
+  }
+  packData(data, mappings2, potLength) {
     const dataMappings = Object.assign({}, kDefaultMappings, mappings2);
-    this._dataBuffer = packData(data, dataMappings, kGLTypes, true, (i, entry) => {
-      this.map.set(entry.id, i);
+    return packData(data, dataMappings, kGLTypes, potLength, (i, entry) => {
+      this.map.set(entry.id, this._length + i);
       this.bb.min[0] = Math.min(this.bb.min[0], entry.x - entry.radius);
       this.bb.min[1] = Math.min(this.bb.min[1], entry.y - entry.radius);
       this.bb.min[2] = Math.min(this.bb.min[2], entry.z);
@@ -15077,27 +15172,6 @@ var GraphPoints = class {
       this.bb.max[1] = Math.max(this.bb.max[1], entry.y + entry.radius);
       this.bb.max[2] = Math.max(this.bb.max[2], entry.z);
     });
-    this._dataView = new DataView(this._dataBuffer);
-    const diagonalVec = vec3_exports.sub(vec3_exports.create(), this.bb.max, this.bb.min);
-    this.bbDiagonal = vec3_exports.length(diagonalVec);
-    this.bbCenter = vec3_exports.add(vec3_exports.create(), this.bb.min, vec3_exports.mul(vec3_exports.create(), diagonalVec, vec3_exports.fromValues(0.5, 0.5, 0.5)));
-    const textureWidth = Math.pow(2, Math.ceil(Math.log2(Math.ceil(Math.sqrt(data.length)))));
-    const textureHeight = Math.pow(2, Math.ceil(Math.log2(Math.ceil(data.length / textureWidth))));
-    this._dataTexture = context.createTexture2D(textureWidth, textureHeight, {
-      internalFormat: picogl_default.RGBA32F
-    });
-    const float32 = new Float32Array(this._dataBuffer);
-    this._dataTexture.data(float32);
-  }
-  destroy() {
-    this._dataTexture.delete();
-    this.map.clear();
-    this._dataTexture = null;
-    this._dataBuffer = null;
-    this.map = null;
-  }
-  getPointIndex(id) {
-    return this.map.get(id);
   }
   testFeedback(context) {
     const program = context.createProgram(GraphPoints_test_vs_default, noop_fs_default, { transformFeedbackVaryings: ["vPosition", "vRadius", "vYolo"], transformFeedbackMode: picogl_default.INTERLEAVED_ATTRIBS });
@@ -15114,7 +15188,7 @@ var GraphPoints = class {
     const vertexArray = context.createVertexArray().vertexAttributeBuffer(0, pointsIndices);
     const drawCall = context.createDrawCall(program, vertexArray).transformFeedback(transformFeedback);
     drawCall.primitive(picogl_default.POINTS);
-    drawCall.texture("uDataTexture", this._dataTexture);
+    drawCall.texture("uDataTexture", this.texture);
     context.enable(picogl_default.RASTERIZER_DISCARD);
     drawCall.draw();
     context.disable(picogl_default.RASTERIZER_DISCARD);
@@ -15129,7 +15203,7 @@ var GraphPoints = class {
 // src/data/PointsReader.ts
 var PointsReader = class {
   get dataTexture() {
-    return this.points.dataTexture;
+    return this.points.texture;
   }
   constructor(...args) {
     this.initialize(...args);
@@ -15342,6 +15416,7 @@ var MouseHandler = class extends EventEmitter.mixin(UXModule) {
     super();
     this.boundHandler = this.handleMouseEvent.bind(this);
     this.disableContextMenu = (e) => e.preventDefault();
+    this.clickDragThreshold = 10;
     this.canvas = canvas;
     this.rect = rect;
     this.pixelRatio = pixelRatio;
@@ -15351,6 +15426,8 @@ var MouseHandler = class extends EventEmitter.mixin(UXModule) {
       canvasCoords: vec2_exports.create(),
       glCoords: vec2_exports.create(),
       deltaCoords: vec2_exports.create(),
+      clickPositionDelta: vec2_exports.create(),
+      clickValid: false,
       wheel: 0,
       buttons: {
         primary: false,
@@ -15366,6 +15443,8 @@ var MouseHandler = class extends EventEmitter.mixin(UXModule) {
       canvasCoords: vec2_exports.create(),
       glCoords: vec2_exports.create(),
       deltaCoords: vec2_exports.create(),
+      clickPositionDelta: vec2_exports.create(),
+      clickValid: false,
       wheel: 0,
       buttons: {
         primary: false,
@@ -15397,7 +15476,6 @@ var MouseHandler = class extends EventEmitter.mixin(UXModule) {
     this.canvas.addEventListener("mousemove", this.boundHandler);
     this.canvas.addEventListener("mousedown", this.boundHandler);
     this.canvas.addEventListener("mouseup", this.boundHandler);
-    this.canvas.addEventListener("click", this.boundHandler);
     this.canvas.addEventListener("wheel", this.boundHandler);
     this.canvas.addEventListener("contextmenu", this.disableContextMenu);
   }
@@ -15407,7 +15485,6 @@ var MouseHandler = class extends EventEmitter.mixin(UXModule) {
     this.canvas.removeEventListener("mousemove", this.boundHandler);
     this.canvas.removeEventListener("mousedown", this.boundHandler);
     this.canvas.removeEventListener("mouseup", this.boundHandler);
-    this.canvas.removeEventListener("click", this.boundHandler);
     this.canvas.removeEventListener("wheel", this.boundHandler);
     this.canvas.removeEventListener("contextmenu", this.disableContextMenu);
   }
@@ -15467,6 +15544,8 @@ var MouseHandler = class extends EventEmitter.mixin(UXModule) {
     vec2_exports.copy(this.state.canvasCoords, state.canvasCoords);
     vec2_exports.copy(this.state.glCoords, state.glCoords);
     vec2_exports.copy(this.state.deltaCoords, state.deltaCoords);
+    vec2_exports.copy(this.state.clickPositionDelta, state.clickPositionDelta);
+    this.state.clickValid = state.clickValid;
     this.state.wheel = state.wheel;
     Object.assign(this.state.buttons, state.buttons);
   }
@@ -15501,6 +15580,12 @@ var MouseHandler = class extends EventEmitter.mixin(UXModule) {
     vec2_exports.set(gl, (e.clientX - rect.left) * this.pixelRatio, (rect.bottom - e.clientY) * this.pixelRatio);
     if (e.type === "mousemove") {
       vec2_exports.set(delta, e.movementX, e.movementY);
+      if (this.state.clickValid) {
+        vec2_exports.add(this.newState.clickPositionDelta, this.state.clickPositionDelta, delta);
+        if (vec2_exports.length(this.newState.clickPositionDelta) > this.clickDragThreshold) {
+          this.newState.clickValid = false;
+        }
+      }
     } else {
       vec2_exports.set(delta, 0, 0);
     }
@@ -15511,8 +15596,18 @@ var MouseHandler = class extends EventEmitter.mixin(UXModule) {
     this.newState.buttons.fourth = Boolean(e.buttons & 8);
     this.newState.buttons.fifth = Boolean(e.buttons & 16);
     switch (e.type) {
-      case "click":
-        this.handleClickEvent(e, this.newState);
+      case "mousedown":
+        if (this.newState.buttons.primary) {
+          this.newState.clickValid = true;
+          vec2_exports.set(this.newState.clickPositionDelta, 0, 0);
+        }
+        this.update(this.newState);
+        break;
+      case "mouseup":
+        if (this.state.clickValid) {
+          this.handleClickEvent(e, this.newState);
+        }
+        this.update(this.newState);
         break;
       case "wheel":
         this.handleWheelEvent(e, this.newState);
@@ -15532,31 +15627,10 @@ var ColorRegistryType;
   ColorRegistryType2["mapped"] = "mapped";
   ColorRegistryType2["indexed"] = "indexed";
 })(ColorRegistryType || (ColorRegistryType = {}));
-var ColorRegistry = class {
-  constructor(context, initialCapacity = 1024) {
+var ColorRegistry = class extends DataTexture {
+  constructor() {
+    super(...arguments);
     this.dirty = false;
-    this.context = context;
-    this.textureSize = vec2_exports.create();
-    this.resizeTexture(initialCapacity);
-  }
-  get texture() {
-    this.update();
-    return this._texture;
-  }
-  get capacity() {
-    return this.textureSize[0] * this.textureSize[1];
-  }
-  resizeTexture(capacity) {
-    if (this.capacity < capacity) {
-      const textureWidth = Math.pow(2, Math.ceil(Math.log2(Math.ceil(Math.sqrt(capacity)))));
-      const textureHeight = Math.pow(2, Math.ceil(Math.log2(Math.ceil(capacity / textureWidth))));
-      this.textureSize = vec2_exports.fromValues(textureWidth, textureHeight);
-      if (this._texture) {
-        this._texture.resize(textureWidth, textureHeight);
-      } else {
-        this._texture = this.context.createTexture2D(textureWidth, textureHeight);
-      }
-    }
   }
 };
 
@@ -15977,13 +16051,13 @@ __export(mod_exports4, {
 });
 
 // src/graph/nodes/circle/Circle.vs.glsl
-var Circle_vs_default = '#version 300 es\n#define GLSLIFY 1\n\nlayout(location=0) in vec3 aVertex;\nlayout(location=1) in vec3 iPosition;\nlayout(location=2) in float iRadius;\nlayout(location=3) in uint iColor;\nlayout(location=4) in uvec4 iPickingColor;\n\n//layout(std140) uniform RenderUniforms {\n    uniform mat4 uViewMatrix;\n    uniform mat4 uSceneMatrix;\n    uniform mat4 uProjectionMatrix;\n    uniform vec2 uViewportSize;\n    uniform float uPixelRatio;\n    uniform sampler2D uColorPalette;\n//};\n\nuniform bool uPixelSizing;\nuniform bool uBillboard;\n\nuniform bool uPicking;\n\nflat out vec4 fColor;\nflat out float fPixelLength;\nout vec2 vFromCenter;\n\nvec4 getColorByIndexFromTexture(sampler2D tex, int index) {\n    int texWidth = textureSize(tex, 0).x;\n    int col = index % texWidth;\n    int row = index / texWidth;\n    return texelFetch(tex, ivec2(col, row), 0);\n}\n\nvoid main() {\n    // claculate the offset matrix, done as a matrix to be able to compute "billboard" vertices in the shader\n    mat4 offsetMatrix = mat4(1.0);\n    offsetMatrix[3] = vec4(iPosition, 1.0);\n\n    // reset the rotation of the model-view matrix\n    mat4 modelMatrix = uViewMatrix * uSceneMatrix * offsetMatrix;\n    mat4 lookAtMatrix = mat4(modelMatrix);\n    lookAtMatrix[0] = vec4(1.0, 0.0, 0.0, lookAtMatrix[0][3]);\n    lookAtMatrix[1] = vec4(0.0, 1.0, 0.0, lookAtMatrix[1][3]);\n    lookAtMatrix[2] = vec4(0.0, 0.0, 1.0, lookAtMatrix[2][3]);\n\n    // the on-screen center of this node\n    vec4 quadCenter = uProjectionMatrix * lookAtMatrix * vec4(0.0, 0.0, 0.0, 1.0);\n    vec2 screenQuadCenter = quadCenter.xy / quadCenter.w;\n\n    // the on-screen position of a side of this quad\n    vec4 quadSide = uProjectionMatrix * lookAtMatrix * vec4(iRadius, 0.0, 0.0, 1.0);\n    vec2 screenQuadSide = quadSide.xy / quadSide.w;\n\n    // compute the pixel radius of this node for a size of 1 in world coordinates\n    float pixelRadius = max(1.0, length((screenQuadSide - screenQuadCenter) * uViewportSize * 0.5));\n\n    // calculate the desired pixel radius for the size mode\n    float desiredPixelRadius = (uPixelSizing ? iRadius : pixelRadius);\n\n    // calculate the pixel radius multiplier needed to acomplish the desired pixel radius\n    float pixelRadiusMult = desiredPixelRadius / pixelRadius;\n\n    // calculate the render matrix\n    mat4 renderMatrix = uBillboard ? uProjectionMatrix * lookAtMatrix : uProjectionMatrix * modelMatrix;\n\n    // compute the vertex position and its screen position\n    vec4 worldVertex = renderMatrix * vec4(aVertex * iRadius * pixelRadiusMult, 1.0);\n\n    // send the render color to the fragment shader\n    fColor = uPicking ? vec4(iPickingColor) / 255.0 : getColorByIndexFromTexture(uColorPalette, int(iColor));\n    // send the normalized length of a single pixel to the fragment shader\n    fPixelLength = 1.0 / desiredPixelRadius;\n    // send the normalized distance from the center to the fragment shader\n    vFromCenter = aVertex.xy;\n\n    // set the render vertex location\n    gl_Position = worldVertex;\n}\n';
+var Circle_vs_default = '#version 300 es\n#define GLSLIFY 1\n\nlayout(location=0) in vec3 aVertex;\nlayout(location=1) in uint iPositionIndex;\nlayout(location=2) in float iRadius;\nlayout(location=3) in uint iColor;\nlayout(location=4) in uvec4 iPickingColor;\n\n//layout(std140) uniform RenderUniforms {\n    uniform mat4 uViewMatrix;\n    uniform mat4 uSceneMatrix;\n    uniform mat4 uProjectionMatrix;\n    uniform vec2 uViewportSize;\n    uniform float uPixelRatio;\n    uniform sampler2D uGraphPoints;\n    uniform sampler2D uColorPalette;\n//};\n\nuniform bool uPixelSizing;\nuniform bool uBillboard;\n\nuniform bool uPicking;\n\nflat out vec4 fColor;\nflat out float fPixelLength;\nout vec2 vFromCenter;\n\nvec4 valueForIndex(sampler2D tex, int index) {\n    int texWidth = textureSize(tex, 0).x;\n    int col = index % texWidth;\n    int row = index / texWidth;\n    return texelFetch(tex, ivec2(col, row), 0);\n}\n\nuvec4 uvalueForIndex(usampler2D tex, int index) {\n    int texWidth = textureSize(tex, 0).x;\n    int col = index % texWidth;\n    int row = index / texWidth;\n    return texelFetch(tex, ivec2(col, row), 0);\n}\n\nuint uivalueForIndex(usampler2D tex, int index) {\n    int texWidth = textureSize(tex, 0).x;\n    int col = index % texWidth;\n    int row = index / texWidth;\n    return texelFetch(tex, ivec2(col, row), 0)[0];\n}\n\nvoid main() {\n    // claculate the offset matrix, done as a matrix to be able to compute "billboard" vertices in the shader\n    mat4 offsetMatrix = mat4(1.0);\n    offsetMatrix[3] = vec4(valueForIndex(uGraphPoints, int(iPositionIndex)).xyz, 1.0);\n\n    // reset the rotation of the model-view matrix\n    mat4 modelMatrix = uViewMatrix * uSceneMatrix * offsetMatrix;\n    mat4 lookAtMatrix = mat4(modelMatrix);\n    lookAtMatrix[0] = vec4(1.0, 0.0, 0.0, lookAtMatrix[0][3]);\n    lookAtMatrix[1] = vec4(0.0, 1.0, 0.0, lookAtMatrix[1][3]);\n    lookAtMatrix[2] = vec4(0.0, 0.0, 1.0, lookAtMatrix[2][3]);\n\n    // the on-screen center of this node\n    vec4 quadCenter = uProjectionMatrix * lookAtMatrix * vec4(0.0, 0.0, 0.0, 1.0);\n    vec2 screenQuadCenter = quadCenter.xy / quadCenter.w;\n\n    // the on-screen position of a side of this quad\n    vec4 quadSide = uProjectionMatrix * lookAtMatrix * vec4(iRadius, 0.0, 0.0, 1.0);\n    vec2 screenQuadSide = quadSide.xy / quadSide.w;\n\n    // compute the pixel radius of this node for a size of 1 in world coordinates\n    float pixelRadius = max(1.0, length((screenQuadSide - screenQuadCenter) * uViewportSize * 0.5));\n\n    // calculate the desired pixel radius for the size mode\n    float desiredPixelRadius = (uPixelSizing ? iRadius : pixelRadius);\n\n    // calculate the pixel radius multiplier needed to acomplish the desired pixel radius\n    float pixelRadiusMult = desiredPixelRadius / pixelRadius;\n\n    // calculate the render matrix\n    mat4 renderMatrix = uBillboard ? uProjectionMatrix * lookAtMatrix : uProjectionMatrix * modelMatrix;\n\n    // compute the vertex position and its screen position\n    vec4 worldVertex = renderMatrix * vec4(aVertex * iRadius * pixelRadiusMult, 1.0);\n\n    // send the render color to the fragment shader\n    fColor = uPicking ? vec4(iPickingColor) / 255.0 : valueForIndex(uColorPalette, int(iColor));\n    // send the normalized length of a single pixel to the fragment shader\n    fPixelLength = 1.0 / desiredPixelRadius;\n    // send the normalized distance from the center to the fragment shader\n    vFromCenter = aVertex.xy;\n\n    // set the render vertex location\n    gl_Position = worldVertex;\n}\n';
 
 // src/graph/nodes/circle/Circle.fs.glsl
 var Circle_fs_default = "#version 300 es\nprecision highp float;\n#define GLSLIFY 1\n\n// from https://en.wikipedia.org/wiki/SRGB#The_reverse_transformation\nfloat luminance_x(float x) {\n    return x <= 0.04045 ? x / 12.92 : pow((x + 0.055) / 1.055, 2.4);\n}\nfloat color_l(float l) {\n    return min(1.0, max(0.0, l <= 0.0031308 ? l * 12.92 : pow(l * 1.055, 1.0 / 2.4) - 0.055));\n}\n\n// from https://en.wikipedia.org/wiki/Relative_luminance\nfloat rgb2luminance(vec3 color) {\n    // relative luminance\n    // see http://www.w3.org/TR/2008/REC-WCAG20-20081211/#relativeluminancedef\n    float r = luminance_x(color.r);\n    float g = luminance_x(color.g);\n    float b = luminance_x(color.b);\n    return 0.2126 * r + 0.7152 * g + 0.0722 * b;\n}\n\nvec3 setLuminance(vec3 color, float luminance) {\n    float r = luminance_x(color.r) * 0.2126;\n    float g = luminance_x(color.g) * 0.7152;\n    float b = luminance_x(color.b) * 0.0722;\n    float colorLuminance = r + g + b;\n\n    float tr = luminance * (r / colorLuminance);\n    float tg = luminance * (g / colorLuminance);\n    float tb = luminance * (b / colorLuminance);\n\n    float rr = color_l(tr / 0.2126);\n    float rg = color_l(tg / 0.7152);\n    float rb = color_l(tb / 0.0722);\n\n    return vec3(rr, rg, rb );\n}\n\n// https://www.w3.org/TR/WCAG20/#contrast-ratiodef\n// (L1 + 0.05) / (L2 + 0.05), where\n// - L1 is the relative luminance of the lighter of the colors, and\n// - L2 is the relative luminance of the darker of the colors.\nfloat findDarker(float luminance, float contrast) {\n    return (contrast * luminance) + (0.05 * contrast) - 0.05;\n}\nfloat findLighter(float luminance, float contrast) {\n    return (luminance + 0.05 - (0.05 * contrast)) / contrast;\n}\n\nvec3 contrastingColor(vec3 color, float contrast) {\n    float luminance = rgb2luminance(color);\n    float darker = findDarker(luminance, contrast);\n    float lighter = findLighter(luminance, contrast);\n\n    float targetLuminance;\n    if (darker < 0.0 || darker > 1.0) {\n        targetLuminance = lighter;\n    } else if (lighter < 0.0 || lighter > 1.0) {\n        targetLuminance = darker;\n    } else {\n        targetLuminance = abs(luminance - lighter) < abs(darker - luminance) ? lighter : darker;\n    }\n\n    return setLuminance(color, targetLuminance);\n}\n\nvec3 desaturateColor(vec3 color, float amount) {\n    float l = rgb2luminance(color);\n    vec3 gray = vec3(l, l, l);\n    return mix(color, gray, amount);\n}\n\nuniform vec4 uClearColor;\nuniform float uDesaturate;\nuniform float uBrightness;\nuniform float uFade;\nuniform float uAlpha;\n\nvec4 outputColor(vec4 color) {\n    // desaturate => fade => alpha\n    vec3 ret = mix(color.rgb, vec3(uBrightness + 1.0 / 2.0), abs(uBrightness));\n    ret = vec3(desaturateColor(ret, uDesaturate));\n    ret = mix(ret, uClearColor.rgb, uFade);\n    return vec4(ret, color.a * uAlpha);\n}\n\n#define MODE_DRAFT 0u\n#define MODE_MEDIUM 1u\n#define MODE_HIGH_PASS_1 2u\n#define MODE_HIGH_PASS_2 3u\n#define MODE_PICKING 4u\n\n// most of these come from this excellent post:\n// https://iquilezles.org/www/articles/distfunctions2d/distfunctions2d.htm\n\nfloat opRound(in float d, in float r) {\n    return d - r;\n}\n\nfloat opOnion(in float d, in float r) {\n    return abs(d) - r;\n}\n\nfloat sdCircle(in vec2 p, in float r ) {\n    return length(p) - r;\n}\n\nfloat sdEquilateralTriangle(in vec2 p, in float r) {\n    const float k = sqrt(3.0);\n    p.x = abs(p.x) - r;\n    p.y = p.y + (r) / k;\n    if (p.x + k * p.y > 0.0) {\n        p = vec2(p.x-k*p.y,-k*p.x-p.y) / 2.0;\n    }\n    p.x -= clamp(p.x, -2.0 * r, 0.0);\n    return -length(p) * sign(p.y);\n}\n\nfloat sdPentagon(in vec2 p, in float r) {\n    const vec3 k = vec3(0.809016994, 0.587785252, 0.726542528);\n    p.y = -(p.y) * 1.25;\n    p.x = abs(p.x) * 1.25;\n    p -= 2.0 * min(dot(vec2(-k.x, k.y), p), 0.0) * vec2(-k.x, k.y);\n    p -= 2.0 * min(dot(vec2(k.x, k.y), p), 0.0) * vec2(k.x, k.y);\n    p -= vec2(clamp(p.x, -r*k.z, r*k.z), r);\n    return length(p) * sign(p.y);\n}\n\nfloat sdOctagon(in vec2 p, in float r) {\n    // pi/8: cos, sin, tan.\n    const vec3 k = vec3(\n        -0.9238795325,   // sqrt(2+sqrt(2))/2\n        0.3826834323,   // sqrt(2-sqrt(2))/2\n        0.4142135623\n    ); // sqrt(2)-1\n    // reflections\n    p = abs(p) * 1.1;\n    p -= 2.0 * min(dot(vec2(k.x,k.y), p), 0.0) * vec2(k.x,k.y);\n    p -= 2.0 * min(dot(vec2(-k.x,k.y), p), 0.0) * vec2(-k.x,k.y);\n    // Polygon side.\n    p -= vec2(clamp(p.x, -k.z*r, k.z*r), r);\n    return length(p) * sign(p.y);\n}\n\nfloat sdStar(in vec2 p, in float r, in uint n, in float m) { // m=[2,n]\n    // these 4 lines can be precomputed for a given shape\n    float an = 3.141593 / float(n);\n    float en = 3.141593 / m;\n    vec2  acs = vec2(cos(an), sin(an));\n    vec2  ecs = vec2(cos(en), sin(en)); // ecs=vec2(0,1) and simplify, for regular polygon,\n\n    // reduce to first sector\n    float bn = mod(atan(p.x, p.y), 2.0 * an) - an;\n    p = length(p) * vec2(cos(bn), abs(sin(bn)));\n\n    // line sdf\n    p -= r * acs;\n    p += ecs * clamp(-dot(p, ecs), 0.0, r * acs.y / ecs.y);\n    return length(p) * sign(p.x);\n}\n\nfloat sdCross(in vec2 p, in float w, in float r) {\n    p = abs(p);\n    return length(p - min(p.x + p.y, w) * 0.5) - r;\n}\n\n// TODO: Precompute this, we always pass the same parameters tot his function (v, vec2(1.0, 0.3), 0.0)\nfloat sdPlus( in vec2 p, in vec2 b, float r ) {\n    p = abs(p);\n    p = (p.y > p.x) ? p.yx : p.xy;\n\n    vec2  q = p - b;\n    float k = max(q.y, q.x);\n    vec2  w = (k > 0.0) ? q : vec2(b.y - p.x, -k);\n\n    return sign(k)*length(max(w, 0.0)) + r;\n}\n\nuniform float uPixelRatio;\nuniform uint uRenderMode;\nuniform float uOutline;\n\nflat in vec4 fColor;\nflat in float fPixelLength;\nin vec2 vFromCenter;\n\nout vec4 fragColor;\n\nvoid main() {\n    float antialias = fPixelLength * 1.5;\n    float sd = sdCircle(vFromCenter, 1.0);\n    float outline = opOnion(sd, min(0.15, fPixelLength * uOutline * uPixelRatio));\n    float modeDistance = uRenderMode == MODE_HIGH_PASS_1 ? -antialias : -antialias * 0.5;\n    float distance = uRenderMode == MODE_HIGH_PASS_2 ? 0.0 : modeDistance;\n\n    if (sd > distance) {\n        discard;\n    }\n\n    vec3 color = fColor.rgb * (1.0 - 0.25 * smoothstep(antialias, 0.0, outline));\n\n    if (uRenderMode == MODE_HIGH_PASS_2) {\n        if (sd < -antialias) {\n            discard;\n        }\n        fragColor = outputColor(vec4(color, smoothstep(0.0, antialias, abs(sd))));\n    } else {\n        fragColor = outputColor(vec4(color, 1.0));\n    }\n}\n";
 
 // src/graph/nodes/circle/Circle.data.vs.glsl
-var Circle_data_vs_default = "#version 300 es\n#define GLSLIFY 1\n\nlayout(location=0) in uint aPositionIndex;\nlayout(location=1) in uint aColor;\nlayout(location=2) in float aRadius; // optional atthe end\n\nuniform sampler2D uGraphPoints;\nuniform bool uUsePointRadius;\n\nout vec3 vPosition;\nout float vRadius;\nflat out uint vColor;\n\nvec4 getValueByIndexFromTexture(sampler2D tex, int index) {\n    int texWidth = textureSize(tex, 0).x;\n    int col = index % texWidth;\n    int row = index / texWidth;\n    return texelFetch(tex, ivec2(col, row), 0);\n}\n\nvoid main() {\n    vec4 value = getValueByIndexFromTexture(uGraphPoints, int(aPositionIndex));\n    vPosition = value.xyz;\n\n    if (uUsePointRadius) {\n        vRadius = value.w;\n    } else {\n        vRadius = aRadius;\n    }\n\n    vColor = aColor;\n}\n";
+var Circle_data_vs_default = "#version 300 es\n#define GLSLIFY 1\n\nlayout(location=0) in uint aPositionIndex;\nlayout(location=1) in uint aColor;\nlayout(location=2) in float aRadius; // optional atthe end\n\nuniform sampler2D uGraphPoints;\nuniform bool uUsePointRadius;\n\nflat out uint fPoint;\nflat out float fRadius;\nflat out uint fColor;\n\nvec4 valueForIndex(sampler2D tex, int index) {\n    int texWidth = textureSize(tex, 0).x;\n    int col = index % texWidth;\n    int row = index / texWidth;\n    return texelFetch(tex, ivec2(col, row), 0);\n}\n\nuvec4 uvalueForIndex(usampler2D tex, int index) {\n    int texWidth = textureSize(tex, 0).x;\n    int col = index % texWidth;\n    int row = index / texWidth;\n    return texelFetch(tex, ivec2(col, row), 0);\n}\n\nuint uivalueForIndex(usampler2D tex, int index) {\n    int texWidth = textureSize(tex, 0).x;\n    int col = index % texWidth;\n    int row = index / texWidth;\n    return texelFetch(tex, ivec2(col, row), 0)[0];\n}\n\nvoid main() {\n    vec4 value = valueForIndex(uGraphPoints, int(aPositionIndex));\n    if (uUsePointRadius) {\n        fRadius = value.w;\n    } else {\n        fRadius = aRadius;\n    }\n\n    fPoint = aPositionIndex;\n    fColor = aColor;\n}\n";
 
 // src/graph/nodes/circle/Circle.picking.fs.glsl
 var Circle_picking_fs_default = "#version 300 es\nprecision highp float;\n#define GLSLIFY 1\n\nflat in vec4 fColor;\nflat in float fPixelLength;\nin vec2 vFromCenter;\n\nout vec4 fragColor;\n\nvoid main() {\n    float fromCenter = length(vFromCenter);\n    if (fromCenter > 1.0) {\n        discard;\n    }\n    fragColor = fColor;\n}\n";
@@ -16092,24 +16166,6 @@ var Nodes = class extends LayerRenderable {
   static get defaultMappings() {
     return kBasicNodeMappings;
   }
-  get constraintSize() {
-    return this.localUniforms.uConstraintSize;
-  }
-  set constraintSize(value) {
-    this.localUniforms.uConstraintSize = value;
-  }
-  get minSize() {
-    return this.localUniforms.uMinSize;
-  }
-  set minSize(value) {
-    this.localUniforms.uMinSize = value;
-  }
-  get maxSize() {
-    return this.localUniforms.uMaxSize;
-  }
-  set maxSize(value) {
-    this.localUniforms.uMaxSize = value;
-  }
   get pixelSizing() {
     return this.localUniforms.uPixelSizing;
   }
@@ -16129,15 +16185,13 @@ var Nodes = class extends LayerRenderable {
     this.localUniforms.uOutline = value;
   }
   initialize(...args) {
+    super.initialize(...args);
     this.localUniforms = Object.assign({}, this.localUniforms, {
-      uConstraintSize: true,
-      uMinSize: 1,
-      uMaxSize: 4,
+      uGraphPoints: this.dataTexture,
       uPixelSizing: false,
       uBillboard: true,
       uOutline: 6
     });
-    super.initialize(...args);
   }
   computeMappings(mappings2) {
     const nodesMappings = Object.assign({}, kBasicNodeMappings, mappings2);
@@ -16167,7 +16221,8 @@ var Nodes = class extends LayerRenderable {
 var kEvents3 = {
   hoverOn: Symbol("grafer_hover_on"),
   hoverOff: Symbol("grafer_hover_off"),
-  click: Symbol("grafer_click")
+  click: Symbol("grafer_click"),
+  emptyClick: Symbol("grafer_empty_click")
 };
 Object.freeze(kEvents3);
 var PickingManager = class extends EventEmitter.mixin(UXModule) {
@@ -16270,6 +16325,8 @@ var PickingManager = class extends EventEmitter.mixin(UXModule) {
       case MouseHandler.events.click:
         if (colorID !== 0) {
           this.emit(kEvents3.click, colorID >> 1);
+        } else {
+          this.emit(kEvents3.emptyClick);
         }
         break;
     }
@@ -16316,7 +16373,7 @@ var PickingManager = class extends EventEmitter.mixin(UXModule) {
 
 // src/graph/nodes/circle/Circle.ts
 var kGLCircleNodeTypes = {
-  position: [PicoGL.FLOAT, PicoGL.FLOAT, PicoGL.FLOAT],
+  position: PicoGL.UNSIGNED_INT,
   radius: PicoGL.FLOAT,
   color: PicoGL.UNSIGNED_INT
 };
@@ -16402,7 +16459,7 @@ var Circle = class extends Nodes {
   getDataShader() {
     return {
       vs: Circle_data_vs_default,
-      varyings: ["vPosition", "vRadius", "vColor"]
+      varyings: ["fPoint", "fRadius", "fColor"]
     };
   }
   handlePickingEvent(event, colorID) {
@@ -16603,13 +16660,13 @@ __export(mod_exports5, {
 });
 
 // src/graph/edges/straight/Straight.vs.glsl
-var Straight_vs_default = "#version 300 es\n#define GLSLIFY 1\n\nlayout(location=0) in vec3 aVertex;\nlayout(location=1) in vec3 iOffsetA;\nlayout(location=2) in vec3 iOffsetB;\nlayout(location=3) in uint iColorA;\nlayout(location=4) in uint iColorB;\n\nuniform mat4 uViewMatrix;\nuniform mat4 uSceneMatrix;\nuniform mat4 uProjectionMatrix;\nuniform vec2 uViewportSize;\nuniform float uPixelRatio;\nuniform sampler2D uColorPalette;\n\nuniform float uLineWidth;\n\nflat out float fLineWidth;\nout vec3 vColor;\nout vec2 vProjectedPosition;\nout float vProjectedW;\n\nvec4 getColorByIndexFromTexture(sampler2D tex, int index) {\n    int texWidth = textureSize(tex, 0).x;\n    int col = index % texWidth;\n    int row = index / texWidth;\n    return texelFetch(tex, ivec2(col, row), 0);\n}\n\nvoid main() {\n    float multA = aVertex.y;\n    float multB = 1.0 - aVertex.y;\n\n    vec4 colorA = getColorByIndexFromTexture(uColorPalette, int(iColorA));\n    vec4 colorB = getColorByIndexFromTexture(uColorPalette, int(iColorB));\n\n    vColor = colorA.rgb * multA + colorB.rgb * multB;\n\n    mat4 renderMatrix = uProjectionMatrix * uViewMatrix * uSceneMatrix;\n\n    vec4 aProjected = renderMatrix * vec4(iOffsetA, 1.0);\n    vec2 aScreen = aProjected.xy / aProjected.w * uViewportSize * 0.5;\n\n    vec4 bProjected = renderMatrix * vec4(iOffsetB, 1.0);\n    vec2 bScreen = bProjected.xy / bProjected.w * uViewportSize * 0.5;\n\n    vec2 direction = normalize(bScreen - aScreen);\n    vec2 perp = vec2(-direction.y, direction.x);\n\n    fLineWidth = uLineWidth * uPixelRatio;\n    float offsetWidth = fLineWidth + 0.5;\n    vec4 position = aProjected * multA + bProjected * multB;\n    vec4 offset = vec4(((aVertex.x * perp * offsetWidth) / uViewportSize) * position.w, 0.0, 0.0);\n    gl_Position = position + offset;\n\n    vProjectedPosition = position.xy;\n    vProjectedW = position.w;\n}\n";
+var Straight_vs_default = "#version 300 es\n#define GLSLIFY 1\n\nlayout(location=0) in vec3 aVertex;\nlayout(location=1) in uint iPointA;\nlayout(location=2) in uint iPointB;\nlayout(location=3) in uint iColorA;\nlayout(location=4) in uint iColorB;\n\nuniform mat4 uViewMatrix;\nuniform mat4 uSceneMatrix;\nuniform mat4 uProjectionMatrix;\nuniform vec2 uViewportSize;\nuniform float uPixelRatio;\nuniform sampler2D uGraphPoints;\nuniform sampler2D uColorPalette;\n\nuniform float uLineWidth;\n\nflat out float fLineWidth;\nout vec3 vColor;\nout vec2 vProjectedPosition;\nout float vProjectedW;\n\nvec4 valueForIndex(sampler2D tex, int index) {\n    int texWidth = textureSize(tex, 0).x;\n    int col = index % texWidth;\n    int row = index / texWidth;\n    return texelFetch(tex, ivec2(col, row), 0);\n}\n\nuvec4 uvalueForIndex(usampler2D tex, int index) {\n    int texWidth = textureSize(tex, 0).x;\n    int col = index % texWidth;\n    int row = index / texWidth;\n    return texelFetch(tex, ivec2(col, row), 0);\n}\n\nuint uivalueForIndex(usampler2D tex, int index) {\n    int texWidth = textureSize(tex, 0).x;\n    int col = index % texWidth;\n    int row = index / texWidth;\n    return texelFetch(tex, ivec2(col, row), 0)[0];\n}\n\nvoid main() {\n    vec4 pointA = valueForIndex(uGraphPoints, int(iPointA));\n    vec4 pointB = valueForIndex(uGraphPoints, int(iPointB));\n\n    vec3 direction = normalize(pointB.xyz - pointA.xyz);\n\n    vec3 offsetA = pointA.xyz + direction * pointA[3];\n    vec3 offsetB = pointB.xyz - direction * pointB[3];\n\n    float multA = aVertex.y;\n    float multB = 1.0 - aVertex.y;\n\n    vec4 colorA = valueForIndex(uColorPalette, int(iColorA));\n    vec4 colorB = valueForIndex(uColorPalette, int(iColorB));\n\n    vColor = colorA.rgb * multA + colorB.rgb * multB;\n\n    mat4 renderMatrix = uProjectionMatrix * uViewMatrix * uSceneMatrix;\n\n    vec4 aProjected = renderMatrix * vec4(offsetA, 1.0);\n    vec2 aScreen = aProjected.xy / aProjected.w * uViewportSize * 0.5;\n\n    vec4 bProjected = renderMatrix * vec4(offsetB, 1.0);\n    vec2 bScreen = bProjected.xy / bProjected.w * uViewportSize * 0.5;\n\n    vec2 screenDirection = normalize(bScreen - aScreen);\n    vec2 perp = vec2(-screenDirection.y, screenDirection.x);\n\n    fLineWidth = uLineWidth * uPixelRatio;\n    float offsetWidth = fLineWidth + 0.5;\n    vec4 position = aProjected * multA + bProjected * multB;\n    vec4 offset = vec4(((aVertex.x * perp * offsetWidth) / uViewportSize) * position.w, 0.0, 0.0);\n    gl_Position = position + offset;\n\n    vProjectedPosition = position.xy;\n    vProjectedW = position.w;\n}\n";
 
 // src/graph/edges/straight/Straight.fs.glsl
 var Straight_fs_default = "#version 300 es\nprecision highp float;\n#define GLSLIFY 1\n\n// from https://en.wikipedia.org/wiki/SRGB#The_reverse_transformation\nfloat luminance_x_1540259130(float x) {\n    return x <= 0.04045 ? x / 12.92 : pow((x + 0.055) / 1.055, 2.4);\n}\nfloat color_l_1540259130(float l) {\n    return min(1.0, max(0.0, l <= 0.0031308 ? l * 12.92 : pow(l * 1.055, 1.0 / 2.4) - 0.055));\n}\n\n// from https://en.wikipedia.org/wiki/Relative_luminance\nfloat rgb2luminance(vec3 color) {\n    // relative luminance\n    // see http://www.w3.org/TR/2008/REC-WCAG20-20081211/#relativeluminancedef\n    float r = luminance_x_1540259130(color.r);\n    float g = luminance_x_1540259130(color.g);\n    float b = luminance_x_1540259130(color.b);\n    return 0.2126 * r + 0.7152 * g + 0.0722 * b;\n}\n\nvec3 setLuminance(vec3 color, float luminance) {\n    float r = luminance_x_1540259130(color.r) * 0.2126;\n    float g = luminance_x_1540259130(color.g) * 0.7152;\n    float b = luminance_x_1540259130(color.b) * 0.0722;\n    float colorLuminance = r + g + b;\n\n    float tr = luminance * (r / colorLuminance);\n    float tg = luminance * (g / colorLuminance);\n    float tb = luminance * (b / colorLuminance);\n\n    float rr = color_l_1540259130(tr / 0.2126);\n    float rg = color_l_1540259130(tg / 0.7152);\n    float rb = color_l_1540259130(tb / 0.0722);\n\n    return vec3(rr, rg, rb );\n}\n\n// https://www.w3.org/TR/WCAG20/#contrast-ratiodef\n// (L1 + 0.05) / (L2 + 0.05), where\n// - L1 is the relative luminance of the lighter of the colors, and\n// - L2 is the relative luminance of the darker of the colors.\nfloat findDarker(float luminance, float contrast) {\n    return (contrast * luminance) + (0.05 * contrast) - 0.05;\n}\nfloat findLighter(float luminance, float contrast) {\n    return (luminance + 0.05 - (0.05 * contrast)) / contrast;\n}\n\nvec3 contrastingColor(vec3 color, float contrast) {\n    float luminance = rgb2luminance(color);\n    float darker = findDarker(luminance, contrast);\n    float lighter = findLighter(luminance, contrast);\n\n    float targetLuminance;\n    if (darker < 0.0 || darker > 1.0) {\n        targetLuminance = lighter;\n    } else if (lighter < 0.0 || lighter > 1.0) {\n        targetLuminance = darker;\n    } else {\n        targetLuminance = abs(luminance - lighter) < abs(darker - luminance) ? lighter : darker;\n    }\n\n    return setLuminance(color, targetLuminance);\n}\n\nvec3 desaturateColor(vec3 color, float amount) {\n    float l = rgb2luminance(color);\n    vec3 gray = vec3(l, l, l);\n    return mix(color, gray, amount);\n}\n\nuniform vec4 uClearColor;\nuniform float uDesaturate;\nuniform float uBrightness;\nuniform float uFade;\nuniform float uAlpha;\n\nvec4 outputColor(vec4 color) {\n    // desaturate => fade => alpha\n    vec3 ret = mix(color.rgb, vec3(uBrightness + 1.0 / 2.0), abs(uBrightness));\n    ret = vec3(desaturateColor(ret, uDesaturate));\n    ret = mix(ret, uClearColor.rgb, uFade);\n    return vec4(ret, color.a * uAlpha);\n}\n\n#define MODE_DRAFT 0u\n#define MODE_MEDIUM 1u\n#define MODE_HIGH_PASS_1 2u\n#define MODE_HIGH_PASS_2 3u\n#define MODE_PICKING 4u\n\n#define ONE_ALPHA 0.00392156862 // 1.0 / 255.0\n\nfloat lineAlpha(vec2 position, float w, vec2 viewportSize, float lineWidth) {\n    vec2 lineCenter = ((position / w) * 0.5 + 0.5) * viewportSize;\n    float distOffset = (lineWidth - 1.0) * 0.5;\n    float dist = smoothstep(lineWidth * 0.5 - 0.5, lineWidth * 0.5 + 0.5, distance(lineCenter, gl_FragCoord.xy));\n    return (1.0 - dist);\n}\n\nvec4 lineColor(vec3 color, vec2 position, float w, vec2 viewportSize, uint mode, float lineWidth) {\n    if (mode < MODE_HIGH_PASS_1) {\n        return outputColor(vec4(color, 1.0));\n    }\n\n    float a = lineAlpha(position, w, viewportSize, lineWidth);\n\n    if (mode == MODE_HIGH_PASS_1) {\n        if (a == 1.0) {\n            return outputColor(vec4(color, a));\n        } else {\n            discard;\n        }\n    }\n\n    // Possible optimization.\n    // Edges run into fill rate issues because too many of them overlap, discarging pixels below a certain alpha\n    // threshold might help speed things up a bit.\n    if (a < ONE_ALPHA) {\n        discard;\n    }\n\n    return outputColor(vec4(color, a));\n}\n\nuniform vec2 uViewportSize;\nuniform uint uRenderMode;\n\nflat in float fLineWidth;\nin vec3 vColor;\nin vec2 vProjectedPosition;\nin float vProjectedW;\n\nout vec4 fragColor;\n\nvoid main() {\n    fragColor = lineColor(vColor, vProjectedPosition, vProjectedW, uViewportSize, uRenderMode, fLineWidth);\n}\n";
 
 // src/graph/edges/straight/Straight.data.vs.glsl
-var Straight_data_vs_default = "#version 300 es\n#define GLSLIFY 1\n\nlayout(location=0) in uint aSourceIndex;\nlayout(location=1) in uint aTargetIndex;\nlayout(location=2) in uint aSourceColor;\nlayout(location=3) in uint aTargetColor;\n\nuniform sampler2D uGraphPoints;\n\nout vec3 vSource;\nout vec3 vTarget;\nflat out uint vSourceColor;\nflat out uint vTargetColor;\n\nvec4 valueForIndex(sampler2D tex, int index) {\n    int texWidth = textureSize(tex, 0).x;\n    int col = index % texWidth;\n    int row = index / texWidth;\n    return texelFetch(tex, ivec2(col, row), 0);\n}\n\nuvec4 uvalueForIndex(usampler2D tex, int index) {\n    int texWidth = textureSize(tex, 0).x;\n    int col = index % texWidth;\n    int row = index / texWidth;\n    return texelFetch(tex, ivec2(col, row), 0);\n}\n\nuint uivalueForIndex(usampler2D tex, int index) {\n    int texWidth = textureSize(tex, 0).x;\n    int col = index % texWidth;\n    int row = index / texWidth;\n    return texelFetch(tex, ivec2(col, row), 0)[0];\n}\n\nvoid main() {\n    vec4 source = valueForIndex(uGraphPoints, int(aSourceIndex));\n    vec4 target = valueForIndex(uGraphPoints, int(aTargetIndex));\n\n    vec3 direction = normalize(target.xyz - source.xyz);\n\n    vSource = source.xyz + direction * source[3];\n    vTarget = target.xyz - direction * target[3];\n\n    vSourceColor = aSourceColor;\n    vTargetColor = aTargetColor;\n}\n";
+var Straight_data_vs_default = "#version 300 es\n#define GLSLIFY 1\n\nlayout(location=0) in uint aSourceIndex;\nlayout(location=1) in uint aTargetIndex;\nlayout(location=2) in uint aSourceColor;\nlayout(location=3) in uint aTargetColor;\n\nflat out uint fSource;\nflat out uint fTarget;\nflat out uint fSourceColor;\nflat out uint fTargetColor;\n\nvoid main() {\n    fSource = aSourceIndex;\n    fTarget = aTargetIndex;\n    fSourceColor = aSourceColor;\n    fTargetColor = aTargetColor;\n}\n";
 
 // src/graph/edges/Edges.ts
 var kBasicEdgeMappings = {
@@ -16636,10 +16693,11 @@ var Edges = class extends LayerRenderable {
     this.localUniforms.uLineWidth = value;
   }
   initialize(...args) {
+    super.initialize(...args);
     this.localUniforms = Object.assign({}, this.localUniforms, {
+      uGraphPoints: this.dataTexture,
       uLineWidth: 1.5
     });
-    super.initialize(...args);
   }
   constructor(...args) {
     super(...args);
@@ -16660,8 +16718,8 @@ var Edges = class extends LayerRenderable {
 
 // src/graph/edges/straight/Straight.ts
 var kGLStraightEdgeTypes = {
-  source: [PicoGL.FLOAT, PicoGL.FLOAT, PicoGL.FLOAT],
-  target: [PicoGL.FLOAT, PicoGL.FLOAT, PicoGL.FLOAT],
+  source: PicoGL.UNSIGNED_INT,
+  target: PicoGL.UNSIGNED_INT,
   sourceColor: PicoGL.UNSIGNED_INT,
   targetColor: PicoGL.UNSIGNED_INT
 };
@@ -16683,9 +16741,7 @@ var Straight = class extends Edges {
     const shaders = this.getDrawShaders();
     this.program = context.createProgram(shaders.vs, shaders.fs);
     this.drawCall = context.createDrawCall(this.program, this.edgesVAO).primitive(PicoGL.TRIANGLE_STRIP);
-    this.compute(context, {
-      uGraphPoints: this.dataTexture
-    });
+    this.compute(context, {});
   }
   destroy() {
   }
@@ -16722,13 +16778,13 @@ var Straight = class extends Edges {
   getDataShader() {
     return {
       vs: Straight_data_vs_default,
-      varyings: ["vSource", "vTarget", "vSourceColor", "vTargetColor"]
+      varyings: ["fSource", "fTarget", "fSourceColor", "fTargetColor"]
     };
   }
 };
 
 // src/graph/edges/dashed/Dashed.vs.glsl
-var Dashed_vs_default = "#version 300 es\n#define GLSLIFY 1\n\nlayout(location=0) in vec3 aVertex;\nlayout(location=1) in vec3 iOffsetA;\nlayout(location=2) in vec3 iOffsetB;\nlayout(location=3) in uint iColorA;\nlayout(location=4) in uint iColorB;\n\nuniform mat4 uViewMatrix;\nuniform mat4 uSceneMatrix;\nuniform mat4 uProjectionMatrix;\nuniform vec2 uViewportSize;\nuniform float uPixelRatio;\nuniform sampler2D uColorPalette;\nuniform uint uDashLength;\n\nuniform float uLineWidth;\n\nflat out float fLineWidth;\nout vec3 vColor;\nout float vDashLength;\nout vec2 vProjectedPosition;\nout float vProjectedW;\n\nvec4 getColorByIndexFromTexture(sampler2D tex, int index) {\n    int texWidth = textureSize(tex, 0).x;\n    int col = index % texWidth;\n    int row = index / texWidth;\n    return texelFetch(tex, ivec2(col, row), 0);\n}\n\nvoid main() {\n    float multA = aVertex.y;\n    float multB = 1.0 - aVertex.y;\n\n    vec4 colorA = getColorByIndexFromTexture(uColorPalette, int(iColorA));\n    vec4 colorB = getColorByIndexFromTexture(uColorPalette, int(iColorB));\n\n    vColor = colorA.rgb * multA + colorB.rgb * multB;\n\n    mat4 renderMatrix = uProjectionMatrix * uViewMatrix * uSceneMatrix;\n\n    vec4 aProjected = renderMatrix * vec4(iOffsetA, 1.0);\n    vec2 aScreen = (aProjected.xy / aProjected.w) * (uViewportSize / 2.0);\n\n    vec4 bProjected = renderMatrix * vec4(iOffsetB, 1.0);\n    vec2 bScreen = (bProjected.xy / bProjected.w) * (uViewportSize / 2.0);\n\n    vec2 direction = normalize(bScreen - aScreen);\n    vec2 perp = vec2(-direction.y, direction.x);\n\n    fLineWidth = uLineWidth * uPixelRatio;\n    float offsetWidth = fLineWidth + 0.5;\n    vec4 position = aProjected * multA + bProjected * multB;\n    vec4 offset = vec4(((aVertex.x * perp * offsetWidth) / uViewportSize) * position.w, 0.0, 0.0);\n    gl_Position = position + offset;\n\n    vProjectedPosition = position.xy;\n    vProjectedW = position.w;\n\n    float screenDistance = distance(aScreen, bScreen);\n    vDashLength = (screenDistance / float(uDashLength)) * aVertex.y;\n}\n";
+var Dashed_vs_default = "#version 300 es\n#define GLSLIFY 1\n\nlayout(location=0) in vec3 aVertex;\nlayout(location=1) in uint iPointA;\nlayout(location=2) in uint iPointB;\nlayout(location=3) in uint iColorA;\nlayout(location=4) in uint iColorB;\n\nuniform mat4 uViewMatrix;\nuniform mat4 uSceneMatrix;\nuniform mat4 uProjectionMatrix;\nuniform vec2 uViewportSize;\nuniform float uPixelRatio;\nuniform sampler2D uGraphPoints;\nuniform sampler2D uColorPalette;\nuniform uint uDashLength;\n\nuniform float uLineWidth;\n\nflat out float fLineWidth;\nout vec3 vColor;\nout float vDashLength;\nout vec2 vProjectedPosition;\nout float vProjectedW;\n\nvec4 valueForIndex(sampler2D tex, int index) {\n    int texWidth = textureSize(tex, 0).x;\n    int col = index % texWidth;\n    int row = index / texWidth;\n    return texelFetch(tex, ivec2(col, row), 0);\n}\n\nuvec4 uvalueForIndex(usampler2D tex, int index) {\n    int texWidth = textureSize(tex, 0).x;\n    int col = index % texWidth;\n    int row = index / texWidth;\n    return texelFetch(tex, ivec2(col, row), 0);\n}\n\nuint uivalueForIndex(usampler2D tex, int index) {\n    int texWidth = textureSize(tex, 0).x;\n    int col = index % texWidth;\n    int row = index / texWidth;\n    return texelFetch(tex, ivec2(col, row), 0)[0];\n}\n\nvoid main() {\n    vec4 pointA = valueForIndex(uGraphPoints, int(iPointA));\n    vec4 pointB = valueForIndex(uGraphPoints, int(iPointB));\n\n    vec3 direction = normalize(pointB.xyz - pointA.xyz);\n\n    vec3 offsetA = pointA.xyz + direction * pointA[3];\n    vec3 offsetB = pointB.xyz - direction * pointB[3];\n\n    float multA = aVertex.y;\n    float multB = 1.0 - aVertex.y;\n\n    vec4 colorA = valueForIndex(uColorPalette, int(iColorA));\n    vec4 colorB = valueForIndex(uColorPalette, int(iColorB));\n\n    vColor = colorA.rgb * multA + colorB.rgb * multB;\n\n    mat4 renderMatrix = uProjectionMatrix * uViewMatrix * uSceneMatrix;\n\n    vec4 aProjected = renderMatrix * vec4(offsetA, 1.0);\n    vec2 aScreen = (aProjected.xy / aProjected.w) * (uViewportSize / 2.0);\n\n    vec4 bProjected = renderMatrix * vec4(offsetB, 1.0);\n    vec2 bScreen = (bProjected.xy / bProjected.w) * (uViewportSize / 2.0);\n\n    vec2 screenDirection = normalize(bScreen - aScreen);\n    vec2 perp = vec2(-screenDirection.y, screenDirection.x);\n\n    fLineWidth = uLineWidth * uPixelRatio;\n    float offsetWidth = fLineWidth + 0.5;\n    vec4 position = aProjected * multA + bProjected * multB;\n    vec4 offset = vec4(((aVertex.x * perp * offsetWidth) / uViewportSize) * position.w, 0.0, 0.0);\n    gl_Position = position + offset;\n\n    vProjectedPosition = position.xy;\n    vProjectedW = position.w;\n\n    float screenDistance = distance(aScreen, bScreen);\n    vDashLength = (screenDistance / float(uDashLength)) * aVertex.y;\n}\n";
 
 // src/graph/edges/dashed/Dashed.fs.glsl
 var Dashed_fs_default = "#version 300 es\nprecision highp float;\n#define GLSLIFY 1\n\n// from https://en.wikipedia.org/wiki/SRGB#The_reverse_transformation\nfloat luminance_x_1540259130(float x) {\n    return x <= 0.04045 ? x / 12.92 : pow((x + 0.055) / 1.055, 2.4);\n}\nfloat color_l_1540259130(float l) {\n    return min(1.0, max(0.0, l <= 0.0031308 ? l * 12.92 : pow(l * 1.055, 1.0 / 2.4) - 0.055));\n}\n\n// from https://en.wikipedia.org/wiki/Relative_luminance\nfloat rgb2luminance(vec3 color) {\n    // relative luminance\n    // see http://www.w3.org/TR/2008/REC-WCAG20-20081211/#relativeluminancedef\n    float r = luminance_x_1540259130(color.r);\n    float g = luminance_x_1540259130(color.g);\n    float b = luminance_x_1540259130(color.b);\n    return 0.2126 * r + 0.7152 * g + 0.0722 * b;\n}\n\nvec3 setLuminance(vec3 color, float luminance) {\n    float r = luminance_x_1540259130(color.r) * 0.2126;\n    float g = luminance_x_1540259130(color.g) * 0.7152;\n    float b = luminance_x_1540259130(color.b) * 0.0722;\n    float colorLuminance = r + g + b;\n\n    float tr = luminance * (r / colorLuminance);\n    float tg = luminance * (g / colorLuminance);\n    float tb = luminance * (b / colorLuminance);\n\n    float rr = color_l_1540259130(tr / 0.2126);\n    float rg = color_l_1540259130(tg / 0.7152);\n    float rb = color_l_1540259130(tb / 0.0722);\n\n    return vec3(rr, rg, rb );\n}\n\n// https://www.w3.org/TR/WCAG20/#contrast-ratiodef\n// (L1 + 0.05) / (L2 + 0.05), where\n// - L1 is the relative luminance of the lighter of the colors, and\n// - L2 is the relative luminance of the darker of the colors.\nfloat findDarker(float luminance, float contrast) {\n    return (contrast * luminance) + (0.05 * contrast) - 0.05;\n}\nfloat findLighter(float luminance, float contrast) {\n    return (luminance + 0.05 - (0.05 * contrast)) / contrast;\n}\n\nvec3 contrastingColor(vec3 color, float contrast) {\n    float luminance = rgb2luminance(color);\n    float darker = findDarker(luminance, contrast);\n    float lighter = findLighter(luminance, contrast);\n\n    float targetLuminance;\n    if (darker < 0.0 || darker > 1.0) {\n        targetLuminance = lighter;\n    } else if (lighter < 0.0 || lighter > 1.0) {\n        targetLuminance = darker;\n    } else {\n        targetLuminance = abs(luminance - lighter) < abs(darker - luminance) ? lighter : darker;\n    }\n\n    return setLuminance(color, targetLuminance);\n}\n\nvec3 desaturateColor(vec3 color, float amount) {\n    float l = rgb2luminance(color);\n    vec3 gray = vec3(l, l, l);\n    return mix(color, gray, amount);\n}\n\nuniform vec4 uClearColor;\nuniform float uDesaturate;\nuniform float uBrightness;\nuniform float uFade;\nuniform float uAlpha;\n\nvec4 outputColor(vec4 color) {\n    // desaturate => fade => alpha\n    vec3 ret = mix(color.rgb, vec3(uBrightness + 1.0 / 2.0), abs(uBrightness));\n    ret = vec3(desaturateColor(ret, uDesaturate));\n    ret = mix(ret, uClearColor.rgb, uFade);\n    return vec4(ret, color.a * uAlpha);\n}\n\n#define MODE_DRAFT 0u\n#define MODE_MEDIUM 1u\n#define MODE_HIGH_PASS_1 2u\n#define MODE_HIGH_PASS_2 3u\n#define MODE_PICKING 4u\n\n#define ONE_ALPHA 0.00392156862 // 1.0 / 255.0\n\nfloat lineAlpha(vec2 position, float w, vec2 viewportSize, float lineWidth) {\n    vec2 lineCenter = ((position / w) * 0.5 + 0.5) * viewportSize;\n    float distOffset = (lineWidth - 1.0) * 0.5;\n    float dist = smoothstep(lineWidth * 0.5 - 0.5, lineWidth * 0.5 + 0.5, distance(lineCenter, gl_FragCoord.xy));\n    return (1.0 - dist);\n}\n\nvec4 lineColor(vec3 color, vec2 position, float w, vec2 viewportSize, uint mode, float lineWidth) {\n    if (mode < MODE_HIGH_PASS_1) {\n        return outputColor(vec4(color, 1.0));\n    }\n\n    float a = lineAlpha(position, w, viewportSize, lineWidth);\n\n    if (mode == MODE_HIGH_PASS_1) {\n        if (a == 1.0) {\n            return outputColor(vec4(color, a));\n        } else {\n            discard;\n        }\n    }\n\n    // Possible optimization.\n    // Edges run into fill rate issues because too many of them overlap, discarging pixels below a certain alpha\n    // threshold might help speed things up a bit.\n    if (a < ONE_ALPHA) {\n        discard;\n    }\n\n    return outputColor(vec4(color, a));\n}\n\nuniform vec2 uViewportSize;\nuniform uint uRenderMode;\n\nflat in float fLineWidth;\nin vec3 vColor;\nin float vDashLength;\nin vec2 vProjectedPosition;\nin float vProjectedW;\n\nout vec4 fragColor;\n\nvoid main() {\n    if (int(vDashLength) % 2 == 1) {\n        discard;\n    }\n    fragColor = lineColor(vColor, vProjectedPosition, vProjectedW, uViewportSize, uRenderMode, fLineWidth);\n}\n";
@@ -16754,18 +16810,18 @@ var Dashed = class extends Straight {
 };
 
 // src/graph/edges/gravity/Gravity.vs.glsl
-var Gravity_vs_default = "#version 300 es\n#define GLSLIFY 1\n\nlayout(location=0) in vec3 aVertex;\nlayout(location=1) in vec3 iOffsetA;\nlayout(location=2) in vec3 iOffsetB;\nlayout(location=3) in uint iColorA;\nlayout(location=4) in uint iColorB;\n\nuniform mat4 uViewMatrix;\nuniform mat4 uSceneMatrix;\nuniform mat4 uProjectionMatrix;\nuniform vec2 uViewportSize;\nuniform float uPixelRatio;\nuniform float uGravity;\nuniform sampler2D uColorPalette;\n\nout vec3 vColor;\nout vec2 vProjectedPosition;\nout float vProjectedW;\n\nvec4 getColorByIndexFromTexture(sampler2D tex, int index) {\n    int texWidth = textureSize(tex, 0).x;\n    int col = index % texWidth;\n    int row = index / texWidth;\n    return texelFetch(tex, ivec2(col, row), 0);\n}\n\nvoid main() {\n    float multA = aVertex.x;\n    float multB = 1.0 - aVertex.x;\n\n    vec4 colorA = getColorByIndexFromTexture(uColorPalette, int(iColorA));\n    vec4 colorB = getColorByIndexFromTexture(uColorPalette, int(iColorB));\n\n    vColor = colorA.rgb * multA + colorB.rgb * multB;\n\n    vec3 direction = iOffsetB - iOffsetA;\n    vec3 middle = iOffsetA + direction * 0.5;\n    float distance = length(direction);\n\n    float toCenter = length(middle);\n    vec3 towardsCenter = (middle * -1.0) / toCenter;\n\n    vec3 gravity = middle + towardsCenter * min(toCenter, distance * uGravity);\n    vec3 position = gravity + pow(multB, 2.0) * (iOffsetB - gravity) + pow(multA, 2.0) * (iOffsetA - gravity);\n\n    mat4 renderMatrix = uProjectionMatrix * uViewMatrix * uSceneMatrix;\n    gl_Position = renderMatrix * vec4(position, 1.0);\n\n    vProjectedPosition = gl_Position.xy;\n    vProjectedW = gl_Position.w;\n}\n";
+var Gravity_vs_default = "#version 300 es\n#define GLSLIFY 1\n\nlayout(location=0) in vec3 aVertex;\nlayout(location=1) in uint iPointA;\nlayout(location=2) in uint iPointB;\nlayout(location=3) in uint iColorA;\nlayout(location=4) in uint iColorB;\n\nuniform mat4 uViewMatrix;\nuniform mat4 uSceneMatrix;\nuniform mat4 uProjectionMatrix;\nuniform vec2 uViewportSize;\nuniform float uPixelRatio;\nuniform float uGravity;\nuniform sampler2D uColorPalette;\n\nout vec3 vColor;\nout vec2 vProjectedPosition;\nout float vProjectedW;\n\nvec4 valueForIndex(sampler2D tex, int index) {\n    int texWidth = textureSize(tex, 0).x;\n    int col = index % texWidth;\n    int row = index / texWidth;\n    return texelFetch(tex, ivec2(col, row), 0);\n}\n\nuvec4 uvalueForIndex(usampler2D tex, int index) {\n    int texWidth = textureSize(tex, 0).x;\n    int col = index % texWidth;\n    int row = index / texWidth;\n    return texelFetch(tex, ivec2(col, row), 0);\n}\n\nuint uivalueForIndex(usampler2D tex, int index) {\n    int texWidth = textureSize(tex, 0).x;\n    int col = index % texWidth;\n    int row = index / texWidth;\n    return texelFetch(tex, ivec2(col, row), 0)[0];\n}\n\nvoid main() {\n    float multA = aVertex.x;\n    float multB = 1.0 - aVertex.x;\n\n    vec3 offsetA = valueForIndex(uGraphPoints, int(iPointA)).xyz;\n    vec3 offsetB = valueForIndex(uGraphPoints, int(iPointB)).xyz;\n\n    vec4 colorA = valueForIndex(uColorPalette, int(iColorA));\n    vec4 colorB = valueForIndex(uColorPalette, int(iColorB));\n\n    vColor = colorA.rgb * multA + colorB.rgb * multB;\n\n    vec3 direction = offsetB - offsetA;\n    vec3 middle = offsetA + direction * 0.5;\n    float distance = length(direction);\n\n    float toCenter = length(middle);\n    vec3 towardsCenter = (middle * -1.0) / toCenter;\n\n    vec3 gravity = middle + towardsCenter * min(toCenter, distance * uGravity);\n    vec3 position = gravity + pow(multB, 2.0) * (offsetB - gravity) + pow(multA, 2.0) * (offsetA - gravity);\n\n    mat4 renderMatrix = uProjectionMatrix * uViewMatrix * uSceneMatrix;\n    gl_Position = renderMatrix * vec4(position, 1.0);\n\n    vProjectedPosition = gl_Position.xy;\n    vProjectedW = gl_Position.w;\n}\n";
 
 // src/graph/edges/gravity/Gravity.fs.glsl
 var Gravity_fs_default = "#version 300 es\nprecision highp float;\n#define GLSLIFY 1\n\n// from https://en.wikipedia.org/wiki/SRGB#The_reverse_transformation\nfloat luminance_x_1540259130(float x) {\n    return x <= 0.04045 ? x / 12.92 : pow((x + 0.055) / 1.055, 2.4);\n}\nfloat color_l_1540259130(float l) {\n    return min(1.0, max(0.0, l <= 0.0031308 ? l * 12.92 : pow(l * 1.055, 1.0 / 2.4) - 0.055));\n}\n\n// from https://en.wikipedia.org/wiki/Relative_luminance\nfloat rgb2luminance(vec3 color) {\n    // relative luminance\n    // see http://www.w3.org/TR/2008/REC-WCAG20-20081211/#relativeluminancedef\n    float r = luminance_x_1540259130(color.r);\n    float g = luminance_x_1540259130(color.g);\n    float b = luminance_x_1540259130(color.b);\n    return 0.2126 * r + 0.7152 * g + 0.0722 * b;\n}\n\nvec3 setLuminance(vec3 color, float luminance) {\n    float r = luminance_x_1540259130(color.r) * 0.2126;\n    float g = luminance_x_1540259130(color.g) * 0.7152;\n    float b = luminance_x_1540259130(color.b) * 0.0722;\n    float colorLuminance = r + g + b;\n\n    float tr = luminance * (r / colorLuminance);\n    float tg = luminance * (g / colorLuminance);\n    float tb = luminance * (b / colorLuminance);\n\n    float rr = color_l_1540259130(tr / 0.2126);\n    float rg = color_l_1540259130(tg / 0.7152);\n    float rb = color_l_1540259130(tb / 0.0722);\n\n    return vec3(rr, rg, rb );\n}\n\n// https://www.w3.org/TR/WCAG20/#contrast-ratiodef\n// (L1 + 0.05) / (L2 + 0.05), where\n// - L1 is the relative luminance of the lighter of the colors, and\n// - L2 is the relative luminance of the darker of the colors.\nfloat findDarker(float luminance, float contrast) {\n    return (contrast * luminance) + (0.05 * contrast) - 0.05;\n}\nfloat findLighter(float luminance, float contrast) {\n    return (luminance + 0.05 - (0.05 * contrast)) / contrast;\n}\n\nvec3 contrastingColor(vec3 color, float contrast) {\n    float luminance = rgb2luminance(color);\n    float darker = findDarker(luminance, contrast);\n    float lighter = findLighter(luminance, contrast);\n\n    float targetLuminance;\n    if (darker < 0.0 || darker > 1.0) {\n        targetLuminance = lighter;\n    } else if (lighter < 0.0 || lighter > 1.0) {\n        targetLuminance = darker;\n    } else {\n        targetLuminance = abs(luminance - lighter) < abs(darker - luminance) ? lighter : darker;\n    }\n\n    return setLuminance(color, targetLuminance);\n}\n\nvec3 desaturateColor(vec3 color, float amount) {\n    float l = rgb2luminance(color);\n    vec3 gray = vec3(l, l, l);\n    return mix(color, gray, amount);\n}\n\nuniform vec4 uClearColor;\nuniform float uDesaturate;\nuniform float uBrightness;\nuniform float uFade;\nuniform float uAlpha;\n\nvec4 outputColor(vec4 color) {\n    // desaturate => fade => alpha\n    vec3 ret = mix(color.rgb, vec3(uBrightness + 1.0 / 2.0), abs(uBrightness));\n    ret = vec3(desaturateColor(ret, uDesaturate));\n    ret = mix(ret, uClearColor.rgb, uFade);\n    return vec4(ret, color.a * uAlpha);\n}\n\n#define MODE_DRAFT 0u\n#define MODE_MEDIUM 1u\n#define MODE_HIGH_PASS_1 2u\n#define MODE_HIGH_PASS_2 3u\n#define MODE_PICKING 4u\n\n#define ONE_ALPHA 0.00392156862 // 1.0 / 255.0\n\nfloat lineAlpha(vec2 position, float w, vec2 viewportSize, float lineWidth) {\n    vec2 lineCenter = ((position / w) * 0.5 + 0.5) * viewportSize;\n    float distOffset = (lineWidth - 1.0) * 0.5;\n    float dist = smoothstep(lineWidth * 0.5 - 0.5, lineWidth * 0.5 + 0.5, distance(lineCenter, gl_FragCoord.xy));\n    return (1.0 - dist);\n}\n\nvec4 lineColor(vec3 color, vec2 position, float w, vec2 viewportSize, uint mode, float lineWidth) {\n    if (mode < MODE_HIGH_PASS_1) {\n        return outputColor(vec4(color, 1.0));\n    }\n\n    float a = lineAlpha(position, w, viewportSize, lineWidth);\n\n    if (mode == MODE_HIGH_PASS_1) {\n        if (a == 1.0) {\n            return outputColor(vec4(color, a));\n        } else {\n            discard;\n        }\n    }\n\n    // Possible optimization.\n    // Edges run into fill rate issues because too many of them overlap, discarging pixels below a certain alpha\n    // threshold might help speed things up a bit.\n    if (a < ONE_ALPHA) {\n        discard;\n    }\n\n    return outputColor(vec4(color, a));\n}\n\nuniform vec2 uViewportSize;\nuniform uint uRenderMode;\n\nin vec3 vColor;\nin vec2 vProjectedPosition;\nin float vProjectedW;\n\nout vec4 fragColor;\n\nvoid main() {\n    fragColor = lineColor(vColor, vProjectedPosition, vProjectedW, uViewportSize, uRenderMode);\n}\n";
 
 // src/graph/edges/gravity/Gravity.data.vs.glsl
-var Gravity_data_vs_default = "#version 300 es\n#define GLSLIFY 1\n\nlayout(location=0) in uint aSourceIndex;\nlayout(location=1) in uint aTargetIndex;\nlayout(location=2) in uint aSourceColor;\nlayout(location=3) in uint aTargetColor;\n\nuniform sampler2D uGraphPoints;\n\nout vec3 vSource;\nout vec3 vTarget;\nflat out uint vSourceColor;\nflat out uint vTargetColor;\n\nvec4 valueForIndex(sampler2D tex, int index) {\n    int texWidth = textureSize(tex, 0).x;\n    int col = index % texWidth;\n    int row = index / texWidth;\n    return texelFetch(tex, ivec2(col, row), 0);\n}\n\nuvec4 uvalueForIndex(usampler2D tex, int index) {\n    int texWidth = textureSize(tex, 0).x;\n    int col = index % texWidth;\n    int row = index / texWidth;\n    return texelFetch(tex, ivec2(col, row), 0);\n}\n\nuint uivalueForIndex(usampler2D tex, int index) {\n    int texWidth = textureSize(tex, 0).x;\n    int col = index % texWidth;\n    int row = index / texWidth;\n    return texelFetch(tex, ivec2(col, row), 0)[0];\n}\n\nvoid main() {\n    vec4 source = valueForIndex(uGraphPoints, int(aSourceIndex));\n    vSource = source.xyz;\n\n    vec4 target = valueForIndex(uGraphPoints, int(aTargetIndex));\n    vTarget = target.xyz;\n\n    vSourceColor = aSourceColor;\n    vTargetColor = aTargetColor;\n}\n";
+var Gravity_data_vs_default = "#version 300 es\n#define GLSLIFY 1\n\nlayout(location=0) in uint aSourceIndex;\nlayout(location=1) in uint aTargetIndex;\nlayout(location=2) in uint aSourceColor;\nlayout(location=3) in uint aTargetColor;\n\nuniform sampler2D uGraphPoints;\n\nflat out uint fSource;\nflat out uint fTarget;\nflat out uint fSourceColor;\nflat out uint fTargetColor;\n\nvoid main() {\n    fSource = aSourceIndex;\n    fTarget = aTargetIndex;\n    fSourceColor = aSourceColor;\n    fTargetColor = aTargetColor;\n}\n";
 
 // src/graph/edges/gravity/Gravity.ts
 var kGLGravityEdgeTypes = {
-  source: [PicoGL.FLOAT, PicoGL.FLOAT, PicoGL.FLOAT],
-  target: [PicoGL.FLOAT, PicoGL.FLOAT, PicoGL.FLOAT],
+  source: PicoGL.UNSIGNED_INT,
+  target: PicoGL.UNSIGNED_INT,
   sourceColor: PicoGL.UNSIGNED_INT,
   targetColor: PicoGL.UNSIGNED_INT
 };
@@ -16792,9 +16848,7 @@ var Gravity = class extends Edges {
     const shaders = this.getDrawShaders();
     this.program = context.createProgram(shaders.vs, shaders.fs);
     this.drawCall = context.createDrawCall(this.program, this.edgesVAO).primitive(PicoGL.LINE_STRIP);
-    this.compute(context, {
-      uGraphPoints: this.dataTexture
-    });
+    this.compute(context, {});
   }
   destroy() {
   }
@@ -16831,7 +16885,7 @@ var Gravity = class extends Edges {
   getDataShader() {
     return {
       vs: Gravity_data_vs_default,
-      varyings: ["vSource", "vTarget", "vSourceColor", "vTargetColor"]
+      varyings: ["fSource", "fTarget", "fSourceColor", "fTargetColor"]
     };
   }
 };
@@ -16950,13 +17004,13 @@ var CurvedPath = class extends Edges {
 };
 
 // src/graph/edges/path/StraightPath.vs.glsl
-var StraightPath_vs_default = "#version 300 es\n#define GLSLIFY 1\n\nlayout(location=0) in vec3 aVertex;\nlayout(location=1) in vec3 iOffsetA;\nlayout(location=2) in vec3 iOffsetB;\nlayout(location=3) in uint iColorA;\nlayout(location=4) in uint iColorB;\nlayout(location=5) in vec2 iColorMix;\n\nuniform mat4 uViewMatrix;\nuniform mat4 uSceneMatrix;\nuniform mat4 uProjectionMatrix;\nuniform vec2 uViewportSize;\nuniform float uPixelRatio;\nuniform sampler2D uColorPalette;\n\nuniform float uLineWidth;\n\nflat out float fLineWidth;\nout vec3 vColor;\nout vec2 vProjectedPosition;\nout float vProjectedW;\n\nvec4 getColorByIndexFromTexture(sampler2D tex, int index) {\n    int texWidth = textureSize(tex, 0).x;\n    int col = index % texWidth;\n    int row = index / texWidth;\n    return texelFetch(tex, ivec2(col, row), 0);\n}\n\nvoid main() {\n    float multA = aVertex.y;\n    float multB = 1.0 - aVertex.y;\n\n    mat4 renderMatrix = uProjectionMatrix * uViewMatrix * uSceneMatrix;\n\n    vec4 aProjected = renderMatrix * vec4(iOffsetA, 1.0);\n    vec2 aScreen = aProjected.xy / aProjected.w * uViewportSize * 0.5;\n\n    vec4 bProjected = renderMatrix * vec4(iOffsetB, 1.0);\n    vec2 bScreen = bProjected.xy / bProjected.w * uViewportSize * 0.5;\n\n    vec2 direction = normalize(bScreen - aScreen);\n    vec2 perp = vec2(-direction.y, direction.x);\n\n    fLineWidth = uLineWidth * uPixelRatio;\n    float offsetWidth = fLineWidth + 0.5;\n    vec4 position = aProjected * multA + bProjected * multB;\n    vec4 offset = vec4(((aVertex.x * perp * offsetWidth) / uViewportSize) * position.w, 0.0, 0.0);\n    gl_Position = position + offset;\n\n    vProjectedPosition = position.xy;\n    vProjectedW = position.w;\n\n    // calculate the color\n    vec4 colorA = getColorByIndexFromTexture(uColorPalette, int(iColorA));\n    vec4 colorB = getColorByIndexFromTexture(uColorPalette, int(iColorB));\n    vec3 mixColorA = mix(colorA.rgb, colorB.rgb, iColorMix[1]);\n    vec3 mixColorB = mix(colorA.rgb, colorB.rgb, iColorMix[0]);\n    vColor = mixColorA.rgb * multB + mixColorB.rgb * multA;\n}\n";
+var StraightPath_vs_default = "#version 300 es\n#define GLSLIFY 1\n\nlayout(location=0) in vec3 aVertex;\nlayout(location=1) in uint iPointA;\nlayout(location=2) in uint iPointB;\nlayout(location=3) in uint iColorA;\nlayout(location=4) in uint iColorB;\nlayout(location=5) in vec2 iColorMix;\n\nuniform mat4 uViewMatrix;\nuniform mat4 uSceneMatrix;\nuniform mat4 uProjectionMatrix;\nuniform vec2 uViewportSize;\nuniform float uPixelRatio;\nuniform sampler2D uGraphPoints;\nuniform sampler2D uColorPalette;\n\nuniform float uLineWidth;\n\nflat out float fLineWidth;\nout vec3 vColor;\nout vec2 vProjectedPosition;\nout float vProjectedW;\n\nvec4 valueForIndex(sampler2D tex, int index) {\n    int texWidth = textureSize(tex, 0).x;\n    int col = index % texWidth;\n    int row = index / texWidth;\n    return texelFetch(tex, ivec2(col, row), 0);\n}\n\nuvec4 uvalueForIndex(usampler2D tex, int index) {\n    int texWidth = textureSize(tex, 0).x;\n    int col = index % texWidth;\n    int row = index / texWidth;\n    return texelFetch(tex, ivec2(col, row), 0);\n}\n\nuint uivalueForIndex(usampler2D tex, int index) {\n    int texWidth = textureSize(tex, 0).x;\n    int col = index % texWidth;\n    int row = index / texWidth;\n    return texelFetch(tex, ivec2(col, row), 0)[0];\n}\n\nvoid main() {\n    float multA = aVertex.y;\n    float multB = 1.0 - aVertex.y;\n\n    mat4 renderMatrix = uProjectionMatrix * uViewMatrix * uSceneMatrix;\n\n    vec3 offsetA = valueForIndex(uGraphPoints, int(iPointA)).xyz;\n    vec3 offsetB = valueForIndex(uGraphPoints, int(iPointB)).xyz;\n\n    vec4 aProjected = renderMatrix * vec4(offsetA, 1.0);\n    vec2 aScreen = aProjected.xy / aProjected.w * uViewportSize * 0.5;\n\n    vec4 bProjected = renderMatrix * vec4(offsetB, 1.0);\n    vec2 bScreen = bProjected.xy / bProjected.w * uViewportSize * 0.5;\n\n    vec2 direction = normalize(bScreen - aScreen);\n    vec2 perp = vec2(-direction.y, direction.x);\n\n    fLineWidth = uLineWidth * uPixelRatio;\n    float offsetWidth = fLineWidth + 0.5;\n    vec4 position = aProjected * multA + bProjected * multB;\n    vec4 offset = vec4(((aVertex.x * perp * offsetWidth) / uViewportSize) * position.w, 0.0, 0.0);\n    gl_Position = position + offset;\n\n    vProjectedPosition = position.xy;\n    vProjectedW = position.w;\n\n    // calculate the color\n    vec4 colorA = valueForIndex(uColorPalette, int(iColorA));\n    vec4 colorB = valueForIndex(uColorPalette, int(iColorB));\n    vec3 mixColorA = mix(colorA.rgb, colorB.rgb, iColorMix[1]);\n    vec3 mixColorB = mix(colorA.rgb, colorB.rgb, iColorMix[0]);\n    vColor = mixColorA.rgb * multB + mixColorB.rgb * multA;\n}\n";
 
 // src/graph/edges/path/StraightPath.fs.glsl
 var StraightPath_fs_default = "#version 300 es\nprecision highp float;\n#define GLSLIFY 1\n\n// from https://en.wikipedia.org/wiki/SRGB#The_reverse_transformation\nfloat luminance_x_1540259130(float x) {\n    return x <= 0.04045 ? x / 12.92 : pow((x + 0.055) / 1.055, 2.4);\n}\nfloat color_l_1540259130(float l) {\n    return min(1.0, max(0.0, l <= 0.0031308 ? l * 12.92 : pow(l * 1.055, 1.0 / 2.4) - 0.055));\n}\n\n// from https://en.wikipedia.org/wiki/Relative_luminance\nfloat rgb2luminance(vec3 color) {\n    // relative luminance\n    // see http://www.w3.org/TR/2008/REC-WCAG20-20081211/#relativeluminancedef\n    float r = luminance_x_1540259130(color.r);\n    float g = luminance_x_1540259130(color.g);\n    float b = luminance_x_1540259130(color.b);\n    return 0.2126 * r + 0.7152 * g + 0.0722 * b;\n}\n\nvec3 setLuminance(vec3 color, float luminance) {\n    float r = luminance_x_1540259130(color.r) * 0.2126;\n    float g = luminance_x_1540259130(color.g) * 0.7152;\n    float b = luminance_x_1540259130(color.b) * 0.0722;\n    float colorLuminance = r + g + b;\n\n    float tr = luminance * (r / colorLuminance);\n    float tg = luminance * (g / colorLuminance);\n    float tb = luminance * (b / colorLuminance);\n\n    float rr = color_l_1540259130(tr / 0.2126);\n    float rg = color_l_1540259130(tg / 0.7152);\n    float rb = color_l_1540259130(tb / 0.0722);\n\n    return vec3(rr, rg, rb );\n}\n\n// https://www.w3.org/TR/WCAG20/#contrast-ratiodef\n// (L1 + 0.05) / (L2 + 0.05), where\n// - L1 is the relative luminance of the lighter of the colors, and\n// - L2 is the relative luminance of the darker of the colors.\nfloat findDarker(float luminance, float contrast) {\n    return (contrast * luminance) + (0.05 * contrast) - 0.05;\n}\nfloat findLighter(float luminance, float contrast) {\n    return (luminance + 0.05 - (0.05 * contrast)) / contrast;\n}\n\nvec3 contrastingColor(vec3 color, float contrast) {\n    float luminance = rgb2luminance(color);\n    float darker = findDarker(luminance, contrast);\n    float lighter = findLighter(luminance, contrast);\n\n    float targetLuminance;\n    if (darker < 0.0 || darker > 1.0) {\n        targetLuminance = lighter;\n    } else if (lighter < 0.0 || lighter > 1.0) {\n        targetLuminance = darker;\n    } else {\n        targetLuminance = abs(luminance - lighter) < abs(darker - luminance) ? lighter : darker;\n    }\n\n    return setLuminance(color, targetLuminance);\n}\n\nvec3 desaturateColor(vec3 color, float amount) {\n    float l = rgb2luminance(color);\n    vec3 gray = vec3(l, l, l);\n    return mix(color, gray, amount);\n}\n\nuniform vec4 uClearColor;\nuniform float uDesaturate;\nuniform float uBrightness;\nuniform float uFade;\nuniform float uAlpha;\n\nvec4 outputColor(vec4 color) {\n    // desaturate => fade => alpha\n    vec3 ret = mix(color.rgb, vec3(uBrightness + 1.0 / 2.0), abs(uBrightness));\n    ret = vec3(desaturateColor(ret, uDesaturate));\n    ret = mix(ret, uClearColor.rgb, uFade);\n    return vec4(ret, color.a * uAlpha);\n}\n\n#define MODE_DRAFT 0u\n#define MODE_MEDIUM 1u\n#define MODE_HIGH_PASS_1 2u\n#define MODE_HIGH_PASS_2 3u\n#define MODE_PICKING 4u\n\n#define ONE_ALPHA 0.00392156862 // 1.0 / 255.0\n\nfloat lineAlpha(vec2 position, float w, vec2 viewportSize, float lineWidth) {\n    vec2 lineCenter = ((position / w) * 0.5 + 0.5) * viewportSize;\n    float distOffset = (lineWidth - 1.0) * 0.5;\n    float dist = smoothstep(lineWidth * 0.5 - 0.5, lineWidth * 0.5 + 0.5, distance(lineCenter, gl_FragCoord.xy));\n    return (1.0 - dist);\n}\n\nvec4 lineColor(vec3 color, vec2 position, float w, vec2 viewportSize, uint mode, float lineWidth) {\n    if (mode < MODE_HIGH_PASS_1) {\n        return outputColor(vec4(color, 1.0));\n    }\n\n    float a = lineAlpha(position, w, viewportSize, lineWidth);\n\n    if (mode == MODE_HIGH_PASS_1) {\n        if (a == 1.0) {\n            return outputColor(vec4(color, a));\n        } else {\n            discard;\n        }\n    }\n\n    // Possible optimization.\n    // Edges run into fill rate issues because too many of them overlap, discarging pixels below a certain alpha\n    // threshold might help speed things up a bit.\n    if (a < ONE_ALPHA) {\n        discard;\n    }\n\n    return outputColor(vec4(color, a));\n}\n\nuniform vec2 uViewportSize;\nuniform uint uRenderMode;\n\nflat in float fLineWidth;\nin vec3 vColor;\nin vec2 vProjectedPosition;\nin float vProjectedW;\n\nout vec4 fragColor;\n\nvoid main() {\n    fragColor = lineColor(vColor, vProjectedPosition, vProjectedW, uViewportSize, uRenderMode, fLineWidth);\n}\n";
 
 // src/graph/edges/path/StraightPath.data.vs.glsl
-var StraightPath_data_vs_default = "#version 300 es\n#define GLSLIFY 1\n\nlayout(location=0) in uint aSourceIndex;\nlayout(location=1) in uint aTargetIndex;\nlayout(location=2) in uvec2 aControl;\nlayout(location=3) in uint aSourceColor;\nlayout(location=4) in uint aTargetColor;\n\nuniform sampler2D uGraphPoints;\n\nout vec3 vSource;\nout vec3 vTarget;\nflat out uint vSourceColor;\nflat out uint vTargetColor;\nout vec2 vColorMix;\n\nvec4 valueForIndex(sampler2D tex, int index) {\n    int texWidth = textureSize(tex, 0).x;\n    int col = index % texWidth;\n    int row = index / texWidth;\n    return texelFetch(tex, ivec2(col, row), 0);\n}\n\nuvec4 uvalueForIndex(usampler2D tex, int index) {\n    int texWidth = textureSize(tex, 0).x;\n    int col = index % texWidth;\n    int row = index / texWidth;\n    return texelFetch(tex, ivec2(col, row), 0);\n}\n\nuint uivalueForIndex(usampler2D tex, int index) {\n    int texWidth = textureSize(tex, 0).x;\n    int col = index % texWidth;\n    int row = index / texWidth;\n    return texelFetch(tex, ivec2(col, row), 0)[0];\n}\n\nvoid main() {\n    vec4 source = valueForIndex(uGraphPoints, int(aSourceIndex));\n    vec4 target = valueForIndex(uGraphPoints, int(aTargetIndex));\n\n    vSource = source.xyz;\n    vTarget = target.xyz;\n\n    vSourceColor = aSourceColor;\n    vTargetColor = aTargetColor;\n\n    vColorMix = vec2(float(aControl[0]) / float(aControl[1]), float(aControl[0] + 1u) / float(aControl[1]));\n}\n";
+var StraightPath_data_vs_default = "#version 300 es\n#define GLSLIFY 1\n\nlayout(location=0) in uint aSourceIndex;\nlayout(location=1) in uint aTargetIndex;\nlayout(location=2) in uvec2 aControl;\nlayout(location=3) in uint aSourceColor;\nlayout(location=4) in uint aTargetColor;\n\nuniform sampler2D uGraphPoints;\n\nflat out uint fSource;\nflat out uint fTarget;\nflat out uint fSourceColor;\nflat out uint fTargetColor;\nflat out vec2 fColorMix;\n\nvoid main() {\n    fSource = aSourceIndex;\n    fTarget = aTargetIndex;\n\n    fSourceColor = aSourceColor;\n    fTargetColor = aTargetColor;\n\n    fColorMix = vec2(float(aControl[0]) / float(aControl[1]), float(aControl[0] + 1u) / float(aControl[1]));\n}\n";
 
 // src/graph/edges/path/StraightPath.ts
 var kStraightPathEdgeDataTypes = {
@@ -16967,8 +17021,8 @@ var kStraightPathEdgeDataTypes = {
   targetColor: PicoGL.UNSIGNED_INT
 };
 var kGLStraightPathEdgeTypes = {
-  source: [PicoGL.FLOAT, PicoGL.FLOAT, PicoGL.FLOAT],
-  target: [PicoGL.FLOAT, PicoGL.FLOAT, PicoGL.FLOAT],
+  source: PicoGL.UNSIGNED_INT,
+  target: PicoGL.UNSIGNED_INT,
   sourceColor: PicoGL.UNSIGNED_INT,
   targetColor: PicoGL.UNSIGNED_INT,
   colorMix: [PicoGL.FLOAT, PicoGL.FLOAT]
@@ -17030,7 +17084,7 @@ var StraightPath = class extends Edges {
   getDataShader() {
     return {
       vs: StraightPath_data_vs_default,
-      varyings: ["vSource", "vTarget", "vSourceColor", "vTargetColor", "vColorMix"]
+      varyings: ["fSource", "fTarget", "fSourceColor", "fTargetColor", "fColorMix"]
     };
   }
   computeMappings(mappings2) {
@@ -17247,10 +17301,9 @@ precision lowp usampler2D;
 #define GLSLIFY 1
 
 layout(location=0) in vec3 aVertex;
-layout(location=1) in vec3 iPosition;
-layout(location=2) in float iRadius;
-layout(location=3) in uint iColor;
-layout(location=4) in uvec4 iLabel;
+layout(location=1) in uint iPoint;
+layout(location=2) in uint iColor;
+layout(location=3) in uvec4 iLabel;
 
 //layout(std140) uniform RenderUniforms {
     uniform mat4 uViewMatrix;
@@ -17258,6 +17311,7 @@ layout(location=4) in uvec4 iLabel;
     uniform mat4 uProjectionMatrix;
     uniform vec2 uViewportSize;
     uniform float uPixelRatio;
+    uniform sampler2D uGraphPoints;
     uniform sampler2D uColorPalette;
 //};
 uniform usampler2D uLabelIndices;
@@ -17368,9 +17422,12 @@ vec3 desaturateColor(vec3 color, float amount) {
 }
 
 void main() {
+    vec4 point = valueForIndex(uGraphPoints, int(iPoint));
+    vec3 position = point.xyz;
+    float radius = point.w;
     // claculate the offset matrix, done as a matrix to be able to compute "billboard" vertices in the shader
     mat4 offsetMatrix = mat4(1.0);
-    offsetMatrix[3] = vec4(iPosition, 1.0);
+    offsetMatrix[3] = vec4(position, 1.0);
 
     // reset the rotation of the model-view matrix
     mat4 modelMatrix = uViewMatrix * uSceneMatrix * offsetMatrix;
@@ -17384,7 +17441,7 @@ void main() {
     vec2 screenQuadCenter = quadCenter.xy / quadCenter.w;
 
     // the on-screen position of a side of this quad
-    vec4 quadSide = uProjectionMatrix * lookAtMatrix * vec4(iRadius, 0.0, 0.0, 1.0);
+    vec4 quadSide = uProjectionMatrix * lookAtMatrix * vec4(radius, 0.0, 0.0, 1.0);
     vec2 screenQuadSide = quadSide.xy / quadSide.w;
 
     // compute the pixel radius of this point for a size of 1 in world coordinates
@@ -17422,7 +17479,7 @@ void main() {
 //    float visibilityMultiplier = pixelRadius >= uVisibilityThreshold * 0.5 * uPixelRatio ? 1.0 : 0.0;
 
     // calculate the size of a pixel in worls coordinates with repsect to the point's position
-    float pixelToWorld = iRadius / pixelRadius;
+    float pixelToWorld = radius / pixelRadius;
 
     // calculate the with and height of the label
     float padding = uPadding * uPixelRatio;
@@ -17439,8 +17496,8 @@ void main() {
     // claculate the label offset
     float labelMargin = 5.0 * pixelToWorld; // pixels
     vec3 labelOffset = vec3(
-        (iRadius + labelSize.x * 0.5 + labelMargin) * uLabelPlacement.x,
-        (iRadius + labelSize.y * 0.5 + labelMargin) * uLabelPlacement.y,
+        (radius + labelSize.x * 0.5 + labelMargin) * uLabelPlacement.x,
+        (radius + labelSize.y * 0.5 + labelMargin) * uLabelPlacement.y,
         0.01
     );
 
@@ -17453,7 +17510,7 @@ void main() {
 `;
 
 // src/graph/labels/point/PointLabel.data.vs.glsl
-var PointLabel_data_vs_default = "#version 300 es\n#define GLSLIFY 1\n\nlayout(location=0) in uint aPositionIndex;\nlayout(location=1) in uint aColor;\nlayout(location=2) in uvec4 aLabel;\n\nuniform sampler2D uGraphPoints;\n\nout vec3 vPosition;\nout float vRadius;\nflat out uint vColor;\nflat out uvec4 vLabel;\n\nvec4 valueForIndex(sampler2D tex, int index) {\n    int texWidth = textureSize(tex, 0).x;\n    int col = index % texWidth;\n    int row = index / texWidth;\n    return texelFetch(tex, ivec2(col, row), 0);\n}\n\nuvec4 uvalueForIndex(usampler2D tex, int index) {\n    int texWidth = textureSize(tex, 0).x;\n    int col = index % texWidth;\n    int row = index / texWidth;\n    return texelFetch(tex, ivec2(col, row), 0);\n}\n\nuint uivalueForIndex(usampler2D tex, int index) {\n    int texWidth = textureSize(tex, 0).x;\n    int col = index % texWidth;\n    int row = index / texWidth;\n    return texelFetch(tex, ivec2(col, row), 0)[0];\n}\n\nvoid main() {\n    vec4 value = valueForIndex(uGraphPoints, int(aPositionIndex));\n    vPosition = value.xyz;\n    vRadius = value.w;\n    vColor = aColor;\n    vLabel = aLabel;\n}\n";
+var PointLabel_data_vs_default = "#version 300 es\n#define GLSLIFY 1\n\nlayout(location=0) in uint aPositionIndex;\nlayout(location=1) in uint aColor;\nlayout(location=2) in uvec4 aLabel;\n\nuniform sampler2D uGraphPoints;\n\nflat out uint fPoint;\nflat out uint fColor;\nflat out uvec4 fLabel;\n\nvoid main() {\n    fPoint = aPositionIndex;\n    fColor = aColor;\n    fLabel = aLabel;\n}\n";
 
 // node_modules/potpack/index.mjs
 function potpack(boxes) {
@@ -17529,14 +17586,14 @@ var kLabelDataTypes = {
   char: picogl_default.UNSIGNED_SHORT
 };
 var LabelAtlas = class {
-  constructor(context, data, mappings2, font) {
+  constructor(context, data, mappings2, font, bold = false) {
     this.fontSizeStep = 25;
     this.spaceSizeMap = new Map();
     this.labelPixelRatio = window.devicePixelRatio;
     this.characterMap = new Map();
     this.labelMap = new Map();
     if (data.length) {
-      this.processData(context, data, Object.assign({}, kLabelMappings, mappings2), font);
+      this.processData(context, data, Object.assign({}, kLabelMappings, mappings2), font, bold);
     } else {
       this._boxesTexture = context.createTexture2D(1, 1);
       this._labelsTexture = context.createTexture2D(1, 1);
@@ -17552,7 +17609,7 @@ var LabelAtlas = class {
   get charactersTexture() {
     return this._charactersTexture;
   }
-  async processData(context, data, mappings2, font) {
+  async processData(context, data, mappings2, font, bold) {
     const canvas = document.createElement("canvas");
     canvas.setAttribute("style", "font-smooth: never;-webkit-font-smoothing : none;");
     const ctx = canvas.getContext("2d");
@@ -17574,7 +17631,7 @@ var LabelAtlas = class {
           const char = entry.label.charAt(i);
           const charKey = `${char}-${renderSize}`;
           if (!this.characterMap.has(charKey)) {
-            const image = this.computeDistanceField(this.renderCharTexture(char, renderSize, ctx, canvas, font), renderSize);
+            const image = this.computeDistanceField(this.renderCharTexture(char, renderSize, ctx, canvas, font, bold), renderSize);
             const box2 = { id: charKey, w: image.width, h: image.height, image };
             boxMap.set(charKey, box2);
             boxes.push(box2);
@@ -17613,10 +17670,11 @@ var LabelAtlas = class {
     texture.data(data);
     return texture;
   }
-  renderCharTexture(char, size, context, canvas, font) {
+  renderCharTexture(char, size, context, canvas, font, bold) {
     const pixelRatio = this.labelPixelRatio;
+    const fontString = `${bold ? "bold " : ""}${size * pixelRatio}px "${font}"`;
     if (!this.spaceSizeMap.has(size)) {
-      context.font = `${size * pixelRatio}px "${font}"`;
+      context.font = fontString;
       context.imageSmoothingEnabled = false;
       context.fillStyle = "white";
       context.textAlign = "center";
@@ -17629,7 +17687,7 @@ var LabelAtlas = class {
     const textPadding = Math.min(textWidth, textHeight) * 0.15;
     canvas.width = textWidth + textPadding + kImageMargin * 2;
     canvas.height = size * pixelRatio + textPadding + kImageMargin * 2;
-    context.font = `${size * pixelRatio}px "${font}"`;
+    context.font = fontString;
     context.imageSmoothingEnabled = false;
     context.fillStyle = "white";
     context.textAlign = "center";
@@ -17745,8 +17803,7 @@ var kLabelNodeDataTypes = {
   label: [picogl_default.UNSIGNED_INT, picogl_default.UNSIGNED_INT, picogl_default.UNSIGNED_INT, picogl_default.UNSIGNED_INT]
 };
 var kGLLabelNodeTypes = {
-  position: [picogl_default.FLOAT, picogl_default.FLOAT, picogl_default.FLOAT],
-  radius: picogl_default.FLOAT,
+  point: picogl_default.UNSIGNED_INT,
   color: picogl_default.UNSIGNED_INT,
   label: [picogl_default.UNSIGNED_INT, picogl_default.UNSIGNED_INT, picogl_default.UNSIGNED_INT, picogl_default.UNSIGNED_INT]
 };
@@ -17804,11 +17861,11 @@ var PointLabel = class extends Nodes {
   set padding(value) {
     this.localUniforms.uPadding = value;
   }
-  initialize(context, points2, data, mappings2, pickingManager, font = "monospace", labelAtlas) {
+  initialize(context, points2, data, mappings2, pickingManager, font = "monospace", bold = false, labelAtlas) {
     if (labelAtlas) {
       this.labelAtlas = labelAtlas;
     } else {
-      this.labelAtlas = new LabelAtlas(context, data, mappings2, font);
+      this.labelAtlas = new LabelAtlas(context, data, mappings2, font, bold);
     }
     super.initialize(context, points2, data, mappings2, pickingManager);
     this.verticesVBO = context.createVertexBuffer(picogl_default.FLOAT, 2, new Float32Array([
@@ -17873,7 +17930,7 @@ var PointLabel = class extends Nodes {
   getDataShader() {
     return {
       vs: PointLabel_data_vs_default,
-      varyings: ["vPosition", "vRadius", "vColor", "vLabel"]
+      varyings: ["fPoint", "fColor", "fLabel"]
     };
   }
   computeMappings(mappings2) {
@@ -17902,10 +17959,9 @@ precision lowp usampler2D;
 #define M_2PI 6.28318530718
 
 layout(location=0) in vec3 aVertex;
-layout(location=1) in vec3 iPosition;
-layout(location=2) in float iRadius;
-layout(location=3) in uint iColor;
-layout(location=4) in uvec4 iLabel;
+layout(location=1) in uint iPoint;
+layout(location=2) in uint iColor;
+layout(location=3) in uvec4 iLabel;
 
 //layout(std140) uniform RenderUniforms {
     uniform mat4 uViewMatrix;
@@ -17913,6 +17969,7 @@ layout(location=4) in uvec4 iLabel;
     uniform mat4 uProjectionMatrix;
     uniform vec2 uViewportSize;
     uniform float uPixelRatio;
+    uniform sampler2D uGraphPoints;
     uniform sampler2D uColorPalette;
 //};
 uniform sampler2D uCharTexture;
@@ -18026,9 +18083,12 @@ vec3 desaturateColor(vec3 color, float amount) {
 }
 
 void main() {
+    vec4 point = valueForIndex(uGraphPoints, int(iPoint));
+    vec3 position = point.xyz;
+    float radius = point.w;
     // claculate the offset matrix, done as a matrix to be able to compute "billboard" vertices in the shader
     mat4 offsetMatrix = mat4(1.0);
-    offsetMatrix[3] = vec4(iPosition, 1.0);
+    offsetMatrix[3] = vec4(position, 1.0);
 
     // reset the rotation of the model-view matrix
     mat4 modelMatrix = uViewMatrix * uSceneMatrix * offsetMatrix;
@@ -18042,7 +18102,7 @@ void main() {
     vec2 screenQuadCenter = quadCenter.xy / quadCenter.w;
 
     // the on-screen position of a side of this quad
-    vec4 quadSide = uProjectionMatrix * lookAtMatrix * vec4(iRadius, 0.0, 0.0, 1.0);
+    vec4 quadSide = uProjectionMatrix * lookAtMatrix * vec4(radius, 0.0, 0.0, 1.0);
     vec2 screenQuadSide = quadSide.xy / quadSide.w;
 
     // compute the pixel radius of this point for a size of 1 in world coordinates
@@ -18082,8 +18142,8 @@ void main() {
     vFromCenter = aVertex.xy;
 
     // compute the vertex position and its screen position
-    float pixelLength = iRadius / pixelRadius;
-    float textRadius = iRadius + pixelLength * placementOffset;
+    float pixelLength = radius / pixelRadius;
+    float textRadius = radius + pixelLength * placementOffset;
     vec3 labelOffset = vec3(0.0, 0.0, 0.01); // offset the label forward a tiny bit so it's always in front
     vec4 worldVertex = renderMatrix * vec4(aVertex * textRadius * visibilityMultiplier + labelOffset, 1.0);
 
@@ -18148,8 +18208,8 @@ var CircularLabel = class extends PointLabel {
     const rad = value * 0.0174533;
     this.localUniforms.uLabelDirection = [Math.cos(rad), Math.sin(rad)];
   }
-  initialize(context, points2, data, mappings2, pickingManager, font = "monospace", labelAtlas) {
-    super.initialize(context, points2, data, mappings2, pickingManager, font, labelAtlas);
+  initialize(context, points2, data, mappings2, pickingManager, font = "monospace", bold = false, labelAtlas) {
+    super.initialize(context, points2, data, mappings2, pickingManager, font, bold, labelAtlas);
     this.localUniforms.uRepeatLabel = -1;
     this.localUniforms.uRepeatGap = 5;
     this.localUniforms.uPlacementMargin = 0;
@@ -18166,15 +18226,15 @@ var CircularLabel = class extends PointLabel {
 };
 
 // src/graph/labels/ring/RingLabel.vs.glsl
-var RingLabel_vs_default = '#version 300 es\n\nprecision lowp usampler2D;\n#define GLSLIFY 1\n\n#define M_PI 3.14159265359\n#define M_2PI 6.28318530718\n\nlayout(location=0) in vec3 aVertex;\nlayout(location=1) in vec3 iPosition;\nlayout(location=2) in float iRadius;\nlayout(location=3) in uint iColor;\nlayout(location=4) in uvec4 iLabel;\n\n//layout(std140) uniform RenderUniforms {\n    uniform mat4 uViewMatrix;\n    uniform mat4 uSceneMatrix;\n    uniform mat4 uProjectionMatrix;\n    uniform vec2 uViewportSize;\n    uniform float uPixelRatio;\n    uniform sampler2D uColorPalette;\n//};\nuniform sampler2D uCharTexture;\nuniform float uVisibilityThreshold;\nuniform vec2 uLabelPositioning;\nuniform int uRepeatLabel;\nuniform float uRepeatGap;\nuniform float uPlacementMargin;\nuniform float uLabelPlacement;\nuniform vec2 uLabelDirection;\nuniform bool uBackground;\nuniform float uPadding;\n\nflat out vec4 fBackgroundColor;\nflat out vec4 fTextColor;\nflat out vec4 fLabelInfo;\nflat out float fPixelRadius;\nflat out float fPixelLength;\nflat out float fThickness;\nflat out float fLabelStep;\nflat out vec2 fCharTextureSize;\n\nout vec2 vFromCenter;\n\nvec4 valueForIndex(sampler2D tex, int index) {\n    int texWidth = textureSize(tex, 0).x;\n    int col = index % texWidth;\n    int row = index / texWidth;\n    return texelFetch(tex, ivec2(col, row), 0);\n}\n\nuvec4 uvalueForIndex(usampler2D tex, int index) {\n    int texWidth = textureSize(tex, 0).x;\n    int col = index % texWidth;\n    int row = index / texWidth;\n    return texelFetch(tex, ivec2(col, row), 0);\n}\n\nuint uivalueForIndex(usampler2D tex, int index) {\n    int texWidth = textureSize(tex, 0).x;\n    int col = index % texWidth;\n    int row = index / texWidth;\n    return texelFetch(tex, ivec2(col, row), 0)[0];\n}\n\n// from https://en.wikipedia.org/wiki/SRGB#The_reverse_transformation\nfloat luminance_x(float x) {\n    return x <= 0.04045 ? x / 12.92 : pow((x + 0.055) / 1.055, 2.4);\n}\nfloat color_l(float l) {\n    return min(1.0, max(0.0, l <= 0.0031308 ? l * 12.92 : pow(l * 1.055, 1.0 / 2.4) - 0.055));\n}\n\n// from https://en.wikipedia.org/wiki/Relative_luminance\nfloat rgb2luminance(vec3 color) {\n    // relative luminance\n    // see http://www.w3.org/TR/2008/REC-WCAG20-20081211/#relativeluminancedef\n    float r = luminance_x(color.r);\n    float g = luminance_x(color.g);\n    float b = luminance_x(color.b);\n    return 0.2126 * r + 0.7152 * g + 0.0722 * b;\n}\n\nvec3 setLuminance(vec3 color, float luminance) {\n    float r = luminance_x(color.r) * 0.2126;\n    float g = luminance_x(color.g) * 0.7152;\n    float b = luminance_x(color.b) * 0.0722;\n    float colorLuminance = r + g + b;\n\n    float tr = luminance * (r / colorLuminance);\n    float tg = luminance * (g / colorLuminance);\n    float tb = luminance * (b / colorLuminance);\n\n    float rr = color_l(tr / 0.2126);\n    float rg = color_l(tg / 0.7152);\n    float rb = color_l(tb / 0.0722);\n\n    return vec3(rr, rg, rb );\n}\n\n// https://www.w3.org/TR/WCAG20/#contrast-ratiodef\n// (L1 + 0.05) / (L2 + 0.05), where\n// - L1 is the relative luminance of the lighter of the colors, and\n// - L2 is the relative luminance of the darker of the colors.\nfloat findDarker(float luminance, float contrast) {\n    return (contrast * luminance) + (0.05 * contrast) - 0.05;\n}\nfloat findLighter(float luminance, float contrast) {\n    return (luminance + 0.05 - (0.05 * contrast)) / contrast;\n}\n\nvec3 contrastingColor(vec3 color, float contrast) {\n    float luminance = rgb2luminance(color);\n    float darker = findDarker(luminance, contrast);\n    float lighter = findLighter(luminance, contrast);\n\n    float targetLuminance;\n    if (darker < 0.0 || darker > 1.0) {\n        targetLuminance = lighter;\n    } else if (lighter < 0.0 || lighter > 1.0) {\n        targetLuminance = darker;\n    } else {\n        targetLuminance = abs(luminance - lighter) < abs(darker - luminance) ? lighter : darker;\n    }\n\n    return setLuminance(color, targetLuminance);\n}\n\nvec3 desaturateColor(vec3 color, float amount) {\n    float l = rgb2luminance(color);\n    vec3 gray = vec3(l, l, l);\n    return mix(color, gray, amount);\n}\n\nvoid main() {\n    // claculate the offset matrix, done as a matrix to be able to compute "billboard" vertices in the shader\n    mat4 offsetMatrix = mat4(1.0);\n    offsetMatrix[3] = vec4(iPosition, 1.0);\n\n    // reset the rotation of the model-view matrix\n    mat4 modelMatrix = uViewMatrix * uSceneMatrix * offsetMatrix;\n    mat4 lookAtMatrix = mat4(modelMatrix);\n    lookAtMatrix[0] = vec4(1.0, 0.0, 0.0, lookAtMatrix[0][3]);\n    lookAtMatrix[1] = vec4(0.0, 1.0, 0.0, lookAtMatrix[1][3]);\n    lookAtMatrix[2] = vec4(0.0, 0.0, 1.0, lookAtMatrix[2][3]);\n\n    // the on-screen center of this point\n    vec4 quadCenter = uProjectionMatrix * lookAtMatrix * vec4(0.0, 0.0, 0.0, 1.0);\n    vec2 screenQuadCenter = quadCenter.xy / quadCenter.w;\n\n    // the on-screen position of a side of this quad\n    vec4 quadSide = uProjectionMatrix * lookAtMatrix * vec4(iRadius, 0.0, 0.0, 1.0);\n    vec2 screenQuadSide = quadSide.xy / quadSide.w;\n\n    // compute the pixel radius of this point for a size of 1 in world coordinates\n    float pixelRadius = length((screenQuadSide - screenQuadCenter) * uViewportSize * 0.5);\n\n    // send the size of the char texture to the fragment shader\n    fCharTextureSize = vec2(textureSize(uCharTexture, 0));\n\n    // send the render color to the fragment shader\n    vec4 color = valueForIndex(uColorPalette, int(iColor));\n    fBackgroundColor = vec4(color.rgb, 1.0);\n    fTextColor = vec4(contrastingColor(color.rgb, 7.0), 1.0);\n\n    // send thelabel info to the fragment shader\n    fLabelInfo = vec4(iLabel);\n\n    // calculate the label visibility\n    float visibilityThreshold = uVisibilityThreshold * uPixelRatio;\n    float visibilityMultiplier = smoothstep(visibilityThreshold * 0.5 - fLabelInfo[3], visibilityThreshold * 0.5, pixelRadius * 0.5);\n\n    // send the pixel radius of this label to the fragment shader\n    float padding = uPadding * uPixelRatio;\n    float minThickness = max(2.0, min(pixelRadius * 0.1, 3.0 * uPixelRatio));\n    fThickness = (minThickness + (fLabelInfo[3] + padding * 2.0 - minThickness) * visibilityMultiplier) * 0.5;\n    fPixelRadius = pixelRadius + fThickness;\n\n    // send the normalized length of a single pixel\n    fPixelLength = 1.0 / fPixelRadius;\n\n    // calculate the render matrix\n    mat4 renderMatrix = uProjectionMatrix * lookAtMatrix;\n\n    // send the normalized distance from the center to the fragment shader\n    vFromCenter = aVertex.xy;\n\n    // compute the vertex position and its screen position\n    float pixelLength = iRadius / pixelRadius;\n    float textRadius = iRadius + pixelLength * fThickness;\n    vec4 worldVertex = renderMatrix * vec4(aVertex * textRadius, 1.0);\n\n    // find the number of label repetitions\n    float repeatLabels = float(uint(uRepeatLabel));\n    float repeatGap = uRepeatGap * uPixelRatio;\n    float circumference = fPixelRadius * M_2PI;\n    float maxLabels = min(repeatLabels, floor(circumference / (fLabelInfo[2] + repeatGap + padding * 2.0)));\n    float maxLabelsLength = (fLabelInfo[2] + padding * 2.0) * maxLabels;\n    float labelGap = (circumference - maxLabelsLength) / maxLabels;\n    fLabelStep = fLabelInfo[2] + labelGap + padding * 2.0;\n\n    // set the render vertex location\n    gl_Position = worldVertex;\n}\n';
+var RingLabel_vs_default = '#version 300 es\n\nprecision lowp usampler2D;\n#define GLSLIFY 1\n\n#define M_PI 3.14159265359\n#define M_2PI 6.28318530718\n\nlayout(location=0) in vec3 aVertex;\nlayout(location=1) in uint iPoint;\nlayout(location=2) in uint iColor;\nlayout(location=3) in uvec4 iLabel;\n\n//layout(std140) uniform RenderUniforms {\n    uniform mat4 uViewMatrix;\n    uniform mat4 uSceneMatrix;\n    uniform mat4 uProjectionMatrix;\n    uniform vec2 uViewportSize;\n    uniform float uPixelRatio;\n    uniform sampler2D uGraphPoints;\n    uniform sampler2D uColorPalette;\n//};\nuniform sampler2D uCharTexture;\nuniform float uVisibilityThreshold;\nuniform vec2 uLabelPositioning;\nuniform int uRepeatLabel;\nuniform float uRepeatGap;\nuniform float uPlacementMargin;\nuniform float uLabelPlacement;\nuniform vec2 uLabelDirection;\nuniform bool uBackground;\nuniform float uPadding;\n\nflat out vec4 fBackgroundColor;\nflat out vec4 fTextColor;\nflat out vec4 fLabelInfo;\nflat out float fPixelRadius;\nflat out float fPixelLength;\nflat out float fThickness;\nflat out float fLabelStep;\nflat out vec2 fCharTextureSize;\n\nout vec2 vFromCenter;\n\nvec4 valueForIndex(sampler2D tex, int index) {\n    int texWidth = textureSize(tex, 0).x;\n    int col = index % texWidth;\n    int row = index / texWidth;\n    return texelFetch(tex, ivec2(col, row), 0);\n}\n\nuvec4 uvalueForIndex(usampler2D tex, int index) {\n    int texWidth = textureSize(tex, 0).x;\n    int col = index % texWidth;\n    int row = index / texWidth;\n    return texelFetch(tex, ivec2(col, row), 0);\n}\n\nuint uivalueForIndex(usampler2D tex, int index) {\n    int texWidth = textureSize(tex, 0).x;\n    int col = index % texWidth;\n    int row = index / texWidth;\n    return texelFetch(tex, ivec2(col, row), 0)[0];\n}\n\n// from https://en.wikipedia.org/wiki/SRGB#The_reverse_transformation\nfloat luminance_x(float x) {\n    return x <= 0.04045 ? x / 12.92 : pow((x + 0.055) / 1.055, 2.4);\n}\nfloat color_l(float l) {\n    return min(1.0, max(0.0, l <= 0.0031308 ? l * 12.92 : pow(l * 1.055, 1.0 / 2.4) - 0.055));\n}\n\n// from https://en.wikipedia.org/wiki/Relative_luminance\nfloat rgb2luminance(vec3 color) {\n    // relative luminance\n    // see http://www.w3.org/TR/2008/REC-WCAG20-20081211/#relativeluminancedef\n    float r = luminance_x(color.r);\n    float g = luminance_x(color.g);\n    float b = luminance_x(color.b);\n    return 0.2126 * r + 0.7152 * g + 0.0722 * b;\n}\n\nvec3 setLuminance(vec3 color, float luminance) {\n    float r = luminance_x(color.r) * 0.2126;\n    float g = luminance_x(color.g) * 0.7152;\n    float b = luminance_x(color.b) * 0.0722;\n    float colorLuminance = r + g + b;\n\n    float tr = luminance * (r / colorLuminance);\n    float tg = luminance * (g / colorLuminance);\n    float tb = luminance * (b / colorLuminance);\n\n    float rr = color_l(tr / 0.2126);\n    float rg = color_l(tg / 0.7152);\n    float rb = color_l(tb / 0.0722);\n\n    return vec3(rr, rg, rb );\n}\n\n// https://www.w3.org/TR/WCAG20/#contrast-ratiodef\n// (L1 + 0.05) / (L2 + 0.05), where\n// - L1 is the relative luminance of the lighter of the colors, and\n// - L2 is the relative luminance of the darker of the colors.\nfloat findDarker(float luminance, float contrast) {\n    return (contrast * luminance) + (0.05 * contrast) - 0.05;\n}\nfloat findLighter(float luminance, float contrast) {\n    return (luminance + 0.05 - (0.05 * contrast)) / contrast;\n}\n\nvec3 contrastingColor(vec3 color, float contrast) {\n    float luminance = rgb2luminance(color);\n    float darker = findDarker(luminance, contrast);\n    float lighter = findLighter(luminance, contrast);\n\n    float targetLuminance;\n    if (darker < 0.0 || darker > 1.0) {\n        targetLuminance = lighter;\n    } else if (lighter < 0.0 || lighter > 1.0) {\n        targetLuminance = darker;\n    } else {\n        targetLuminance = abs(luminance - lighter) < abs(darker - luminance) ? lighter : darker;\n    }\n\n    return setLuminance(color, targetLuminance);\n}\n\nvec3 desaturateColor(vec3 color, float amount) {\n    float l = rgb2luminance(color);\n    vec3 gray = vec3(l, l, l);\n    return mix(color, gray, amount);\n}\n\nvoid main() {\n    vec4 point = valueForIndex(uGraphPoints, int(iPoint));\n    vec3 position = point.xyz;\n    float radius = point.w;\n    // claculate the offset matrix, done as a matrix to be able to compute "billboard" vertices in the shader\n    mat4 offsetMatrix = mat4(1.0);\n    offsetMatrix[3] = vec4(position, 1.0);\n\n    // reset the rotation of the model-view matrix\n    mat4 modelMatrix = uViewMatrix * uSceneMatrix * offsetMatrix;\n    mat4 lookAtMatrix = mat4(modelMatrix);\n    lookAtMatrix[0] = vec4(1.0, 0.0, 0.0, lookAtMatrix[0][3]);\n    lookAtMatrix[1] = vec4(0.0, 1.0, 0.0, lookAtMatrix[1][3]);\n    lookAtMatrix[2] = vec4(0.0, 0.0, 1.0, lookAtMatrix[2][3]);\n\n    // the on-screen center of this point\n    vec4 quadCenter = uProjectionMatrix * lookAtMatrix * vec4(0.0, 0.0, 0.0, 1.0);\n    vec2 screenQuadCenter = quadCenter.xy / quadCenter.w;\n\n    // the on-screen position of a side of this quad\n    vec4 quadSide = uProjectionMatrix * lookAtMatrix * vec4(radius, 0.0, 0.0, 1.0);\n    vec2 screenQuadSide = quadSide.xy / quadSide.w;\n\n    // compute the pixel radius of this point for a size of 1 in world coordinates\n    float pixelRadius = length((screenQuadSide - screenQuadCenter) * uViewportSize * 0.5);\n\n    // send the size of the char texture to the fragment shader\n    fCharTextureSize = vec2(textureSize(uCharTexture, 0));\n\n    // send the render color to the fragment shader\n    vec4 color = valueForIndex(uColorPalette, int(iColor));\n    fBackgroundColor = vec4(color.rgb, 1.0);\n    fTextColor = vec4(contrastingColor(color.rgb, 7.0), 1.0);\n\n    // send thelabel info to the fragment shader\n    fLabelInfo = vec4(iLabel);\n\n    // calculate the label visibility\n    float visibilityThreshold = uVisibilityThreshold * uPixelRatio;\n    float visibilityMultiplier = smoothstep(visibilityThreshold * 0.5 - fLabelInfo[3], visibilityThreshold * 0.5, pixelRadius * 0.5);\n\n    // send the pixel radius of this label to the fragment shader\n    float padding = uPadding * uPixelRatio;\n    float minThickness = max(2.0, min(pixelRadius * 0.1, 3.0 * uPixelRatio));\n    fThickness = (minThickness + (fLabelInfo[3] + padding * 2.0 - minThickness) * visibilityMultiplier) * 0.5;\n    fPixelRadius = pixelRadius + fThickness;\n\n    // send the normalized length of a single pixel\n    fPixelLength = 1.0 / fPixelRadius;\n\n    // calculate the render matrix\n    mat4 renderMatrix = uProjectionMatrix * lookAtMatrix;\n\n    // send the normalized distance from the center to the fragment shader\n    vFromCenter = aVertex.xy;\n\n    // compute the vertex position and its screen position\n    float pixelLength = radius / pixelRadius;\n    float textRadius = radius + pixelLength * fThickness;\n    vec4 worldVertex = renderMatrix * vec4(aVertex * textRadius, 1.0);\n\n    // find the number of label repetitions\n    float repeatLabels = float(uint(uRepeatLabel));\n    float repeatGap = uRepeatGap * uPixelRatio;\n    float circumference = fPixelRadius * M_2PI;\n    float maxLabels = min(repeatLabels, floor(circumference / (fLabelInfo[2] + repeatGap + padding * 2.0)));\n    float maxLabelsLength = (fLabelInfo[2] + padding * 2.0) * maxLabels;\n    float labelGap = (circumference - maxLabelsLength) / maxLabels;\n    fLabelStep = fLabelInfo[2] + labelGap + padding * 2.0;\n\n    // set the render vertex location\n    gl_Position = worldVertex;\n}\n';
 
 // src/graph/labels/ring/RingLabel.fs.glsl
 var RingLabel_fs_default = "#version 300 es\nprecision highp float;\nprecision lowp usampler2D;\n#define GLSLIFY 1\n\n#define M_PI 3.14159265359\n#define M_2PI 6.28318530718\n\nvec4 valueForIndex(sampler2D tex, int index) {\n    int texWidth = textureSize(tex, 0).x;\n    int col = index % texWidth;\n    int row = index / texWidth;\n    return texelFetch(tex, ivec2(col, row), 0);\n}\n\nuvec4 uvalueForIndex(usampler2D tex, int index) {\n    int texWidth = textureSize(tex, 0).x;\n    int col = index % texWidth;\n    int row = index / texWidth;\n    return texelFetch(tex, ivec2(col, row), 0);\n}\n\nuint uivalueForIndex(usampler2D tex, int index) {\n    int texWidth = textureSize(tex, 0).x;\n    int col = index % texWidth;\n    int row = index / texWidth;\n    return texelFetch(tex, ivec2(col, row), 0)[0];\n}\n\n// from https://en.wikipedia.org/wiki/SRGB#The_reverse_transformation\nfloat luminance_x(float x) {\n    return x <= 0.04045 ? x / 12.92 : pow((x + 0.055) / 1.055, 2.4);\n}\nfloat color_l(float l) {\n    return min(1.0, max(0.0, l <= 0.0031308 ? l * 12.92 : pow(l * 1.055, 1.0 / 2.4) - 0.055));\n}\n\n// from https://en.wikipedia.org/wiki/Relative_luminance\nfloat rgb2luminance(vec3 color) {\n    // relative luminance\n    // see http://www.w3.org/TR/2008/REC-WCAG20-20081211/#relativeluminancedef\n    float r = luminance_x(color.r);\n    float g = luminance_x(color.g);\n    float b = luminance_x(color.b);\n    return 0.2126 * r + 0.7152 * g + 0.0722 * b;\n}\n\nvec3 setLuminance(vec3 color, float luminance) {\n    float r = luminance_x(color.r) * 0.2126;\n    float g = luminance_x(color.g) * 0.7152;\n    float b = luminance_x(color.b) * 0.0722;\n    float colorLuminance = r + g + b;\n\n    float tr = luminance * (r / colorLuminance);\n    float tg = luminance * (g / colorLuminance);\n    float tb = luminance * (b / colorLuminance);\n\n    float rr = color_l(tr / 0.2126);\n    float rg = color_l(tg / 0.7152);\n    float rb = color_l(tb / 0.0722);\n\n    return vec3(rr, rg, rb );\n}\n\n// https://www.w3.org/TR/WCAG20/#contrast-ratiodef\n// (L1 + 0.05) / (L2 + 0.05), where\n// - L1 is the relative luminance of the lighter of the colors, and\n// - L2 is the relative luminance of the darker of the colors.\nfloat findDarker(float luminance, float contrast) {\n    return (contrast * luminance) + (0.05 * contrast) - 0.05;\n}\nfloat findLighter(float luminance, float contrast) {\n    return (luminance + 0.05 - (0.05 * contrast)) / contrast;\n}\n\nvec3 contrastingColor(vec3 color, float contrast) {\n    float luminance = rgb2luminance(color);\n    float darker = findDarker(luminance, contrast);\n    float lighter = findLighter(luminance, contrast);\n\n    float targetLuminance;\n    if (darker < 0.0 || darker > 1.0) {\n        targetLuminance = lighter;\n    } else if (lighter < 0.0 || lighter > 1.0) {\n        targetLuminance = darker;\n    } else {\n        targetLuminance = abs(luminance - lighter) < abs(darker - luminance) ? lighter : darker;\n    }\n\n    return setLuminance(color, targetLuminance);\n}\n\nvec3 desaturateColor(vec3 color, float amount) {\n    float l = rgb2luminance(color);\n    vec3 gray = vec3(l, l, l);\n    return mix(color, gray, amount);\n}\n\nuniform vec4 uClearColor;\nuniform float uDesaturate;\nuniform float uBrightness;\nuniform float uFade;\nuniform float uAlpha;\n\nvec4 outputColor(vec4 color) {\n    // desaturate => fade => alpha\n    vec3 ret = mix(color.rgb, vec3(uBrightness + 1.0 / 2.0), abs(uBrightness));\n    ret = vec3(desaturateColor(ret, uDesaturate));\n    ret = mix(ret, uClearColor.rgb, uFade);\n    return vec4(ret, color.a * uAlpha);\n}\n\n#define MODE_DRAFT 0u\n#define MODE_MEDIUM 1u\n#define MODE_HIGH_PASS_1 2u\n#define MODE_HIGH_PASS_2 3u\n#define MODE_PICKING 4u\n\n// most of these come from this excellent post:\n// https://iquilezles.org/www/articles/distfunctions2d/distfunctions2d.htm\n\nfloat opRound(in float d, in float r) {\n    return d - r;\n}\n\nfloat opOnion(in float d, in float r) {\n    return abs(d) - r;\n}\n\nfloat sdCircle(in vec2 p, in float r ) {\n    return length(p) - r;\n}\n\nfloat sdEquilateralTriangle(in vec2 p, in float r) {\n    const float k = sqrt(3.0);\n    p.x = abs(p.x) - r;\n    p.y = p.y + (r) / k;\n    if (p.x + k * p.y > 0.0) {\n        p = vec2(p.x-k*p.y,-k*p.x-p.y) / 2.0;\n    }\n    p.x -= clamp(p.x, -2.0 * r, 0.0);\n    return -length(p) * sign(p.y);\n}\n\nfloat sdPentagon(in vec2 p, in float r) {\n    const vec3 k = vec3(0.809016994, 0.587785252, 0.726542528);\n    p.y = -(p.y) * 1.25;\n    p.x = abs(p.x) * 1.25;\n    p -= 2.0 * min(dot(vec2(-k.x, k.y), p), 0.0) * vec2(-k.x, k.y);\n    p -= 2.0 * min(dot(vec2(k.x, k.y), p), 0.0) * vec2(k.x, k.y);\n    p -= vec2(clamp(p.x, -r*k.z, r*k.z), r);\n    return length(p) * sign(p.y);\n}\n\nfloat sdOctagon(in vec2 p, in float r) {\n    // pi/8: cos, sin, tan.\n    const vec3 k = vec3(\n        -0.9238795325,   // sqrt(2+sqrt(2))/2\n        0.3826834323,   // sqrt(2-sqrt(2))/2\n        0.4142135623\n    ); // sqrt(2)-1\n    // reflections\n    p = abs(p) * 1.1;\n    p -= 2.0 * min(dot(vec2(k.x,k.y), p), 0.0) * vec2(k.x,k.y);\n    p -= 2.0 * min(dot(vec2(-k.x,k.y), p), 0.0) * vec2(-k.x,k.y);\n    // Polygon side.\n    p -= vec2(clamp(p.x, -k.z*r, k.z*r), r);\n    return length(p) * sign(p.y);\n}\n\nfloat sdStar(in vec2 p, in float r, in uint n, in float m) { // m=[2,n]\n    // these 4 lines can be precomputed for a given shape\n    float an = 3.141593 / float(n);\n    float en = 3.141593 / m;\n    vec2  acs = vec2(cos(an), sin(an));\n    vec2  ecs = vec2(cos(en), sin(en)); // ecs=vec2(0,1) and simplify, for regular polygon,\n\n    // reduce to first sector\n    float bn = mod(atan(p.x, p.y), 2.0 * an) - an;\n    p = length(p) * vec2(cos(bn), abs(sin(bn)));\n\n    // line sdf\n    p -= r * acs;\n    p += ecs * clamp(-dot(p, ecs), 0.0, r * acs.y / ecs.y);\n    return length(p) * sign(p.x);\n}\n\nfloat sdCross(in vec2 p, in float w, in float r) {\n    p = abs(p);\n    return length(p - min(p.x + p.y, w) * 0.5) - r;\n}\n\n// TODO: Precompute this, we always pass the same parameters tot his function (v, vec2(1.0, 0.3), 0.0)\nfloat sdPlus( in vec2 p, in vec2 b, float r ) {\n    p = abs(p);\n    p = (p.y > p.x) ? p.yx : p.xy;\n\n    vec2  q = p - b;\n    float k = max(q.y, q.x);\n    vec2  w = (k > 0.0) ? q : vec2(b.y - p.x, -k);\n\n    return sign(k)*length(max(w, 0.0)) + r;\n}\n\nuniform usampler2D uLabelIndices;\nuniform usampler2D uCharBoxes;\nuniform sampler2D uCharTexture;\nuniform float uPixelRatio;\nuniform uint uRenderMode;\nuniform vec2 uLabelDirection;\nuniform bool uMirror;\nuniform float uPadding;\n\nflat in vec4 fBackgroundColor;\nflat in vec4 fTextColor;\nflat in float fPixelRadius;\nflat in float fLabelStep;\nflat in vec2 fCharTextureSize;\nflat in vec4 fLabelInfo;\nflat in float fPixelLength;\nflat in float fThickness;\nin vec2 vFromCenter;\n\nout vec4 fragColor;\n\nfloat cross_ish(vec2 a, vec2 b)\n{\n    return a.x * b.y - a.y * b.x;\n}\n\nvoid main() {\n    float padding = uPadding * uPixelRatio;\n    float fromCenter = length(vFromCenter);\n    float thickness = fThickness * fPixelLength;\n    float antialias = min(thickness, fPixelLength * 1.5);\n    float radius = 1.0 - thickness;\n    float circle = fromCenter - (1.0 - thickness);\n    float ring = opOnion(circle, thickness);\n    float modeDistance = uRenderMode == MODE_HIGH_PASS_1 ? -antialias : -antialias * 0.5;\n    float ringThreshold = uRenderMode == MODE_HIGH_PASS_2 ? 0.0 : modeDistance;\n\n    if (ring > ringThreshold) {\n        discard;\n    }\n\n    float halfLabelWidth = fLabelInfo[2] * 0.5;\n    float halfLabelHeight = fLabelInfo[3] * 0.5;\n    float normalizedHeight = (halfLabelHeight + padding) / fPixelRadius;\n\n    vec2 positionVector = uLabelDirection;\n    float angle = atan(cross_ish(vFromCenter, positionVector), dot(vFromCenter, positionVector));\n    float angleDistance = angle * fPixelRadius;\n    float paddedLabelWidth = fLabelInfo[2] + padding * 2.0;\n    float offsetAngleDistance = angleDistance + halfLabelWidth + padding;\n\n    float width = fract(offsetAngleDistance / fLabelStep) * fLabelStep;\n    float height = (1.0 - fromCenter) * fPixelRadius - padding;\n    vec4 finalColor;\n\n    if (height < 0.0 || height > fLabelInfo[3] || width < padding || width > fLabelInfo[2] + padding) {\n        finalColor = fBackgroundColor;\n    } else {\n        float uProgress = (width - padding) / fLabelInfo[2];\n        if (uMirror) {\n            uProgress = 1.0 - uProgress;\n        }\n        float stringProgress = fLabelInfo[0] + fLabelInfo[1] * uProgress;\n        float stringIndex = floor(stringProgress);\n        int charIndex = int(uivalueForIndex(uLabelIndices, int(stringIndex)));\n        vec4 charBox = vec4(uvalueForIndex(uCharBoxes, charIndex));\n        float charMult = stringProgress - stringIndex;\n\n        vec4 charBoxUV = charBox / vec4(fCharTextureSize, fCharTextureSize);\n\n        vec2 uv = vec2(charBoxUV[0] + charBoxUV[2] * charMult, charBoxUV[1] + charBoxUV[3] * fLabelInfo[1]);\n        if (uMirror) {\n            uv = vec2(charBoxUV[0] + charBoxUV[2] * charMult, charBoxUV[1] + charBoxUV[3] * (height / fLabelInfo[3]));\n        } else {\n            uv = vec2(charBoxUV[0] + charBoxUV[2] * charMult, charBoxUV[1] + charBoxUV[3] * (1.0 - height / fLabelInfo[3]));\n        }\n\n        vec4 texPixel = texture(uCharTexture, uv);\n\n        float smoothing = 7.0 / fLabelInfo[3];\n        float distance = texPixel.a;\n        float textEdge = smoothstep(0.5 - smoothing, 0.5 + smoothing, distance);\n        finalColor = mix(fBackgroundColor, fTextColor, textEdge);\n    }\n\n    if (uRenderMode == MODE_HIGH_PASS_2) {\n        if (ring < -antialias) {\n            discard;\n        }\n        fragColor = outputColor(vec4(finalColor.rgb, smoothstep(0.0, antialias, abs(ring))));\n    } else {\n        fragColor = outputColor(vec4(finalColor.rgb, 1.0));\n    }\n\n//    fragColor = vec4(1.0,0.0,1.0,1.0);\n}\n";
 
 // src/graph/labels/ring/RingLabel.ts
 var RingLabel = class extends CircularLabel {
-  initialize(context, points2, data, mappings2, pickingManager, font = "monospace", labelAtlas) {
-    super.initialize(context, points2, data, mappings2, pickingManager, font, labelAtlas);
+  initialize(context, points2, data, mappings2, pickingManager, font = "monospace", bold = false, labelAtlas) {
+    super.initialize(context, points2, data, mappings2, pickingManager, font, bold, labelAtlas);
     this.localUniforms.uPadding = 2;
   }
   getDrawShaders() {
@@ -18204,9 +18264,10 @@ __export(mod_exports8, {
 });
 
 // src/UX/mod.ts
-var mod_exports11 = {};
-__export(mod_exports11, {
+var mod_exports12 = {};
+__export(mod_exports12, {
   DebugMenu: () => DebugMenu,
+  animation: () => mod_exports11,
   mouse: () => mod_exports9,
   picking: () => mod_exports10
 });
@@ -18342,6 +18403,252 @@ __export(mod_exports10, {
   PickingManager: () => PickingManager
 });
 
+// src/UX/animation/mod.ts
+var mod_exports11 = {};
+__export(mod_exports11, {
+  AnimationManager: () => AnimationManager,
+  EaseInBack: () => EaseInBack,
+  EaseInBounce: () => EaseInBounce,
+  EaseInCirc: () => EaseInCirc,
+  EaseInCubic: () => EaseInCubic,
+  EaseInElastic: () => EaseInElastic,
+  EaseInExpo: () => EaseInExpo,
+  EaseInOutBack: () => EaseInOutBack,
+  EaseInOutBounce: () => EaseInOutBounce,
+  EaseInOutCirc: () => EaseInOutCirc,
+  EaseInOutCubic: () => EaseInOutCubic,
+  EaseInOutElastic: () => EaseInOutElastic,
+  EaseInOutExpo: () => EaseInOutExpo,
+  EaseInOutQuad: () => EaseInOutQuad,
+  EaseInOutQuart: () => EaseInOutQuart,
+  EaseInOutQuint: () => EaseInOutQuint,
+  EaseInOutSine: () => EaseInOutSine,
+  EaseInQuad: () => EaseInQuad,
+  EaseInQuart: () => EaseInQuart,
+  EaseInQuint: () => EaseInQuint,
+  EaseInSine: () => EaseInSine,
+  EaseOutBack: () => EaseOutBack,
+  EaseOutBounce: () => EaseOutBounce,
+  EaseOutCirc: () => EaseOutCirc,
+  EaseOutCubic: () => EaseOutCubic,
+  EaseOutElastic: () => EaseOutElastic,
+  EaseOutExpo: () => EaseOutExpo,
+  EaseOutQuad: () => EaseOutQuad,
+  EaseOutQuart: () => EaseOutQuart,
+  EaseOutQuint: () => EaseOutQuint,
+  EaseOutSine: () => EaseOutSine,
+  LinearEasing: () => LinearEasing,
+  PropertyInterpolator: () => PropertyInterpolator
+});
+
+// src/UX/animation/PropertyInterpolator.ts
+var PropertyInterpolator = class {
+  constructor(target, property, start, end) {
+    this.target = target;
+    this.start = start;
+    this.end = end;
+    this.propertyPath = property.split(".");
+    this.property = this.propertyPath[this.propertyPath.length - 1];
+    this.propertyOwner = target;
+    for (let i = 0, n = this.propertyPath.length - 1; i < n; ++i) {
+      this.propertyOwner = this.propertyOwner[this.propertyPath[i]];
+    }
+    if (Array.isArray(start) || ArrayBuffer.isView(start)) {
+      this.interpolator = this.interpolateArrayProperty;
+    } else {
+      this.interpolator = this.interpolateNumberProperty;
+    }
+  }
+  setPropertyValue(interpolation) {
+    this.interpolator(interpolation);
+  }
+  interpolateNumberProperty(amount) {
+    this.propertyOwner[this.property] = this.interpolate(this.start, this.end, amount);
+  }
+  interpolateArrayProperty(amount) {
+    this.propertyOwner[this.property] = this.interpolateArray(this.start, this.end, amount);
+  }
+  interpolate(start, end, amount) {
+    return start + (end - start) * amount;
+  }
+  interpolateArray(start, end, amount) {
+    const result = [];
+    for (let i = 0, n = start.length; i < n; ++i) {
+      result.push(this.interpolate(start[i], end[i], amount));
+    }
+    return result;
+  }
+};
+
+// src/UX/animation/Easing.ts
+function LinearEasing(x) {
+  return x;
+}
+var sin = Math.sin;
+var cos = Math.cos;
+var pow2 = Math.pow;
+var sqrt = Math.sqrt;
+var PI = Math.PI;
+function EaseInSine(x) {
+  return 1 - cos(x * PI / 2);
+}
+function EaseOutSine(x) {
+  return sin(x * PI / 2);
+}
+function EaseInOutSine(x) {
+  return -(cos(PI * x) - 1) / 2;
+}
+function EaseInQuad(x) {
+  return x * x;
+}
+function EaseOutQuad(x) {
+  return 1 - (1 - x) * (1 - x);
+}
+function EaseInOutQuad(x) {
+  return x < 0.5 ? 2 * x * x : 1 - pow2(-2 * x + 2, 2) / 2;
+}
+function EaseInCubic(x) {
+  return x * x * x;
+}
+function EaseOutCubic(x) {
+  return 1 - pow2(1 - x, 3);
+}
+function EaseInOutCubic(x) {
+  return x < 0.5 ? 4 * x * x * x : 1 - pow2(-2 * x + 2, 3) / 2;
+}
+function EaseInQuart(x) {
+  return x * x * x * x;
+}
+function EaseOutQuart(x) {
+  return 1 - pow2(1 - x, 4);
+}
+function EaseInOutQuart(x) {
+  return x < 0.5 ? 8 * x * x * x * x : 1 - pow2(-2 * x + 2, 4) / 2;
+}
+function EaseInQuint(x) {
+  return x * x * x * x * x;
+}
+function EaseOutQuint(x) {
+  return 1 - pow2(1 - x, 5);
+}
+function EaseInOutQuint(x) {
+  return x < 0.5 ? 16 * x * x * x * x * x : 1 - pow2(-2 * x + 2, 5) / 2;
+}
+function EaseInExpo(x) {
+  return x === 0 ? 0 : pow2(2, 10 * x - 10);
+}
+function EaseOutExpo(x) {
+  return x === 1 ? 1 : 1 - pow2(2, -10 * x);
+}
+function EaseInOutExpo(x) {
+  return x === 0 ? 0 : x === 1 ? 1 : x < 0.5 ? pow2(2, 20 * x - 10) / 2 : (2 - pow2(2, -20 * x + 10)) / 2;
+}
+function EaseInCirc(x) {
+  return 1 - sqrt(1 - pow2(x, 2));
+}
+function EaseOutCirc(x) {
+  return sqrt(1 - pow2(x - 1, 2));
+}
+function EaseInOutCirc(x) {
+  return x < 0.5 ? (1 - sqrt(1 - pow2(2 * x, 2))) / 2 : (sqrt(1 - pow2(-2 * x + 2, 2)) + 1) / 2;
+}
+function EaseInBack(x) {
+  const c1 = 1.70158;
+  const c3 = c1 + 1;
+  return c3 * x * x * x - c1 * x * x;
+}
+function EaseOutBack(x) {
+  const c1 = 1.70158;
+  const c3 = c1 + 1;
+  return 1 + c3 * pow2(x - 1, 3) + c1 * pow2(x - 1, 2);
+}
+function EaseInOutBack(x) {
+  const c1 = 1.70158;
+  const c2 = c1 * 1.525;
+  return x < 0.5 ? pow2(2 * x, 2) * ((c2 + 1) * 2 * x - c2) / 2 : (pow2(2 * x - 2, 2) * ((c2 + 1) * (x * 2 - 2) + c2) + 2) / 2;
+}
+function EaseInElastic(x) {
+  const c4 = 2 * Math.PI / 3;
+  return x === 0 ? 0 : x === 1 ? 1 : -pow2(2, 10 * x - 10) * sin((x * 10 - 10.75) * c4);
+}
+function EaseOutElastic(x) {
+  const c4 = 2 * Math.PI / 3;
+  return x === 0 ? 0 : x === 1 ? 1 : pow2(2, -10 * x) * sin((x * 10 - 0.75) * c4) + 1;
+}
+function EaseInOutElastic(x) {
+  const c5 = 2 * Math.PI / 4.5;
+  return x === 0 ? 0 : x === 1 ? 1 : x < 0.5 ? -(pow2(2, 20 * x - 10) * sin((20 * x - 11.125) * c5)) / 2 : pow2(2, -20 * x + 10) * sin((20 * x - 11.125) * c5) / 2 + 1;
+}
+function EaseOutBounce(x) {
+  const n1 = 7.5625;
+  const d1 = 2.75;
+  if (x < 1 / d1) {
+    return n1 * x * x;
+  } else if (x < 2 / d1) {
+    return n1 * (x -= 1.5 / d1) * x + 0.75;
+  } else if (x < 2.5 / d1) {
+    return n1 * (x -= 2.25 / d1) * x + 0.9375;
+  } else {
+    return n1 * (x -= 2.625 / d1) * x + 0.984375;
+  }
+}
+function EaseInBounce(x) {
+  return 1 - EaseOutBounce(1 - x);
+}
+function EaseInOutBounce(x) {
+  return x < 0.5 ? (1 - EaseOutBounce(1 - 2 * x)) / 2 : (1 + EaseOutBounce(2 * x - 1)) / 2;
+}
+
+// src/UX/animation/AnimationManager.ts
+var AnimationManager = class {
+  constructor() {
+    this.targets = new Map();
+  }
+  animate(target, property, duration, start, end, cb = null, easing = LinearEasing) {
+    const needsAnimationFrame = this.targets.size === 0;
+    const interpolator = new PropertyInterpolator(target, property, start, end);
+    let targetAnimations = this.targets.get(target);
+    if (!targetAnimations) {
+      targetAnimations = new Map();
+      this.targets.set(target, targetAnimations);
+    }
+    targetAnimations.set(property, {
+      interpolator,
+      cb,
+      easing,
+      duration,
+      lastUpdate: performance.now(),
+      currentTime: 0
+    });
+    if (needsAnimationFrame) {
+      requestAnimationFrame(() => this.animationFrame());
+    }
+  }
+  animationFrame() {
+    const time = performance.now();
+    for (const [target, animations] of this.targets) {
+      for (const [property, entry] of animations) {
+        entry.currentTime += time - entry.lastUpdate;
+        entry.lastUpdate = time;
+        const progress = Math.min(entry.currentTime / entry.duration, 1);
+        entry.interpolator.setPropertyValue(entry.easing(progress));
+        if (entry.cb) {
+          entry.cb(progress);
+        }
+        if (entry.currentTime >= entry.duration) {
+          animations.delete(property);
+        }
+      }
+      if (!animations.size) {
+        this.targets.delete(target);
+      }
+    }
+    if (this.targets.size !== 0) {
+      requestAnimationFrame(() => this.animationFrame());
+    }
+  }
+};
+
 // src/UX/debug/DebugMenu.ts
 var import_tweakpane = __toModule(require_tweakpane());
 var DebugMenu = class {
@@ -18407,8 +18714,6 @@ var DebugMenu = class {
       }],
       pixelSizing: [element, { label: "pixel sizing " }],
       billboard: [element, { label: "billboarding" }],
-      minSize: [element, { label: "min size" }],
-      maxSize: [element, { label: "max size" }],
       gravity: [element, { min: -2, max: 2 }],
       alpha: [element, { min: 0, max: 1 }],
       fade: [element, { min: 0, max: 1 }],
@@ -18707,7 +19012,7 @@ var GraferController = class extends EventEmitter {
     }
   }
   addLabels(labelsData, hasColors) {
-    var _a2;
+    var _a2, _b;
     const pickingManager = this._viewport.graph.picking;
     const context = this.context;
     const graph = this._viewport.graph;
@@ -18726,7 +19031,7 @@ var GraferController = class extends EventEmitter {
           return value;
         };
       }
-      labels = new LabelsClass(context, graph, labelsData.data, labelsMappings, pickingManager, (_a2 = labelsData.options) == null ? void 0 : _a2.font);
+      labels = new LabelsClass(context, graph, labelsData.data, labelsMappings, pickingManager, (_a2 = labelsData.options) == null ? void 0 : _a2.font, (_b = labelsData.options) == null ? void 0 : _b.bold);
       if ("options" in labelsData) {
         const options = labelsData.options;
         const keys = Object.keys(options);
@@ -19820,18 +20125,18 @@ async function playground(container) {
       };
       const grafer = new GraferController(canvas, { points: points2, layers, colors: colorsArr });
       const { viewport } = grafer;
-      const dolly = new mod_exports11.mouse.ScrollDolly(viewport);
+      const dolly = new mod_exports12.mouse.ScrollDolly(viewport);
       dolly.enabled = true;
-      const truck = new mod_exports11.mouse.DragTruck(viewport);
+      const truck = new mod_exports12.mouse.DragTruck(viewport);
       truck.button = "primary";
       truck.enabled = true;
-      const rotation = new mod_exports11.mouse.DragRotation(viewport);
+      const rotation = new mod_exports12.mouse.DragRotation(viewport);
       rotation.button = "secondary";
       rotation.enabled = true;
-      const pan = new mod_exports11.mouse.DragPan(viewport);
+      const pan = new mod_exports12.mouse.DragPan(viewport);
       pan.button = "auxiliary";
       pan.enabled = true;
-      const debug = new mod_exports11.DebugMenu(viewport);
+      const debug = new mod_exports12.DebugMenu(viewport);
       debug.registerUX(dolly);
       debug.registerUX(truck);
       debug.registerUX(rotation);
@@ -19845,15 +20150,15 @@ async function playground(container) {
 }
 
 // examples/src/basic/mod.ts
-var mod_exports14 = {};
-__export(mod_exports14, {
-  html: () => mod_exports12,
-  js: () => mod_exports13
+var mod_exports15 = {};
+__export(mod_exports15, {
+  html: () => mod_exports13,
+  js: () => mod_exports14
 });
 
 // examples/src/basic/html/mod.ts
-var mod_exports12 = {};
-__export(mod_exports12, {
+var mod_exports13 = {};
+__export(mod_exports13, {
   edgeColors: () => edgeColors,
   minimal: () => minimal,
   minimal3D: () => minimal3D,
@@ -20069,8 +20374,8 @@ async function picking(container) {
 }
 
 // examples/src/basic/js/mod.ts
-var mod_exports13 = {};
-__export(mod_exports13, {
+var mod_exports14 = {};
+__export(mod_exports14, {
   edgeColors: () => edgeColors2,
   minimal: () => minimal2,
   minimal3D: () => minimal3D2,
@@ -20287,14 +20592,15 @@ async function picking2(container) {
     console.log(`${event.description} => layer:"${detail.layer}" ${detail.type}:"${detail.id}"`);
   };
   const controller = new GraferController(canvas, { layers });
-  controller.on(mod_exports11.picking.PickingManager.events.hoverOn, printEvent);
-  controller.on(mod_exports11.picking.PickingManager.events.hoverOff, printEvent);
-  controller.on(mod_exports11.picking.PickingManager.events.click, printEvent);
+  controller.on(mod_exports12.picking.PickingManager.events.hoverOn, printEvent);
+  controller.on(mod_exports12.picking.PickingManager.events.hoverOff, printEvent);
+  controller.on(mod_exports12.picking.PickingManager.events.click, printEvent);
 }
 
 // examples/src/data/mod.ts
-var mod_exports15 = {};
-__export(mod_exports15, {
+var mod_exports16 = {};
+__export(mod_exports16, {
+  addPoints: () => addPoints,
   colors: () => colors,
   mappings: () => mappings,
   points: () => points,
@@ -20333,6 +20639,68 @@ async function points(container) {
     { nodes, edges }
   ];
   render(html`<grafer-view class="grafer_container" .points="${points2}" .layers="${layers}"></grafer-view><mouse-interactions></mouse-interactions>`, container);
+}
+
+// examples/src/data/addPoints.ts
+function generateRandomPointData(startIndex, count) {
+  const data = [];
+  for (let i = 0; i < count; ++i) {
+    data.push({
+      id: `p_${startIndex + i}`,
+      x: Math.random() * 200 - 100,
+      y: Math.random() * 200 - 100,
+      radius: 1
+    });
+  }
+  return data;
+}
+var gPointCount = 0;
+function addNewPoints(controller) {
+  const data = generateRandomPointData(gPointCount, 50);
+  controller.viewport.graph.addPoints(data);
+  const nodeData = data.map((p) => ({ point: p.id }));
+  const layer = {
+    nodes: {
+      data: nodeData
+    }
+  };
+  controller.addLayer(layer, `newNodes_${gPointCount}`);
+  controller.render();
+  gPointCount += 50;
+}
+async function addPoints(container) {
+  const points2 = {
+    data: [
+      { id: "tl", x: -100, y: -100, radius: 4 },
+      { id: "tr", x: 100, y: -100, radius: 4 },
+      { id: "bl", x: -100, y: 100, radius: 4 },
+      { id: "br", x: 100, y: 100, radius: 4 }
+    ]
+  };
+  const nodes = {
+    data: [
+      { point: "tl" },
+      { point: "tr" },
+      { point: "bl" },
+      { point: "br" }
+    ]
+  };
+  const edges = {
+    data: [
+      { source: "tl", target: "tr" },
+      { source: "tr", target: "br" },
+      { source: "br", target: "bl" },
+      { source: "bl", target: "tl" }
+    ]
+  };
+  const layers = [
+    { nodes, edges }
+  ];
+  render(html`<canvas class="grafer_container"></canvas><mouse-interactions></mouse-interactions>`, container);
+  const canvas = document.querySelector(".grafer_container");
+  const controller = new GraferController(canvas, { points: points2, layers });
+  addNewPoints(controller);
+  setInterval(() => addNewPoints(controller), 5e3);
 }
 
 // examples/src/data/separateNodesEdges.ts
@@ -20462,8 +20830,8 @@ async function mappings(container) {
 }
 
 // examples/src/nodes/mod.ts
-var mod_exports16 = {};
-__export(mod_exports16, {
+var mod_exports17 = {};
+__export(mod_exports17, {
   circle: () => circle,
   cross: () => cross4,
   octagon: () => octagon,
@@ -20721,8 +21089,8 @@ async function plus(container) {
 }
 
 // examples/src/edges/mod.ts
-var mod_exports17 = {};
-__export(mod_exports17, {
+var mod_exports18 = {};
+__export(mod_exports18, {
   bundling: () => bundling,
   circuitBoard: () => circuitBoard,
   curvedPaths: () => curvedPaths,
@@ -21025,8 +21393,8 @@ async function bundling(container) {
 }
 
 // examples/src/labels/mod.ts
-var mod_exports18 = {};
-__export(mod_exports18, {
+var mod_exports19 = {};
+__export(mod_exports19, {
   circularLabel: () => circularLabel,
   pointLabel: () => pointLabel,
   ringLabel: () => ringLabel
@@ -21201,8 +21569,8 @@ async function ringLabel(container) {
 }
 
 // examples/src/aske/mod.ts
-var mod_exports19 = {};
-__export(mod_exports19, {
+var mod_exports20 = {};
+__export(mod_exports20, {
   bundledEdgesLoader: () => bundledEdgesLoader,
   knowledgeViewLoader: () => knowledgeViewLoader
 });
@@ -21466,7 +21834,7 @@ async function loadGraph(container, info) {
       "#81a1c1"
     ];
     const controller = new GraferController(canvas, { points: points2, colors: colors2, layers });
-    new mod_exports11.DebugMenu(controller.viewport);
+    new mod_exports12.DebugMenu(controller.viewport);
   }
 }
 async function bundledEdgesLoader(container) {
@@ -21946,7 +22314,7 @@ async function loadGraph2(container, info) {
       }
     }
   }
-  new mod_exports11.DebugMenu(controller.viewport);
+  new mod_exports12.DebugMenu(controller.viewport);
 }
 async function knowledgeViewLoader(container) {
   renderMenu3(container, (result) => {
@@ -21987,12 +22355,12 @@ MouseInteractions = __decorateClass([
 
 // examples/src/mod.ts
 var examples = {
-  basic: mod_exports14,
-  data: mod_exports15,
-  nodes: mod_exports16,
-  edges: mod_exports17,
-  labels: mod_exports18,
-  aske: mod_exports19,
+  basic: mod_exports15,
+  data: mod_exports16,
+  nodes: mod_exports17,
+  edges: mod_exports18,
+  labels: mod_exports19,
+  aske: mod_exports20,
   playground
 };
 function getExample(examples2, path) {
