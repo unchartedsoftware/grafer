@@ -52,5 +52,3 @@ export class PropertyInterpolator<T extends PropertyType> {
         return result;
     }
 }
-
-const a = new PropertyInterpolator(null, 'yolo', 0, 9);

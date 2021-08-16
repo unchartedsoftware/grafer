@@ -151,11 +151,6 @@ export function EaseInOutElastic(x: number): number {
                 : (pow(2, -20 * x + 10) * sin((20 * x - 11.125) * c5)) / 2 + 1;
 }
 
-export function EaseInBounce(x: number): number {
-    return 1 - EaseOutBounce(1 - x);
-
-}
-
 export function EaseOutBounce(x: number): number {
     const n1 = 7.5625;
     const d1 = 2.75;
@@ -168,6 +163,11 @@ export function EaseOutBounce(x: number): number {
     } else {
         return n1 * (x -= 2.625 / d1) * x + 0.984375;
     }
+}
+
+export function EaseInBounce(x: number): number {
+    return 1 - EaseOutBounce(1 - x);
+
 }
 
 export function EaseInOutBounce(x: number): number {
