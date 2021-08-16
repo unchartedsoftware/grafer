@@ -13,6 +13,7 @@ const kEvents  = {
     hoverOn: Symbol('grafer_hover_on'),
     hoverOff: Symbol('grafer_hover_off'),
     click: Symbol('grafer_click'),
+    emptyClick: Symbol('grafer_empty_click'),
 };
 Object.freeze(kEvents);
 
@@ -152,6 +153,8 @@ export class PickingManager extends EventEmitter.mixin(UXModule) {
             case MouseHandler.events.click:
                 if (colorID !== 0) {
                     this.emit(kEvents.click, colorID >> 1);
+                } else {
+                    this.emit(kEvents.emptyClick);
                 }
                 break;
         }
