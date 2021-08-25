@@ -32,6 +32,7 @@ export interface RenderUniforms {
     uClearColor: vec4;
     uColorPalette: Texture;
     uRenderMode: RenderMode;
+    uCameraMode: 0 | 1;
 }
 
 export type GenericUniforms = { [key: string]: number | number[] | boolean | Texture };
