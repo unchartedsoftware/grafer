@@ -15,6 +15,7 @@ layout(location=3) in uvec4 iLabel;
     uniform float uPixelRatio;
     uniform sampler2D uGraphPoints;
     uniform sampler2D uColorPalette;
+    uniform uint uCameraMode; // 0 = 2D; 1 = 3D;
 //};
 uniform usampler2D uLabelIndices;
 uniform usampler2D uCharBoxes;
@@ -48,9 +49,11 @@ void main() {
     // reset the rotation of the model-view matrix
     mat4 modelMatrix = uViewMatrix * uSceneMatrix * offsetMatrix;
     mat4 lookAtMatrix = mat4(modelMatrix);
-    lookAtMatrix[0] = vec4(1.0, 0.0, 0.0, lookAtMatrix[0][3]);
-    lookAtMatrix[1] = vec4(0.0, 1.0, 0.0, lookAtMatrix[1][3]);
-    lookAtMatrix[2] = vec4(0.0, 0.0, 1.0, lookAtMatrix[2][3]);
+    if (uCameraMode == 1u) {
+        lookAtMatrix[0] = vec4(1.0, 0.0, 0.0, lookAtMatrix[0][3]);
+        lookAtMatrix[1] = vec4(0.0, 1.0, 0.0, lookAtMatrix[1][3]);
+        lookAtMatrix[2] = vec4(0.0, 0.0, 1.0, lookAtMatrix[2][3]);
+    }
 
     // the on-screen center of this point
     vec4 quadCenter = uProjectionMatrix * lookAtMatrix * vec4(0.0, 0.0, 0.0, 1.0);
@@ -114,7 +117,7 @@ void main() {
     vec3 labelOffset = vec3(
         (radius + labelSize.x * 0.5 + labelMargin) * uLabelPlacement.x,
         (radius + labelSize.y * 0.5 + labelMargin) * uLabelPlacement.y,
-        0.01
+        uCameraMode == 1u ? 0.01 : 0.0
     );
 
     // compute the vertex position and its screen position

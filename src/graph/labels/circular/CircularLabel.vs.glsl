@@ -18,6 +18,7 @@ layout(location=3) in uvec4 iLabel;
     uniform float uPixelRatio;
     uniform sampler2D uGraphPoints;
     uniform sampler2D uColorPalette;
+    uniform uint uCameraMode; // 0 = 2D; 1 = 3D;
 //};
 uniform sampler2D uCharTexture;
 uniform float uVisibilityThreshold;
@@ -53,9 +54,11 @@ void main() {
     // reset the rotation of the model-view matrix
     mat4 modelMatrix = uViewMatrix * uSceneMatrix * offsetMatrix;
     mat4 lookAtMatrix = mat4(modelMatrix);
-    lookAtMatrix[0] = vec4(1.0, 0.0, 0.0, lookAtMatrix[0][3]);
-    lookAtMatrix[1] = vec4(0.0, 1.0, 0.0, lookAtMatrix[1][3]);
-    lookAtMatrix[2] = vec4(0.0, 0.0, 1.0, lookAtMatrix[2][3]);
+    if (uCameraMode == 1u) {
+        lookAtMatrix[0] = vec4(1.0, 0.0, 0.0, lookAtMatrix[0][3]);
+        lookAtMatrix[1] = vec4(0.0, 1.0, 0.0, lookAtMatrix[1][3]);
+        lookAtMatrix[2] = vec4(0.0, 0.0, 1.0, lookAtMatrix[2][3]);
+    }
 
     // the on-screen center of this point
     vec4 quadCenter = uProjectionMatrix * lookAtMatrix * vec4(0.0, 0.0, 0.0, 1.0);
@@ -104,7 +107,7 @@ void main() {
     // compute the vertex position and its screen position
     float pixelLength = radius / pixelRadius;
     float textRadius = radius + pixelLength * placementOffset;
-    vec3 labelOffset = vec3(0.0, 0.0, 0.01); // offset the label forward a tiny bit so it's always in front
+    vec3 labelOffset = vec3(0.0, 0.0, uCameraMode == 1u ? 0.01 : 0.0); // offset the label forward a tiny bit so it's always in front in 3D
     vec4 worldVertex = renderMatrix * vec4(aVertex * textRadius * visibilityMultiplier + labelOffset, 1.0);
 
     // find the number of label repetitions
