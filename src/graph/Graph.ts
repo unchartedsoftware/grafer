@@ -24,7 +24,7 @@ export class Graph extends EventEmitter.mixin(GraphPoints) implements Renderable
 
     private readonly _matrix: mat4;
     public get matrix(): mat4 {
-        mat4.fromRotationTranslation(this._matrix, this._rotation, this._translation);
+        mat4.fromRotationTranslationScaleOrigin(this._matrix, this._rotation, this._translation, this._scale, this._translation);
         return this._matrix;
     }
 
@@ -43,6 +43,14 @@ export class Graph extends EventEmitter.mixin(GraphPoints) implements Renderable
         return this._translation;
     }
 
+    private readonly _scale: vec3;
+    public get scale(): number {
+        return this._scale[0];
+    }
+    public set scale(value: number) {
+        vec3.set(this._scale, value, value, value);
+    }
+
     constructor(context: App, data: PointData[]);
     constructor(context: App, data: unknown[], mappings: Partial<PointDataMappings>);
     constructor(context: App, data: unknown[], mappings: Partial<PointDataMappings> = {}) {
@@ -50,6 +58,7 @@ export class Graph extends EventEmitter.mixin(GraphPoints) implements Renderable
         this._layers = [];
         this._rotation = quat.create();
         this._translation = vec3.create();
+        this._scale = vec3.fromValues(1, 1, 1);
         this._matrix = mat4.create();
     }
 
@@ -79,6 +88,10 @@ export class Graph extends EventEmitter.mixin(GraphPoints) implements Renderable
 
     public rotate(rotation: quat): void {
         quat.mul(this._rotation, rotation, this._rotation);
+    }
+
+    public translate(translation: vec3): void {
+        vec3.add(this._translation, this._translation, translation);
     }
 
     public addLayer(layer: Layer): void {
