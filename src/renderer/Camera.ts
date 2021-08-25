@@ -1,6 +1,17 @@
 import {vec2, vec3, mat4, quat} from 'gl-matrix';
 
+export type CameraMode = '2D' | '3D';
+
 export class Camera {
+    private _mode: CameraMode;
+    public get mode(): CameraMode {
+        return this._mode;
+    }
+    public set mode(value: CameraMode) {
+        this._mode = value;
+        this.calculateProjectionMatrix();
+    }
+
     private _aovRad: number = 0;
     public get aovRad(): number {
         return this._aovRad;
@@ -90,7 +101,7 @@ export class Camera {
         return this._projectionMatrix;
     }
 
-    constructor(viewportSize: vec2, position: vec3 = vec3.fromValues(0, 0, -1)) {
+    constructor(viewportSize: vec2, position: vec3 = vec3.fromValues(0, 0, -1), mode: CameraMode = '2D') {
         this._position = vec3.create();
         vec3.copy(this._position, position);
 
@@ -102,6 +113,8 @@ export class Camera {
         this._aspect = this._viewportSize[0] / this._viewportSize[1];
         this.aov = 45;
 
+        this._mode = mode;
+
         this.calculateProjectionMatrix();
     }
 
@@ -110,12 +123,26 @@ export class Camera {
     }
 
     private calculateProjectionMatrix(): void {
-        mat4.perspective(
-            this._projectionMatrix,
-            this._aovRad,
-            this._aspect,
-            this._nearPlane,
-            this._farPlane
-        );
+        if (this._mode === '2D') {
+            const halfWidth = this._viewportSize[0] * 0.5;
+            const halfHeight = this._viewportSize[1] * 0.5;
+            mat4.ortho(
+                this._projectionMatrix,
+                -halfWidth,
+                halfWidth,
+                -halfHeight,
+                halfHeight,
+                this._nearPlane,
+                this._farPlane
+            );
+        } else {
+            mat4.perspective(
+                this._projectionMatrix,
+                this._aovRad,
+                this._aspect,
+                this._nearPlane,
+                this._farPlane
+            );
+        }
     }
 }
