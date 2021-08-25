@@ -2,7 +2,7 @@ import {PicoGL} from 'picogl';
 import {GraferContext} from './GraferContext';
 import {vec2, vec4} from 'gl-matrix';
 import {RenderMode, RenderUniforms} from './Renderable';
-import {Camera} from './Camera';
+import {Camera, CameraOptions} from './Camera';
 import {Graph} from '../graph/Graph';
 import {MouseHandler} from '../UX/mouse/MouseHandler';
 import {ColorRegistry, ColorRegistryType} from './colors/ColorRegistry';
@@ -11,8 +11,9 @@ import RectObserver from './RectObserver';
 import {ColorRegistryMapped} from './colors/ColorRegistryMapped';
 
 export interface ViewportOptions {
-    colorRegistryType?: ColorRegistryType,
-    colorRegistryCapacity?: number,
+    colorRegistryType?: ColorRegistryType;
+    colorRegistryCapacity?: number;
+    camera?: CameraOptions;
 }
 
 const kDefaultOptions: ViewportOptions = {
@@ -85,7 +86,7 @@ export class Viewport {
 
         this.size = vec2.fromValues(this.canvas.width, this.canvas.height);
 
-        this.camera = new Camera(this.size);
+        this.camera = new Camera(this.size, opts.camera);
 
         const resizeObserver = new RectObserver((rect): void => {
             this.rect = rect;
@@ -150,6 +151,7 @@ export class Viewport {
             uClearColor: this._clearColor,
             uColorPalette: this.colorRegisrty.texture,
             uRenderMode: this.renderMode,
+            uCameraMode: this.camera.mode === '2D' ? 0 : 1,
         };
 
         this.resetContextFlags();
