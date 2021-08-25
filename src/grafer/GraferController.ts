@@ -11,6 +11,7 @@ import {PickingManager} from '../UX/picking/PickingManager';
 import {EventEmitter} from '@dekkai/event-emitter/build/lib/EventEmitter';
 import {GraferContext} from '../renderer/GraferContext';
 import {Edges} from '../graph/edges/Edges';
+import {CameraOptions} from '../renderer/Camera';
 
 export type GraferNodesType = keyof typeof GraphNodes.types;
 export type GraferEdgesType = keyof typeof GraphEdges.types;
@@ -79,20 +80,24 @@ export class GraferController extends EventEmitter {
         this._viewport = new Viewport(canvas, opts.viewport);
         this._generateIdPrev = 0;
 
-        const dolly = new ScrollDolly(this._viewport);
-        dolly.enabled = true;
+        if (this._viewport.camera.mode === '2D') {
+            // TODO: Add 2D mouse interactions
+        } else {
+            const dolly = new ScrollDolly(this._viewport);
+            dolly.enabled = true;
 
-        const truck = new DragTruck(this._viewport);
-        truck.button = 'primary';
-        truck.enabled = true;
+            const truck = new DragTruck(this._viewport);
+            truck.button = 'primary';
+            truck.enabled = true;
 
-        const rotation = new DragRotation(this._viewport);
-        rotation.button = 'secondary';
-        rotation.enabled = true;
+            const rotation = new DragRotation(this._viewport);
+            rotation.button = 'secondary';
+            rotation.enabled = true;
 
-        const pan = new DragPan(this._viewport);
-        pan.button = 'auxiliary';
-        pan.enabled = true;
+            const pan = new DragPan(this._viewport);
+            pan.button = 'auxiliary';
+            pan.enabled = true;
+        }
 
         if (data) {
             this.loadData(data);
@@ -113,8 +118,19 @@ export class GraferController extends EventEmitter {
         if (this._viewport.graph) {
             const bbCenter = this._viewport.graph.bbCenter;
             const bbDiagonal = this._viewport.graph.bbDiagonal;
-            this._viewport.camera.position = [-bbCenter[0], -bbCenter[1], -bbCenter[2] - bbDiagonal];
-            this._viewport.camera.farPlane = Math.max(bbDiagonal * 2, 1000);
+
+            if (this._viewport.camera.mode === '2D') {
+                const bb = this._viewport.graph.bb;
+                const bbWidth = Math.abs(bb.min[0]) + Math.abs(bb.max[0]);
+                const bbHeight = Math.abs(bb.min[1]) + Math.abs(bb.max[1]);
+                const size = this._viewport.size;
+                this._viewport.graph.scale = Math.min(size[0] / bbWidth, size[1] / bbHeight);
+                this._viewport.graph.translate([bbCenter[0], bbCenter[1], 0]);
+            } else {
+                this._viewport.camera.position = [-bbCenter[0], -bbCenter[1], -bbCenter[2] - bbDiagonal];
+                this._viewport.camera.farPlane = Math.max(bbDiagonal * 2, 1000);
+            }
+
             this._viewport.render();
         }
     }
