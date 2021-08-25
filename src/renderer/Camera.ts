@@ -2,6 +2,16 @@ import {vec2, vec3, mat4, quat} from 'gl-matrix';
 
 export type CameraMode = '2D' | '3D';
 
+export interface CameraOptions {
+    mode?: CameraMode;
+    position?: vec3;
+}
+
+const kDefaultOptions: CameraOptions = {
+    mode: '2D',
+    position: vec3.fromValues(0, 0, -500),
+};
+
 export class Camera {
     private _mode: CameraMode;
     public get mode(): CameraMode {
@@ -101,9 +111,10 @@ export class Camera {
         return this._projectionMatrix;
     }
 
-    constructor(viewportSize: vec2, position: vec3 = vec3.fromValues(0, 0, -1), mode: CameraMode = '2D') {
-        this._position = vec3.create();
-        vec3.copy(this._position, position);
+    constructor(viewportSize: vec2, options?: CameraOptions) {
+        const _options = Object.assign({}, kDefaultOptions, options);
+        this._position = vec3.copy(vec3.create(), _options.position);
+        this._mode = _options.mode;
 
         this._rotation = quat.fromEuler(quat.create(), 0, 0, 0);
         this._viewMatrix = mat4.create();
@@ -113,8 +124,6 @@ export class Camera {
         this._aspect = this._viewportSize[0] / this._viewportSize[1];
         this.aov = 45;
 
-        this._mode = mode;
-
         this.calculateProjectionMatrix();
     }
 
@@ -123,7 +132,7 @@ export class Camera {
     }
 
     private calculateProjectionMatrix(): void {
-        if (this._mode === '2D') {
+        if (this.mode === '2D') {
             const halfWidth = this._viewportSize[0] * 0.5;
             const halfHeight = this._viewportSize[1] * 0.5;
             mat4.ortho(
