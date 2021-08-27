@@ -24,7 +24,7 @@ export class Graph extends EventEmitter.mixin(GraphPoints) implements Renderable
 
     private readonly _matrix: mat4;
     public get matrix(): mat4 {
-        mat4.fromRotationTranslationScaleOrigin(this._matrix, this._rotation, this._translation, this._scale, this._translation);
+        mat4.fromRotationTranslationScale(this._matrix, this._rotation, this._translation, this._scale);
         return this._matrix;
     }
 
