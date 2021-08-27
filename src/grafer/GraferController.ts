@@ -11,7 +11,8 @@ import {PickingManager} from '../UX/picking/PickingManager';
 import {EventEmitter} from '@dekkai/event-emitter/build/lib/EventEmitter';
 import {GraferContext} from '../renderer/GraferContext';
 import {Edges} from '../graph/edges/Edges';
-import {CameraOptions} from '../renderer/Camera';
+import {DragTranslate} from '../UX/mouse/drag/DragTranslate';
+import {ScrollScale} from '../UX/mouse/scroll/ScrollScale';
 
 export type GraferNodesType = keyof typeof GraphNodes.types;
 export type GraferEdgesType = keyof typeof GraphEdges.types;
@@ -81,7 +82,11 @@ export class GraferController extends EventEmitter {
         this._generateIdPrev = 0;
 
         if (this._viewport.camera.mode === '2D') {
-            // TODO: Add 2D mouse interactions
+            const translate = new DragTranslate(this._viewport);
+            translate.enabled = true;
+
+            const scale = new ScrollScale(this._viewport);
+            scale.enabled = true;
         } else {
             const dolly = new ScrollDolly(this._viewport);
             dolly.enabled = true;
@@ -124,8 +129,9 @@ export class GraferController extends EventEmitter {
                 const bbWidth = Math.abs(bb.min[0]) + Math.abs(bb.max[0]);
                 const bbHeight = Math.abs(bb.min[1]) + Math.abs(bb.max[1]);
                 const size = this._viewport.size;
-                this._viewport.graph.scale = Math.min(size[0] / bbWidth, size[1] / bbHeight);
-                this._viewport.graph.translate([bbCenter[0], bbCenter[1], 0]);
+                const scale = Math.min(size[0] / bbWidth, size[1] / bbHeight);
+                this._viewport.graph.scale = scale;
+                this._viewport.graph.translate([-bbCenter[0] * scale, -bbCenter[1] * scale, 0]);
             } else {
                 this._viewport.camera.position = [-bbCenter[0], -bbCenter[1], -bbCenter[2] - bbDiagonal];
                 this._viewport.camera.farPlane = Math.max(bbDiagonal * 2, 1000);
