@@ -173,8 +173,9 @@ export class Viewport {
                     break;
 
                 case RenderMode.HIGH_PASS_1:
-                    uniforms.uRenderMode = RenderMode.HIGH_PASS_2;
-                    this.graph.render(this.context, RenderMode.HIGH_PASS_2, uniforms);
+                    this.renderMode = RenderMode.HIGH_PASS_2;
+                    uniforms.uRenderMode = this.renderMode;
+                    this.graph.render(this.context, this.renderMode, uniforms);
                     break;
             }
         }
