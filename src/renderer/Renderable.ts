@@ -1,5 +1,6 @@
 import {mat4, vec2, vec4} from 'gl-matrix';
 import PicoGL, {App, DrawCall, Texture, VertexArray, VertexBuffer} from 'picogl';
+import {CameraMode} from './Camera';
 
 export type GLDataTypes<T> = {
     [key in keyof T]?: GLenum | readonly GLenum[];
@@ -32,7 +33,7 @@ export interface RenderUniforms {
     uClearColor: vec4;
     uColorPalette: Texture;
     uRenderMode: RenderMode;
-    uCameraMode: 0 | 1;
+    uCameraMode: CameraMode;
 }
 
 export type GenericUniforms = { [key: string]: number | number[] | boolean | Texture };

@@ -13,6 +13,7 @@ import {GraferContext} from '../renderer/GraferContext';
 import {Edges} from '../graph/edges/Edges';
 import {DragTranslate} from '../UX/mouse/drag/DragTranslate';
 import {ScrollScale} from '../UX/mouse/scroll/ScrollScale';
+import {CameraMode} from '../renderer/Camera';
 
 export type GraferNodesType = keyof typeof GraphNodes.types;
 export type GraferEdgesType = keyof typeof GraphEdges.types;
@@ -81,7 +82,7 @@ export class GraferController extends EventEmitter {
         this._viewport = new Viewport(canvas, opts.viewport);
         this._generateIdPrev = 0;
 
-        if (this._viewport.camera.mode === '2D') {
+        if (this._viewport.camera.mode === CameraMode['2D']) {
             const translate = new DragTranslate(this._viewport);
             translate.enabled = true;
 
@@ -124,7 +125,7 @@ export class GraferController extends EventEmitter {
             const bbCenter = this._viewport.graph.bbCenter;
             const bbDiagonal = this._viewport.graph.bbDiagonal;
 
-            if (this._viewport.camera.mode === '2D') {
+            if (this._viewport.camera.mode === CameraMode['2D']) {
                 const bb = this._viewport.graph.bb;
                 const bbWidth = Math.abs(bb.min[0]) + Math.abs(bb.max[0]);
                 const bbHeight = Math.abs(bb.min[1]) + Math.abs(bb.max[1]);

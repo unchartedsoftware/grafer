@@ -1,6 +1,11 @@
 import {vec2, vec3, mat4, quat} from 'gl-matrix';
 
-export type CameraMode = '2D' | '3D';
+export enum CameraMode {
+    '2D',
+    '3D',
+}
+
+// export type CameraMode = '2D' | '3D';
 
 export interface CameraOptions {
     mode?: CameraMode;
@@ -8,7 +13,7 @@ export interface CameraOptions {
 }
 
 const kDefaultOptions: CameraOptions = {
-    mode: '2D',
+    mode: CameraMode['2D'],
     position: vec3.fromValues(0, 0, -500),
 };
 
@@ -132,7 +137,7 @@ export class Camera {
     }
 
     private calculateProjectionMatrix(): void {
-        if (this.mode === '2D') {
+        if (this.mode === CameraMode['2D']) {
             const halfWidth = this._viewportSize[0] * 0.5;
             const halfHeight = this._viewportSize[1] * 0.5;
             mat4.ortho(

@@ -151,7 +151,7 @@ export class Viewport {
             uClearColor: this._clearColor,
             uColorPalette: this.colorRegisrty.texture,
             uRenderMode: this.renderMode,
-            uCameraMode: this.camera.mode === '2D' ? 0 : 1,
+            uCameraMode: this.camera.mode,
         };
 
         this.resetContextFlags();
