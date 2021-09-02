@@ -1,5 +1,5 @@
 import {html, render} from 'lit-html';
-import '../../../src/grafer/GraferView';
+import {GraferController} from '../../../src/grafer/GraferController';
 
 export async function points(container: HTMLElement): Promise<void> {
 
@@ -41,5 +41,7 @@ export async function points(container: HTMLElement): Promise<void> {
     ];
 
     // pass the points to grafer
-    render(html`<grafer-view class="grafer_container" .points="${points}" .layers="${layers}"></grafer-view><mouse-interactions></mouse-interactions>`, container);
+    render(html`<canvas class="grafer_container"></canvas><mouse-interactions></mouse-interactions>`, container);
+    const canvas = document.querySelector('.grafer_container') as HTMLCanvasElement;
+    new GraferController(canvas, { points, layers });
 }

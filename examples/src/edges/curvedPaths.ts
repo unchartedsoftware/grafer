@@ -1,10 +1,11 @@
 import {html, render} from 'lit-html';
-import '../../../src/grafer/GraferView';
+import {GraferController, GraferEdgesData, GraferLayerData} from '../../../src/grafer/GraferController';
+import {GraferInputColor} from '../../../src/renderer/colors/ColorRegistry';
 
 export async function curvedPaths(container: HTMLElement): Promise<void> {
 
     // create an array od colors to be used
-    const colors = [
+    const colors: GraferInputColor[] = [
         /* 0 */ 'red',
         /* 1 */ 'limegreen',
         /* 2 */ [0, 0, 255],
@@ -35,14 +36,14 @@ export async function curvedPaths(container: HTMLElement): Promise<void> {
     };
 
     // edges also reference points
-    const edges = {
+    const edges: GraferEdgesData = {
         type: 'CurvedPath',
         data: [
             { source: 'left', target: 'right', control: ['center', 'bottom'], sourceColor: 3, targetColor: 1 },
         ],
     };
 
-    const edgesDashed = {
+    const edgesDashed: GraferEdgesData = {
         type: 'Dashed',
         data: [
             { source: 'left', target: 'center' },
@@ -51,11 +52,13 @@ export async function curvedPaths(container: HTMLElement): Promise<void> {
         ],
     };
 
-    const layers = [
+    const layers: GraferLayerData[] = [
         { nodes, edges },
         { edges: edgesDashed },
     ];
 
     // pass the points to grafer
-    render(html`<grafer-view class="grafer_container" .colors="${colors}" .points="${points}" .layers="${layers}"></grafer-view><mouse-interactions></mouse-interactions>`, container);
+    render(html`<canvas class="grafer_container"></canvas><mouse-interactions></mouse-interactions>`, container);
+    const canvas = document.querySelector('.grafer_container') as HTMLCanvasElement;
+    new GraferController(canvas, { colors, points, layers });
 }

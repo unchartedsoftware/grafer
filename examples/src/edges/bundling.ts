@@ -1,5 +1,5 @@
 import {html, render} from 'lit-html';
-import '../../../src/grafer/GraferView';
+import {GraferController} from '../../../src/grafer/GraferController';
 
 function createClusterNodePoints(cluster: string, x: number, y: number, r: number, count: number): any[] {
     const PI2 = Math.PI * 2;
@@ -137,5 +137,7 @@ export async function bundling(container: HTMLElement): Promise<void> {
     ];
 
     // pass the points to grafer
-    render(html`<grafer-view class="grafer_container" .colors="${colors}" .points="${points}" .layers="${layers}"></grafer-view><mouse-interactions></mouse-interactions>`, container);
+    render(html`<canvas class="grafer_container"></canvas><mouse-interactions></mouse-interactions>`, container);
+    const canvas = document.querySelector('.grafer_container') as HTMLCanvasElement;
+    new GraferController(canvas, { colors, points, layers });
 }

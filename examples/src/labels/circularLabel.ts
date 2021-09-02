@@ -1,5 +1,10 @@
 import {html, render} from 'lit-html';
-import '../../../src/grafer/GraferView';
+import {
+    GraferController,
+    GraferLabelsData,
+    GraferLayerData,
+    GraferNodesData,
+} from '../../../src/grafer/GraferController';
 
 function createNodePoints(count: number, radius: number = 10.0): any[] {
     const PI2 = Math.PI * 2;
@@ -25,7 +30,7 @@ function createNodePoints(count: number, radius: number = 10.0): any[] {
 }
 
 export async function circularLabel(container: HTMLElement): Promise<void> {
-    const nodes = {
+    const nodes: GraferNodesData = {
         type: 'Circle',
         data: [
             ...createNodePoints(10, 16),
@@ -33,7 +38,7 @@ export async function circularLabel(container: HTMLElement): Promise<void> {
         ],
     };
 
-    const labels = {
+    const labels: GraferLabelsData = {
         type: 'CircularLabel',
         data: nodes.data,
         options: {
@@ -47,7 +52,7 @@ export async function circularLabel(container: HTMLElement): Promise<void> {
         },
     };
 
-    const layers = [
+    const layers: GraferLayerData[] = [
         { nodes, labels },
     ];
 
@@ -60,9 +65,7 @@ export async function circularLabel(container: HTMLElement): Promise<void> {
         '#b48ead',
     ];
 
-    render(html`
-        <grafer-view class="grafer_container" .colors="${colors}" .layers="${layers}"></grafer-view>
-        <canvas id="debug_canvas" class="grafer_container"></canvas>
-        <mouse-interactions></mouse-interactions>
-    `, container);
+    render(html`<canvas class="grafer_container"></canvas><mouse-interactions></mouse-interactions>`, container);
+    const canvas = document.querySelector('.grafer_container') as HTMLCanvasElement;
+    new GraferController(canvas, { colors, layers });
 }

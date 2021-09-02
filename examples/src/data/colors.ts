@@ -1,10 +1,11 @@
 import {html, render} from 'lit-html';
-import '../../../src/grafer/GraferView';
+import {GraferController} from '../../../src/grafer/GraferController';
+import {GraferInputColor} from '../../../src/renderer/colors/ColorRegistry';
 
 export async function colors(container: HTMLElement): Promise<void> {
 
     // create an array od colors to be used
-    const colors = [
+    const colors: GraferInputColor[] = [
         /* 0 */ 'red',
         /* 1 */ 'limegreen',
         /* 2 */ [0, 0, 255],
@@ -49,5 +50,7 @@ export async function colors(container: HTMLElement): Promise<void> {
     ];
 
     // pass the points, colors and layers to grafer
-    render(html`<grafer-view class="grafer_container" .colors="${colors}" .points="${points}" .layers="${layers}"></grafer-view><mouse-interactions></mouse-interactions>`, container);
+    render(html`<canvas class="grafer_container"></canvas><mouse-interactions></mouse-interactions>`, container);
+    const canvas = document.querySelector('.grafer_container') as HTMLCanvasElement;
+    new GraferController(canvas, { colors, points, layers });
 }

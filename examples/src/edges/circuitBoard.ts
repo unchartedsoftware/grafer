@@ -1,5 +1,5 @@
 import {html, render} from 'lit-html';
-import '../../../src/grafer/GraferView';
+import {GraferController, GraferEdgesData, GraferLayerData} from '../../../src/grafer/GraferController';
 
 export async function circuitBoard(container: HTMLElement): Promise<void> {
 
@@ -47,7 +47,7 @@ export async function circuitBoard(container: HTMLElement): Promise<void> {
         ],
     };
 
-    const edges = {
+    const edges: GraferEdgesData = {
         type: 'CurvedPath',
         data: [
             { source: 'p1-p1', target: 'p1-p2', control: ['p1-c1', 'p1-c2', 'p1-c3'] },
@@ -56,10 +56,12 @@ export async function circuitBoard(container: HTMLElement): Promise<void> {
         ],
     };
 
-    const layers = [
+    const layers: GraferLayerData[] = [
         { nodes, edges },
     ];
 
     // pass the points to grafer
-    render(html`<grafer-view class="grafer_container" .colors="${colors}" .points="${points}" .layers="${layers}"></grafer-view><mouse-interactions></mouse-interactions>`, container);
+    render(html`<canvas class="grafer_container"></canvas><mouse-interactions></mouse-interactions>`, container);
+    const canvas = document.querySelector('.grafer_container') as HTMLCanvasElement;
+    new GraferController(canvas, { colors, points, layers });
 }

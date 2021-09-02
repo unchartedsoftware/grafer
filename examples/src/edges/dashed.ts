@@ -1,5 +1,5 @@
 import {html, render} from 'lit-html';
-import '../../../src/grafer/GraferView';
+import {GraferController, GraferEdgesData, GraferLayerData} from '../../../src/grafer/GraferController';
 
 export async function dashed(container: HTMLElement): Promise<void> {
     const nodes = {
@@ -11,7 +11,7 @@ export async function dashed(container: HTMLElement): Promise<void> {
         ],
     };
 
-    const edges = {
+    const edges: GraferEdgesData = {
         data: [
             { source: 0, target: 1 },
             { source: 1, target: 2 },
@@ -24,9 +24,11 @@ export async function dashed(container: HTMLElement): Promise<void> {
         type: 'Dashed',
     };
 
-    const layers = [
+    const layers: GraferLayerData[] = [
         { nodes, edges },
     ];
 
-    render(html`<grafer-view class="grafer_container" .layers="${layers}"></grafer-view><mouse-interactions></mouse-interactions>`, container);
+    render(html`<canvas class="grafer_container"></canvas><mouse-interactions></mouse-interactions>`, container);
+    const canvas = document.querySelector('.grafer_container') as HTMLCanvasElement;
+    new GraferController(canvas, { layers });
 }
