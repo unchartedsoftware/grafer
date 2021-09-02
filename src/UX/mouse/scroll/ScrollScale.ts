@@ -3,7 +3,7 @@ import {vec2, vec3} from 'gl-matrix';
 import {ScrollModule} from './ScrollModule';
 
 export class ScrollScale extends ScrollModule {
-    protected handleMouse(event: symbol, state: MouseState, delta: number, ...args: any[]): void {
+    protected handleMouse(event: symbol, state: MouseState, delta: number): void {
         const speed = Math.max(1.001, this.speed * Math.abs(delta) * 0.25);
         const oldScale = this.viewport.graph.scale;
 

@@ -1,3 +1,4 @@
+/* eslint-disable */
 import {DataFile} from '@dekkai/data-source/build/lib/file/DataFile';
 import {LocalFileSource} from '@dekkai/data-source/build/lib/file/types';
 import {data, graph} from '../../../src/mod';
