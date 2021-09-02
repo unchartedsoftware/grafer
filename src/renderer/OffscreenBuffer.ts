@@ -41,7 +41,6 @@ export class OffscreenBuffer {
     }
 
     public prepareContext(context: App): void {
-        context.depthMask(true);
         context.readFramebuffer(this.frameBuffer);
         context.drawFramebuffer(this.frameBuffer)
             .clearMask(PicoGL.COLOR_BUFFER_BIT | PicoGL.DEPTH_BUFFER_BIT)
