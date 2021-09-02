@@ -281,7 +281,7 @@ async function loadGraph(container: HTMLElement, info: LayoutInfo): Promise<void
                 },
             },
         };
-        layers.unshift(nodeLayer);
+        layers.push(nodeLayer);
 
         if (info.nodesFile) {
             const nodes = nodeLayer.nodes;

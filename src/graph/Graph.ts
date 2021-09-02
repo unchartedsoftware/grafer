@@ -68,15 +68,23 @@ export class Graph extends EventEmitter.mixin(GraphPoints) implements Renderable
             this.picking.offscreenBuffer.prepareContext(context);
         }
 
-        // render layers
+        const localUniforms = [uniforms];
+        if (mode === RenderMode.HIGH) {
+            localUniforms.push(Object.assign({}, uniforms, { uRenderMode: RenderMode.HIGH_PASS_1 }));
+            localUniforms.push(Object.assign({}, uniforms, { uRenderMode: RenderMode.HIGH_PASS_2 }));
+        }
+
+        // render layers, back to front
         for (let i = 0, n = this._layers.length; i < n; ++i) {
             if (this._layers[i].enabled) {
-                this._layers[i].render(context, mode, uniforms);
+                this._layers[i].render(context, mode, localUniforms, i);
             }
         }
+
         if (this.picking && this.picking.enabled && this.picking.debugRender) {
             this.picking.offscreenBuffer.blitToScreen(context);
         }
+
         this.emit(kEvents.postRender, this, mode, uniforms);
     }
 

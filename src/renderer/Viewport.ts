@@ -79,6 +79,7 @@ export class Viewport {
         // this.clearColor = [0.18, 0.204, 0.251, 1.0];
         this.context.clearMask(PicoGL.COLOR_BUFFER_BIT | PicoGL.DEPTH_BUFFER_BIT);
         this.context.enable(PicoGL.DEPTH_TEST);
+        this.context.enable(PicoGL.POLYGON_OFFSET_FILL);
         this.context.depthFunc(PicoGL.LESS);
         this.context.pixelRatio = pixelRatio;
 
@@ -168,14 +169,8 @@ export class Viewport {
                     break;
 
                 case RenderMode.MEDIUM:
-                    this.renderMode = RenderMode.HIGH_PASS_1;
+                    this.renderMode = RenderMode.HIGH;
                     this.scheduleRender(120);
-                    break;
-
-                case RenderMode.HIGH_PASS_1:
-                    this.renderMode = RenderMode.HIGH_PASS_2;
-                    uniforms.uRenderMode = this.renderMode;
-                    this.graph.render(this.context, this.renderMode, uniforms);
                     break;
             }
         }

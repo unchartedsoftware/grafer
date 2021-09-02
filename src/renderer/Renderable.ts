@@ -19,6 +19,7 @@ export interface RenderableShaders {
 export enum RenderMode {
     DRAFT,
     MEDIUM,
+    HIGH,
     HIGH_PASS_1,
     HIGH_PASS_2,
     PICKING,

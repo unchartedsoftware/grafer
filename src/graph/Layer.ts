@@ -129,26 +129,54 @@ export class Layer extends EventEmitter implements GraphRenderable {
         }
     }
 
-    public render(context: App, mode: RenderMode, uniforms: RenderUniforms): void {
-        this.renderEdges(context, mode, uniforms);
-        this.renderNodes(context, mode, uniforms);
-        this.renderLabels(context, mode, uniforms);
+    public render(context: App, mode: RenderMode, uniforms: RenderUniforms | RenderUniforms[], index: number = 0): void {
+        const offset = index * -3;
+
+        if (mode === RenderMode.HIGH) {
+            // render opaque elements first (if not high render pass 2)
+            this.renderLabels(context, RenderMode.HIGH_PASS_1, uniforms[1], offset - 2, true);
+            this.renderNodes(context, RenderMode.HIGH_PASS_1, uniforms[1], offset - 1, true);
+            this.renderEdges(context, RenderMode.HIGH_PASS_1, uniforms[1], offset, true);
+
+            // render blended elements
+            this.renderEdges(context, RenderMode.HIGH_PASS_1, uniforms[1], offset, false);
+            this.renderEdges(context, RenderMode.HIGH_PASS_2, uniforms[2], offset, false);
+
+            this.renderNodes(context, RenderMode.HIGH_PASS_1, uniforms[1], offset - 1, false);
+            this.renderNodes(context, RenderMode.HIGH_PASS_2, uniforms[2], offset - 1, false);
+
+            this.renderLabels(context, RenderMode.HIGH_PASS_1, uniforms[1], offset - 2, false);
+            this.renderLabels(context, RenderMode.HIGH_PASS_2, uniforms[2], offset - 2, false);
+        } else {
+            // render opaque elements first (if not high render pass 2)
+            this.renderLabels(context, mode, uniforms[0], offset - 2, true);
+            this.renderNodes(context, mode, uniforms[0], offset - 1, true);
+            this.renderEdges(context, mode, uniforms[0], offset, true);
+
+            // render blended elements
+            this.renderEdges(context, mode, uniforms[0], offset, false);
+            this.renderNodes(context, mode, uniforms[0], offset - 1, false);
+            this.renderLabels(context, mode, uniforms[0], offset - 2, false);
+        }
     }
 
-    public renderNodes(context: App, mode: RenderMode, uniforms: RenderUniforms): void {
-        if (this._nodes && this._nodes.enabled) {
+    private renderNodes(context: App, mode: RenderMode, uniforms: RenderUniforms, offset: number, opaque: boolean): void {
+        if (this._nodes && this._nodes.enabled && (this._nodes.opaque === opaque || mode === RenderMode.HIGH_PASS_2)) {
+            context.polygonOffset(0, offset);
             this._nodes.render(context, mode, uniforms);
         }
     }
 
-    public renderEdges(context: App, mode: RenderMode, uniforms: RenderUniforms): void {
-        if (this._edges && this._edges.enabled) {
+    private renderEdges(context: App, mode: RenderMode, uniforms: RenderUniforms, offset: number, opaque: boolean): void {
+        if (this._edges && this._edges.enabled && (this._edges.opaque === opaque || mode === RenderMode.HIGH_PASS_2)) {
+            context.polygonOffset(0, offset);
             this._edges.render(context, mode, uniforms);
         }
     }
 
-    public renderLabels(context: App, mode: RenderMode, uniforms: RenderUniforms): void {
-        if (this._labels && this.labels.enabled) {
+    private renderLabels(context: App, mode: RenderMode, uniforms: RenderUniforms, offset: number, opaque: boolean): void {
+        if (this._labels && this._labels.enabled && (this._labels.opaque === opaque || mode === RenderMode.HIGH_PASS_2)) {
+            context.polygonOffset(0, offset);
             this._labels.render(context, mode, uniforms);
         }
     }

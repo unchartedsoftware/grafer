@@ -54,6 +54,10 @@ export abstract class LayerRenderable<T_SRC, T_TGT> extends PointsReaderEmitter<
         this.localUniforms.uBrightness = value;
     }
 
+    public get opaque(): boolean {
+        return this.localUniforms.uAlpha >= 1.0 || this.blendMode === LayerRenderableBlendMode.NONE;
+    }
+
     protected pickingManager: PickingManager;
     protected localUniforms: GenericUniforms;
 
@@ -110,7 +114,7 @@ export abstract class LayerRenderable<T_SRC, T_TGT> extends PointsReaderEmitter<
                 break;
 
             default:
-                if (this.localUniforms.uAlpha >= 1.0 || this.blendMode === LayerRenderableBlendMode.NONE) {
+                if (this.opaque) {
                     context.disable(PicoGL.BLEND);
                     context.depthMask(true);
                 } else {
