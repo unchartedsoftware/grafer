@@ -14802,9 +14802,10 @@ var RenderMode;
 (function(RenderMode2) {
   RenderMode2[RenderMode2["DRAFT"] = 0] = "DRAFT";
   RenderMode2[RenderMode2["MEDIUM"] = 1] = "MEDIUM";
-  RenderMode2[RenderMode2["HIGH_PASS_1"] = 2] = "HIGH_PASS_1";
-  RenderMode2[RenderMode2["HIGH_PASS_2"] = 3] = "HIGH_PASS_2";
-  RenderMode2[RenderMode2["PICKING"] = 4] = "PICKING";
+  RenderMode2[RenderMode2["HIGH"] = 2] = "HIGH";
+  RenderMode2[RenderMode2["HIGH_PASS_1"] = 3] = "HIGH_PASS_1";
+  RenderMode2[RenderMode2["HIGH_PASS_2"] = 4] = "HIGH_PASS_2";
+  RenderMode2[RenderMode2["PICKING"] = 5] = "PICKING";
 })(RenderMode || (RenderMode = {}));
 var GL_TYPE_SIZE = {
   [picogl_default.BYTE]: 1,
@@ -15260,6 +15261,7 @@ var PointsReader = class {
 var mod_exports3 = {};
 __export(mod_exports3, {
   Camera: () => Camera,
+  CameraMode: () => CameraMode,
   GL_TYPE_GETTER: () => GL_TYPE_GETTER,
   GL_TYPE_SETTER: () => GL_TYPE_SETTER,
   GL_TYPE_SIZE: () => GL_TYPE_SIZE,
@@ -15275,20 +15277,37 @@ __export(mod_exports3, {
 });
 
 // src/renderer/Camera.ts
+var CameraMode;
+(function(CameraMode2) {
+  CameraMode2[CameraMode2["2D"] = 0] = "2D";
+  CameraMode2[CameraMode2["3D"] = 1] = "3D";
+})(CameraMode || (CameraMode = {}));
+var kDefaultOptions = {
+  mode: 0,
+  position: vec3_exports.fromValues(0, 0, -500)
+};
 var Camera = class {
-  constructor(viewportSize, position = vec3_exports.fromValues(0, 0, -1)) {
+  constructor(viewportSize, options) {
     this._aovRad = 0;
     this._aov = 0;
     this._nearPlane = 1;
     this._farPlane = 1e3;
-    this._position = vec3_exports.create();
-    vec3_exports.copy(this._position, position);
+    const _options = Object.assign({}, kDefaultOptions, options);
+    this._position = vec3_exports.copy(vec3_exports.create(), _options.position);
+    this._mode = _options.mode;
     this._rotation = quat_exports.fromEuler(quat_exports.create(), 0, 0, 0);
     this._viewMatrix = mat4_exports.create();
     this._projectionMatrix = mat4_exports.create();
     this._viewportSize = vec2_exports.copy(vec2_exports.create(), viewportSize);
     this._aspect = this._viewportSize[0] / this._viewportSize[1];
     this.aov = 45;
+    this.calculateProjectionMatrix();
+  }
+  get mode() {
+    return this._mode;
+  }
+  set mode(value) {
+    this._mode = value;
     this.calculateProjectionMatrix();
   }
   get aovRad() {
@@ -15362,7 +15381,13 @@ var Camera = class {
     quat_exports.mul(this._rotation, rotation, this._rotation);
   }
   calculateProjectionMatrix() {
-    mat4_exports.perspective(this._projectionMatrix, this._aovRad, this._aspect, this._nearPlane, this._farPlane);
+    if (this.mode === 0) {
+      const halfWidth = this._viewportSize[0] * 0.5;
+      const halfHeight = this._viewportSize[1] * 0.5;
+      mat4_exports.ortho(this._projectionMatrix, -halfWidth, halfWidth, -halfHeight, halfHeight, this._nearPlane, this._farPlane);
+    } else {
+      mat4_exports.perspective(this._projectionMatrix, this._aovRad, this._aspect, this._nearPlane, this._farPlane);
+    }
   }
 };
 
@@ -15762,7 +15787,7 @@ var ColorRegistryMapped = class extends ColorRegistry {
 };
 
 // src/renderer/Viewport.ts
-var kDefaultOptions = {
+var kDefaultOptions2 = {
   colorRegistryType: ColorRegistryType.mapped,
   colorRegistryCapacity: 1024
 };
@@ -15773,7 +15798,7 @@ var Viewport = class {
     this.timeoutID = 0;
     this.boundDelayedRender = this.delayedRender.bind(this);
     const pixelRatio = window.devicePixelRatio;
-    const opts = Object.assign({}, kDefaultOptions, options);
+    const opts = Object.assign({}, kDefaultOptions2, options);
     this.element = element;
     if (this.element instanceof HTMLCanvasElement) {
       this.canvas = this.element;
@@ -15794,11 +15819,12 @@ var Viewport = class {
     this.clearColor = [0.141176471, 0.160784314, 0.2, 1];
     this.context.clearMask(PicoGL.COLOR_BUFFER_BIT | PicoGL.DEPTH_BUFFER_BIT);
     this.context.enable(PicoGL.DEPTH_TEST);
+    this.context.enable(PicoGL.POLYGON_OFFSET_FILL);
     this.context.depthFunc(PicoGL.LESS);
     this.context.pixelRatio = pixelRatio;
     this.mouseHandler = new MouseHandler(this.canvas, this.rect, this.pixelRatio);
     this.size = vec2_exports.fromValues(this.canvas.width, this.canvas.height);
-    this.camera = new Camera(this.size);
+    this.camera = new Camera(this.size, opts.camera);
     const resizeObserver = new RectObserver((rect) => {
       this.rect = rect;
       this.context.resize(this.rect.width * this.pixelRatio, this.rect.height * this.pixelRatio);
@@ -15865,7 +15891,8 @@ var Viewport = class {
       uPixelRatio: this.pixelRatio,
       uClearColor: this._clearColor,
       uColorPalette: this.colorRegisrty.texture,
-      uRenderMode: this.renderMode
+      uRenderMode: this.renderMode,
+      uCameraMode: this.camera.mode
     };
     this.resetContextFlags();
     this.context.clear();
@@ -15879,12 +15906,8 @@ var Viewport = class {
           this.scheduleRender(85);
           break;
         case RenderMode.MEDIUM:
-          this.renderMode = RenderMode.HIGH_PASS_1;
+          this.renderMode = RenderMode.HIGH;
           this.scheduleRender(120);
-          break;
-        case RenderMode.HIGH_PASS_1:
-          uniforms.uRenderMode = RenderMode.HIGH_PASS_2;
-          this.graph.render(this.context, RenderMode.HIGH_PASS_2, uniforms);
           break;
       }
     }
@@ -15920,7 +15943,6 @@ var OffscreenBuffer = class {
     this.frameBuffer = context.createFramebuffer().colorTarget(0, this.colorTarget).depthTarget(this.depthTarget);
   }
   prepareContext(context) {
-    context.depthMask(true);
     context.readFramebuffer(this.frameBuffer);
     context.drawFramebuffer(this.frameBuffer).clearMask(PicoGL.COLOR_BUFFER_BIT | PicoGL.DEPTH_BUFFER_BIT).clearColor(...this._clearColor).clear().depthMask(true);
   }
@@ -15970,13 +15992,14 @@ var Graph = class extends EventEmitter.mixin(GraphPoints) {
     this._layers = [];
     this._rotation = quat_exports.create();
     this._translation = vec3_exports.create();
+    this._scale = vec3_exports.fromValues(1, 1, 1);
     this._matrix = mat4_exports.create();
   }
   static get events() {
     return kEvents2;
   }
   get matrix() {
-    mat4_exports.fromRotationTranslation(this._matrix, this._rotation, this._translation);
+    mat4_exports.fromRotationTranslationScale(this._matrix, this._rotation, this._translation, this._scale);
     return this._matrix;
   }
   get layers() {
@@ -15988,14 +16011,25 @@ var Graph = class extends EventEmitter.mixin(GraphPoints) {
   get translation() {
     return this._translation;
   }
+  get scale() {
+    return this._scale[0];
+  }
+  set scale(value) {
+    vec3_exports.set(this._scale, value, value, value);
+  }
   render(context, mode, uniforms) {
     this.emit(kEvents2.preRender, this, mode, uniforms);
     if (mode === RenderMode.PICKING && this.picking && this.picking.enabled) {
       this.picking.offscreenBuffer.prepareContext(context);
     }
+    const localUniforms = [uniforms];
+    if (mode === RenderMode.HIGH) {
+      localUniforms.push(Object.assign({}, uniforms, { uRenderMode: RenderMode.HIGH_PASS_1 }));
+      localUniforms.push(Object.assign({}, uniforms, { uRenderMode: RenderMode.HIGH_PASS_2 }));
+    }
     for (let i = 0, n = this._layers.length; i < n; ++i) {
       if (this._layers[i].enabled) {
-        this._layers[i].render(context, mode, uniforms);
+        this._layers[i].render(context, mode, localUniforms, i);
       }
     }
     if (this.picking && this.picking.enabled && this.picking.debugRender) {
@@ -16010,6 +16044,9 @@ var Graph = class extends EventEmitter.mixin(GraphPoints) {
   }
   rotate(rotation) {
     quat_exports.mul(this._rotation, rotation, this._rotation);
+  }
+  translate(translation) {
+    vec3_exports.add(this._translation, this._translation, translation);
   }
   addLayer(layer) {
     this._layers.push(layer);
@@ -16051,10 +16088,10 @@ __export(mod_exports4, {
 });
 
 // src/graph/nodes/circle/Circle.vs.glsl
-var Circle_vs_default = '#version 300 es\n#define GLSLIFY 1\n\nlayout(location=0) in vec3 aVertex;\nlayout(location=1) in uint iPositionIndex;\nlayout(location=2) in float iRadius;\nlayout(location=3) in uint iColor;\nlayout(location=4) in uvec4 iPickingColor;\n\n//layout(std140) uniform RenderUniforms {\n    uniform mat4 uViewMatrix;\n    uniform mat4 uSceneMatrix;\n    uniform mat4 uProjectionMatrix;\n    uniform vec2 uViewportSize;\n    uniform float uPixelRatio;\n    uniform sampler2D uGraphPoints;\n    uniform sampler2D uColorPalette;\n//};\n\nuniform bool uPixelSizing;\nuniform bool uBillboard;\n\nuniform bool uPicking;\n\nflat out vec4 fColor;\nflat out float fPixelLength;\nout vec2 vFromCenter;\n\nvec4 valueForIndex(sampler2D tex, int index) {\n    int texWidth = textureSize(tex, 0).x;\n    int col = index % texWidth;\n    int row = index / texWidth;\n    return texelFetch(tex, ivec2(col, row), 0);\n}\n\nuvec4 uvalueForIndex(usampler2D tex, int index) {\n    int texWidth = textureSize(tex, 0).x;\n    int col = index % texWidth;\n    int row = index / texWidth;\n    return texelFetch(tex, ivec2(col, row), 0);\n}\n\nuint uivalueForIndex(usampler2D tex, int index) {\n    int texWidth = textureSize(tex, 0).x;\n    int col = index % texWidth;\n    int row = index / texWidth;\n    return texelFetch(tex, ivec2(col, row), 0)[0];\n}\n\nvoid main() {\n    // claculate the offset matrix, done as a matrix to be able to compute "billboard" vertices in the shader\n    mat4 offsetMatrix = mat4(1.0);\n    offsetMatrix[3] = vec4(valueForIndex(uGraphPoints, int(iPositionIndex)).xyz, 1.0);\n\n    // reset the rotation of the model-view matrix\n    mat4 modelMatrix = uViewMatrix * uSceneMatrix * offsetMatrix;\n    mat4 lookAtMatrix = mat4(modelMatrix);\n    lookAtMatrix[0] = vec4(1.0, 0.0, 0.0, lookAtMatrix[0][3]);\n    lookAtMatrix[1] = vec4(0.0, 1.0, 0.0, lookAtMatrix[1][3]);\n    lookAtMatrix[2] = vec4(0.0, 0.0, 1.0, lookAtMatrix[2][3]);\n\n    // the on-screen center of this node\n    vec4 quadCenter = uProjectionMatrix * lookAtMatrix * vec4(0.0, 0.0, 0.0, 1.0);\n    vec2 screenQuadCenter = quadCenter.xy / quadCenter.w;\n\n    // the on-screen position of a side of this quad\n    vec4 quadSide = uProjectionMatrix * lookAtMatrix * vec4(iRadius, 0.0, 0.0, 1.0);\n    vec2 screenQuadSide = quadSide.xy / quadSide.w;\n\n    // compute the pixel radius of this node for a size of 1 in world coordinates\n    float pixelRadius = max(1.0, length((screenQuadSide - screenQuadCenter) * uViewportSize * 0.5));\n\n    // calculate the desired pixel radius for the size mode\n    float desiredPixelRadius = (uPixelSizing ? iRadius : pixelRadius);\n\n    // calculate the pixel radius multiplier needed to acomplish the desired pixel radius\n    float pixelRadiusMult = desiredPixelRadius / pixelRadius;\n\n    // calculate the render matrix\n    mat4 renderMatrix = uBillboard ? uProjectionMatrix * lookAtMatrix : uProjectionMatrix * modelMatrix;\n\n    // compute the vertex position and its screen position\n    vec4 worldVertex = renderMatrix * vec4(aVertex * iRadius * pixelRadiusMult, 1.0);\n\n    // send the render color to the fragment shader\n    fColor = uPicking ? vec4(iPickingColor) / 255.0 : valueForIndex(uColorPalette, int(iColor));\n    // send the normalized length of a single pixel to the fragment shader\n    fPixelLength = 1.0 / desiredPixelRadius;\n    // send the normalized distance from the center to the fragment shader\n    vFromCenter = aVertex.xy;\n\n    // set the render vertex location\n    gl_Position = worldVertex;\n}\n';
+var Circle_vs_default = '#version 300 es\n#define GLSLIFY 1\n\nlayout(location=0) in vec3 aVertex;\nlayout(location=1) in uint iPositionIndex;\nlayout(location=2) in float iRadius;\nlayout(location=3) in uint iColor;\nlayout(location=4) in uvec4 iPickingColor;\n\n//layout(std140) uniform RenderUniforms {\n    uniform mat4 uViewMatrix;\n    uniform mat4 uSceneMatrix;\n    uniform mat4 uProjectionMatrix;\n    uniform vec2 uViewportSize;\n    uniform float uPixelRatio;\n    uniform sampler2D uGraphPoints;\n    uniform sampler2D uColorPalette;\n    uniform uint uCameraMode; // 0 = 2D; 1 = 3D;\n//};\n\nuniform bool uPixelSizing;\nuniform bool uBillboard;\n\nuniform bool uPicking;\n\nflat out vec4 fColor;\nflat out float fPixelLength;\nout vec2 vFromCenter;\n\nvec4 valueForIndex(sampler2D tex, int index) {\n    int texWidth = textureSize(tex, 0).x;\n    int col = index % texWidth;\n    int row = index / texWidth;\n    return texelFetch(tex, ivec2(col, row), 0);\n}\n\nuvec4 uvalueForIndex(usampler2D tex, int index) {\n    int texWidth = textureSize(tex, 0).x;\n    int col = index % texWidth;\n    int row = index / texWidth;\n    return texelFetch(tex, ivec2(col, row), 0);\n}\n\nuint uivalueForIndex(usampler2D tex, int index) {\n    int texWidth = textureSize(tex, 0).x;\n    int col = index % texWidth;\n    int row = index / texWidth;\n    return texelFetch(tex, ivec2(col, row), 0)[0];\n}\n\nvoid main() {\n    // claculate the offset matrix, done as a matrix to be able to compute "billboard" vertices in the shader\n    mat4 offsetMatrix = mat4(1.0);\n    offsetMatrix[3] = vec4(valueForIndex(uGraphPoints, int(iPositionIndex)).xyz, 1.0);\n\n    // reset the rotation of the model-view matrix\n    mat4 modelMatrix = uViewMatrix * uSceneMatrix * offsetMatrix;\n    mat4 lookAtMatrix = mat4(modelMatrix);\n    if (uCameraMode == 1u) {\n        lookAtMatrix[0] = vec4(1.0, 0.0, 0.0, lookAtMatrix[0][3]);\n        lookAtMatrix[1] = vec4(0.0, 1.0, 0.0, lookAtMatrix[1][3]);\n        lookAtMatrix[2] = vec4(0.0, 0.0, 1.0, lookAtMatrix[2][3]);\n    }\n\n    // the on-screen center of this node\n    vec4 quadCenter = uProjectionMatrix * lookAtMatrix * vec4(0.0, 0.0, 0.0, 1.0);\n    vec2 screenQuadCenter = quadCenter.xy / quadCenter.w;\n\n    // the on-screen position of a side of this quad\n    vec4 quadSide = uProjectionMatrix * lookAtMatrix * vec4(iRadius, 0.0, 0.0, 1.0);\n    vec2 screenQuadSide = quadSide.xy / quadSide.w;\n\n    // compute the pixel radius of this node for a size of 1 in world coordinates\n    float pixelRadius = max(1.0, length((screenQuadSide - screenQuadCenter) * uViewportSize * 0.5));\n\n    // calculate the desired pixel radius for the size mode\n    float desiredPixelRadius = (uPixelSizing ? iRadius : pixelRadius);\n\n    // calculate the pixel radius multiplier needed to acomplish the desired pixel radius\n    float pixelRadiusMult = desiredPixelRadius / pixelRadius;\n\n    // calculate the render matrix\n    mat4 renderMatrix = uBillboard ? uProjectionMatrix * lookAtMatrix : uProjectionMatrix * modelMatrix;\n\n    // compute the vertex position and its screen position\n    vec4 worldVertex = renderMatrix * vec4(aVertex * iRadius * pixelRadiusMult, 1.0);\n\n    // send the render color to the fragment shader\n    fColor = uPicking ? vec4(iPickingColor) / 255.0 : valueForIndex(uColorPalette, int(iColor));\n    // send the normalized length of a single pixel to the fragment shader\n    fPixelLength = 1.0 / desiredPixelRadius;\n    // send the normalized distance from the center to the fragment shader\n    vFromCenter = aVertex.xy;\n\n    // set the render vertex location\n    gl_Position = worldVertex;\n}\n';
 
 // src/graph/nodes/circle/Circle.fs.glsl
-var Circle_fs_default = "#version 300 es\nprecision highp float;\n#define GLSLIFY 1\n\n// from https://en.wikipedia.org/wiki/SRGB#The_reverse_transformation\nfloat luminance_x(float x) {\n    return x <= 0.04045 ? x / 12.92 : pow((x + 0.055) / 1.055, 2.4);\n}\nfloat color_l(float l) {\n    return min(1.0, max(0.0, l <= 0.0031308 ? l * 12.92 : pow(l * 1.055, 1.0 / 2.4) - 0.055));\n}\n\n// from https://en.wikipedia.org/wiki/Relative_luminance\nfloat rgb2luminance(vec3 color) {\n    // relative luminance\n    // see http://www.w3.org/TR/2008/REC-WCAG20-20081211/#relativeluminancedef\n    float r = luminance_x(color.r);\n    float g = luminance_x(color.g);\n    float b = luminance_x(color.b);\n    return 0.2126 * r + 0.7152 * g + 0.0722 * b;\n}\n\nvec3 setLuminance(vec3 color, float luminance) {\n    float r = luminance_x(color.r) * 0.2126;\n    float g = luminance_x(color.g) * 0.7152;\n    float b = luminance_x(color.b) * 0.0722;\n    float colorLuminance = r + g + b;\n\n    float tr = luminance * (r / colorLuminance);\n    float tg = luminance * (g / colorLuminance);\n    float tb = luminance * (b / colorLuminance);\n\n    float rr = color_l(tr / 0.2126);\n    float rg = color_l(tg / 0.7152);\n    float rb = color_l(tb / 0.0722);\n\n    return vec3(rr, rg, rb );\n}\n\n// https://www.w3.org/TR/WCAG20/#contrast-ratiodef\n// (L1 + 0.05) / (L2 + 0.05), where\n// - L1 is the relative luminance of the lighter of the colors, and\n// - L2 is the relative luminance of the darker of the colors.\nfloat findDarker(float luminance, float contrast) {\n    return (contrast * luminance) + (0.05 * contrast) - 0.05;\n}\nfloat findLighter(float luminance, float contrast) {\n    return (luminance + 0.05 - (0.05 * contrast)) / contrast;\n}\n\nvec3 contrastingColor(vec3 color, float contrast) {\n    float luminance = rgb2luminance(color);\n    float darker = findDarker(luminance, contrast);\n    float lighter = findLighter(luminance, contrast);\n\n    float targetLuminance;\n    if (darker < 0.0 || darker > 1.0) {\n        targetLuminance = lighter;\n    } else if (lighter < 0.0 || lighter > 1.0) {\n        targetLuminance = darker;\n    } else {\n        targetLuminance = abs(luminance - lighter) < abs(darker - luminance) ? lighter : darker;\n    }\n\n    return setLuminance(color, targetLuminance);\n}\n\nvec3 desaturateColor(vec3 color, float amount) {\n    float l = rgb2luminance(color);\n    vec3 gray = vec3(l, l, l);\n    return mix(color, gray, amount);\n}\n\nuniform vec4 uClearColor;\nuniform float uDesaturate;\nuniform float uBrightness;\nuniform float uFade;\nuniform float uAlpha;\n\nvec4 outputColor(vec4 color) {\n    // desaturate => fade => alpha\n    vec3 ret = mix(color.rgb, vec3(uBrightness + 1.0 / 2.0), abs(uBrightness));\n    ret = vec3(desaturateColor(ret, uDesaturate));\n    ret = mix(ret, uClearColor.rgb, uFade);\n    return vec4(ret, color.a * uAlpha);\n}\n\n#define MODE_DRAFT 0u\n#define MODE_MEDIUM 1u\n#define MODE_HIGH_PASS_1 2u\n#define MODE_HIGH_PASS_2 3u\n#define MODE_PICKING 4u\n\n// most of these come from this excellent post:\n// https://iquilezles.org/www/articles/distfunctions2d/distfunctions2d.htm\n\nfloat opRound(in float d, in float r) {\n    return d - r;\n}\n\nfloat opOnion(in float d, in float r) {\n    return abs(d) - r;\n}\n\nfloat sdCircle(in vec2 p, in float r ) {\n    return length(p) - r;\n}\n\nfloat sdEquilateralTriangle(in vec2 p, in float r) {\n    const float k = sqrt(3.0);\n    p.x = abs(p.x) - r;\n    p.y = p.y + (r) / k;\n    if (p.x + k * p.y > 0.0) {\n        p = vec2(p.x-k*p.y,-k*p.x-p.y) / 2.0;\n    }\n    p.x -= clamp(p.x, -2.0 * r, 0.0);\n    return -length(p) * sign(p.y);\n}\n\nfloat sdPentagon(in vec2 p, in float r) {\n    const vec3 k = vec3(0.809016994, 0.587785252, 0.726542528);\n    p.y = -(p.y) * 1.25;\n    p.x = abs(p.x) * 1.25;\n    p -= 2.0 * min(dot(vec2(-k.x, k.y), p), 0.0) * vec2(-k.x, k.y);\n    p -= 2.0 * min(dot(vec2(k.x, k.y), p), 0.0) * vec2(k.x, k.y);\n    p -= vec2(clamp(p.x, -r*k.z, r*k.z), r);\n    return length(p) * sign(p.y);\n}\n\nfloat sdOctagon(in vec2 p, in float r) {\n    // pi/8: cos, sin, tan.\n    const vec3 k = vec3(\n        -0.9238795325,   // sqrt(2+sqrt(2))/2\n        0.3826834323,   // sqrt(2-sqrt(2))/2\n        0.4142135623\n    ); // sqrt(2)-1\n    // reflections\n    p = abs(p) * 1.1;\n    p -= 2.0 * min(dot(vec2(k.x,k.y), p), 0.0) * vec2(k.x,k.y);\n    p -= 2.0 * min(dot(vec2(-k.x,k.y), p), 0.0) * vec2(-k.x,k.y);\n    // Polygon side.\n    p -= vec2(clamp(p.x, -k.z*r, k.z*r), r);\n    return length(p) * sign(p.y);\n}\n\nfloat sdStar(in vec2 p, in float r, in uint n, in float m) { // m=[2,n]\n    // these 4 lines can be precomputed for a given shape\n    float an = 3.141593 / float(n);\n    float en = 3.141593 / m;\n    vec2  acs = vec2(cos(an), sin(an));\n    vec2  ecs = vec2(cos(en), sin(en)); // ecs=vec2(0,1) and simplify, for regular polygon,\n\n    // reduce to first sector\n    float bn = mod(atan(p.x, p.y), 2.0 * an) - an;\n    p = length(p) * vec2(cos(bn), abs(sin(bn)));\n\n    // line sdf\n    p -= r * acs;\n    p += ecs * clamp(-dot(p, ecs), 0.0, r * acs.y / ecs.y);\n    return length(p) * sign(p.x);\n}\n\nfloat sdCross(in vec2 p, in float w, in float r) {\n    p = abs(p);\n    return length(p - min(p.x + p.y, w) * 0.5) - r;\n}\n\n// TODO: Precompute this, we always pass the same parameters tot his function (v, vec2(1.0, 0.3), 0.0)\nfloat sdPlus( in vec2 p, in vec2 b, float r ) {\n    p = abs(p);\n    p = (p.y > p.x) ? p.yx : p.xy;\n\n    vec2  q = p - b;\n    float k = max(q.y, q.x);\n    vec2  w = (k > 0.0) ? q : vec2(b.y - p.x, -k);\n\n    return sign(k)*length(max(w, 0.0)) + r;\n}\n\nuniform float uPixelRatio;\nuniform uint uRenderMode;\nuniform float uOutline;\n\nflat in vec4 fColor;\nflat in float fPixelLength;\nin vec2 vFromCenter;\n\nout vec4 fragColor;\n\nvoid main() {\n    float antialias = fPixelLength * 1.5;\n    float sd = sdCircle(vFromCenter, 1.0);\n    float outline = opOnion(sd, min(0.15, fPixelLength * uOutline * uPixelRatio));\n    float modeDistance = uRenderMode == MODE_HIGH_PASS_1 ? -antialias : -antialias * 0.5;\n    float distance = uRenderMode == MODE_HIGH_PASS_2 ? 0.0 : modeDistance;\n\n    if (sd > distance) {\n        discard;\n    }\n\n    vec3 color = fColor.rgb * (1.0 - 0.25 * smoothstep(antialias, 0.0, outline));\n\n    if (uRenderMode == MODE_HIGH_PASS_2) {\n        if (sd < -antialias) {\n            discard;\n        }\n        fragColor = outputColor(vec4(color, smoothstep(0.0, antialias, abs(sd))));\n    } else {\n        fragColor = outputColor(vec4(color, 1.0));\n    }\n}\n";
+var Circle_fs_default = "#version 300 es\nprecision highp float;\n#define GLSLIFY 1\n\n// from https://en.wikipedia.org/wiki/SRGB#The_reverse_transformation\nfloat luminance_x(float x) {\n    return x <= 0.04045 ? x / 12.92 : pow((x + 0.055) / 1.055, 2.4);\n}\nfloat color_l(float l) {\n    return min(1.0, max(0.0, l <= 0.0031308 ? l * 12.92 : pow(l * 1.055, 1.0 / 2.4) - 0.055));\n}\n\n// from https://en.wikipedia.org/wiki/Relative_luminance\nfloat rgb2luminance(vec3 color) {\n    // relative luminance\n    // see http://www.w3.org/TR/2008/REC-WCAG20-20081211/#relativeluminancedef\n    float r = luminance_x(color.r);\n    float g = luminance_x(color.g);\n    float b = luminance_x(color.b);\n    return 0.2126 * r + 0.7152 * g + 0.0722 * b;\n}\n\nvec3 setLuminance(vec3 color, float luminance) {\n    float r = luminance_x(color.r) * 0.2126;\n    float g = luminance_x(color.g) * 0.7152;\n    float b = luminance_x(color.b) * 0.0722;\n    float colorLuminance = r + g + b;\n\n    float tr = luminance * (r / colorLuminance);\n    float tg = luminance * (g / colorLuminance);\n    float tb = luminance * (b / colorLuminance);\n\n    float rr = color_l(tr / 0.2126);\n    float rg = color_l(tg / 0.7152);\n    float rb = color_l(tb / 0.0722);\n\n    return vec3(rr, rg, rb );\n}\n\n// https://www.w3.org/TR/WCAG20/#contrast-ratiodef\n// (L1 + 0.05) / (L2 + 0.05), where\n// - L1 is the relative luminance of the lighter of the colors, and\n// - L2 is the relative luminance of the darker of the colors.\nfloat findDarker(float luminance, float contrast) {\n    return (contrast * luminance) + (0.05 * contrast) - 0.05;\n}\nfloat findLighter(float luminance, float contrast) {\n    return (luminance + 0.05 - (0.05 * contrast)) / contrast;\n}\n\nvec3 contrastingColor(vec3 color, float contrast) {\n    float luminance = rgb2luminance(color);\n    float darker = findDarker(luminance, contrast);\n    float lighter = findLighter(luminance, contrast);\n\n    float targetLuminance;\n    if (darker < 0.0 || darker > 1.0) {\n        targetLuminance = lighter;\n    } else if (lighter < 0.0 || lighter > 1.0) {\n        targetLuminance = darker;\n    } else {\n        targetLuminance = abs(luminance - lighter) < abs(darker - luminance) ? lighter : darker;\n    }\n\n    return setLuminance(color, targetLuminance);\n}\n\nvec3 desaturateColor(vec3 color, float amount) {\n    float l = rgb2luminance(color);\n    vec3 gray = vec3(l, l, l);\n    return mix(color, gray, amount);\n}\n\nuniform vec4 uClearColor;\nuniform float uDesaturate;\nuniform float uBrightness;\nuniform float uFade;\nuniform float uAlpha;\n\nvec4 outputColor(vec4 color) {\n    // desaturate => fade => alpha\n    vec3 ret = mix(color.rgb, vec3(uBrightness + 1.0 / 2.0), abs(uBrightness));\n    ret = vec3(desaturateColor(ret, uDesaturate));\n    ret = mix(ret, uClearColor.rgb, uFade);\n    return vec4(ret, color.a * uAlpha);\n}\n\n#define MODE_DRAFT 0u\n#define MODE_MEDIUM 1u\n#define MODE_HIGH 2u\n#define MODE_HIGH_PASS_1 3u\n#define MODE_HIGH_PASS_2 4u\n#define MODE_PICKING 5u\n\n// most of these come from this excellent post:\n// https://iquilezles.org/www/articles/distfunctions2d/distfunctions2d.htm\n\nfloat opRound(in float d, in float r) {\n    return d - r;\n}\n\nfloat opOnion(in float d, in float r) {\n    return abs(d) - r;\n}\n\nfloat sdCircle(in vec2 p, in float r ) {\n    return length(p) - r;\n}\n\nfloat sdEquilateralTriangle(in vec2 p, in float r) {\n    const float k = sqrt(3.0);\n    p.x = abs(p.x) - r;\n    p.y = p.y + (r) / k;\n    if (p.x + k * p.y > 0.0) {\n        p = vec2(p.x-k*p.y,-k*p.x-p.y) / 2.0;\n    }\n    p.x -= clamp(p.x, -2.0 * r, 0.0);\n    return -length(p) * sign(p.y);\n}\n\nfloat sdPentagon(in vec2 p, in float r) {\n    const vec3 k = vec3(0.809016994, 0.587785252, 0.726542528);\n    p.y = -(p.y) * 1.25;\n    p.x = abs(p.x) * 1.25;\n    p -= 2.0 * min(dot(vec2(-k.x, k.y), p), 0.0) * vec2(-k.x, k.y);\n    p -= 2.0 * min(dot(vec2(k.x, k.y), p), 0.0) * vec2(k.x, k.y);\n    p -= vec2(clamp(p.x, -r*k.z, r*k.z), r);\n    return length(p) * sign(p.y);\n}\n\nfloat sdOctagon(in vec2 p, in float r) {\n    // pi/8: cos, sin, tan.\n    const vec3 k = vec3(\n        -0.9238795325,   // sqrt(2+sqrt(2))/2\n        0.3826834323,   // sqrt(2-sqrt(2))/2\n        0.4142135623\n    ); // sqrt(2)-1\n    // reflections\n    p = abs(p) * 1.1;\n    p -= 2.0 * min(dot(vec2(k.x,k.y), p), 0.0) * vec2(k.x,k.y);\n    p -= 2.0 * min(dot(vec2(-k.x,k.y), p), 0.0) * vec2(-k.x,k.y);\n    // Polygon side.\n    p -= vec2(clamp(p.x, -k.z*r, k.z*r), r);\n    return length(p) * sign(p.y);\n}\n\nfloat sdStar(in vec2 p, in float r, in uint n, in float m) { // m=[2,n]\n    // these 4 lines can be precomputed for a given shape\n    float an = 3.141593 / float(n);\n    float en = 3.141593 / m;\n    vec2  acs = vec2(cos(an), sin(an));\n    vec2  ecs = vec2(cos(en), sin(en)); // ecs=vec2(0,1) and simplify, for regular polygon,\n\n    // reduce to first sector\n    float bn = mod(atan(p.x, p.y), 2.0 * an) - an;\n    p = length(p) * vec2(cos(bn), abs(sin(bn)));\n\n    // line sdf\n    p -= r * acs;\n    p += ecs * clamp(-dot(p, ecs), 0.0, r * acs.y / ecs.y);\n    return length(p) * sign(p.x);\n}\n\nfloat sdCross(in vec2 p, in float w, in float r) {\n    p = abs(p);\n    return length(p - min(p.x + p.y, w) * 0.5) - r;\n}\n\n// TODO: Precompute this, we always pass the same parameters tot his function (v, vec2(1.0, 0.3), 0.0)\nfloat sdPlus( in vec2 p, in vec2 b, float r ) {\n    p = abs(p);\n    p = (p.y > p.x) ? p.yx : p.xy;\n\n    vec2  q = p - b;\n    float k = max(q.y, q.x);\n    vec2  w = (k > 0.0) ? q : vec2(b.y - p.x, -k);\n\n    return sign(k)*length(max(w, 0.0)) + r;\n}\n\nuniform float uPixelRatio;\nuniform uint uRenderMode;\nuniform float uOutline;\n\nflat in vec4 fColor;\nflat in float fPixelLength;\nin vec2 vFromCenter;\n\nout vec4 fragColor;\n\nvoid main() {\n    float antialias = fPixelLength * 1.5;\n    float sd = sdCircle(vFromCenter, 1.0);\n    float outline = opOnion(sd, min(0.15, fPixelLength * uOutline * uPixelRatio));\n    float modeDistance = uRenderMode == MODE_HIGH_PASS_1 ? -antialias : -antialias * 0.5;\n    float distance = uRenderMode == MODE_HIGH_PASS_2 ? 0.0 : modeDistance;\n\n    if (sd > distance) {\n        discard;\n    }\n\n    vec3 color = fColor.rgb * (1.0 - 0.25 * smoothstep(antialias, 0.0, outline));\n\n    if (uRenderMode == MODE_HIGH_PASS_2) {\n        if (sd < -antialias) {\n            discard;\n        }\n        fragColor = outputColor(vec4(color, smoothstep(0.0, antialias, abs(sd))));\n    } else {\n        fragColor = outputColor(vec4(color, 1.0));\n    }\n}\n";
 
 // src/graph/nodes/circle/Circle.data.vs.glsl
 var Circle_data_vs_default = "#version 300 es\n#define GLSLIFY 1\n\nlayout(location=0) in uint aPositionIndex;\nlayout(location=1) in uint aColor;\nlayout(location=2) in float aRadius; // optional atthe end\n\nuniform sampler2D uGraphPoints;\nuniform bool uUsePointRadius;\n\nflat out uint fPoint;\nflat out float fRadius;\nflat out uint fColor;\n\nvec4 valueForIndex(sampler2D tex, int index) {\n    int texWidth = textureSize(tex, 0).x;\n    int col = index % texWidth;\n    int row = index / texWidth;\n    return texelFetch(tex, ivec2(col, row), 0);\n}\n\nuvec4 uvalueForIndex(usampler2D tex, int index) {\n    int texWidth = textureSize(tex, 0).x;\n    int col = index % texWidth;\n    int row = index / texWidth;\n    return texelFetch(tex, ivec2(col, row), 0);\n}\n\nuint uivalueForIndex(usampler2D tex, int index) {\n    int texWidth = textureSize(tex, 0).x;\n    int col = index % texWidth;\n    int row = index / texWidth;\n    return texelFetch(tex, ivec2(col, row), 0)[0];\n}\n\nvoid main() {\n    vec4 value = valueForIndex(uGraphPoints, int(aPositionIndex));\n    if (uUsePointRadius) {\n        fRadius = value.w;\n    } else {\n        fRadius = aRadius;\n    }\n\n    fPoint = aPositionIndex;\n    fColor = aColor;\n}\n";
@@ -16105,6 +16142,9 @@ var LayerRenderable = class extends PointsReaderEmitter {
   set brightness(value) {
     this.localUniforms.uBrightness = value;
   }
+  get opaque() {
+    return this.localUniforms.uAlpha >= 1 || this.blendMode === 0;
+  }
   initialize(context, points2, data, mappings2, pickingManager) {
     this.pickingManager = pickingManager;
     this.picking = true;
@@ -16133,7 +16173,7 @@ var LayerRenderable = class extends PointsReaderEmitter {
         }
         break;
       default:
-        if (this.localUniforms.uAlpha >= 1 || this.blendMode === 0) {
+        if (this.opaque) {
           context.disable(PicoGL.BLEND);
           context.depthMask(true);
         } else {
@@ -16471,7 +16511,7 @@ var Circle = class extends Nodes {
 };
 
 // src/graph/nodes/ring/Ring.fs.glsl
-var Ring_fs_default = "#version 300 es\nprecision highp float;\n#define GLSLIFY 1\n\n// from https://en.wikipedia.org/wiki/SRGB#The_reverse_transformation\nfloat luminance_x(float x) {\n    return x <= 0.04045 ? x / 12.92 : pow((x + 0.055) / 1.055, 2.4);\n}\nfloat color_l(float l) {\n    return min(1.0, max(0.0, l <= 0.0031308 ? l * 12.92 : pow(l * 1.055, 1.0 / 2.4) - 0.055));\n}\n\n// from https://en.wikipedia.org/wiki/Relative_luminance\nfloat rgb2luminance(vec3 color) {\n    // relative luminance\n    // see http://www.w3.org/TR/2008/REC-WCAG20-20081211/#relativeluminancedef\n    float r = luminance_x(color.r);\n    float g = luminance_x(color.g);\n    float b = luminance_x(color.b);\n    return 0.2126 * r + 0.7152 * g + 0.0722 * b;\n}\n\nvec3 setLuminance(vec3 color, float luminance) {\n    float r = luminance_x(color.r) * 0.2126;\n    float g = luminance_x(color.g) * 0.7152;\n    float b = luminance_x(color.b) * 0.0722;\n    float colorLuminance = r + g + b;\n\n    float tr = luminance * (r / colorLuminance);\n    float tg = luminance * (g / colorLuminance);\n    float tb = luminance * (b / colorLuminance);\n\n    float rr = color_l(tr / 0.2126);\n    float rg = color_l(tg / 0.7152);\n    float rb = color_l(tb / 0.0722);\n\n    return vec3(rr, rg, rb );\n}\n\n// https://www.w3.org/TR/WCAG20/#contrast-ratiodef\n// (L1 + 0.05) / (L2 + 0.05), where\n// - L1 is the relative luminance of the lighter of the colors, and\n// - L2 is the relative luminance of the darker of the colors.\nfloat findDarker(float luminance, float contrast) {\n    return (contrast * luminance) + (0.05 * contrast) - 0.05;\n}\nfloat findLighter(float luminance, float contrast) {\n    return (luminance + 0.05 - (0.05 * contrast)) / contrast;\n}\n\nvec3 contrastingColor(vec3 color, float contrast) {\n    float luminance = rgb2luminance(color);\n    float darker = findDarker(luminance, contrast);\n    float lighter = findLighter(luminance, contrast);\n\n    float targetLuminance;\n    if (darker < 0.0 || darker > 1.0) {\n        targetLuminance = lighter;\n    } else if (lighter < 0.0 || lighter > 1.0) {\n        targetLuminance = darker;\n    } else {\n        targetLuminance = abs(luminance - lighter) < abs(darker - luminance) ? lighter : darker;\n    }\n\n    return setLuminance(color, targetLuminance);\n}\n\nvec3 desaturateColor(vec3 color, float amount) {\n    float l = rgb2luminance(color);\n    vec3 gray = vec3(l, l, l);\n    return mix(color, gray, amount);\n}\n\nuniform vec4 uClearColor;\nuniform float uDesaturate;\nuniform float uBrightness;\nuniform float uFade;\nuniform float uAlpha;\n\nvec4 outputColor(vec4 color) {\n    // desaturate => fade => alpha\n    vec3 ret = mix(color.rgb, vec3(uBrightness + 1.0 / 2.0), abs(uBrightness));\n    ret = vec3(desaturateColor(ret, uDesaturate));\n    ret = mix(ret, uClearColor.rgb, uFade);\n    return vec4(ret, color.a * uAlpha);\n}\n\n#define MODE_DRAFT 0u\n#define MODE_MEDIUM 1u\n#define MODE_HIGH_PASS_1 2u\n#define MODE_HIGH_PASS_2 3u\n#define MODE_PICKING 4u\n\n// most of these come from this excellent post:\n// https://iquilezles.org/www/articles/distfunctions2d/distfunctions2d.htm\n\nfloat opRound(in float d, in float r) {\n    return d - r;\n}\n\nfloat opOnion(in float d, in float r) {\n    return abs(d) - r;\n}\n\nfloat sdCircle(in vec2 p, in float r ) {\n    return length(p) - r;\n}\n\nfloat sdEquilateralTriangle(in vec2 p, in float r) {\n    const float k = sqrt(3.0);\n    p.x = abs(p.x) - r;\n    p.y = p.y + (r) / k;\n    if (p.x + k * p.y > 0.0) {\n        p = vec2(p.x-k*p.y,-k*p.x-p.y) / 2.0;\n    }\n    p.x -= clamp(p.x, -2.0 * r, 0.0);\n    return -length(p) * sign(p.y);\n}\n\nfloat sdPentagon(in vec2 p, in float r) {\n    const vec3 k = vec3(0.809016994, 0.587785252, 0.726542528);\n    p.y = -(p.y) * 1.25;\n    p.x = abs(p.x) * 1.25;\n    p -= 2.0 * min(dot(vec2(-k.x, k.y), p), 0.0) * vec2(-k.x, k.y);\n    p -= 2.0 * min(dot(vec2(k.x, k.y), p), 0.0) * vec2(k.x, k.y);\n    p -= vec2(clamp(p.x, -r*k.z, r*k.z), r);\n    return length(p) * sign(p.y);\n}\n\nfloat sdOctagon(in vec2 p, in float r) {\n    // pi/8: cos, sin, tan.\n    const vec3 k = vec3(\n        -0.9238795325,   // sqrt(2+sqrt(2))/2\n        0.3826834323,   // sqrt(2-sqrt(2))/2\n        0.4142135623\n    ); // sqrt(2)-1\n    // reflections\n    p = abs(p) * 1.1;\n    p -= 2.0 * min(dot(vec2(k.x,k.y), p), 0.0) * vec2(k.x,k.y);\n    p -= 2.0 * min(dot(vec2(-k.x,k.y), p), 0.0) * vec2(-k.x,k.y);\n    // Polygon side.\n    p -= vec2(clamp(p.x, -k.z*r, k.z*r), r);\n    return length(p) * sign(p.y);\n}\n\nfloat sdStar(in vec2 p, in float r, in uint n, in float m) { // m=[2,n]\n    // these 4 lines can be precomputed for a given shape\n    float an = 3.141593 / float(n);\n    float en = 3.141593 / m;\n    vec2  acs = vec2(cos(an), sin(an));\n    vec2  ecs = vec2(cos(en), sin(en)); // ecs=vec2(0,1) and simplify, for regular polygon,\n\n    // reduce to first sector\n    float bn = mod(atan(p.x, p.y), 2.0 * an) - an;\n    p = length(p) * vec2(cos(bn), abs(sin(bn)));\n\n    // line sdf\n    p -= r * acs;\n    p += ecs * clamp(-dot(p, ecs), 0.0, r * acs.y / ecs.y);\n    return length(p) * sign(p.x);\n}\n\nfloat sdCross(in vec2 p, in float w, in float r) {\n    p = abs(p);\n    return length(p - min(p.x + p.y, w) * 0.5) - r;\n}\n\n// TODO: Precompute this, we always pass the same parameters tot his function (v, vec2(1.0, 0.3), 0.0)\nfloat sdPlus( in vec2 p, in vec2 b, float r ) {\n    p = abs(p);\n    p = (p.y > p.x) ? p.yx : p.xy;\n\n    vec2  q = p - b;\n    float k = max(q.y, q.x);\n    vec2  w = (k > 0.0) ? q : vec2(b.y - p.x, -k);\n\n    return sign(k)*length(max(w, 0.0)) + r;\n}\n\nuniform float uPixelRatio;\nuniform uint uRenderMode;\nuniform float uOutline;\n\nflat in vec4 fColor;\nflat in float fPixelLength;\nin vec2 vFromCenter;\n\nout vec4 fragColor;\n\nvoid main() {\n    float thickness = max(fPixelLength, min(0.1, fPixelLength * uOutline * uPixelRatio));\n    float antialias = min(thickness, fPixelLength * 1.5);\n    float radius = 1.0 - thickness;\n    float ring = opOnion(sdCircle(vFromCenter, radius), thickness);\n    float modeDistance = uRenderMode == MODE_HIGH_PASS_1 ? -antialias : -antialias * 0.5;\n    float distance = uRenderMode == MODE_HIGH_PASS_2 ? 0.0 : modeDistance;\n\n    if (ring > distance) {\n        discard;\n    }\n\n    if (uRenderMode == MODE_HIGH_PASS_2) {\n        if (ring < -antialias) {\n            discard;\n        }\n        fragColor = outputColor(vec4(fColor.rgb, smoothstep(0.0, antialias, abs(ring))));\n    } else {\n        fragColor = outputColor(vec4(fColor.rgb, 1.0));\n    }\n}\n";
+var Ring_fs_default = "#version 300 es\nprecision highp float;\n#define GLSLIFY 1\n\n// from https://en.wikipedia.org/wiki/SRGB#The_reverse_transformation\nfloat luminance_x(float x) {\n    return x <= 0.04045 ? x / 12.92 : pow((x + 0.055) / 1.055, 2.4);\n}\nfloat color_l(float l) {\n    return min(1.0, max(0.0, l <= 0.0031308 ? l * 12.92 : pow(l * 1.055, 1.0 / 2.4) - 0.055));\n}\n\n// from https://en.wikipedia.org/wiki/Relative_luminance\nfloat rgb2luminance(vec3 color) {\n    // relative luminance\n    // see http://www.w3.org/TR/2008/REC-WCAG20-20081211/#relativeluminancedef\n    float r = luminance_x(color.r);\n    float g = luminance_x(color.g);\n    float b = luminance_x(color.b);\n    return 0.2126 * r + 0.7152 * g + 0.0722 * b;\n}\n\nvec3 setLuminance(vec3 color, float luminance) {\n    float r = luminance_x(color.r) * 0.2126;\n    float g = luminance_x(color.g) * 0.7152;\n    float b = luminance_x(color.b) * 0.0722;\n    float colorLuminance = r + g + b;\n\n    float tr = luminance * (r / colorLuminance);\n    float tg = luminance * (g / colorLuminance);\n    float tb = luminance * (b / colorLuminance);\n\n    float rr = color_l(tr / 0.2126);\n    float rg = color_l(tg / 0.7152);\n    float rb = color_l(tb / 0.0722);\n\n    return vec3(rr, rg, rb );\n}\n\n// https://www.w3.org/TR/WCAG20/#contrast-ratiodef\n// (L1 + 0.05) / (L2 + 0.05), where\n// - L1 is the relative luminance of the lighter of the colors, and\n// - L2 is the relative luminance of the darker of the colors.\nfloat findDarker(float luminance, float contrast) {\n    return (contrast * luminance) + (0.05 * contrast) - 0.05;\n}\nfloat findLighter(float luminance, float contrast) {\n    return (luminance + 0.05 - (0.05 * contrast)) / contrast;\n}\n\nvec3 contrastingColor(vec3 color, float contrast) {\n    float luminance = rgb2luminance(color);\n    float darker = findDarker(luminance, contrast);\n    float lighter = findLighter(luminance, contrast);\n\n    float targetLuminance;\n    if (darker < 0.0 || darker > 1.0) {\n        targetLuminance = lighter;\n    } else if (lighter < 0.0 || lighter > 1.0) {\n        targetLuminance = darker;\n    } else {\n        targetLuminance = abs(luminance - lighter) < abs(darker - luminance) ? lighter : darker;\n    }\n\n    return setLuminance(color, targetLuminance);\n}\n\nvec3 desaturateColor(vec3 color, float amount) {\n    float l = rgb2luminance(color);\n    vec3 gray = vec3(l, l, l);\n    return mix(color, gray, amount);\n}\n\nuniform vec4 uClearColor;\nuniform float uDesaturate;\nuniform float uBrightness;\nuniform float uFade;\nuniform float uAlpha;\n\nvec4 outputColor(vec4 color) {\n    // desaturate => fade => alpha\n    vec3 ret = mix(color.rgb, vec3(uBrightness + 1.0 / 2.0), abs(uBrightness));\n    ret = vec3(desaturateColor(ret, uDesaturate));\n    ret = mix(ret, uClearColor.rgb, uFade);\n    return vec4(ret, color.a * uAlpha);\n}\n\n#define MODE_DRAFT 0u\n#define MODE_MEDIUM 1u\n#define MODE_HIGH 2u\n#define MODE_HIGH_PASS_1 3u\n#define MODE_HIGH_PASS_2 4u\n#define MODE_PICKING 5u\n\n// most of these come from this excellent post:\n// https://iquilezles.org/www/articles/distfunctions2d/distfunctions2d.htm\n\nfloat opRound(in float d, in float r) {\n    return d - r;\n}\n\nfloat opOnion(in float d, in float r) {\n    return abs(d) - r;\n}\n\nfloat sdCircle(in vec2 p, in float r ) {\n    return length(p) - r;\n}\n\nfloat sdEquilateralTriangle(in vec2 p, in float r) {\n    const float k = sqrt(3.0);\n    p.x = abs(p.x) - r;\n    p.y = p.y + (r) / k;\n    if (p.x + k * p.y > 0.0) {\n        p = vec2(p.x-k*p.y,-k*p.x-p.y) / 2.0;\n    }\n    p.x -= clamp(p.x, -2.0 * r, 0.0);\n    return -length(p) * sign(p.y);\n}\n\nfloat sdPentagon(in vec2 p, in float r) {\n    const vec3 k = vec3(0.809016994, 0.587785252, 0.726542528);\n    p.y = -(p.y) * 1.25;\n    p.x = abs(p.x) * 1.25;\n    p -= 2.0 * min(dot(vec2(-k.x, k.y), p), 0.0) * vec2(-k.x, k.y);\n    p -= 2.0 * min(dot(vec2(k.x, k.y), p), 0.0) * vec2(k.x, k.y);\n    p -= vec2(clamp(p.x, -r*k.z, r*k.z), r);\n    return length(p) * sign(p.y);\n}\n\nfloat sdOctagon(in vec2 p, in float r) {\n    // pi/8: cos, sin, tan.\n    const vec3 k = vec3(\n        -0.9238795325,   // sqrt(2+sqrt(2))/2\n        0.3826834323,   // sqrt(2-sqrt(2))/2\n        0.4142135623\n    ); // sqrt(2)-1\n    // reflections\n    p = abs(p) * 1.1;\n    p -= 2.0 * min(dot(vec2(k.x,k.y), p), 0.0) * vec2(k.x,k.y);\n    p -= 2.0 * min(dot(vec2(-k.x,k.y), p), 0.0) * vec2(-k.x,k.y);\n    // Polygon side.\n    p -= vec2(clamp(p.x, -k.z*r, k.z*r), r);\n    return length(p) * sign(p.y);\n}\n\nfloat sdStar(in vec2 p, in float r, in uint n, in float m) { // m=[2,n]\n    // these 4 lines can be precomputed for a given shape\n    float an = 3.141593 / float(n);\n    float en = 3.141593 / m;\n    vec2  acs = vec2(cos(an), sin(an));\n    vec2  ecs = vec2(cos(en), sin(en)); // ecs=vec2(0,1) and simplify, for regular polygon,\n\n    // reduce to first sector\n    float bn = mod(atan(p.x, p.y), 2.0 * an) - an;\n    p = length(p) * vec2(cos(bn), abs(sin(bn)));\n\n    // line sdf\n    p -= r * acs;\n    p += ecs * clamp(-dot(p, ecs), 0.0, r * acs.y / ecs.y);\n    return length(p) * sign(p.x);\n}\n\nfloat sdCross(in vec2 p, in float w, in float r) {\n    p = abs(p);\n    return length(p - min(p.x + p.y, w) * 0.5) - r;\n}\n\n// TODO: Precompute this, we always pass the same parameters tot his function (v, vec2(1.0, 0.3), 0.0)\nfloat sdPlus( in vec2 p, in vec2 b, float r ) {\n    p = abs(p);\n    p = (p.y > p.x) ? p.yx : p.xy;\n\n    vec2  q = p - b;\n    float k = max(q.y, q.x);\n    vec2  w = (k > 0.0) ? q : vec2(b.y - p.x, -k);\n\n    return sign(k)*length(max(w, 0.0)) + r;\n}\n\nuniform float uPixelRatio;\nuniform uint uRenderMode;\nuniform float uOutline;\n\nflat in vec4 fColor;\nflat in float fPixelLength;\nin vec2 vFromCenter;\n\nout vec4 fragColor;\n\nvoid main() {\n    float thickness = max(fPixelLength, min(0.1, fPixelLength * uOutline * uPixelRatio));\n    float antialias = min(thickness, fPixelLength * 1.5);\n    float radius = 1.0 - thickness;\n    float ring = opOnion(sdCircle(vFromCenter, radius), thickness);\n    float modeDistance = uRenderMode == MODE_HIGH_PASS_1 ? -antialias : -antialias * 0.5;\n    float distance = uRenderMode == MODE_HIGH_PASS_2 ? 0.0 : modeDistance;\n\n    if (ring > distance) {\n        discard;\n    }\n\n    if (uRenderMode == MODE_HIGH_PASS_2) {\n        if (ring < -antialias) {\n            discard;\n        }\n        fragColor = outputColor(vec4(fColor.rgb, smoothstep(0.0, antialias, abs(ring))));\n    } else {\n        fragColor = outputColor(vec4(fColor.rgb, 1.0));\n    }\n}\n";
 
 // src/graph/nodes/ring/Ring.ts
 var Ring = class extends Circle {
@@ -16483,7 +16523,7 @@ var Ring = class extends Circle {
 };
 
 // src/graph/nodes/triangle/Triangle.fs.glsl
-var Triangle_fs_default = "#version 300 es\nprecision highp float;\n#define GLSLIFY 1\n\n// from https://en.wikipedia.org/wiki/SRGB#The_reverse_transformation\nfloat luminance_x(float x) {\n    return x <= 0.04045 ? x / 12.92 : pow((x + 0.055) / 1.055, 2.4);\n}\nfloat color_l(float l) {\n    return min(1.0, max(0.0, l <= 0.0031308 ? l * 12.92 : pow(l * 1.055, 1.0 / 2.4) - 0.055));\n}\n\n// from https://en.wikipedia.org/wiki/Relative_luminance\nfloat rgb2luminance(vec3 color) {\n    // relative luminance\n    // see http://www.w3.org/TR/2008/REC-WCAG20-20081211/#relativeluminancedef\n    float r = luminance_x(color.r);\n    float g = luminance_x(color.g);\n    float b = luminance_x(color.b);\n    return 0.2126 * r + 0.7152 * g + 0.0722 * b;\n}\n\nvec3 setLuminance(vec3 color, float luminance) {\n    float r = luminance_x(color.r) * 0.2126;\n    float g = luminance_x(color.g) * 0.7152;\n    float b = luminance_x(color.b) * 0.0722;\n    float colorLuminance = r + g + b;\n\n    float tr = luminance * (r / colorLuminance);\n    float tg = luminance * (g / colorLuminance);\n    float tb = luminance * (b / colorLuminance);\n\n    float rr = color_l(tr / 0.2126);\n    float rg = color_l(tg / 0.7152);\n    float rb = color_l(tb / 0.0722);\n\n    return vec3(rr, rg, rb );\n}\n\n// https://www.w3.org/TR/WCAG20/#contrast-ratiodef\n// (L1 + 0.05) / (L2 + 0.05), where\n// - L1 is the relative luminance of the lighter of the colors, and\n// - L2 is the relative luminance of the darker of the colors.\nfloat findDarker(float luminance, float contrast) {\n    return (contrast * luminance) + (0.05 * contrast) - 0.05;\n}\nfloat findLighter(float luminance, float contrast) {\n    return (luminance + 0.05 - (0.05 * contrast)) / contrast;\n}\n\nvec3 contrastingColor(vec3 color, float contrast) {\n    float luminance = rgb2luminance(color);\n    float darker = findDarker(luminance, contrast);\n    float lighter = findLighter(luminance, contrast);\n\n    float targetLuminance;\n    if (darker < 0.0 || darker > 1.0) {\n        targetLuminance = lighter;\n    } else if (lighter < 0.0 || lighter > 1.0) {\n        targetLuminance = darker;\n    } else {\n        targetLuminance = abs(luminance - lighter) < abs(darker - luminance) ? lighter : darker;\n    }\n\n    return setLuminance(color, targetLuminance);\n}\n\nvec3 desaturateColor(vec3 color, float amount) {\n    float l = rgb2luminance(color);\n    vec3 gray = vec3(l, l, l);\n    return mix(color, gray, amount);\n}\n\nuniform vec4 uClearColor;\nuniform float uDesaturate;\nuniform float uBrightness;\nuniform float uFade;\nuniform float uAlpha;\n\nvec4 outputColor(vec4 color) {\n    // desaturate => fade => alpha\n    vec3 ret = mix(color.rgb, vec3(uBrightness + 1.0 / 2.0), abs(uBrightness));\n    ret = vec3(desaturateColor(ret, uDesaturate));\n    ret = mix(ret, uClearColor.rgb, uFade);\n    return vec4(ret, color.a * uAlpha);\n}\n\n#define MODE_DRAFT 0u\n#define MODE_MEDIUM 1u\n#define MODE_HIGH_PASS_1 2u\n#define MODE_HIGH_PASS_2 3u\n#define MODE_PICKING 4u\n\n// most of these come from this excellent post:\n// https://iquilezles.org/www/articles/distfunctions2d/distfunctions2d.htm\n\nfloat opRound(in float d, in float r) {\n    return d - r;\n}\n\nfloat opOnion(in float d, in float r) {\n    return abs(d) - r;\n}\n\nfloat sdCircle(in vec2 p, in float r ) {\n    return length(p) - r;\n}\n\nfloat sdEquilateralTriangle(in vec2 p, in float r) {\n    const float k = sqrt(3.0);\n    p.x = abs(p.x) - r;\n    p.y = p.y + (r) / k;\n    if (p.x + k * p.y > 0.0) {\n        p = vec2(p.x-k*p.y,-k*p.x-p.y) / 2.0;\n    }\n    p.x -= clamp(p.x, -2.0 * r, 0.0);\n    return -length(p) * sign(p.y);\n}\n\nfloat sdPentagon(in vec2 p, in float r) {\n    const vec3 k = vec3(0.809016994, 0.587785252, 0.726542528);\n    p.y = -(p.y) * 1.25;\n    p.x = abs(p.x) * 1.25;\n    p -= 2.0 * min(dot(vec2(-k.x, k.y), p), 0.0) * vec2(-k.x, k.y);\n    p -= 2.0 * min(dot(vec2(k.x, k.y), p), 0.0) * vec2(k.x, k.y);\n    p -= vec2(clamp(p.x, -r*k.z, r*k.z), r);\n    return length(p) * sign(p.y);\n}\n\nfloat sdOctagon(in vec2 p, in float r) {\n    // pi/8: cos, sin, tan.\n    const vec3 k = vec3(\n        -0.9238795325,   // sqrt(2+sqrt(2))/2\n        0.3826834323,   // sqrt(2-sqrt(2))/2\n        0.4142135623\n    ); // sqrt(2)-1\n    // reflections\n    p = abs(p) * 1.1;\n    p -= 2.0 * min(dot(vec2(k.x,k.y), p), 0.0) * vec2(k.x,k.y);\n    p -= 2.0 * min(dot(vec2(-k.x,k.y), p), 0.0) * vec2(-k.x,k.y);\n    // Polygon side.\n    p -= vec2(clamp(p.x, -k.z*r, k.z*r), r);\n    return length(p) * sign(p.y);\n}\n\nfloat sdStar(in vec2 p, in float r, in uint n, in float m) { // m=[2,n]\n    // these 4 lines can be precomputed for a given shape\n    float an = 3.141593 / float(n);\n    float en = 3.141593 / m;\n    vec2  acs = vec2(cos(an), sin(an));\n    vec2  ecs = vec2(cos(en), sin(en)); // ecs=vec2(0,1) and simplify, for regular polygon,\n\n    // reduce to first sector\n    float bn = mod(atan(p.x, p.y), 2.0 * an) - an;\n    p = length(p) * vec2(cos(bn), abs(sin(bn)));\n\n    // line sdf\n    p -= r * acs;\n    p += ecs * clamp(-dot(p, ecs), 0.0, r * acs.y / ecs.y);\n    return length(p) * sign(p.x);\n}\n\nfloat sdCross(in vec2 p, in float w, in float r) {\n    p = abs(p);\n    return length(p - min(p.x + p.y, w) * 0.5) - r;\n}\n\n// TODO: Precompute this, we always pass the same parameters tot his function (v, vec2(1.0, 0.3), 0.0)\nfloat sdPlus( in vec2 p, in vec2 b, float r ) {\n    p = abs(p);\n    p = (p.y > p.x) ? p.yx : p.xy;\n\n    vec2  q = p - b;\n    float k = max(q.y, q.x);\n    vec2  w = (k > 0.0) ? q : vec2(b.y - p.x, -k);\n\n    return sign(k)*length(max(w, 0.0)) + r;\n}\n\nuniform float uPixelRatio;\nuniform uint uRenderMode;\nuniform float uOutline;\n\nflat in vec4 fColor;\nflat in float fPixelLength;\nin vec2 vFromCenter;\n\nout vec4 fragColor;\n\nvoid main() {\n    float antialias = fPixelLength * 1.5;\n    float sd = sdEquilateralTriangle(vFromCenter, 0.85);\n    float outline = opOnion(sd, min(0.15, fPixelLength * uOutline * uPixelRatio));\n    float modeDistance = uRenderMode == MODE_HIGH_PASS_1 ? -antialias : -antialias * 0.5;\n    float distance = uRenderMode == MODE_HIGH_PASS_2 ? 0.0 : modeDistance;\n\n    if (sd > distance) {\n        discard;\n    }\n\n    vec3 color = fColor.rgb * (1.0 - 0.25 * smoothstep(antialias, 0.0, outline));\n\n    if (uRenderMode == MODE_HIGH_PASS_2) {\n        if (sd < -antialias) {\n            discard;\n        }\n        fragColor = outputColor(vec4(color, smoothstep(0.0, antialias, abs(sd))));\n    } else {\n        fragColor = outputColor(vec4(color, 1.0));\n    }\n}\n";
+var Triangle_fs_default = "#version 300 es\nprecision highp float;\n#define GLSLIFY 1\n\n// from https://en.wikipedia.org/wiki/SRGB#The_reverse_transformation\nfloat luminance_x(float x) {\n    return x <= 0.04045 ? x / 12.92 : pow((x + 0.055) / 1.055, 2.4);\n}\nfloat color_l(float l) {\n    return min(1.0, max(0.0, l <= 0.0031308 ? l * 12.92 : pow(l * 1.055, 1.0 / 2.4) - 0.055));\n}\n\n// from https://en.wikipedia.org/wiki/Relative_luminance\nfloat rgb2luminance(vec3 color) {\n    // relative luminance\n    // see http://www.w3.org/TR/2008/REC-WCAG20-20081211/#relativeluminancedef\n    float r = luminance_x(color.r);\n    float g = luminance_x(color.g);\n    float b = luminance_x(color.b);\n    return 0.2126 * r + 0.7152 * g + 0.0722 * b;\n}\n\nvec3 setLuminance(vec3 color, float luminance) {\n    float r = luminance_x(color.r) * 0.2126;\n    float g = luminance_x(color.g) * 0.7152;\n    float b = luminance_x(color.b) * 0.0722;\n    float colorLuminance = r + g + b;\n\n    float tr = luminance * (r / colorLuminance);\n    float tg = luminance * (g / colorLuminance);\n    float tb = luminance * (b / colorLuminance);\n\n    float rr = color_l(tr / 0.2126);\n    float rg = color_l(tg / 0.7152);\n    float rb = color_l(tb / 0.0722);\n\n    return vec3(rr, rg, rb );\n}\n\n// https://www.w3.org/TR/WCAG20/#contrast-ratiodef\n// (L1 + 0.05) / (L2 + 0.05), where\n// - L1 is the relative luminance of the lighter of the colors, and\n// - L2 is the relative luminance of the darker of the colors.\nfloat findDarker(float luminance, float contrast) {\n    return (contrast * luminance) + (0.05 * contrast) - 0.05;\n}\nfloat findLighter(float luminance, float contrast) {\n    return (luminance + 0.05 - (0.05 * contrast)) / contrast;\n}\n\nvec3 contrastingColor(vec3 color, float contrast) {\n    float luminance = rgb2luminance(color);\n    float darker = findDarker(luminance, contrast);\n    float lighter = findLighter(luminance, contrast);\n\n    float targetLuminance;\n    if (darker < 0.0 || darker > 1.0) {\n        targetLuminance = lighter;\n    } else if (lighter < 0.0 || lighter > 1.0) {\n        targetLuminance = darker;\n    } else {\n        targetLuminance = abs(luminance - lighter) < abs(darker - luminance) ? lighter : darker;\n    }\n\n    return setLuminance(color, targetLuminance);\n}\n\nvec3 desaturateColor(vec3 color, float amount) {\n    float l = rgb2luminance(color);\n    vec3 gray = vec3(l, l, l);\n    return mix(color, gray, amount);\n}\n\nuniform vec4 uClearColor;\nuniform float uDesaturate;\nuniform float uBrightness;\nuniform float uFade;\nuniform float uAlpha;\n\nvec4 outputColor(vec4 color) {\n    // desaturate => fade => alpha\n    vec3 ret = mix(color.rgb, vec3(uBrightness + 1.0 / 2.0), abs(uBrightness));\n    ret = vec3(desaturateColor(ret, uDesaturate));\n    ret = mix(ret, uClearColor.rgb, uFade);\n    return vec4(ret, color.a * uAlpha);\n}\n\n#define MODE_DRAFT 0u\n#define MODE_MEDIUM 1u\n#define MODE_HIGH 2u\n#define MODE_HIGH_PASS_1 3u\n#define MODE_HIGH_PASS_2 4u\n#define MODE_PICKING 5u\n\n// most of these come from this excellent post:\n// https://iquilezles.org/www/articles/distfunctions2d/distfunctions2d.htm\n\nfloat opRound(in float d, in float r) {\n    return d - r;\n}\n\nfloat opOnion(in float d, in float r) {\n    return abs(d) - r;\n}\n\nfloat sdCircle(in vec2 p, in float r ) {\n    return length(p) - r;\n}\n\nfloat sdEquilateralTriangle(in vec2 p, in float r) {\n    const float k = sqrt(3.0);\n    p.x = abs(p.x) - r;\n    p.y = p.y + (r) / k;\n    if (p.x + k * p.y > 0.0) {\n        p = vec2(p.x-k*p.y,-k*p.x-p.y) / 2.0;\n    }\n    p.x -= clamp(p.x, -2.0 * r, 0.0);\n    return -length(p) * sign(p.y);\n}\n\nfloat sdPentagon(in vec2 p, in float r) {\n    const vec3 k = vec3(0.809016994, 0.587785252, 0.726542528);\n    p.y = -(p.y) * 1.25;\n    p.x = abs(p.x) * 1.25;\n    p -= 2.0 * min(dot(vec2(-k.x, k.y), p), 0.0) * vec2(-k.x, k.y);\n    p -= 2.0 * min(dot(vec2(k.x, k.y), p), 0.0) * vec2(k.x, k.y);\n    p -= vec2(clamp(p.x, -r*k.z, r*k.z), r);\n    return length(p) * sign(p.y);\n}\n\nfloat sdOctagon(in vec2 p, in float r) {\n    // pi/8: cos, sin, tan.\n    const vec3 k = vec3(\n        -0.9238795325,   // sqrt(2+sqrt(2))/2\n        0.3826834323,   // sqrt(2-sqrt(2))/2\n        0.4142135623\n    ); // sqrt(2)-1\n    // reflections\n    p = abs(p) * 1.1;\n    p -= 2.0 * min(dot(vec2(k.x,k.y), p), 0.0) * vec2(k.x,k.y);\n    p -= 2.0 * min(dot(vec2(-k.x,k.y), p), 0.0) * vec2(-k.x,k.y);\n    // Polygon side.\n    p -= vec2(clamp(p.x, -k.z*r, k.z*r), r);\n    return length(p) * sign(p.y);\n}\n\nfloat sdStar(in vec2 p, in float r, in uint n, in float m) { // m=[2,n]\n    // these 4 lines can be precomputed for a given shape\n    float an = 3.141593 / float(n);\n    float en = 3.141593 / m;\n    vec2  acs = vec2(cos(an), sin(an));\n    vec2  ecs = vec2(cos(en), sin(en)); // ecs=vec2(0,1) and simplify, for regular polygon,\n\n    // reduce to first sector\n    float bn = mod(atan(p.x, p.y), 2.0 * an) - an;\n    p = length(p) * vec2(cos(bn), abs(sin(bn)));\n\n    // line sdf\n    p -= r * acs;\n    p += ecs * clamp(-dot(p, ecs), 0.0, r * acs.y / ecs.y);\n    return length(p) * sign(p.x);\n}\n\nfloat sdCross(in vec2 p, in float w, in float r) {\n    p = abs(p);\n    return length(p - min(p.x + p.y, w) * 0.5) - r;\n}\n\n// TODO: Precompute this, we always pass the same parameters tot his function (v, vec2(1.0, 0.3), 0.0)\nfloat sdPlus( in vec2 p, in vec2 b, float r ) {\n    p = abs(p);\n    p = (p.y > p.x) ? p.yx : p.xy;\n\n    vec2  q = p - b;\n    float k = max(q.y, q.x);\n    vec2  w = (k > 0.0) ? q : vec2(b.y - p.x, -k);\n\n    return sign(k)*length(max(w, 0.0)) + r;\n}\n\nuniform float uPixelRatio;\nuniform uint uRenderMode;\nuniform float uOutline;\n\nflat in vec4 fColor;\nflat in float fPixelLength;\nin vec2 vFromCenter;\n\nout vec4 fragColor;\n\nvoid main() {\n    float antialias = fPixelLength * 1.5;\n    float sd = sdEquilateralTriangle(vFromCenter, 0.85);\n    float outline = opOnion(sd, min(0.15, fPixelLength * uOutline * uPixelRatio));\n    float modeDistance = uRenderMode == MODE_HIGH_PASS_1 ? -antialias : -antialias * 0.5;\n    float distance = uRenderMode == MODE_HIGH_PASS_2 ? 0.0 : modeDistance;\n\n    if (sd > distance) {\n        discard;\n    }\n\n    vec3 color = fColor.rgb * (1.0 - 0.25 * smoothstep(antialias, 0.0, outline));\n\n    if (uRenderMode == MODE_HIGH_PASS_2) {\n        if (sd < -antialias) {\n            discard;\n        }\n        fragColor = outputColor(vec4(color, smoothstep(0.0, antialias, abs(sd))));\n    } else {\n        fragColor = outputColor(vec4(color, 1.0));\n    }\n}\n";
 
 // src/graph/nodes/triangle/Triangle.picking.fs.glsl
 var Triangle_picking_fs_default = "#version 300 es\nprecision highp float;\n#define GLSLIFY 1\n\n// most of these come from this excellent post:\n// https://iquilezles.org/www/articles/distfunctions2d/distfunctions2d.htm\n\nfloat opRound(in float d, in float r) {\n    return d - r;\n}\n\nfloat opOnion(in float d, in float r) {\n    return abs(d) - r;\n}\n\nfloat sdCircle(in vec2 p, in float r ) {\n    return length(p) - r;\n}\n\nfloat sdEquilateralTriangle(in vec2 p, in float r) {\n    const float k = sqrt(3.0);\n    p.x = abs(p.x) - r;\n    p.y = p.y + (r) / k;\n    if (p.x + k * p.y > 0.0) {\n        p = vec2(p.x-k*p.y,-k*p.x-p.y) / 2.0;\n    }\n    p.x -= clamp(p.x, -2.0 * r, 0.0);\n    return -length(p) * sign(p.y);\n}\n\nfloat sdPentagon(in vec2 p, in float r) {\n    const vec3 k = vec3(0.809016994, 0.587785252, 0.726542528);\n    p.y = -(p.y) * 1.25;\n    p.x = abs(p.x) * 1.25;\n    p -= 2.0 * min(dot(vec2(-k.x, k.y), p), 0.0) * vec2(-k.x, k.y);\n    p -= 2.0 * min(dot(vec2(k.x, k.y), p), 0.0) * vec2(k.x, k.y);\n    p -= vec2(clamp(p.x, -r*k.z, r*k.z), r);\n    return length(p) * sign(p.y);\n}\n\nfloat sdOctagon(in vec2 p, in float r) {\n    // pi/8: cos, sin, tan.\n    const vec3 k = vec3(\n        -0.9238795325,   // sqrt(2+sqrt(2))/2\n        0.3826834323,   // sqrt(2-sqrt(2))/2\n        0.4142135623\n    ); // sqrt(2)-1\n    // reflections\n    p = abs(p) * 1.1;\n    p -= 2.0 * min(dot(vec2(k.x,k.y), p), 0.0) * vec2(k.x,k.y);\n    p -= 2.0 * min(dot(vec2(-k.x,k.y), p), 0.0) * vec2(-k.x,k.y);\n    // Polygon side.\n    p -= vec2(clamp(p.x, -k.z*r, k.z*r), r);\n    return length(p) * sign(p.y);\n}\n\nfloat sdStar(in vec2 p, in float r, in uint n, in float m) { // m=[2,n]\n    // these 4 lines can be precomputed for a given shape\n    float an = 3.141593 / float(n);\n    float en = 3.141593 / m;\n    vec2  acs = vec2(cos(an), sin(an));\n    vec2  ecs = vec2(cos(en), sin(en)); // ecs=vec2(0,1) and simplify, for regular polygon,\n\n    // reduce to first sector\n    float bn = mod(atan(p.x, p.y), 2.0 * an) - an;\n    p = length(p) * vec2(cos(bn), abs(sin(bn)));\n\n    // line sdf\n    p -= r * acs;\n    p += ecs * clamp(-dot(p, ecs), 0.0, r * acs.y / ecs.y);\n    return length(p) * sign(p.x);\n}\n\nfloat sdCross(in vec2 p, in float w, in float r) {\n    p = abs(p);\n    return length(p - min(p.x + p.y, w) * 0.5) - r;\n}\n\n// TODO: Precompute this, we always pass the same parameters tot his function (v, vec2(1.0, 0.3), 0.0)\nfloat sdPlus( in vec2 p, in vec2 b, float r ) {\n    p = abs(p);\n    p = (p.y > p.x) ? p.yx : p.xy;\n\n    vec2  q = p - b;\n    float k = max(q.y, q.x);\n    vec2  w = (k > 0.0) ? q : vec2(b.y - p.x, -k);\n\n    return sign(k)*length(max(w, 0.0)) + r;\n}\n\nflat in vec4 fColor;\nflat in float fPixelLength;\nin vec2 vFromCenter;\n\nout vec4 fragColor;\n\nvoid main() {\n    float sd = sdEquilateralTriangle(vFromCenter, 1.0);\n    if (sd > 0.0) {\n        discard;\n    }\n    fragColor = fColor;\n}\n";
@@ -16503,7 +16543,7 @@ var Triangle = class extends Circle {
 };
 
 // src/graph/nodes/pentagon/Pentagon.fs.glsl
-var Pentagon_fs_default = "#version 300 es\nprecision highp float;\n#define GLSLIFY 1\n\n// from https://en.wikipedia.org/wiki/SRGB#The_reverse_transformation\nfloat luminance_x(float x) {\n    return x <= 0.04045 ? x / 12.92 : pow((x + 0.055) / 1.055, 2.4);\n}\nfloat color_l(float l) {\n    return min(1.0, max(0.0, l <= 0.0031308 ? l * 12.92 : pow(l * 1.055, 1.0 / 2.4) - 0.055));\n}\n\n// from https://en.wikipedia.org/wiki/Relative_luminance\nfloat rgb2luminance(vec3 color) {\n    // relative luminance\n    // see http://www.w3.org/TR/2008/REC-WCAG20-20081211/#relativeluminancedef\n    float r = luminance_x(color.r);\n    float g = luminance_x(color.g);\n    float b = luminance_x(color.b);\n    return 0.2126 * r + 0.7152 * g + 0.0722 * b;\n}\n\nvec3 setLuminance(vec3 color, float luminance) {\n    float r = luminance_x(color.r) * 0.2126;\n    float g = luminance_x(color.g) * 0.7152;\n    float b = luminance_x(color.b) * 0.0722;\n    float colorLuminance = r + g + b;\n\n    float tr = luminance * (r / colorLuminance);\n    float tg = luminance * (g / colorLuminance);\n    float tb = luminance * (b / colorLuminance);\n\n    float rr = color_l(tr / 0.2126);\n    float rg = color_l(tg / 0.7152);\n    float rb = color_l(tb / 0.0722);\n\n    return vec3(rr, rg, rb );\n}\n\n// https://www.w3.org/TR/WCAG20/#contrast-ratiodef\n// (L1 + 0.05) / (L2 + 0.05), where\n// - L1 is the relative luminance of the lighter of the colors, and\n// - L2 is the relative luminance of the darker of the colors.\nfloat findDarker(float luminance, float contrast) {\n    return (contrast * luminance) + (0.05 * contrast) - 0.05;\n}\nfloat findLighter(float luminance, float contrast) {\n    return (luminance + 0.05 - (0.05 * contrast)) / contrast;\n}\n\nvec3 contrastingColor(vec3 color, float contrast) {\n    float luminance = rgb2luminance(color);\n    float darker = findDarker(luminance, contrast);\n    float lighter = findLighter(luminance, contrast);\n\n    float targetLuminance;\n    if (darker < 0.0 || darker > 1.0) {\n        targetLuminance = lighter;\n    } else if (lighter < 0.0 || lighter > 1.0) {\n        targetLuminance = darker;\n    } else {\n        targetLuminance = abs(luminance - lighter) < abs(darker - luminance) ? lighter : darker;\n    }\n\n    return setLuminance(color, targetLuminance);\n}\n\nvec3 desaturateColor(vec3 color, float amount) {\n    float l = rgb2luminance(color);\n    vec3 gray = vec3(l, l, l);\n    return mix(color, gray, amount);\n}\n\nuniform vec4 uClearColor;\nuniform float uDesaturate;\nuniform float uBrightness;\nuniform float uFade;\nuniform float uAlpha;\n\nvec4 outputColor(vec4 color) {\n    // desaturate => fade => alpha\n    vec3 ret = mix(color.rgb, vec3(uBrightness + 1.0 / 2.0), abs(uBrightness));\n    ret = vec3(desaturateColor(ret, uDesaturate));\n    ret = mix(ret, uClearColor.rgb, uFade);\n    return vec4(ret, color.a * uAlpha);\n}\n\n#define MODE_DRAFT 0u\n#define MODE_MEDIUM 1u\n#define MODE_HIGH_PASS_1 2u\n#define MODE_HIGH_PASS_2 3u\n#define MODE_PICKING 4u\n\n// most of these come from this excellent post:\n// https://iquilezles.org/www/articles/distfunctions2d/distfunctions2d.htm\n\nfloat opRound(in float d, in float r) {\n    return d - r;\n}\n\nfloat opOnion(in float d, in float r) {\n    return abs(d) - r;\n}\n\nfloat sdCircle(in vec2 p, in float r ) {\n    return length(p) - r;\n}\n\nfloat sdEquilateralTriangle(in vec2 p, in float r) {\n    const float k = sqrt(3.0);\n    p.x = abs(p.x) - r;\n    p.y = p.y + (r) / k;\n    if (p.x + k * p.y > 0.0) {\n        p = vec2(p.x-k*p.y,-k*p.x-p.y) / 2.0;\n    }\n    p.x -= clamp(p.x, -2.0 * r, 0.0);\n    return -length(p) * sign(p.y);\n}\n\nfloat sdPentagon(in vec2 p, in float r) {\n    const vec3 k = vec3(0.809016994, 0.587785252, 0.726542528);\n    p.y = -(p.y) * 1.25;\n    p.x = abs(p.x) * 1.25;\n    p -= 2.0 * min(dot(vec2(-k.x, k.y), p), 0.0) * vec2(-k.x, k.y);\n    p -= 2.0 * min(dot(vec2(k.x, k.y), p), 0.0) * vec2(k.x, k.y);\n    p -= vec2(clamp(p.x, -r*k.z, r*k.z), r);\n    return length(p) * sign(p.y);\n}\n\nfloat sdOctagon(in vec2 p, in float r) {\n    // pi/8: cos, sin, tan.\n    const vec3 k = vec3(\n        -0.9238795325,   // sqrt(2+sqrt(2))/2\n        0.3826834323,   // sqrt(2-sqrt(2))/2\n        0.4142135623\n    ); // sqrt(2)-1\n    // reflections\n    p = abs(p) * 1.1;\n    p -= 2.0 * min(dot(vec2(k.x,k.y), p), 0.0) * vec2(k.x,k.y);\n    p -= 2.0 * min(dot(vec2(-k.x,k.y), p), 0.0) * vec2(-k.x,k.y);\n    // Polygon side.\n    p -= vec2(clamp(p.x, -k.z*r, k.z*r), r);\n    return length(p) * sign(p.y);\n}\n\nfloat sdStar(in vec2 p, in float r, in uint n, in float m) { // m=[2,n]\n    // these 4 lines can be precomputed for a given shape\n    float an = 3.141593 / float(n);\n    float en = 3.141593 / m;\n    vec2  acs = vec2(cos(an), sin(an));\n    vec2  ecs = vec2(cos(en), sin(en)); // ecs=vec2(0,1) and simplify, for regular polygon,\n\n    // reduce to first sector\n    float bn = mod(atan(p.x, p.y), 2.0 * an) - an;\n    p = length(p) * vec2(cos(bn), abs(sin(bn)));\n\n    // line sdf\n    p -= r * acs;\n    p += ecs * clamp(-dot(p, ecs), 0.0, r * acs.y / ecs.y);\n    return length(p) * sign(p.x);\n}\n\nfloat sdCross(in vec2 p, in float w, in float r) {\n    p = abs(p);\n    return length(p - min(p.x + p.y, w) * 0.5) - r;\n}\n\n// TODO: Precompute this, we always pass the same parameters tot his function (v, vec2(1.0, 0.3), 0.0)\nfloat sdPlus( in vec2 p, in vec2 b, float r ) {\n    p = abs(p);\n    p = (p.y > p.x) ? p.yx : p.xy;\n\n    vec2  q = p - b;\n    float k = max(q.y, q.x);\n    vec2  w = (k > 0.0) ? q : vec2(b.y - p.x, -k);\n\n    return sign(k)*length(max(w, 0.0)) + r;\n}\n\nuniform float uPixelRatio;\nuniform uint uRenderMode;\nuniform float uOutline;\n\nflat in vec4 fColor;\nflat in float fPixelLength;\nin vec2 vFromCenter;\n\nout vec4 fragColor;\n\nvoid main() {\n    float antialias = fPixelLength * 1.5;\n    float sd = sdPentagon(vFromCenter, 1.0);\n    float outline = opOnion(sd, min(0.15, fPixelLength * uOutline * uPixelRatio));\n    float modeDistance = uRenderMode == MODE_HIGH_PASS_1 ? -antialias : -antialias * 0.5;\n    float distance = uRenderMode == MODE_HIGH_PASS_2 ? 0.0 : modeDistance;\n\n    if (sd > distance) {\n        discard;\n    }\n\n    vec3 color = fColor.rgb * (1.0 - 0.25 * smoothstep(antialias, 0.0, outline));\n\n    if (uRenderMode == MODE_HIGH_PASS_2) {\n        if (sd < -antialias) {\n            discard;\n        }\n        fragColor = outputColor(vec4(color, smoothstep(0.0, antialias, abs(sd))));\n    } else {\n        fragColor = outputColor(vec4(color, 1.0));\n    }\n}\n";
+var Pentagon_fs_default = "#version 300 es\nprecision highp float;\n#define GLSLIFY 1\n\n// from https://en.wikipedia.org/wiki/SRGB#The_reverse_transformation\nfloat luminance_x(float x) {\n    return x <= 0.04045 ? x / 12.92 : pow((x + 0.055) / 1.055, 2.4);\n}\nfloat color_l(float l) {\n    return min(1.0, max(0.0, l <= 0.0031308 ? l * 12.92 : pow(l * 1.055, 1.0 / 2.4) - 0.055));\n}\n\n// from https://en.wikipedia.org/wiki/Relative_luminance\nfloat rgb2luminance(vec3 color) {\n    // relative luminance\n    // see http://www.w3.org/TR/2008/REC-WCAG20-20081211/#relativeluminancedef\n    float r = luminance_x(color.r);\n    float g = luminance_x(color.g);\n    float b = luminance_x(color.b);\n    return 0.2126 * r + 0.7152 * g + 0.0722 * b;\n}\n\nvec3 setLuminance(vec3 color, float luminance) {\n    float r = luminance_x(color.r) * 0.2126;\n    float g = luminance_x(color.g) * 0.7152;\n    float b = luminance_x(color.b) * 0.0722;\n    float colorLuminance = r + g + b;\n\n    float tr = luminance * (r / colorLuminance);\n    float tg = luminance * (g / colorLuminance);\n    float tb = luminance * (b / colorLuminance);\n\n    float rr = color_l(tr / 0.2126);\n    float rg = color_l(tg / 0.7152);\n    float rb = color_l(tb / 0.0722);\n\n    return vec3(rr, rg, rb );\n}\n\n// https://www.w3.org/TR/WCAG20/#contrast-ratiodef\n// (L1 + 0.05) / (L2 + 0.05), where\n// - L1 is the relative luminance of the lighter of the colors, and\n// - L2 is the relative luminance of the darker of the colors.\nfloat findDarker(float luminance, float contrast) {\n    return (contrast * luminance) + (0.05 * contrast) - 0.05;\n}\nfloat findLighter(float luminance, float contrast) {\n    return (luminance + 0.05 - (0.05 * contrast)) / contrast;\n}\n\nvec3 contrastingColor(vec3 color, float contrast) {\n    float luminance = rgb2luminance(color);\n    float darker = findDarker(luminance, contrast);\n    float lighter = findLighter(luminance, contrast);\n\n    float targetLuminance;\n    if (darker < 0.0 || darker > 1.0) {\n        targetLuminance = lighter;\n    } else if (lighter < 0.0 || lighter > 1.0) {\n        targetLuminance = darker;\n    } else {\n        targetLuminance = abs(luminance - lighter) < abs(darker - luminance) ? lighter : darker;\n    }\n\n    return setLuminance(color, targetLuminance);\n}\n\nvec3 desaturateColor(vec3 color, float amount) {\n    float l = rgb2luminance(color);\n    vec3 gray = vec3(l, l, l);\n    return mix(color, gray, amount);\n}\n\nuniform vec4 uClearColor;\nuniform float uDesaturate;\nuniform float uBrightness;\nuniform float uFade;\nuniform float uAlpha;\n\nvec4 outputColor(vec4 color) {\n    // desaturate => fade => alpha\n    vec3 ret = mix(color.rgb, vec3(uBrightness + 1.0 / 2.0), abs(uBrightness));\n    ret = vec3(desaturateColor(ret, uDesaturate));\n    ret = mix(ret, uClearColor.rgb, uFade);\n    return vec4(ret, color.a * uAlpha);\n}\n\n#define MODE_DRAFT 0u\n#define MODE_MEDIUM 1u\n#define MODE_HIGH 2u\n#define MODE_HIGH_PASS_1 3u\n#define MODE_HIGH_PASS_2 4u\n#define MODE_PICKING 5u\n\n// most of these come from this excellent post:\n// https://iquilezles.org/www/articles/distfunctions2d/distfunctions2d.htm\n\nfloat opRound(in float d, in float r) {\n    return d - r;\n}\n\nfloat opOnion(in float d, in float r) {\n    return abs(d) - r;\n}\n\nfloat sdCircle(in vec2 p, in float r ) {\n    return length(p) - r;\n}\n\nfloat sdEquilateralTriangle(in vec2 p, in float r) {\n    const float k = sqrt(3.0);\n    p.x = abs(p.x) - r;\n    p.y = p.y + (r) / k;\n    if (p.x + k * p.y > 0.0) {\n        p = vec2(p.x-k*p.y,-k*p.x-p.y) / 2.0;\n    }\n    p.x -= clamp(p.x, -2.0 * r, 0.0);\n    return -length(p) * sign(p.y);\n}\n\nfloat sdPentagon(in vec2 p, in float r) {\n    const vec3 k = vec3(0.809016994, 0.587785252, 0.726542528);\n    p.y = -(p.y) * 1.25;\n    p.x = abs(p.x) * 1.25;\n    p -= 2.0 * min(dot(vec2(-k.x, k.y), p), 0.0) * vec2(-k.x, k.y);\n    p -= 2.0 * min(dot(vec2(k.x, k.y), p), 0.0) * vec2(k.x, k.y);\n    p -= vec2(clamp(p.x, -r*k.z, r*k.z), r);\n    return length(p) * sign(p.y);\n}\n\nfloat sdOctagon(in vec2 p, in float r) {\n    // pi/8: cos, sin, tan.\n    const vec3 k = vec3(\n        -0.9238795325,   // sqrt(2+sqrt(2))/2\n        0.3826834323,   // sqrt(2-sqrt(2))/2\n        0.4142135623\n    ); // sqrt(2)-1\n    // reflections\n    p = abs(p) * 1.1;\n    p -= 2.0 * min(dot(vec2(k.x,k.y), p), 0.0) * vec2(k.x,k.y);\n    p -= 2.0 * min(dot(vec2(-k.x,k.y), p), 0.0) * vec2(-k.x,k.y);\n    // Polygon side.\n    p -= vec2(clamp(p.x, -k.z*r, k.z*r), r);\n    return length(p) * sign(p.y);\n}\n\nfloat sdStar(in vec2 p, in float r, in uint n, in float m) { // m=[2,n]\n    // these 4 lines can be precomputed for a given shape\n    float an = 3.141593 / float(n);\n    float en = 3.141593 / m;\n    vec2  acs = vec2(cos(an), sin(an));\n    vec2  ecs = vec2(cos(en), sin(en)); // ecs=vec2(0,1) and simplify, for regular polygon,\n\n    // reduce to first sector\n    float bn = mod(atan(p.x, p.y), 2.0 * an) - an;\n    p = length(p) * vec2(cos(bn), abs(sin(bn)));\n\n    // line sdf\n    p -= r * acs;\n    p += ecs * clamp(-dot(p, ecs), 0.0, r * acs.y / ecs.y);\n    return length(p) * sign(p.x);\n}\n\nfloat sdCross(in vec2 p, in float w, in float r) {\n    p = abs(p);\n    return length(p - min(p.x + p.y, w) * 0.5) - r;\n}\n\n// TODO: Precompute this, we always pass the same parameters tot his function (v, vec2(1.0, 0.3), 0.0)\nfloat sdPlus( in vec2 p, in vec2 b, float r ) {\n    p = abs(p);\n    p = (p.y > p.x) ? p.yx : p.xy;\n\n    vec2  q = p - b;\n    float k = max(q.y, q.x);\n    vec2  w = (k > 0.0) ? q : vec2(b.y - p.x, -k);\n\n    return sign(k)*length(max(w, 0.0)) + r;\n}\n\nuniform float uPixelRatio;\nuniform uint uRenderMode;\nuniform float uOutline;\n\nflat in vec4 fColor;\nflat in float fPixelLength;\nin vec2 vFromCenter;\n\nout vec4 fragColor;\n\nvoid main() {\n    float antialias = fPixelLength * 1.5;\n    float sd = sdPentagon(vFromCenter, 1.0);\n    float outline = opOnion(sd, min(0.15, fPixelLength * uOutline * uPixelRatio));\n    float modeDistance = uRenderMode == MODE_HIGH_PASS_1 ? -antialias : -antialias * 0.5;\n    float distance = uRenderMode == MODE_HIGH_PASS_2 ? 0.0 : modeDistance;\n\n    if (sd > distance) {\n        discard;\n    }\n\n    vec3 color = fColor.rgb * (1.0 - 0.25 * smoothstep(antialias, 0.0, outline));\n\n    if (uRenderMode == MODE_HIGH_PASS_2) {\n        if (sd < -antialias) {\n            discard;\n        }\n        fragColor = outputColor(vec4(color, smoothstep(0.0, antialias, abs(sd))));\n    } else {\n        fragColor = outputColor(vec4(color, 1.0));\n    }\n}\n";
 
 // src/graph/nodes/pentagon/Pentagon.picking.fs.glsl
 var Pentagon_picking_fs_default = "#version 300 es\nprecision highp float;\n#define GLSLIFY 1\n\n// most of these come from this excellent post:\n// https://iquilezles.org/www/articles/distfunctions2d/distfunctions2d.htm\n\nfloat opRound(in float d, in float r) {\n    return d - r;\n}\n\nfloat opOnion(in float d, in float r) {\n    return abs(d) - r;\n}\n\nfloat sdCircle(in vec2 p, in float r ) {\n    return length(p) - r;\n}\n\nfloat sdEquilateralTriangle(in vec2 p, in float r) {\n    const float k = sqrt(3.0);\n    p.x = abs(p.x) - r;\n    p.y = p.y + (r) / k;\n    if (p.x + k * p.y > 0.0) {\n        p = vec2(p.x-k*p.y,-k*p.x-p.y) / 2.0;\n    }\n    p.x -= clamp(p.x, -2.0 * r, 0.0);\n    return -length(p) * sign(p.y);\n}\n\nfloat sdPentagon(in vec2 p, in float r) {\n    const vec3 k = vec3(0.809016994, 0.587785252, 0.726542528);\n    p.y = -(p.y) * 1.25;\n    p.x = abs(p.x) * 1.25;\n    p -= 2.0 * min(dot(vec2(-k.x, k.y), p), 0.0) * vec2(-k.x, k.y);\n    p -= 2.0 * min(dot(vec2(k.x, k.y), p), 0.0) * vec2(k.x, k.y);\n    p -= vec2(clamp(p.x, -r*k.z, r*k.z), r);\n    return length(p) * sign(p.y);\n}\n\nfloat sdOctagon(in vec2 p, in float r) {\n    // pi/8: cos, sin, tan.\n    const vec3 k = vec3(\n        -0.9238795325,   // sqrt(2+sqrt(2))/2\n        0.3826834323,   // sqrt(2-sqrt(2))/2\n        0.4142135623\n    ); // sqrt(2)-1\n    // reflections\n    p = abs(p) * 1.1;\n    p -= 2.0 * min(dot(vec2(k.x,k.y), p), 0.0) * vec2(k.x,k.y);\n    p -= 2.0 * min(dot(vec2(-k.x,k.y), p), 0.0) * vec2(-k.x,k.y);\n    // Polygon side.\n    p -= vec2(clamp(p.x, -k.z*r, k.z*r), r);\n    return length(p) * sign(p.y);\n}\n\nfloat sdStar(in vec2 p, in float r, in uint n, in float m) { // m=[2,n]\n    // these 4 lines can be precomputed for a given shape\n    float an = 3.141593 / float(n);\n    float en = 3.141593 / m;\n    vec2  acs = vec2(cos(an), sin(an));\n    vec2  ecs = vec2(cos(en), sin(en)); // ecs=vec2(0,1) and simplify, for regular polygon,\n\n    // reduce to first sector\n    float bn = mod(atan(p.x, p.y), 2.0 * an) - an;\n    p = length(p) * vec2(cos(bn), abs(sin(bn)));\n\n    // line sdf\n    p -= r * acs;\n    p += ecs * clamp(-dot(p, ecs), 0.0, r * acs.y / ecs.y);\n    return length(p) * sign(p.x);\n}\n\nfloat sdCross(in vec2 p, in float w, in float r) {\n    p = abs(p);\n    return length(p - min(p.x + p.y, w) * 0.5) - r;\n}\n\n// TODO: Precompute this, we always pass the same parameters tot his function (v, vec2(1.0, 0.3), 0.0)\nfloat sdPlus( in vec2 p, in vec2 b, float r ) {\n    p = abs(p);\n    p = (p.y > p.x) ? p.yx : p.xy;\n\n    vec2  q = p - b;\n    float k = max(q.y, q.x);\n    vec2  w = (k > 0.0) ? q : vec2(b.y - p.x, -k);\n\n    return sign(k)*length(max(w, 0.0)) + r;\n}\n\nflat in vec4 fColor;\nflat in float fPixelLength;\nin vec2 vFromCenter;\n\nout vec4 fragColor;\n\nvoid main() {\n    float sd = sdPentagon(vFromCenter, 1.0);\n    if (sd > 0.0) {\n        discard;\n    }\n    fragColor = fColor;\n}\n";
@@ -16523,7 +16563,7 @@ var Pentagon = class extends Circle {
 };
 
 // src/graph/nodes/octagon/Octagon.fs.glsl
-var Octagon_fs_default = "#version 300 es\nprecision highp float;\n#define GLSLIFY 1\n\n// from https://en.wikipedia.org/wiki/SRGB#The_reverse_transformation\nfloat luminance_x(float x) {\n    return x <= 0.04045 ? x / 12.92 : pow((x + 0.055) / 1.055, 2.4);\n}\nfloat color_l(float l) {\n    return min(1.0, max(0.0, l <= 0.0031308 ? l * 12.92 : pow(l * 1.055, 1.0 / 2.4) - 0.055));\n}\n\n// from https://en.wikipedia.org/wiki/Relative_luminance\nfloat rgb2luminance(vec3 color) {\n    // relative luminance\n    // see http://www.w3.org/TR/2008/REC-WCAG20-20081211/#relativeluminancedef\n    float r = luminance_x(color.r);\n    float g = luminance_x(color.g);\n    float b = luminance_x(color.b);\n    return 0.2126 * r + 0.7152 * g + 0.0722 * b;\n}\n\nvec3 setLuminance(vec3 color, float luminance) {\n    float r = luminance_x(color.r) * 0.2126;\n    float g = luminance_x(color.g) * 0.7152;\n    float b = luminance_x(color.b) * 0.0722;\n    float colorLuminance = r + g + b;\n\n    float tr = luminance * (r / colorLuminance);\n    float tg = luminance * (g / colorLuminance);\n    float tb = luminance * (b / colorLuminance);\n\n    float rr = color_l(tr / 0.2126);\n    float rg = color_l(tg / 0.7152);\n    float rb = color_l(tb / 0.0722);\n\n    return vec3(rr, rg, rb );\n}\n\n// https://www.w3.org/TR/WCAG20/#contrast-ratiodef\n// (L1 + 0.05) / (L2 + 0.05), where\n// - L1 is the relative luminance of the lighter of the colors, and\n// - L2 is the relative luminance of the darker of the colors.\nfloat findDarker(float luminance, float contrast) {\n    return (contrast * luminance) + (0.05 * contrast) - 0.05;\n}\nfloat findLighter(float luminance, float contrast) {\n    return (luminance + 0.05 - (0.05 * contrast)) / contrast;\n}\n\nvec3 contrastingColor(vec3 color, float contrast) {\n    float luminance = rgb2luminance(color);\n    float darker = findDarker(luminance, contrast);\n    float lighter = findLighter(luminance, contrast);\n\n    float targetLuminance;\n    if (darker < 0.0 || darker > 1.0) {\n        targetLuminance = lighter;\n    } else if (lighter < 0.0 || lighter > 1.0) {\n        targetLuminance = darker;\n    } else {\n        targetLuminance = abs(luminance - lighter) < abs(darker - luminance) ? lighter : darker;\n    }\n\n    return setLuminance(color, targetLuminance);\n}\n\nvec3 desaturateColor(vec3 color, float amount) {\n    float l = rgb2luminance(color);\n    vec3 gray = vec3(l, l, l);\n    return mix(color, gray, amount);\n}\n\nuniform vec4 uClearColor;\nuniform float uDesaturate;\nuniform float uBrightness;\nuniform float uFade;\nuniform float uAlpha;\n\nvec4 outputColor(vec4 color) {\n    // desaturate => fade => alpha\n    vec3 ret = mix(color.rgb, vec3(uBrightness + 1.0 / 2.0), abs(uBrightness));\n    ret = vec3(desaturateColor(ret, uDesaturate));\n    ret = mix(ret, uClearColor.rgb, uFade);\n    return vec4(ret, color.a * uAlpha);\n}\n\n#define MODE_DRAFT 0u\n#define MODE_MEDIUM 1u\n#define MODE_HIGH_PASS_1 2u\n#define MODE_HIGH_PASS_2 3u\n#define MODE_PICKING 4u\n\n// most of these come from this excellent post:\n// https://iquilezles.org/www/articles/distfunctions2d/distfunctions2d.htm\n\nfloat opRound(in float d, in float r) {\n    return d - r;\n}\n\nfloat opOnion(in float d, in float r) {\n    return abs(d) - r;\n}\n\nfloat sdCircle(in vec2 p, in float r ) {\n    return length(p) - r;\n}\n\nfloat sdEquilateralTriangle(in vec2 p, in float r) {\n    const float k = sqrt(3.0);\n    p.x = abs(p.x) - r;\n    p.y = p.y + (r) / k;\n    if (p.x + k * p.y > 0.0) {\n        p = vec2(p.x-k*p.y,-k*p.x-p.y) / 2.0;\n    }\n    p.x -= clamp(p.x, -2.0 * r, 0.0);\n    return -length(p) * sign(p.y);\n}\n\nfloat sdPentagon(in vec2 p, in float r) {\n    const vec3 k = vec3(0.809016994, 0.587785252, 0.726542528);\n    p.y = -(p.y) * 1.25;\n    p.x = abs(p.x) * 1.25;\n    p -= 2.0 * min(dot(vec2(-k.x, k.y), p), 0.0) * vec2(-k.x, k.y);\n    p -= 2.0 * min(dot(vec2(k.x, k.y), p), 0.0) * vec2(k.x, k.y);\n    p -= vec2(clamp(p.x, -r*k.z, r*k.z), r);\n    return length(p) * sign(p.y);\n}\n\nfloat sdOctagon(in vec2 p, in float r) {\n    // pi/8: cos, sin, tan.\n    const vec3 k = vec3(\n        -0.9238795325,   // sqrt(2+sqrt(2))/2\n        0.3826834323,   // sqrt(2-sqrt(2))/2\n        0.4142135623\n    ); // sqrt(2)-1\n    // reflections\n    p = abs(p) * 1.1;\n    p -= 2.0 * min(dot(vec2(k.x,k.y), p), 0.0) * vec2(k.x,k.y);\n    p -= 2.0 * min(dot(vec2(-k.x,k.y), p), 0.0) * vec2(-k.x,k.y);\n    // Polygon side.\n    p -= vec2(clamp(p.x, -k.z*r, k.z*r), r);\n    return length(p) * sign(p.y);\n}\n\nfloat sdStar(in vec2 p, in float r, in uint n, in float m) { // m=[2,n]\n    // these 4 lines can be precomputed for a given shape\n    float an = 3.141593 / float(n);\n    float en = 3.141593 / m;\n    vec2  acs = vec2(cos(an), sin(an));\n    vec2  ecs = vec2(cos(en), sin(en)); // ecs=vec2(0,1) and simplify, for regular polygon,\n\n    // reduce to first sector\n    float bn = mod(atan(p.x, p.y), 2.0 * an) - an;\n    p = length(p) * vec2(cos(bn), abs(sin(bn)));\n\n    // line sdf\n    p -= r * acs;\n    p += ecs * clamp(-dot(p, ecs), 0.0, r * acs.y / ecs.y);\n    return length(p) * sign(p.x);\n}\n\nfloat sdCross(in vec2 p, in float w, in float r) {\n    p = abs(p);\n    return length(p - min(p.x + p.y, w) * 0.5) - r;\n}\n\n// TODO: Precompute this, we always pass the same parameters tot his function (v, vec2(1.0, 0.3), 0.0)\nfloat sdPlus( in vec2 p, in vec2 b, float r ) {\n    p = abs(p);\n    p = (p.y > p.x) ? p.yx : p.xy;\n\n    vec2  q = p - b;\n    float k = max(q.y, q.x);\n    vec2  w = (k > 0.0) ? q : vec2(b.y - p.x, -k);\n\n    return sign(k)*length(max(w, 0.0)) + r;\n}\n\nuniform float uPixelRatio;\nuniform uint uRenderMode;\nuniform float uOutline;\n\nflat in vec4 fColor;\nflat in float fPixelLength;\nin vec2 vFromCenter;\n\nout vec4 fragColor;\n\nvoid main() {\n    float antialias = fPixelLength * 1.5;\n    float sd = sdOctagon(vFromCenter, 1.0);\n    float outline = opOnion(sd, min(0.15, fPixelLength * uOutline * uPixelRatio));\n    float modeDistance = uRenderMode == MODE_HIGH_PASS_1 ? -antialias : -antialias * 0.5;\n    float distance = uRenderMode == MODE_HIGH_PASS_2 ? 0.0 : modeDistance;\n\n    if (sd > distance) {\n        discard;\n    }\n\n    vec3 color = fColor.rgb * (1.0 - 0.25 * smoothstep(antialias, 0.0, outline));\n\n    if (uRenderMode == MODE_HIGH_PASS_2) {\n        if (sd < -antialias) {\n            discard;\n        }\n        fragColor = outputColor(vec4(color, smoothstep(0.0, antialias, abs(sd))));\n    } else {\n        fragColor = outputColor(vec4(color, 1.0));\n    }\n}\n";
+var Octagon_fs_default = "#version 300 es\nprecision highp float;\n#define GLSLIFY 1\n\n// from https://en.wikipedia.org/wiki/SRGB#The_reverse_transformation\nfloat luminance_x(float x) {\n    return x <= 0.04045 ? x / 12.92 : pow((x + 0.055) / 1.055, 2.4);\n}\nfloat color_l(float l) {\n    return min(1.0, max(0.0, l <= 0.0031308 ? l * 12.92 : pow(l * 1.055, 1.0 / 2.4) - 0.055));\n}\n\n// from https://en.wikipedia.org/wiki/Relative_luminance\nfloat rgb2luminance(vec3 color) {\n    // relative luminance\n    // see http://www.w3.org/TR/2008/REC-WCAG20-20081211/#relativeluminancedef\n    float r = luminance_x(color.r);\n    float g = luminance_x(color.g);\n    float b = luminance_x(color.b);\n    return 0.2126 * r + 0.7152 * g + 0.0722 * b;\n}\n\nvec3 setLuminance(vec3 color, float luminance) {\n    float r = luminance_x(color.r) * 0.2126;\n    float g = luminance_x(color.g) * 0.7152;\n    float b = luminance_x(color.b) * 0.0722;\n    float colorLuminance = r + g + b;\n\n    float tr = luminance * (r / colorLuminance);\n    float tg = luminance * (g / colorLuminance);\n    float tb = luminance * (b / colorLuminance);\n\n    float rr = color_l(tr / 0.2126);\n    float rg = color_l(tg / 0.7152);\n    float rb = color_l(tb / 0.0722);\n\n    return vec3(rr, rg, rb );\n}\n\n// https://www.w3.org/TR/WCAG20/#contrast-ratiodef\n// (L1 + 0.05) / (L2 + 0.05), where\n// - L1 is the relative luminance of the lighter of the colors, and\n// - L2 is the relative luminance of the darker of the colors.\nfloat findDarker(float luminance, float contrast) {\n    return (contrast * luminance) + (0.05 * contrast) - 0.05;\n}\nfloat findLighter(float luminance, float contrast) {\n    return (luminance + 0.05 - (0.05 * contrast)) / contrast;\n}\n\nvec3 contrastingColor(vec3 color, float contrast) {\n    float luminance = rgb2luminance(color);\n    float darker = findDarker(luminance, contrast);\n    float lighter = findLighter(luminance, contrast);\n\n    float targetLuminance;\n    if (darker < 0.0 || darker > 1.0) {\n        targetLuminance = lighter;\n    } else if (lighter < 0.0 || lighter > 1.0) {\n        targetLuminance = darker;\n    } else {\n        targetLuminance = abs(luminance - lighter) < abs(darker - luminance) ? lighter : darker;\n    }\n\n    return setLuminance(color, targetLuminance);\n}\n\nvec3 desaturateColor(vec3 color, float amount) {\n    float l = rgb2luminance(color);\n    vec3 gray = vec3(l, l, l);\n    return mix(color, gray, amount);\n}\n\nuniform vec4 uClearColor;\nuniform float uDesaturate;\nuniform float uBrightness;\nuniform float uFade;\nuniform float uAlpha;\n\nvec4 outputColor(vec4 color) {\n    // desaturate => fade => alpha\n    vec3 ret = mix(color.rgb, vec3(uBrightness + 1.0 / 2.0), abs(uBrightness));\n    ret = vec3(desaturateColor(ret, uDesaturate));\n    ret = mix(ret, uClearColor.rgb, uFade);\n    return vec4(ret, color.a * uAlpha);\n}\n\n#define MODE_DRAFT 0u\n#define MODE_MEDIUM 1u\n#define MODE_HIGH 2u\n#define MODE_HIGH_PASS_1 3u\n#define MODE_HIGH_PASS_2 4u\n#define MODE_PICKING 5u\n\n// most of these come from this excellent post:\n// https://iquilezles.org/www/articles/distfunctions2d/distfunctions2d.htm\n\nfloat opRound(in float d, in float r) {\n    return d - r;\n}\n\nfloat opOnion(in float d, in float r) {\n    return abs(d) - r;\n}\n\nfloat sdCircle(in vec2 p, in float r ) {\n    return length(p) - r;\n}\n\nfloat sdEquilateralTriangle(in vec2 p, in float r) {\n    const float k = sqrt(3.0);\n    p.x = abs(p.x) - r;\n    p.y = p.y + (r) / k;\n    if (p.x + k * p.y > 0.0) {\n        p = vec2(p.x-k*p.y,-k*p.x-p.y) / 2.0;\n    }\n    p.x -= clamp(p.x, -2.0 * r, 0.0);\n    return -length(p) * sign(p.y);\n}\n\nfloat sdPentagon(in vec2 p, in float r) {\n    const vec3 k = vec3(0.809016994, 0.587785252, 0.726542528);\n    p.y = -(p.y) * 1.25;\n    p.x = abs(p.x) * 1.25;\n    p -= 2.0 * min(dot(vec2(-k.x, k.y), p), 0.0) * vec2(-k.x, k.y);\n    p -= 2.0 * min(dot(vec2(k.x, k.y), p), 0.0) * vec2(k.x, k.y);\n    p -= vec2(clamp(p.x, -r*k.z, r*k.z), r);\n    return length(p) * sign(p.y);\n}\n\nfloat sdOctagon(in vec2 p, in float r) {\n    // pi/8: cos, sin, tan.\n    const vec3 k = vec3(\n        -0.9238795325,   // sqrt(2+sqrt(2))/2\n        0.3826834323,   // sqrt(2-sqrt(2))/2\n        0.4142135623\n    ); // sqrt(2)-1\n    // reflections\n    p = abs(p) * 1.1;\n    p -= 2.0 * min(dot(vec2(k.x,k.y), p), 0.0) * vec2(k.x,k.y);\n    p -= 2.0 * min(dot(vec2(-k.x,k.y), p), 0.0) * vec2(-k.x,k.y);\n    // Polygon side.\n    p -= vec2(clamp(p.x, -k.z*r, k.z*r), r);\n    return length(p) * sign(p.y);\n}\n\nfloat sdStar(in vec2 p, in float r, in uint n, in float m) { // m=[2,n]\n    // these 4 lines can be precomputed for a given shape\n    float an = 3.141593 / float(n);\n    float en = 3.141593 / m;\n    vec2  acs = vec2(cos(an), sin(an));\n    vec2  ecs = vec2(cos(en), sin(en)); // ecs=vec2(0,1) and simplify, for regular polygon,\n\n    // reduce to first sector\n    float bn = mod(atan(p.x, p.y), 2.0 * an) - an;\n    p = length(p) * vec2(cos(bn), abs(sin(bn)));\n\n    // line sdf\n    p -= r * acs;\n    p += ecs * clamp(-dot(p, ecs), 0.0, r * acs.y / ecs.y);\n    return length(p) * sign(p.x);\n}\n\nfloat sdCross(in vec2 p, in float w, in float r) {\n    p = abs(p);\n    return length(p - min(p.x + p.y, w) * 0.5) - r;\n}\n\n// TODO: Precompute this, we always pass the same parameters tot his function (v, vec2(1.0, 0.3), 0.0)\nfloat sdPlus( in vec2 p, in vec2 b, float r ) {\n    p = abs(p);\n    p = (p.y > p.x) ? p.yx : p.xy;\n\n    vec2  q = p - b;\n    float k = max(q.y, q.x);\n    vec2  w = (k > 0.0) ? q : vec2(b.y - p.x, -k);\n\n    return sign(k)*length(max(w, 0.0)) + r;\n}\n\nuniform float uPixelRatio;\nuniform uint uRenderMode;\nuniform float uOutline;\n\nflat in vec4 fColor;\nflat in float fPixelLength;\nin vec2 vFromCenter;\n\nout vec4 fragColor;\n\nvoid main() {\n    float antialias = fPixelLength * 1.5;\n    float sd = sdOctagon(vFromCenter, 1.0);\n    float outline = opOnion(sd, min(0.15, fPixelLength * uOutline * uPixelRatio));\n    float modeDistance = uRenderMode == MODE_HIGH_PASS_1 ? -antialias : -antialias * 0.5;\n    float distance = uRenderMode == MODE_HIGH_PASS_2 ? 0.0 : modeDistance;\n\n    if (sd > distance) {\n        discard;\n    }\n\n    vec3 color = fColor.rgb * (1.0 - 0.25 * smoothstep(antialias, 0.0, outline));\n\n    if (uRenderMode == MODE_HIGH_PASS_2) {\n        if (sd < -antialias) {\n            discard;\n        }\n        fragColor = outputColor(vec4(color, smoothstep(0.0, antialias, abs(sd))));\n    } else {\n        fragColor = outputColor(vec4(color, 1.0));\n    }\n}\n";
 
 // src/graph/nodes/octagon/Octagon.picking.fs.glsl
 var Octagon_picking_fs_default = "#version 300 es\nprecision highp float;\n#define GLSLIFY 1\n\n// most of these come from this excellent post:\n// https://iquilezles.org/www/articles/distfunctions2d/distfunctions2d.htm\n\nfloat opRound(in float d, in float r) {\n    return d - r;\n}\n\nfloat opOnion(in float d, in float r) {\n    return abs(d) - r;\n}\n\nfloat sdCircle(in vec2 p, in float r ) {\n    return length(p) - r;\n}\n\nfloat sdEquilateralTriangle(in vec2 p, in float r) {\n    const float k = sqrt(3.0);\n    p.x = abs(p.x) - r;\n    p.y = p.y + (r) / k;\n    if (p.x + k * p.y > 0.0) {\n        p = vec2(p.x-k*p.y,-k*p.x-p.y) / 2.0;\n    }\n    p.x -= clamp(p.x, -2.0 * r, 0.0);\n    return -length(p) * sign(p.y);\n}\n\nfloat sdPentagon(in vec2 p, in float r) {\n    const vec3 k = vec3(0.809016994, 0.587785252, 0.726542528);\n    p.y = -(p.y) * 1.25;\n    p.x = abs(p.x) * 1.25;\n    p -= 2.0 * min(dot(vec2(-k.x, k.y), p), 0.0) * vec2(-k.x, k.y);\n    p -= 2.0 * min(dot(vec2(k.x, k.y), p), 0.0) * vec2(k.x, k.y);\n    p -= vec2(clamp(p.x, -r*k.z, r*k.z), r);\n    return length(p) * sign(p.y);\n}\n\nfloat sdOctagon(in vec2 p, in float r) {\n    // pi/8: cos, sin, tan.\n    const vec3 k = vec3(\n        -0.9238795325,   // sqrt(2+sqrt(2))/2\n        0.3826834323,   // sqrt(2-sqrt(2))/2\n        0.4142135623\n    ); // sqrt(2)-1\n    // reflections\n    p = abs(p) * 1.1;\n    p -= 2.0 * min(dot(vec2(k.x,k.y), p), 0.0) * vec2(k.x,k.y);\n    p -= 2.0 * min(dot(vec2(-k.x,k.y), p), 0.0) * vec2(-k.x,k.y);\n    // Polygon side.\n    p -= vec2(clamp(p.x, -k.z*r, k.z*r), r);\n    return length(p) * sign(p.y);\n}\n\nfloat sdStar(in vec2 p, in float r, in uint n, in float m) { // m=[2,n]\n    // these 4 lines can be precomputed for a given shape\n    float an = 3.141593 / float(n);\n    float en = 3.141593 / m;\n    vec2  acs = vec2(cos(an), sin(an));\n    vec2  ecs = vec2(cos(en), sin(en)); // ecs=vec2(0,1) and simplify, for regular polygon,\n\n    // reduce to first sector\n    float bn = mod(atan(p.x, p.y), 2.0 * an) - an;\n    p = length(p) * vec2(cos(bn), abs(sin(bn)));\n\n    // line sdf\n    p -= r * acs;\n    p += ecs * clamp(-dot(p, ecs), 0.0, r * acs.y / ecs.y);\n    return length(p) * sign(p.x);\n}\n\nfloat sdCross(in vec2 p, in float w, in float r) {\n    p = abs(p);\n    return length(p - min(p.x + p.y, w) * 0.5) - r;\n}\n\n// TODO: Precompute this, we always pass the same parameters tot his function (v, vec2(1.0, 0.3), 0.0)\nfloat sdPlus( in vec2 p, in vec2 b, float r ) {\n    p = abs(p);\n    p = (p.y > p.x) ? p.yx : p.xy;\n\n    vec2  q = p - b;\n    float k = max(q.y, q.x);\n    vec2  w = (k > 0.0) ? q : vec2(b.y - p.x, -k);\n\n    return sign(k)*length(max(w, 0.0)) + r;\n}\n\nflat in vec4 fColor;\nflat in float fPixelLength;\nin vec2 vFromCenter;\n\nout vec4 fragColor;\n\nvoid main() {\n    float sd = sdOctagon(vFromCenter, 1.0);\n    if (sd > 0.0) {\n        discard;\n    }\n    fragColor = fColor;\n}\n";
@@ -16543,7 +16583,7 @@ var Octagon = class extends Circle {
 };
 
 // src/graph/nodes/star/Star.fs.glsl
-var Star_fs_default = "#version 300 es\nprecision highp float;\n#define GLSLIFY 1\n\n// from https://en.wikipedia.org/wiki/SRGB#The_reverse_transformation\nfloat luminance_x(float x) {\n    return x <= 0.04045 ? x / 12.92 : pow((x + 0.055) / 1.055, 2.4);\n}\nfloat color_l(float l) {\n    return min(1.0, max(0.0, l <= 0.0031308 ? l * 12.92 : pow(l * 1.055, 1.0 / 2.4) - 0.055));\n}\n\n// from https://en.wikipedia.org/wiki/Relative_luminance\nfloat rgb2luminance(vec3 color) {\n    // relative luminance\n    // see http://www.w3.org/TR/2008/REC-WCAG20-20081211/#relativeluminancedef\n    float r = luminance_x(color.r);\n    float g = luminance_x(color.g);\n    float b = luminance_x(color.b);\n    return 0.2126 * r + 0.7152 * g + 0.0722 * b;\n}\n\nvec3 setLuminance(vec3 color, float luminance) {\n    float r = luminance_x(color.r) * 0.2126;\n    float g = luminance_x(color.g) * 0.7152;\n    float b = luminance_x(color.b) * 0.0722;\n    float colorLuminance = r + g + b;\n\n    float tr = luminance * (r / colorLuminance);\n    float tg = luminance * (g / colorLuminance);\n    float tb = luminance * (b / colorLuminance);\n\n    float rr = color_l(tr / 0.2126);\n    float rg = color_l(tg / 0.7152);\n    float rb = color_l(tb / 0.0722);\n\n    return vec3(rr, rg, rb );\n}\n\n// https://www.w3.org/TR/WCAG20/#contrast-ratiodef\n// (L1 + 0.05) / (L2 + 0.05), where\n// - L1 is the relative luminance of the lighter of the colors, and\n// - L2 is the relative luminance of the darker of the colors.\nfloat findDarker(float luminance, float contrast) {\n    return (contrast * luminance) + (0.05 * contrast) - 0.05;\n}\nfloat findLighter(float luminance, float contrast) {\n    return (luminance + 0.05 - (0.05 * contrast)) / contrast;\n}\n\nvec3 contrastingColor(vec3 color, float contrast) {\n    float luminance = rgb2luminance(color);\n    float darker = findDarker(luminance, contrast);\n    float lighter = findLighter(luminance, contrast);\n\n    float targetLuminance;\n    if (darker < 0.0 || darker > 1.0) {\n        targetLuminance = lighter;\n    } else if (lighter < 0.0 || lighter > 1.0) {\n        targetLuminance = darker;\n    } else {\n        targetLuminance = abs(luminance - lighter) < abs(darker - luminance) ? lighter : darker;\n    }\n\n    return setLuminance(color, targetLuminance);\n}\n\nvec3 desaturateColor(vec3 color, float amount) {\n    float l = rgb2luminance(color);\n    vec3 gray = vec3(l, l, l);\n    return mix(color, gray, amount);\n}\n\nuniform vec4 uClearColor;\nuniform float uDesaturate;\nuniform float uBrightness;\nuniform float uFade;\nuniform float uAlpha;\n\nvec4 outputColor(vec4 color) {\n    // desaturate => fade => alpha\n    vec3 ret = mix(color.rgb, vec3(uBrightness + 1.0 / 2.0), abs(uBrightness));\n    ret = vec3(desaturateColor(ret, uDesaturate));\n    ret = mix(ret, uClearColor.rgb, uFade);\n    return vec4(ret, color.a * uAlpha);\n}\n\n#define MODE_DRAFT 0u\n#define MODE_MEDIUM 1u\n#define MODE_HIGH_PASS_1 2u\n#define MODE_HIGH_PASS_2 3u\n#define MODE_PICKING 4u\n\n// most of these come from this excellent post:\n// https://iquilezles.org/www/articles/distfunctions2d/distfunctions2d.htm\n\nfloat opRound(in float d, in float r) {\n    return d - r;\n}\n\nfloat opOnion(in float d, in float r) {\n    return abs(d) - r;\n}\n\nfloat sdCircle(in vec2 p, in float r ) {\n    return length(p) - r;\n}\n\nfloat sdEquilateralTriangle(in vec2 p, in float r) {\n    const float k = sqrt(3.0);\n    p.x = abs(p.x) - r;\n    p.y = p.y + (r) / k;\n    if (p.x + k * p.y > 0.0) {\n        p = vec2(p.x-k*p.y,-k*p.x-p.y) / 2.0;\n    }\n    p.x -= clamp(p.x, -2.0 * r, 0.0);\n    return -length(p) * sign(p.y);\n}\n\nfloat sdPentagon(in vec2 p, in float r) {\n    const vec3 k = vec3(0.809016994, 0.587785252, 0.726542528);\n    p.y = -(p.y) * 1.25;\n    p.x = abs(p.x) * 1.25;\n    p -= 2.0 * min(dot(vec2(-k.x, k.y), p), 0.0) * vec2(-k.x, k.y);\n    p -= 2.0 * min(dot(vec2(k.x, k.y), p), 0.0) * vec2(k.x, k.y);\n    p -= vec2(clamp(p.x, -r*k.z, r*k.z), r);\n    return length(p) * sign(p.y);\n}\n\nfloat sdOctagon(in vec2 p, in float r) {\n    // pi/8: cos, sin, tan.\n    const vec3 k = vec3(\n        -0.9238795325,   // sqrt(2+sqrt(2))/2\n        0.3826834323,   // sqrt(2-sqrt(2))/2\n        0.4142135623\n    ); // sqrt(2)-1\n    // reflections\n    p = abs(p) * 1.1;\n    p -= 2.0 * min(dot(vec2(k.x,k.y), p), 0.0) * vec2(k.x,k.y);\n    p -= 2.0 * min(dot(vec2(-k.x,k.y), p), 0.0) * vec2(-k.x,k.y);\n    // Polygon side.\n    p -= vec2(clamp(p.x, -k.z*r, k.z*r), r);\n    return length(p) * sign(p.y);\n}\n\nfloat sdStar(in vec2 p, in float r, in uint n, in float m) { // m=[2,n]\n    // these 4 lines can be precomputed for a given shape\n    float an = 3.141593 / float(n);\n    float en = 3.141593 / m;\n    vec2  acs = vec2(cos(an), sin(an));\n    vec2  ecs = vec2(cos(en), sin(en)); // ecs=vec2(0,1) and simplify, for regular polygon,\n\n    // reduce to first sector\n    float bn = mod(atan(p.x, p.y), 2.0 * an) - an;\n    p = length(p) * vec2(cos(bn), abs(sin(bn)));\n\n    // line sdf\n    p -= r * acs;\n    p += ecs * clamp(-dot(p, ecs), 0.0, r * acs.y / ecs.y);\n    return length(p) * sign(p.x);\n}\n\nfloat sdCross(in vec2 p, in float w, in float r) {\n    p = abs(p);\n    return length(p - min(p.x + p.y, w) * 0.5) - r;\n}\n\n// TODO: Precompute this, we always pass the same parameters tot his function (v, vec2(1.0, 0.3), 0.0)\nfloat sdPlus( in vec2 p, in vec2 b, float r ) {\n    p = abs(p);\n    p = (p.y > p.x) ? p.yx : p.xy;\n\n    vec2  q = p - b;\n    float k = max(q.y, q.x);\n    vec2  w = (k > 0.0) ? q : vec2(b.y - p.x, -k);\n\n    return sign(k)*length(max(w, 0.0)) + r;\n}\n\nuniform float uPixelRatio;\nuniform uint uRenderMode;\nuniform float uOutline;\nuniform uint uSides;\nuniform float uAngleDivisor;\n\nflat in vec4 fColor;\nflat in float fPixelLength;\nin vec2 vFromCenter;\n\nout vec4 fragColor;\n\nvoid main() {\n    float antialias = fPixelLength * 1.5;\n    float sd = sdStar(vFromCenter, 1.0, uSides, uAngleDivisor);\n    float outline = opOnion(sd, min(0.15, fPixelLength * uOutline * uPixelRatio));\n    float modeDistance = uRenderMode == MODE_HIGH_PASS_1 ? -antialias : -antialias * 0.5;\n    float distance = uRenderMode == MODE_HIGH_PASS_2 ? 0.0 : modeDistance;\n\n    if (sd > distance) {\n        discard;\n    }\n\n    vec3 color = fColor.rgb * (1.0 - 0.25 * smoothstep(antialias, 0.0, outline));\n\n    if (uRenderMode == MODE_HIGH_PASS_2) {\n        if (sd < -antialias) {\n            discard;\n        }\n        fragColor = outputColor(vec4(color, smoothstep(0.0, antialias, abs(sd))));\n    } else {\n        fragColor = outputColor(vec4(color, 1.0));\n    }\n}\n";
+var Star_fs_default = "#version 300 es\nprecision highp float;\n#define GLSLIFY 1\n\n// from https://en.wikipedia.org/wiki/SRGB#The_reverse_transformation\nfloat luminance_x(float x) {\n    return x <= 0.04045 ? x / 12.92 : pow((x + 0.055) / 1.055, 2.4);\n}\nfloat color_l(float l) {\n    return min(1.0, max(0.0, l <= 0.0031308 ? l * 12.92 : pow(l * 1.055, 1.0 / 2.4) - 0.055));\n}\n\n// from https://en.wikipedia.org/wiki/Relative_luminance\nfloat rgb2luminance(vec3 color) {\n    // relative luminance\n    // see http://www.w3.org/TR/2008/REC-WCAG20-20081211/#relativeluminancedef\n    float r = luminance_x(color.r);\n    float g = luminance_x(color.g);\n    float b = luminance_x(color.b);\n    return 0.2126 * r + 0.7152 * g + 0.0722 * b;\n}\n\nvec3 setLuminance(vec3 color, float luminance) {\n    float r = luminance_x(color.r) * 0.2126;\n    float g = luminance_x(color.g) * 0.7152;\n    float b = luminance_x(color.b) * 0.0722;\n    float colorLuminance = r + g + b;\n\n    float tr = luminance * (r / colorLuminance);\n    float tg = luminance * (g / colorLuminance);\n    float tb = luminance * (b / colorLuminance);\n\n    float rr = color_l(tr / 0.2126);\n    float rg = color_l(tg / 0.7152);\n    float rb = color_l(tb / 0.0722);\n\n    return vec3(rr, rg, rb );\n}\n\n// https://www.w3.org/TR/WCAG20/#contrast-ratiodef\n// (L1 + 0.05) / (L2 + 0.05), where\n// - L1 is the relative luminance of the lighter of the colors, and\n// - L2 is the relative luminance of the darker of the colors.\nfloat findDarker(float luminance, float contrast) {\n    return (contrast * luminance) + (0.05 * contrast) - 0.05;\n}\nfloat findLighter(float luminance, float contrast) {\n    return (luminance + 0.05 - (0.05 * contrast)) / contrast;\n}\n\nvec3 contrastingColor(vec3 color, float contrast) {\n    float luminance = rgb2luminance(color);\n    float darker = findDarker(luminance, contrast);\n    float lighter = findLighter(luminance, contrast);\n\n    float targetLuminance;\n    if (darker < 0.0 || darker > 1.0) {\n        targetLuminance = lighter;\n    } else if (lighter < 0.0 || lighter > 1.0) {\n        targetLuminance = darker;\n    } else {\n        targetLuminance = abs(luminance - lighter) < abs(darker - luminance) ? lighter : darker;\n    }\n\n    return setLuminance(color, targetLuminance);\n}\n\nvec3 desaturateColor(vec3 color, float amount) {\n    float l = rgb2luminance(color);\n    vec3 gray = vec3(l, l, l);\n    return mix(color, gray, amount);\n}\n\nuniform vec4 uClearColor;\nuniform float uDesaturate;\nuniform float uBrightness;\nuniform float uFade;\nuniform float uAlpha;\n\nvec4 outputColor(vec4 color) {\n    // desaturate => fade => alpha\n    vec3 ret = mix(color.rgb, vec3(uBrightness + 1.0 / 2.0), abs(uBrightness));\n    ret = vec3(desaturateColor(ret, uDesaturate));\n    ret = mix(ret, uClearColor.rgb, uFade);\n    return vec4(ret, color.a * uAlpha);\n}\n\n#define MODE_DRAFT 0u\n#define MODE_MEDIUM 1u\n#define MODE_HIGH 2u\n#define MODE_HIGH_PASS_1 3u\n#define MODE_HIGH_PASS_2 4u\n#define MODE_PICKING 5u\n\n// most of these come from this excellent post:\n// https://iquilezles.org/www/articles/distfunctions2d/distfunctions2d.htm\n\nfloat opRound(in float d, in float r) {\n    return d - r;\n}\n\nfloat opOnion(in float d, in float r) {\n    return abs(d) - r;\n}\n\nfloat sdCircle(in vec2 p, in float r ) {\n    return length(p) - r;\n}\n\nfloat sdEquilateralTriangle(in vec2 p, in float r) {\n    const float k = sqrt(3.0);\n    p.x = abs(p.x) - r;\n    p.y = p.y + (r) / k;\n    if (p.x + k * p.y > 0.0) {\n        p = vec2(p.x-k*p.y,-k*p.x-p.y) / 2.0;\n    }\n    p.x -= clamp(p.x, -2.0 * r, 0.0);\n    return -length(p) * sign(p.y);\n}\n\nfloat sdPentagon(in vec2 p, in float r) {\n    const vec3 k = vec3(0.809016994, 0.587785252, 0.726542528);\n    p.y = -(p.y) * 1.25;\n    p.x = abs(p.x) * 1.25;\n    p -= 2.0 * min(dot(vec2(-k.x, k.y), p), 0.0) * vec2(-k.x, k.y);\n    p -= 2.0 * min(dot(vec2(k.x, k.y), p), 0.0) * vec2(k.x, k.y);\n    p -= vec2(clamp(p.x, -r*k.z, r*k.z), r);\n    return length(p) * sign(p.y);\n}\n\nfloat sdOctagon(in vec2 p, in float r) {\n    // pi/8: cos, sin, tan.\n    const vec3 k = vec3(\n        -0.9238795325,   // sqrt(2+sqrt(2))/2\n        0.3826834323,   // sqrt(2-sqrt(2))/2\n        0.4142135623\n    ); // sqrt(2)-1\n    // reflections\n    p = abs(p) * 1.1;\n    p -= 2.0 * min(dot(vec2(k.x,k.y), p), 0.0) * vec2(k.x,k.y);\n    p -= 2.0 * min(dot(vec2(-k.x,k.y), p), 0.0) * vec2(-k.x,k.y);\n    // Polygon side.\n    p -= vec2(clamp(p.x, -k.z*r, k.z*r), r);\n    return length(p) * sign(p.y);\n}\n\nfloat sdStar(in vec2 p, in float r, in uint n, in float m) { // m=[2,n]\n    // these 4 lines can be precomputed for a given shape\n    float an = 3.141593 / float(n);\n    float en = 3.141593 / m;\n    vec2  acs = vec2(cos(an), sin(an));\n    vec2  ecs = vec2(cos(en), sin(en)); // ecs=vec2(0,1) and simplify, for regular polygon,\n\n    // reduce to first sector\n    float bn = mod(atan(p.x, p.y), 2.0 * an) - an;\n    p = length(p) * vec2(cos(bn), abs(sin(bn)));\n\n    // line sdf\n    p -= r * acs;\n    p += ecs * clamp(-dot(p, ecs), 0.0, r * acs.y / ecs.y);\n    return length(p) * sign(p.x);\n}\n\nfloat sdCross(in vec2 p, in float w, in float r) {\n    p = abs(p);\n    return length(p - min(p.x + p.y, w) * 0.5) - r;\n}\n\n// TODO: Precompute this, we always pass the same parameters tot his function (v, vec2(1.0, 0.3), 0.0)\nfloat sdPlus( in vec2 p, in vec2 b, float r ) {\n    p = abs(p);\n    p = (p.y > p.x) ? p.yx : p.xy;\n\n    vec2  q = p - b;\n    float k = max(q.y, q.x);\n    vec2  w = (k > 0.0) ? q : vec2(b.y - p.x, -k);\n\n    return sign(k)*length(max(w, 0.0)) + r;\n}\n\nuniform float uPixelRatio;\nuniform uint uRenderMode;\nuniform float uOutline;\nuniform uint uSides;\nuniform float uAngleDivisor;\n\nflat in vec4 fColor;\nflat in float fPixelLength;\nin vec2 vFromCenter;\n\nout vec4 fragColor;\n\nvoid main() {\n    float antialias = fPixelLength * 1.5;\n    float sd = sdStar(vFromCenter, 1.0, uSides, uAngleDivisor);\n    float outline = opOnion(sd, min(0.15, fPixelLength * uOutline * uPixelRatio));\n    float modeDistance = uRenderMode == MODE_HIGH_PASS_1 ? -antialias : -antialias * 0.5;\n    float distance = uRenderMode == MODE_HIGH_PASS_2 ? 0.0 : modeDistance;\n\n    if (sd > distance) {\n        discard;\n    }\n\n    vec3 color = fColor.rgb * (1.0 - 0.25 * smoothstep(antialias, 0.0, outline));\n\n    if (uRenderMode == MODE_HIGH_PASS_2) {\n        if (sd < -antialias) {\n            discard;\n        }\n        fragColor = outputColor(vec4(color, smoothstep(0.0, antialias, abs(sd))));\n    } else {\n        fragColor = outputColor(vec4(color, 1.0));\n    }\n}\n";
 
 // src/graph/nodes/star/Star.picking.fs.glsl
 var Star_picking_fs_default = "#version 300 es\nprecision highp float;\n#define GLSLIFY 1\n\n// most of these come from this excellent post:\n// https://iquilezles.org/www/articles/distfunctions2d/distfunctions2d.htm\n\nfloat opRound(in float d, in float r) {\n    return d - r;\n}\n\nfloat opOnion(in float d, in float r) {\n    return abs(d) - r;\n}\n\nfloat sdCircle(in vec2 p, in float r ) {\n    return length(p) - r;\n}\n\nfloat sdEquilateralTriangle(in vec2 p, in float r) {\n    const float k = sqrt(3.0);\n    p.x = abs(p.x) - r;\n    p.y = p.y + (r) / k;\n    if (p.x + k * p.y > 0.0) {\n        p = vec2(p.x-k*p.y,-k*p.x-p.y) / 2.0;\n    }\n    p.x -= clamp(p.x, -2.0 * r, 0.0);\n    return -length(p) * sign(p.y);\n}\n\nfloat sdPentagon(in vec2 p, in float r) {\n    const vec3 k = vec3(0.809016994, 0.587785252, 0.726542528);\n    p.y = -(p.y) * 1.25;\n    p.x = abs(p.x) * 1.25;\n    p -= 2.0 * min(dot(vec2(-k.x, k.y), p), 0.0) * vec2(-k.x, k.y);\n    p -= 2.0 * min(dot(vec2(k.x, k.y), p), 0.0) * vec2(k.x, k.y);\n    p -= vec2(clamp(p.x, -r*k.z, r*k.z), r);\n    return length(p) * sign(p.y);\n}\n\nfloat sdOctagon(in vec2 p, in float r) {\n    // pi/8: cos, sin, tan.\n    const vec3 k = vec3(\n        -0.9238795325,   // sqrt(2+sqrt(2))/2\n        0.3826834323,   // sqrt(2-sqrt(2))/2\n        0.4142135623\n    ); // sqrt(2)-1\n    // reflections\n    p = abs(p) * 1.1;\n    p -= 2.0 * min(dot(vec2(k.x,k.y), p), 0.0) * vec2(k.x,k.y);\n    p -= 2.0 * min(dot(vec2(-k.x,k.y), p), 0.0) * vec2(-k.x,k.y);\n    // Polygon side.\n    p -= vec2(clamp(p.x, -k.z*r, k.z*r), r);\n    return length(p) * sign(p.y);\n}\n\nfloat sdStar(in vec2 p, in float r, in uint n, in float m) { // m=[2,n]\n    // these 4 lines can be precomputed for a given shape\n    float an = 3.141593 / float(n);\n    float en = 3.141593 / m;\n    vec2  acs = vec2(cos(an), sin(an));\n    vec2  ecs = vec2(cos(en), sin(en)); // ecs=vec2(0,1) and simplify, for regular polygon,\n\n    // reduce to first sector\n    float bn = mod(atan(p.x, p.y), 2.0 * an) - an;\n    p = length(p) * vec2(cos(bn), abs(sin(bn)));\n\n    // line sdf\n    p -= r * acs;\n    p += ecs * clamp(-dot(p, ecs), 0.0, r * acs.y / ecs.y);\n    return length(p) * sign(p.x);\n}\n\nfloat sdCross(in vec2 p, in float w, in float r) {\n    p = abs(p);\n    return length(p - min(p.x + p.y, w) * 0.5) - r;\n}\n\n// TODO: Precompute this, we always pass the same parameters tot his function (v, vec2(1.0, 0.3), 0.0)\nfloat sdPlus( in vec2 p, in vec2 b, float r ) {\n    p = abs(p);\n    p = (p.y > p.x) ? p.yx : p.xy;\n\n    vec2  q = p - b;\n    float k = max(q.y, q.x);\n    vec2  w = (k > 0.0) ? q : vec2(b.y - p.x, -k);\n\n    return sign(k)*length(max(w, 0.0)) + r;\n}\n\nuniform uint uSides;\nuniform float uAngleDivisor;\n\nflat in vec4 fColor;\nflat in float fPixelLength;\nin vec2 vFromCenter;\n\nout vec4 fragColor;\n\nvoid main() {\n    float sd = sdStar(vFromCenter, 1.0, uSides, uAngleDivisor);\n    if (sd > 0.0) {\n        discard;\n    }\n    fragColor = fColor;\n}\n";
@@ -16583,7 +16623,7 @@ var Star = class extends Circle {
 };
 
 // src/graph/nodes/cross/Cross.fs.glsl
-var Cross_fs_default = "#version 300 es\nprecision highp float;\n#define GLSLIFY 1\n\n// from https://en.wikipedia.org/wiki/SRGB#The_reverse_transformation\nfloat luminance_x(float x) {\n    return x <= 0.04045 ? x / 12.92 : pow((x + 0.055) / 1.055, 2.4);\n}\nfloat color_l(float l) {\n    return min(1.0, max(0.0, l <= 0.0031308 ? l * 12.92 : pow(l * 1.055, 1.0 / 2.4) - 0.055));\n}\n\n// from https://en.wikipedia.org/wiki/Relative_luminance\nfloat rgb2luminance(vec3 color) {\n    // relative luminance\n    // see http://www.w3.org/TR/2008/REC-WCAG20-20081211/#relativeluminancedef\n    float r = luminance_x(color.r);\n    float g = luminance_x(color.g);\n    float b = luminance_x(color.b);\n    return 0.2126 * r + 0.7152 * g + 0.0722 * b;\n}\n\nvec3 setLuminance(vec3 color, float luminance) {\n    float r = luminance_x(color.r) * 0.2126;\n    float g = luminance_x(color.g) * 0.7152;\n    float b = luminance_x(color.b) * 0.0722;\n    float colorLuminance = r + g + b;\n\n    float tr = luminance * (r / colorLuminance);\n    float tg = luminance * (g / colorLuminance);\n    float tb = luminance * (b / colorLuminance);\n\n    float rr = color_l(tr / 0.2126);\n    float rg = color_l(tg / 0.7152);\n    float rb = color_l(tb / 0.0722);\n\n    return vec3(rr, rg, rb );\n}\n\n// https://www.w3.org/TR/WCAG20/#contrast-ratiodef\n// (L1 + 0.05) / (L2 + 0.05), where\n// - L1 is the relative luminance of the lighter of the colors, and\n// - L2 is the relative luminance of the darker of the colors.\nfloat findDarker(float luminance, float contrast) {\n    return (contrast * luminance) + (0.05 * contrast) - 0.05;\n}\nfloat findLighter(float luminance, float contrast) {\n    return (luminance + 0.05 - (0.05 * contrast)) / contrast;\n}\n\nvec3 contrastingColor(vec3 color, float contrast) {\n    float luminance = rgb2luminance(color);\n    float darker = findDarker(luminance, contrast);\n    float lighter = findLighter(luminance, contrast);\n\n    float targetLuminance;\n    if (darker < 0.0 || darker > 1.0) {\n        targetLuminance = lighter;\n    } else if (lighter < 0.0 || lighter > 1.0) {\n        targetLuminance = darker;\n    } else {\n        targetLuminance = abs(luminance - lighter) < abs(darker - luminance) ? lighter : darker;\n    }\n\n    return setLuminance(color, targetLuminance);\n}\n\nvec3 desaturateColor(vec3 color, float amount) {\n    float l = rgb2luminance(color);\n    vec3 gray = vec3(l, l, l);\n    return mix(color, gray, amount);\n}\n\nuniform vec4 uClearColor;\nuniform float uDesaturate;\nuniform float uBrightness;\nuniform float uFade;\nuniform float uAlpha;\n\nvec4 outputColor(vec4 color) {\n    // desaturate => fade => alpha\n    vec3 ret = mix(color.rgb, vec3(uBrightness + 1.0 / 2.0), abs(uBrightness));\n    ret = vec3(desaturateColor(ret, uDesaturate));\n    ret = mix(ret, uClearColor.rgb, uFade);\n    return vec4(ret, color.a * uAlpha);\n}\n\n#define MODE_DRAFT 0u\n#define MODE_MEDIUM 1u\n#define MODE_HIGH_PASS_1 2u\n#define MODE_HIGH_PASS_2 3u\n#define MODE_PICKING 4u\n\n// most of these come from this excellent post:\n// https://iquilezles.org/www/articles/distfunctions2d/distfunctions2d.htm\n\nfloat opRound(in float d, in float r) {\n    return d - r;\n}\n\nfloat opOnion(in float d, in float r) {\n    return abs(d) - r;\n}\n\nfloat sdCircle(in vec2 p, in float r ) {\n    return length(p) - r;\n}\n\nfloat sdEquilateralTriangle(in vec2 p, in float r) {\n    const float k = sqrt(3.0);\n    p.x = abs(p.x) - r;\n    p.y = p.y + (r) / k;\n    if (p.x + k * p.y > 0.0) {\n        p = vec2(p.x-k*p.y,-k*p.x-p.y) / 2.0;\n    }\n    p.x -= clamp(p.x, -2.0 * r, 0.0);\n    return -length(p) * sign(p.y);\n}\n\nfloat sdPentagon(in vec2 p, in float r) {\n    const vec3 k = vec3(0.809016994, 0.587785252, 0.726542528);\n    p.y = -(p.y) * 1.25;\n    p.x = abs(p.x) * 1.25;\n    p -= 2.0 * min(dot(vec2(-k.x, k.y), p), 0.0) * vec2(-k.x, k.y);\n    p -= 2.0 * min(dot(vec2(k.x, k.y), p), 0.0) * vec2(k.x, k.y);\n    p -= vec2(clamp(p.x, -r*k.z, r*k.z), r);\n    return length(p) * sign(p.y);\n}\n\nfloat sdOctagon(in vec2 p, in float r) {\n    // pi/8: cos, sin, tan.\n    const vec3 k = vec3(\n        -0.9238795325,   // sqrt(2+sqrt(2))/2\n        0.3826834323,   // sqrt(2-sqrt(2))/2\n        0.4142135623\n    ); // sqrt(2)-1\n    // reflections\n    p = abs(p) * 1.1;\n    p -= 2.0 * min(dot(vec2(k.x,k.y), p), 0.0) * vec2(k.x,k.y);\n    p -= 2.0 * min(dot(vec2(-k.x,k.y), p), 0.0) * vec2(-k.x,k.y);\n    // Polygon side.\n    p -= vec2(clamp(p.x, -k.z*r, k.z*r), r);\n    return length(p) * sign(p.y);\n}\n\nfloat sdStar(in vec2 p, in float r, in uint n, in float m) { // m=[2,n]\n    // these 4 lines can be precomputed for a given shape\n    float an = 3.141593 / float(n);\n    float en = 3.141593 / m;\n    vec2  acs = vec2(cos(an), sin(an));\n    vec2  ecs = vec2(cos(en), sin(en)); // ecs=vec2(0,1) and simplify, for regular polygon,\n\n    // reduce to first sector\n    float bn = mod(atan(p.x, p.y), 2.0 * an) - an;\n    p = length(p) * vec2(cos(bn), abs(sin(bn)));\n\n    // line sdf\n    p -= r * acs;\n    p += ecs * clamp(-dot(p, ecs), 0.0, r * acs.y / ecs.y);\n    return length(p) * sign(p.x);\n}\n\nfloat sdCross(in vec2 p, in float w, in float r) {\n    p = abs(p);\n    return length(p - min(p.x + p.y, w) * 0.5) - r;\n}\n\n// TODO: Precompute this, we always pass the same parameters tot his function (v, vec2(1.0, 0.3), 0.0)\nfloat sdPlus( in vec2 p, in vec2 b, float r ) {\n    p = abs(p);\n    p = (p.y > p.x) ? p.yx : p.xy;\n\n    vec2  q = p - b;\n    float k = max(q.y, q.x);\n    vec2  w = (k > 0.0) ? q : vec2(b.y - p.x, -k);\n\n    return sign(k)*length(max(w, 0.0)) + r;\n}\n\nuniform float uPixelRatio;\nuniform uint uRenderMode;\nuniform float uOutline;\n\nflat in vec4 fColor;\nflat in float fPixelLength;\nin vec2 vFromCenter;\n\nout vec4 fragColor;\n\nvoid main() {\n    float antialias = fPixelLength * 1.5;\n    float sd = sdCross(vFromCenter, 1.0, 0.3);\n    float outline = opOnion(sd, min(0.15, fPixelLength * uOutline * uPixelRatio));\n    float modeDistance = uRenderMode == MODE_HIGH_PASS_1 ? -antialias : -antialias * 0.5;\n    float distance = uRenderMode == MODE_HIGH_PASS_2 ? 0.0 : modeDistance;\n\n    if (sd > distance) {\n        discard;\n    }\n\n    vec3 color = fColor.rgb * (1.0 - 0.25 * smoothstep(antialias, 0.0, outline));\n\n    if (uRenderMode == MODE_HIGH_PASS_2) {\n        if (sd < -antialias) {\n            discard;\n        }\n        fragColor = outputColor(vec4(color, smoothstep(0.0, antialias, abs(sd))));\n    } else {\n        fragColor = outputColor(vec4(color, 1.0));\n    }\n}\n";
+var Cross_fs_default = "#version 300 es\nprecision highp float;\n#define GLSLIFY 1\n\n// from https://en.wikipedia.org/wiki/SRGB#The_reverse_transformation\nfloat luminance_x(float x) {\n    return x <= 0.04045 ? x / 12.92 : pow((x + 0.055) / 1.055, 2.4);\n}\nfloat color_l(float l) {\n    return min(1.0, max(0.0, l <= 0.0031308 ? l * 12.92 : pow(l * 1.055, 1.0 / 2.4) - 0.055));\n}\n\n// from https://en.wikipedia.org/wiki/Relative_luminance\nfloat rgb2luminance(vec3 color) {\n    // relative luminance\n    // see http://www.w3.org/TR/2008/REC-WCAG20-20081211/#relativeluminancedef\n    float r = luminance_x(color.r);\n    float g = luminance_x(color.g);\n    float b = luminance_x(color.b);\n    return 0.2126 * r + 0.7152 * g + 0.0722 * b;\n}\n\nvec3 setLuminance(vec3 color, float luminance) {\n    float r = luminance_x(color.r) * 0.2126;\n    float g = luminance_x(color.g) * 0.7152;\n    float b = luminance_x(color.b) * 0.0722;\n    float colorLuminance = r + g + b;\n\n    float tr = luminance * (r / colorLuminance);\n    float tg = luminance * (g / colorLuminance);\n    float tb = luminance * (b / colorLuminance);\n\n    float rr = color_l(tr / 0.2126);\n    float rg = color_l(tg / 0.7152);\n    float rb = color_l(tb / 0.0722);\n\n    return vec3(rr, rg, rb );\n}\n\n// https://www.w3.org/TR/WCAG20/#contrast-ratiodef\n// (L1 + 0.05) / (L2 + 0.05), where\n// - L1 is the relative luminance of the lighter of the colors, and\n// - L2 is the relative luminance of the darker of the colors.\nfloat findDarker(float luminance, float contrast) {\n    return (contrast * luminance) + (0.05 * contrast) - 0.05;\n}\nfloat findLighter(float luminance, float contrast) {\n    return (luminance + 0.05 - (0.05 * contrast)) / contrast;\n}\n\nvec3 contrastingColor(vec3 color, float contrast) {\n    float luminance = rgb2luminance(color);\n    float darker = findDarker(luminance, contrast);\n    float lighter = findLighter(luminance, contrast);\n\n    float targetLuminance;\n    if (darker < 0.0 || darker > 1.0) {\n        targetLuminance = lighter;\n    } else if (lighter < 0.0 || lighter > 1.0) {\n        targetLuminance = darker;\n    } else {\n        targetLuminance = abs(luminance - lighter) < abs(darker - luminance) ? lighter : darker;\n    }\n\n    return setLuminance(color, targetLuminance);\n}\n\nvec3 desaturateColor(vec3 color, float amount) {\n    float l = rgb2luminance(color);\n    vec3 gray = vec3(l, l, l);\n    return mix(color, gray, amount);\n}\n\nuniform vec4 uClearColor;\nuniform float uDesaturate;\nuniform float uBrightness;\nuniform float uFade;\nuniform float uAlpha;\n\nvec4 outputColor(vec4 color) {\n    // desaturate => fade => alpha\n    vec3 ret = mix(color.rgb, vec3(uBrightness + 1.0 / 2.0), abs(uBrightness));\n    ret = vec3(desaturateColor(ret, uDesaturate));\n    ret = mix(ret, uClearColor.rgb, uFade);\n    return vec4(ret, color.a * uAlpha);\n}\n\n#define MODE_DRAFT 0u\n#define MODE_MEDIUM 1u\n#define MODE_HIGH 2u\n#define MODE_HIGH_PASS_1 3u\n#define MODE_HIGH_PASS_2 4u\n#define MODE_PICKING 5u\n\n// most of these come from this excellent post:\n// https://iquilezles.org/www/articles/distfunctions2d/distfunctions2d.htm\n\nfloat opRound(in float d, in float r) {\n    return d - r;\n}\n\nfloat opOnion(in float d, in float r) {\n    return abs(d) - r;\n}\n\nfloat sdCircle(in vec2 p, in float r ) {\n    return length(p) - r;\n}\n\nfloat sdEquilateralTriangle(in vec2 p, in float r) {\n    const float k = sqrt(3.0);\n    p.x = abs(p.x) - r;\n    p.y = p.y + (r) / k;\n    if (p.x + k * p.y > 0.0) {\n        p = vec2(p.x-k*p.y,-k*p.x-p.y) / 2.0;\n    }\n    p.x -= clamp(p.x, -2.0 * r, 0.0);\n    return -length(p) * sign(p.y);\n}\n\nfloat sdPentagon(in vec2 p, in float r) {\n    const vec3 k = vec3(0.809016994, 0.587785252, 0.726542528);\n    p.y = -(p.y) * 1.25;\n    p.x = abs(p.x) * 1.25;\n    p -= 2.0 * min(dot(vec2(-k.x, k.y), p), 0.0) * vec2(-k.x, k.y);\n    p -= 2.0 * min(dot(vec2(k.x, k.y), p), 0.0) * vec2(k.x, k.y);\n    p -= vec2(clamp(p.x, -r*k.z, r*k.z), r);\n    return length(p) * sign(p.y);\n}\n\nfloat sdOctagon(in vec2 p, in float r) {\n    // pi/8: cos, sin, tan.\n    const vec3 k = vec3(\n        -0.9238795325,   // sqrt(2+sqrt(2))/2\n        0.3826834323,   // sqrt(2-sqrt(2))/2\n        0.4142135623\n    ); // sqrt(2)-1\n    // reflections\n    p = abs(p) * 1.1;\n    p -= 2.0 * min(dot(vec2(k.x,k.y), p), 0.0) * vec2(k.x,k.y);\n    p -= 2.0 * min(dot(vec2(-k.x,k.y), p), 0.0) * vec2(-k.x,k.y);\n    // Polygon side.\n    p -= vec2(clamp(p.x, -k.z*r, k.z*r), r);\n    return length(p) * sign(p.y);\n}\n\nfloat sdStar(in vec2 p, in float r, in uint n, in float m) { // m=[2,n]\n    // these 4 lines can be precomputed for a given shape\n    float an = 3.141593 / float(n);\n    float en = 3.141593 / m;\n    vec2  acs = vec2(cos(an), sin(an));\n    vec2  ecs = vec2(cos(en), sin(en)); // ecs=vec2(0,1) and simplify, for regular polygon,\n\n    // reduce to first sector\n    float bn = mod(atan(p.x, p.y), 2.0 * an) - an;\n    p = length(p) * vec2(cos(bn), abs(sin(bn)));\n\n    // line sdf\n    p -= r * acs;\n    p += ecs * clamp(-dot(p, ecs), 0.0, r * acs.y / ecs.y);\n    return length(p) * sign(p.x);\n}\n\nfloat sdCross(in vec2 p, in float w, in float r) {\n    p = abs(p);\n    return length(p - min(p.x + p.y, w) * 0.5) - r;\n}\n\n// TODO: Precompute this, we always pass the same parameters tot his function (v, vec2(1.0, 0.3), 0.0)\nfloat sdPlus( in vec2 p, in vec2 b, float r ) {\n    p = abs(p);\n    p = (p.y > p.x) ? p.yx : p.xy;\n\n    vec2  q = p - b;\n    float k = max(q.y, q.x);\n    vec2  w = (k > 0.0) ? q : vec2(b.y - p.x, -k);\n\n    return sign(k)*length(max(w, 0.0)) + r;\n}\n\nuniform float uPixelRatio;\nuniform uint uRenderMode;\nuniform float uOutline;\n\nflat in vec4 fColor;\nflat in float fPixelLength;\nin vec2 vFromCenter;\n\nout vec4 fragColor;\n\nvoid main() {\n    float antialias = fPixelLength * 1.5;\n    float sd = sdCross(vFromCenter, 1.0, 0.3);\n    float outline = opOnion(sd, min(0.15, fPixelLength * uOutline * uPixelRatio));\n    float modeDistance = uRenderMode == MODE_HIGH_PASS_1 ? -antialias : -antialias * 0.5;\n    float distance = uRenderMode == MODE_HIGH_PASS_2 ? 0.0 : modeDistance;\n\n    if (sd > distance) {\n        discard;\n    }\n\n    vec3 color = fColor.rgb * (1.0 - 0.25 * smoothstep(antialias, 0.0, outline));\n\n    if (uRenderMode == MODE_HIGH_PASS_2) {\n        if (sd < -antialias) {\n            discard;\n        }\n        fragColor = outputColor(vec4(color, smoothstep(0.0, antialias, abs(sd))));\n    } else {\n        fragColor = outputColor(vec4(color, 1.0));\n    }\n}\n";
 
 // src/graph/nodes/cross/Cross.picking.fs.glsl
 var Cross_picking_fs_default = "#version 300 es\nprecision highp float;\n#define GLSLIFY 1\n\n// most of these come from this excellent post:\n// https://iquilezles.org/www/articles/distfunctions2d/distfunctions2d.htm\n\nfloat opRound(in float d, in float r) {\n    return d - r;\n}\n\nfloat opOnion(in float d, in float r) {\n    return abs(d) - r;\n}\n\nfloat sdCircle(in vec2 p, in float r ) {\n    return length(p) - r;\n}\n\nfloat sdEquilateralTriangle(in vec2 p, in float r) {\n    const float k = sqrt(3.0);\n    p.x = abs(p.x) - r;\n    p.y = p.y + (r) / k;\n    if (p.x + k * p.y > 0.0) {\n        p = vec2(p.x-k*p.y,-k*p.x-p.y) / 2.0;\n    }\n    p.x -= clamp(p.x, -2.0 * r, 0.0);\n    return -length(p) * sign(p.y);\n}\n\nfloat sdPentagon(in vec2 p, in float r) {\n    const vec3 k = vec3(0.809016994, 0.587785252, 0.726542528);\n    p.y = -(p.y) * 1.25;\n    p.x = abs(p.x) * 1.25;\n    p -= 2.0 * min(dot(vec2(-k.x, k.y), p), 0.0) * vec2(-k.x, k.y);\n    p -= 2.0 * min(dot(vec2(k.x, k.y), p), 0.0) * vec2(k.x, k.y);\n    p -= vec2(clamp(p.x, -r*k.z, r*k.z), r);\n    return length(p) * sign(p.y);\n}\n\nfloat sdOctagon(in vec2 p, in float r) {\n    // pi/8: cos, sin, tan.\n    const vec3 k = vec3(\n        -0.9238795325,   // sqrt(2+sqrt(2))/2\n        0.3826834323,   // sqrt(2-sqrt(2))/2\n        0.4142135623\n    ); // sqrt(2)-1\n    // reflections\n    p = abs(p) * 1.1;\n    p -= 2.0 * min(dot(vec2(k.x,k.y), p), 0.0) * vec2(k.x,k.y);\n    p -= 2.0 * min(dot(vec2(-k.x,k.y), p), 0.0) * vec2(-k.x,k.y);\n    // Polygon side.\n    p -= vec2(clamp(p.x, -k.z*r, k.z*r), r);\n    return length(p) * sign(p.y);\n}\n\nfloat sdStar(in vec2 p, in float r, in uint n, in float m) { // m=[2,n]\n    // these 4 lines can be precomputed for a given shape\n    float an = 3.141593 / float(n);\n    float en = 3.141593 / m;\n    vec2  acs = vec2(cos(an), sin(an));\n    vec2  ecs = vec2(cos(en), sin(en)); // ecs=vec2(0,1) and simplify, for regular polygon,\n\n    // reduce to first sector\n    float bn = mod(atan(p.x, p.y), 2.0 * an) - an;\n    p = length(p) * vec2(cos(bn), abs(sin(bn)));\n\n    // line sdf\n    p -= r * acs;\n    p += ecs * clamp(-dot(p, ecs), 0.0, r * acs.y / ecs.y);\n    return length(p) * sign(p.x);\n}\n\nfloat sdCross(in vec2 p, in float w, in float r) {\n    p = abs(p);\n    return length(p - min(p.x + p.y, w) * 0.5) - r;\n}\n\n// TODO: Precompute this, we always pass the same parameters tot his function (v, vec2(1.0, 0.3), 0.0)\nfloat sdPlus( in vec2 p, in vec2 b, float r ) {\n    p = abs(p);\n    p = (p.y > p.x) ? p.yx : p.xy;\n\n    vec2  q = p - b;\n    float k = max(q.y, q.x);\n    vec2  w = (k > 0.0) ? q : vec2(b.y - p.x, -k);\n\n    return sign(k)*length(max(w, 0.0)) + r;\n}\n\nflat in vec4 fColor;\nflat in float fPixelLength;\nin vec2 vFromCenter;\n\nout vec4 fragColor;\n\nvoid main() {\n    float sd = sdCross(vFromCenter, 1.0, 0.3);\n    if (sd > 0.0) {\n        discard;\n    }\n    fragColor = fColor;\n}\n";
@@ -16603,7 +16643,7 @@ var Cross = class extends Circle {
 };
 
 // src/graph/nodes/plus/Plus.fs.glsl
-var Plus_fs_default = "#version 300 es\nprecision highp float;\n#define GLSLIFY 1\n\n// from https://en.wikipedia.org/wiki/SRGB#The_reverse_transformation\nfloat luminance_x(float x) {\n    return x <= 0.04045 ? x / 12.92 : pow((x + 0.055) / 1.055, 2.4);\n}\nfloat color_l(float l) {\n    return min(1.0, max(0.0, l <= 0.0031308 ? l * 12.92 : pow(l * 1.055, 1.0 / 2.4) - 0.055));\n}\n\n// from https://en.wikipedia.org/wiki/Relative_luminance\nfloat rgb2luminance(vec3 color) {\n    // relative luminance\n    // see http://www.w3.org/TR/2008/REC-WCAG20-20081211/#relativeluminancedef\n    float r = luminance_x(color.r);\n    float g = luminance_x(color.g);\n    float b = luminance_x(color.b);\n    return 0.2126 * r + 0.7152 * g + 0.0722 * b;\n}\n\nvec3 setLuminance(vec3 color, float luminance) {\n    float r = luminance_x(color.r) * 0.2126;\n    float g = luminance_x(color.g) * 0.7152;\n    float b = luminance_x(color.b) * 0.0722;\n    float colorLuminance = r + g + b;\n\n    float tr = luminance * (r / colorLuminance);\n    float tg = luminance * (g / colorLuminance);\n    float tb = luminance * (b / colorLuminance);\n\n    float rr = color_l(tr / 0.2126);\n    float rg = color_l(tg / 0.7152);\n    float rb = color_l(tb / 0.0722);\n\n    return vec3(rr, rg, rb );\n}\n\n// https://www.w3.org/TR/WCAG20/#contrast-ratiodef\n// (L1 + 0.05) / (L2 + 0.05), where\n// - L1 is the relative luminance of the lighter of the colors, and\n// - L2 is the relative luminance of the darker of the colors.\nfloat findDarker(float luminance, float contrast) {\n    return (contrast * luminance) + (0.05 * contrast) - 0.05;\n}\nfloat findLighter(float luminance, float contrast) {\n    return (luminance + 0.05 - (0.05 * contrast)) / contrast;\n}\n\nvec3 contrastingColor(vec3 color, float contrast) {\n    float luminance = rgb2luminance(color);\n    float darker = findDarker(luminance, contrast);\n    float lighter = findLighter(luminance, contrast);\n\n    float targetLuminance;\n    if (darker < 0.0 || darker > 1.0) {\n        targetLuminance = lighter;\n    } else if (lighter < 0.0 || lighter > 1.0) {\n        targetLuminance = darker;\n    } else {\n        targetLuminance = abs(luminance - lighter) < abs(darker - luminance) ? lighter : darker;\n    }\n\n    return setLuminance(color, targetLuminance);\n}\n\nvec3 desaturateColor(vec3 color, float amount) {\n    float l = rgb2luminance(color);\n    vec3 gray = vec3(l, l, l);\n    return mix(color, gray, amount);\n}\n\nuniform vec4 uClearColor;\nuniform float uDesaturate;\nuniform float uBrightness;\nuniform float uFade;\nuniform float uAlpha;\n\nvec4 outputColor(vec4 color) {\n    // desaturate => fade => alpha\n    vec3 ret = mix(color.rgb, vec3(uBrightness + 1.0 / 2.0), abs(uBrightness));\n    ret = vec3(desaturateColor(ret, uDesaturate));\n    ret = mix(ret, uClearColor.rgb, uFade);\n    return vec4(ret, color.a * uAlpha);\n}\n\n#define MODE_DRAFT 0u\n#define MODE_MEDIUM 1u\n#define MODE_HIGH_PASS_1 2u\n#define MODE_HIGH_PASS_2 3u\n#define MODE_PICKING 4u\n\n// most of these come from this excellent post:\n// https://iquilezles.org/www/articles/distfunctions2d/distfunctions2d.htm\n\nfloat opRound(in float d, in float r) {\n    return d - r;\n}\n\nfloat opOnion(in float d, in float r) {\n    return abs(d) - r;\n}\n\nfloat sdCircle(in vec2 p, in float r ) {\n    return length(p) - r;\n}\n\nfloat sdEquilateralTriangle(in vec2 p, in float r) {\n    const float k = sqrt(3.0);\n    p.x = abs(p.x) - r;\n    p.y = p.y + (r) / k;\n    if (p.x + k * p.y > 0.0) {\n        p = vec2(p.x-k*p.y,-k*p.x-p.y) / 2.0;\n    }\n    p.x -= clamp(p.x, -2.0 * r, 0.0);\n    return -length(p) * sign(p.y);\n}\n\nfloat sdPentagon(in vec2 p, in float r) {\n    const vec3 k = vec3(0.809016994, 0.587785252, 0.726542528);\n    p.y = -(p.y) * 1.25;\n    p.x = abs(p.x) * 1.25;\n    p -= 2.0 * min(dot(vec2(-k.x, k.y), p), 0.0) * vec2(-k.x, k.y);\n    p -= 2.0 * min(dot(vec2(k.x, k.y), p), 0.0) * vec2(k.x, k.y);\n    p -= vec2(clamp(p.x, -r*k.z, r*k.z), r);\n    return length(p) * sign(p.y);\n}\n\nfloat sdOctagon(in vec2 p, in float r) {\n    // pi/8: cos, sin, tan.\n    const vec3 k = vec3(\n        -0.9238795325,   // sqrt(2+sqrt(2))/2\n        0.3826834323,   // sqrt(2-sqrt(2))/2\n        0.4142135623\n    ); // sqrt(2)-1\n    // reflections\n    p = abs(p) * 1.1;\n    p -= 2.0 * min(dot(vec2(k.x,k.y), p), 0.0) * vec2(k.x,k.y);\n    p -= 2.0 * min(dot(vec2(-k.x,k.y), p), 0.0) * vec2(-k.x,k.y);\n    // Polygon side.\n    p -= vec2(clamp(p.x, -k.z*r, k.z*r), r);\n    return length(p) * sign(p.y);\n}\n\nfloat sdStar(in vec2 p, in float r, in uint n, in float m) { // m=[2,n]\n    // these 4 lines can be precomputed for a given shape\n    float an = 3.141593 / float(n);\n    float en = 3.141593 / m;\n    vec2  acs = vec2(cos(an), sin(an));\n    vec2  ecs = vec2(cos(en), sin(en)); // ecs=vec2(0,1) and simplify, for regular polygon,\n\n    // reduce to first sector\n    float bn = mod(atan(p.x, p.y), 2.0 * an) - an;\n    p = length(p) * vec2(cos(bn), abs(sin(bn)));\n\n    // line sdf\n    p -= r * acs;\n    p += ecs * clamp(-dot(p, ecs), 0.0, r * acs.y / ecs.y);\n    return length(p) * sign(p.x);\n}\n\nfloat sdCross(in vec2 p, in float w, in float r) {\n    p = abs(p);\n    return length(p - min(p.x + p.y, w) * 0.5) - r;\n}\n\n// TODO: Precompute this, we always pass the same parameters tot his function (v, vec2(1.0, 0.3), 0.0)\nfloat sdPlus( in vec2 p, in vec2 b, float r ) {\n    p = abs(p);\n    p = (p.y > p.x) ? p.yx : p.xy;\n\n    vec2  q = p - b;\n    float k = max(q.y, q.x);\n    vec2  w = (k > 0.0) ? q : vec2(b.y - p.x, -k);\n\n    return sign(k)*length(max(w, 0.0)) + r;\n}\n\nuniform float uPixelRatio;\nuniform uint uRenderMode;\nuniform float uOutline;\n\nflat in vec4 fColor;\nflat in float fPixelLength;\nin vec2 vFromCenter;\n\nout vec4 fragColor;\n\nvoid main() {\n    float antialias = fPixelLength * 1.5;\n    float sd = sdPlus(vFromCenter, vec2(0.9, 0.3), 0.0);\n    float outline = opOnion(sd, min(0.15, fPixelLength * uOutline * uPixelRatio));\n    float modeDistance = uRenderMode == MODE_HIGH_PASS_1 ? -antialias : -antialias * 0.5;\n    float distance = uRenderMode == MODE_HIGH_PASS_2 ? 0.0 : modeDistance;\n\n    if (sd > distance) {\n        discard;\n    }\n\n    vec3 color = fColor.rgb * (1.0 - 0.25 * smoothstep(antialias, 0.0, outline));\n\n    if (uRenderMode == MODE_HIGH_PASS_2) {\n        if (sd < -antialias) {\n            discard;\n        }\n        fragColor = outputColor(vec4(color, smoothstep(0.0, antialias, abs(sd))));\n    } else {\n        fragColor = outputColor(vec4(color, 1.0));\n    }\n}\n";
+var Plus_fs_default = "#version 300 es\nprecision highp float;\n#define GLSLIFY 1\n\n// from https://en.wikipedia.org/wiki/SRGB#The_reverse_transformation\nfloat luminance_x(float x) {\n    return x <= 0.04045 ? x / 12.92 : pow((x + 0.055) / 1.055, 2.4);\n}\nfloat color_l(float l) {\n    return min(1.0, max(0.0, l <= 0.0031308 ? l * 12.92 : pow(l * 1.055, 1.0 / 2.4) - 0.055));\n}\n\n// from https://en.wikipedia.org/wiki/Relative_luminance\nfloat rgb2luminance(vec3 color) {\n    // relative luminance\n    // see http://www.w3.org/TR/2008/REC-WCAG20-20081211/#relativeluminancedef\n    float r = luminance_x(color.r);\n    float g = luminance_x(color.g);\n    float b = luminance_x(color.b);\n    return 0.2126 * r + 0.7152 * g + 0.0722 * b;\n}\n\nvec3 setLuminance(vec3 color, float luminance) {\n    float r = luminance_x(color.r) * 0.2126;\n    float g = luminance_x(color.g) * 0.7152;\n    float b = luminance_x(color.b) * 0.0722;\n    float colorLuminance = r + g + b;\n\n    float tr = luminance * (r / colorLuminance);\n    float tg = luminance * (g / colorLuminance);\n    float tb = luminance * (b / colorLuminance);\n\n    float rr = color_l(tr / 0.2126);\n    float rg = color_l(tg / 0.7152);\n    float rb = color_l(tb / 0.0722);\n\n    return vec3(rr, rg, rb );\n}\n\n// https://www.w3.org/TR/WCAG20/#contrast-ratiodef\n// (L1 + 0.05) / (L2 + 0.05), where\n// - L1 is the relative luminance of the lighter of the colors, and\n// - L2 is the relative luminance of the darker of the colors.\nfloat findDarker(float luminance, float contrast) {\n    return (contrast * luminance) + (0.05 * contrast) - 0.05;\n}\nfloat findLighter(float luminance, float contrast) {\n    return (luminance + 0.05 - (0.05 * contrast)) / contrast;\n}\n\nvec3 contrastingColor(vec3 color, float contrast) {\n    float luminance = rgb2luminance(color);\n    float darker = findDarker(luminance, contrast);\n    float lighter = findLighter(luminance, contrast);\n\n    float targetLuminance;\n    if (darker < 0.0 || darker > 1.0) {\n        targetLuminance = lighter;\n    } else if (lighter < 0.0 || lighter > 1.0) {\n        targetLuminance = darker;\n    } else {\n        targetLuminance = abs(luminance - lighter) < abs(darker - luminance) ? lighter : darker;\n    }\n\n    return setLuminance(color, targetLuminance);\n}\n\nvec3 desaturateColor(vec3 color, float amount) {\n    float l = rgb2luminance(color);\n    vec3 gray = vec3(l, l, l);\n    return mix(color, gray, amount);\n}\n\nuniform vec4 uClearColor;\nuniform float uDesaturate;\nuniform float uBrightness;\nuniform float uFade;\nuniform float uAlpha;\n\nvec4 outputColor(vec4 color) {\n    // desaturate => fade => alpha\n    vec3 ret = mix(color.rgb, vec3(uBrightness + 1.0 / 2.0), abs(uBrightness));\n    ret = vec3(desaturateColor(ret, uDesaturate));\n    ret = mix(ret, uClearColor.rgb, uFade);\n    return vec4(ret, color.a * uAlpha);\n}\n\n#define MODE_DRAFT 0u\n#define MODE_MEDIUM 1u\n#define MODE_HIGH 2u\n#define MODE_HIGH_PASS_1 3u\n#define MODE_HIGH_PASS_2 4u\n#define MODE_PICKING 5u\n\n// most of these come from this excellent post:\n// https://iquilezles.org/www/articles/distfunctions2d/distfunctions2d.htm\n\nfloat opRound(in float d, in float r) {\n    return d - r;\n}\n\nfloat opOnion(in float d, in float r) {\n    return abs(d) - r;\n}\n\nfloat sdCircle(in vec2 p, in float r ) {\n    return length(p) - r;\n}\n\nfloat sdEquilateralTriangle(in vec2 p, in float r) {\n    const float k = sqrt(3.0);\n    p.x = abs(p.x) - r;\n    p.y = p.y + (r) / k;\n    if (p.x + k * p.y > 0.0) {\n        p = vec2(p.x-k*p.y,-k*p.x-p.y) / 2.0;\n    }\n    p.x -= clamp(p.x, -2.0 * r, 0.0);\n    return -length(p) * sign(p.y);\n}\n\nfloat sdPentagon(in vec2 p, in float r) {\n    const vec3 k = vec3(0.809016994, 0.587785252, 0.726542528);\n    p.y = -(p.y) * 1.25;\n    p.x = abs(p.x) * 1.25;\n    p -= 2.0 * min(dot(vec2(-k.x, k.y), p), 0.0) * vec2(-k.x, k.y);\n    p -= 2.0 * min(dot(vec2(k.x, k.y), p), 0.0) * vec2(k.x, k.y);\n    p -= vec2(clamp(p.x, -r*k.z, r*k.z), r);\n    return length(p) * sign(p.y);\n}\n\nfloat sdOctagon(in vec2 p, in float r) {\n    // pi/8: cos, sin, tan.\n    const vec3 k = vec3(\n        -0.9238795325,   // sqrt(2+sqrt(2))/2\n        0.3826834323,   // sqrt(2-sqrt(2))/2\n        0.4142135623\n    ); // sqrt(2)-1\n    // reflections\n    p = abs(p) * 1.1;\n    p -= 2.0 * min(dot(vec2(k.x,k.y), p), 0.0) * vec2(k.x,k.y);\n    p -= 2.0 * min(dot(vec2(-k.x,k.y), p), 0.0) * vec2(-k.x,k.y);\n    // Polygon side.\n    p -= vec2(clamp(p.x, -k.z*r, k.z*r), r);\n    return length(p) * sign(p.y);\n}\n\nfloat sdStar(in vec2 p, in float r, in uint n, in float m) { // m=[2,n]\n    // these 4 lines can be precomputed for a given shape\n    float an = 3.141593 / float(n);\n    float en = 3.141593 / m;\n    vec2  acs = vec2(cos(an), sin(an));\n    vec2  ecs = vec2(cos(en), sin(en)); // ecs=vec2(0,1) and simplify, for regular polygon,\n\n    // reduce to first sector\n    float bn = mod(atan(p.x, p.y), 2.0 * an) - an;\n    p = length(p) * vec2(cos(bn), abs(sin(bn)));\n\n    // line sdf\n    p -= r * acs;\n    p += ecs * clamp(-dot(p, ecs), 0.0, r * acs.y / ecs.y);\n    return length(p) * sign(p.x);\n}\n\nfloat sdCross(in vec2 p, in float w, in float r) {\n    p = abs(p);\n    return length(p - min(p.x + p.y, w) * 0.5) - r;\n}\n\n// TODO: Precompute this, we always pass the same parameters tot his function (v, vec2(1.0, 0.3), 0.0)\nfloat sdPlus( in vec2 p, in vec2 b, float r ) {\n    p = abs(p);\n    p = (p.y > p.x) ? p.yx : p.xy;\n\n    vec2  q = p - b;\n    float k = max(q.y, q.x);\n    vec2  w = (k > 0.0) ? q : vec2(b.y - p.x, -k);\n\n    return sign(k)*length(max(w, 0.0)) + r;\n}\n\nuniform float uPixelRatio;\nuniform uint uRenderMode;\nuniform float uOutline;\n\nflat in vec4 fColor;\nflat in float fPixelLength;\nin vec2 vFromCenter;\n\nout vec4 fragColor;\n\nvoid main() {\n    float antialias = fPixelLength * 1.5;\n    float sd = sdPlus(vFromCenter, vec2(0.9, 0.3), 0.0);\n    float outline = opOnion(sd, min(0.15, fPixelLength * uOutline * uPixelRatio));\n    float modeDistance = uRenderMode == MODE_HIGH_PASS_1 ? -antialias : -antialias * 0.5;\n    float distance = uRenderMode == MODE_HIGH_PASS_2 ? 0.0 : modeDistance;\n\n    if (sd > distance) {\n        discard;\n    }\n\n    vec3 color = fColor.rgb * (1.0 - 0.25 * smoothstep(antialias, 0.0, outline));\n\n    if (uRenderMode == MODE_HIGH_PASS_2) {\n        if (sd < -antialias) {\n            discard;\n        }\n        fragColor = outputColor(vec4(color, smoothstep(0.0, antialias, abs(sd))));\n    } else {\n        fragColor = outputColor(vec4(color, 1.0));\n    }\n}\n";
 
 // src/graph/nodes/plus/Plus.picking.fs.glsl
 var Plus_picking_fs_default = "#version 300 es\nprecision highp float;\n#define GLSLIFY 1\n\n// most of these come from this excellent post:\n// https://iquilezles.org/www/articles/distfunctions2d/distfunctions2d.htm\n\nfloat opRound(in float d, in float r) {\n    return d - r;\n}\n\nfloat opOnion(in float d, in float r) {\n    return abs(d) - r;\n}\n\nfloat sdCircle(in vec2 p, in float r ) {\n    return length(p) - r;\n}\n\nfloat sdEquilateralTriangle(in vec2 p, in float r) {\n    const float k = sqrt(3.0);\n    p.x = abs(p.x) - r;\n    p.y = p.y + (r) / k;\n    if (p.x + k * p.y > 0.0) {\n        p = vec2(p.x-k*p.y,-k*p.x-p.y) / 2.0;\n    }\n    p.x -= clamp(p.x, -2.0 * r, 0.0);\n    return -length(p) * sign(p.y);\n}\n\nfloat sdPentagon(in vec2 p, in float r) {\n    const vec3 k = vec3(0.809016994, 0.587785252, 0.726542528);\n    p.y = -(p.y) * 1.25;\n    p.x = abs(p.x) * 1.25;\n    p -= 2.0 * min(dot(vec2(-k.x, k.y), p), 0.0) * vec2(-k.x, k.y);\n    p -= 2.0 * min(dot(vec2(k.x, k.y), p), 0.0) * vec2(k.x, k.y);\n    p -= vec2(clamp(p.x, -r*k.z, r*k.z), r);\n    return length(p) * sign(p.y);\n}\n\nfloat sdOctagon(in vec2 p, in float r) {\n    // pi/8: cos, sin, tan.\n    const vec3 k = vec3(\n        -0.9238795325,   // sqrt(2+sqrt(2))/2\n        0.3826834323,   // sqrt(2-sqrt(2))/2\n        0.4142135623\n    ); // sqrt(2)-1\n    // reflections\n    p = abs(p) * 1.1;\n    p -= 2.0 * min(dot(vec2(k.x,k.y), p), 0.0) * vec2(k.x,k.y);\n    p -= 2.0 * min(dot(vec2(-k.x,k.y), p), 0.0) * vec2(-k.x,k.y);\n    // Polygon side.\n    p -= vec2(clamp(p.x, -k.z*r, k.z*r), r);\n    return length(p) * sign(p.y);\n}\n\nfloat sdStar(in vec2 p, in float r, in uint n, in float m) { // m=[2,n]\n    // these 4 lines can be precomputed for a given shape\n    float an = 3.141593 / float(n);\n    float en = 3.141593 / m;\n    vec2  acs = vec2(cos(an), sin(an));\n    vec2  ecs = vec2(cos(en), sin(en)); // ecs=vec2(0,1) and simplify, for regular polygon,\n\n    // reduce to first sector\n    float bn = mod(atan(p.x, p.y), 2.0 * an) - an;\n    p = length(p) * vec2(cos(bn), abs(sin(bn)));\n\n    // line sdf\n    p -= r * acs;\n    p += ecs * clamp(-dot(p, ecs), 0.0, r * acs.y / ecs.y);\n    return length(p) * sign(p.x);\n}\n\nfloat sdCross(in vec2 p, in float w, in float r) {\n    p = abs(p);\n    return length(p - min(p.x + p.y, w) * 0.5) - r;\n}\n\n// TODO: Precompute this, we always pass the same parameters tot his function (v, vec2(1.0, 0.3), 0.0)\nfloat sdPlus( in vec2 p, in vec2 b, float r ) {\n    p = abs(p);\n    p = (p.y > p.x) ? p.yx : p.xy;\n\n    vec2  q = p - b;\n    float k = max(q.y, q.x);\n    vec2  w = (k > 0.0) ? q : vec2(b.y - p.x, -k);\n\n    return sign(k)*length(max(w, 0.0)) + r;\n}\n\nflat in vec4 fColor;\nflat in float fPixelLength;\nin vec2 vFromCenter;\n\nout vec4 fragColor;\n\nvoid main() {\n    float sd = sdPlus(vFromCenter, vec2(1.0, 0.3), 0.0);\n    if (sd > 0.0) {\n        discard;\n    }\n    fragColor = fColor;\n}\n";
@@ -16663,7 +16703,7 @@ __export(mod_exports5, {
 var Straight_vs_default = "#version 300 es\n#define GLSLIFY 1\n\nlayout(location=0) in vec3 aVertex;\nlayout(location=1) in uint iPointA;\nlayout(location=2) in uint iPointB;\nlayout(location=3) in uint iColorA;\nlayout(location=4) in uint iColorB;\n\nuniform mat4 uViewMatrix;\nuniform mat4 uSceneMatrix;\nuniform mat4 uProjectionMatrix;\nuniform vec2 uViewportSize;\nuniform float uPixelRatio;\nuniform sampler2D uGraphPoints;\nuniform sampler2D uColorPalette;\n\nuniform float uLineWidth;\n\nflat out float fLineWidth;\nout vec3 vColor;\nout vec2 vProjectedPosition;\nout float vProjectedW;\n\nvec4 valueForIndex(sampler2D tex, int index) {\n    int texWidth = textureSize(tex, 0).x;\n    int col = index % texWidth;\n    int row = index / texWidth;\n    return texelFetch(tex, ivec2(col, row), 0);\n}\n\nuvec4 uvalueForIndex(usampler2D tex, int index) {\n    int texWidth = textureSize(tex, 0).x;\n    int col = index % texWidth;\n    int row = index / texWidth;\n    return texelFetch(tex, ivec2(col, row), 0);\n}\n\nuint uivalueForIndex(usampler2D tex, int index) {\n    int texWidth = textureSize(tex, 0).x;\n    int col = index % texWidth;\n    int row = index / texWidth;\n    return texelFetch(tex, ivec2(col, row), 0)[0];\n}\n\nvoid main() {\n    vec4 pointA = valueForIndex(uGraphPoints, int(iPointA));\n    vec4 pointB = valueForIndex(uGraphPoints, int(iPointB));\n\n    vec3 direction = normalize(pointB.xyz - pointA.xyz);\n\n    vec3 offsetA = pointA.xyz + direction * pointA[3];\n    vec3 offsetB = pointB.xyz - direction * pointB[3];\n\n    float multA = aVertex.y;\n    float multB = 1.0 - aVertex.y;\n\n    vec4 colorA = valueForIndex(uColorPalette, int(iColorA));\n    vec4 colorB = valueForIndex(uColorPalette, int(iColorB));\n\n    vColor = colorA.rgb * multA + colorB.rgb * multB;\n\n    mat4 renderMatrix = uProjectionMatrix * uViewMatrix * uSceneMatrix;\n\n    vec4 aProjected = renderMatrix * vec4(offsetA, 1.0);\n    vec2 aScreen = aProjected.xy / aProjected.w * uViewportSize * 0.5;\n\n    vec4 bProjected = renderMatrix * vec4(offsetB, 1.0);\n    vec2 bScreen = bProjected.xy / bProjected.w * uViewportSize * 0.5;\n\n    vec2 screenDirection = normalize(bScreen - aScreen);\n    vec2 perp = vec2(-screenDirection.y, screenDirection.x);\n\n    fLineWidth = uLineWidth * uPixelRatio;\n    float offsetWidth = fLineWidth + 0.5;\n    vec4 position = aProjected * multA + bProjected * multB;\n    vec4 offset = vec4(((aVertex.x * perp * offsetWidth) / uViewportSize) * position.w, 0.0, 0.0);\n    gl_Position = position + offset;\n\n    vProjectedPosition = position.xy;\n    vProjectedW = position.w;\n}\n";
 
 // src/graph/edges/straight/Straight.fs.glsl
-var Straight_fs_default = "#version 300 es\nprecision highp float;\n#define GLSLIFY 1\n\n// from https://en.wikipedia.org/wiki/SRGB#The_reverse_transformation\nfloat luminance_x_1540259130(float x) {\n    return x <= 0.04045 ? x / 12.92 : pow((x + 0.055) / 1.055, 2.4);\n}\nfloat color_l_1540259130(float l) {\n    return min(1.0, max(0.0, l <= 0.0031308 ? l * 12.92 : pow(l * 1.055, 1.0 / 2.4) - 0.055));\n}\n\n// from https://en.wikipedia.org/wiki/Relative_luminance\nfloat rgb2luminance(vec3 color) {\n    // relative luminance\n    // see http://www.w3.org/TR/2008/REC-WCAG20-20081211/#relativeluminancedef\n    float r = luminance_x_1540259130(color.r);\n    float g = luminance_x_1540259130(color.g);\n    float b = luminance_x_1540259130(color.b);\n    return 0.2126 * r + 0.7152 * g + 0.0722 * b;\n}\n\nvec3 setLuminance(vec3 color, float luminance) {\n    float r = luminance_x_1540259130(color.r) * 0.2126;\n    float g = luminance_x_1540259130(color.g) * 0.7152;\n    float b = luminance_x_1540259130(color.b) * 0.0722;\n    float colorLuminance = r + g + b;\n\n    float tr = luminance * (r / colorLuminance);\n    float tg = luminance * (g / colorLuminance);\n    float tb = luminance * (b / colorLuminance);\n\n    float rr = color_l_1540259130(tr / 0.2126);\n    float rg = color_l_1540259130(tg / 0.7152);\n    float rb = color_l_1540259130(tb / 0.0722);\n\n    return vec3(rr, rg, rb );\n}\n\n// https://www.w3.org/TR/WCAG20/#contrast-ratiodef\n// (L1 + 0.05) / (L2 + 0.05), where\n// - L1 is the relative luminance of the lighter of the colors, and\n// - L2 is the relative luminance of the darker of the colors.\nfloat findDarker(float luminance, float contrast) {\n    return (contrast * luminance) + (0.05 * contrast) - 0.05;\n}\nfloat findLighter(float luminance, float contrast) {\n    return (luminance + 0.05 - (0.05 * contrast)) / contrast;\n}\n\nvec3 contrastingColor(vec3 color, float contrast) {\n    float luminance = rgb2luminance(color);\n    float darker = findDarker(luminance, contrast);\n    float lighter = findLighter(luminance, contrast);\n\n    float targetLuminance;\n    if (darker < 0.0 || darker > 1.0) {\n        targetLuminance = lighter;\n    } else if (lighter < 0.0 || lighter > 1.0) {\n        targetLuminance = darker;\n    } else {\n        targetLuminance = abs(luminance - lighter) < abs(darker - luminance) ? lighter : darker;\n    }\n\n    return setLuminance(color, targetLuminance);\n}\n\nvec3 desaturateColor(vec3 color, float amount) {\n    float l = rgb2luminance(color);\n    vec3 gray = vec3(l, l, l);\n    return mix(color, gray, amount);\n}\n\nuniform vec4 uClearColor;\nuniform float uDesaturate;\nuniform float uBrightness;\nuniform float uFade;\nuniform float uAlpha;\n\nvec4 outputColor(vec4 color) {\n    // desaturate => fade => alpha\n    vec3 ret = mix(color.rgb, vec3(uBrightness + 1.0 / 2.0), abs(uBrightness));\n    ret = vec3(desaturateColor(ret, uDesaturate));\n    ret = mix(ret, uClearColor.rgb, uFade);\n    return vec4(ret, color.a * uAlpha);\n}\n\n#define MODE_DRAFT 0u\n#define MODE_MEDIUM 1u\n#define MODE_HIGH_PASS_1 2u\n#define MODE_HIGH_PASS_2 3u\n#define MODE_PICKING 4u\n\n#define ONE_ALPHA 0.00392156862 // 1.0 / 255.0\n\nfloat lineAlpha(vec2 position, float w, vec2 viewportSize, float lineWidth) {\n    vec2 lineCenter = ((position / w) * 0.5 + 0.5) * viewportSize;\n    float distOffset = (lineWidth - 1.0) * 0.5;\n    float dist = smoothstep(lineWidth * 0.5 - 0.5, lineWidth * 0.5 + 0.5, distance(lineCenter, gl_FragCoord.xy));\n    return (1.0 - dist);\n}\n\nvec4 lineColor(vec3 color, vec2 position, float w, vec2 viewportSize, uint mode, float lineWidth) {\n    if (mode < MODE_HIGH_PASS_1) {\n        return outputColor(vec4(color, 1.0));\n    }\n\n    float a = lineAlpha(position, w, viewportSize, lineWidth);\n\n    if (mode == MODE_HIGH_PASS_1) {\n        if (a == 1.0) {\n            return outputColor(vec4(color, a));\n        } else {\n            discard;\n        }\n    }\n\n    // Possible optimization.\n    // Edges run into fill rate issues because too many of them overlap, discarging pixels below a certain alpha\n    // threshold might help speed things up a bit.\n    if (a < ONE_ALPHA) {\n        discard;\n    }\n\n    return outputColor(vec4(color, a));\n}\n\nuniform vec2 uViewportSize;\nuniform uint uRenderMode;\n\nflat in float fLineWidth;\nin vec3 vColor;\nin vec2 vProjectedPosition;\nin float vProjectedW;\n\nout vec4 fragColor;\n\nvoid main() {\n    fragColor = lineColor(vColor, vProjectedPosition, vProjectedW, uViewportSize, uRenderMode, fLineWidth);\n}\n";
+var Straight_fs_default = "#version 300 es\nprecision highp float;\n#define GLSLIFY 1\n\n// from https://en.wikipedia.org/wiki/SRGB#The_reverse_transformation\nfloat luminance_x_1540259130(float x) {\n    return x <= 0.04045 ? x / 12.92 : pow((x + 0.055) / 1.055, 2.4);\n}\nfloat color_l_1540259130(float l) {\n    return min(1.0, max(0.0, l <= 0.0031308 ? l * 12.92 : pow(l * 1.055, 1.0 / 2.4) - 0.055));\n}\n\n// from https://en.wikipedia.org/wiki/Relative_luminance\nfloat rgb2luminance(vec3 color) {\n    // relative luminance\n    // see http://www.w3.org/TR/2008/REC-WCAG20-20081211/#relativeluminancedef\n    float r = luminance_x_1540259130(color.r);\n    float g = luminance_x_1540259130(color.g);\n    float b = luminance_x_1540259130(color.b);\n    return 0.2126 * r + 0.7152 * g + 0.0722 * b;\n}\n\nvec3 setLuminance(vec3 color, float luminance) {\n    float r = luminance_x_1540259130(color.r) * 0.2126;\n    float g = luminance_x_1540259130(color.g) * 0.7152;\n    float b = luminance_x_1540259130(color.b) * 0.0722;\n    float colorLuminance = r + g + b;\n\n    float tr = luminance * (r / colorLuminance);\n    float tg = luminance * (g / colorLuminance);\n    float tb = luminance * (b / colorLuminance);\n\n    float rr = color_l_1540259130(tr / 0.2126);\n    float rg = color_l_1540259130(tg / 0.7152);\n    float rb = color_l_1540259130(tb / 0.0722);\n\n    return vec3(rr, rg, rb );\n}\n\n// https://www.w3.org/TR/WCAG20/#contrast-ratiodef\n// (L1 + 0.05) / (L2 + 0.05), where\n// - L1 is the relative luminance of the lighter of the colors, and\n// - L2 is the relative luminance of the darker of the colors.\nfloat findDarker(float luminance, float contrast) {\n    return (contrast * luminance) + (0.05 * contrast) - 0.05;\n}\nfloat findLighter(float luminance, float contrast) {\n    return (luminance + 0.05 - (0.05 * contrast)) / contrast;\n}\n\nvec3 contrastingColor(vec3 color, float contrast) {\n    float luminance = rgb2luminance(color);\n    float darker = findDarker(luminance, contrast);\n    float lighter = findLighter(luminance, contrast);\n\n    float targetLuminance;\n    if (darker < 0.0 || darker > 1.0) {\n        targetLuminance = lighter;\n    } else if (lighter < 0.0 || lighter > 1.0) {\n        targetLuminance = darker;\n    } else {\n        targetLuminance = abs(luminance - lighter) < abs(darker - luminance) ? lighter : darker;\n    }\n\n    return setLuminance(color, targetLuminance);\n}\n\nvec3 desaturateColor(vec3 color, float amount) {\n    float l = rgb2luminance(color);\n    vec3 gray = vec3(l, l, l);\n    return mix(color, gray, amount);\n}\n\nuniform vec4 uClearColor;\nuniform float uDesaturate;\nuniform float uBrightness;\nuniform float uFade;\nuniform float uAlpha;\n\nvec4 outputColor(vec4 color) {\n    // desaturate => fade => alpha\n    vec3 ret = mix(color.rgb, vec3(uBrightness + 1.0 / 2.0), abs(uBrightness));\n    ret = vec3(desaturateColor(ret, uDesaturate));\n    ret = mix(ret, uClearColor.rgb, uFade);\n    return vec4(ret, color.a * uAlpha);\n}\n\n#define MODE_DRAFT 0u\n#define MODE_MEDIUM 1u\n#define MODE_HIGH 2u\n#define MODE_HIGH_PASS_1 3u\n#define MODE_HIGH_PASS_2 4u\n#define MODE_PICKING 5u\n\n#define ONE_ALPHA 0.00392156862 // 1.0 / 255.0\n\nfloat lineAlpha(vec2 position, float w, vec2 viewportSize, float lineWidth) {\n    vec2 lineCenter = ((position / w) * 0.5 + 0.5) * viewportSize;\n    float distOffset = (lineWidth - 1.0) * 0.5;\n    float dist = smoothstep(lineWidth * 0.5 - 0.5, lineWidth * 0.5 + 0.5, distance(lineCenter, gl_FragCoord.xy));\n    return (1.0 - dist);\n}\n\nvec4 lineColor(vec3 color, vec2 position, float w, vec2 viewportSize, uint mode, float lineWidth) {\n    if (mode < MODE_HIGH_PASS_1) {\n        return outputColor(vec4(color, 1.0));\n    }\n\n    float a = lineAlpha(position, w, viewportSize, lineWidth);\n\n    if (mode == MODE_HIGH_PASS_1) {\n        if (a == 1.0) {\n            return outputColor(vec4(color, a));\n        } else {\n            discard;\n        }\n    }\n\n    // Possible optimization.\n    // Edges run into fill rate issues because too many of them overlap, discarging pixels below a certain alpha\n    // threshold might help speed things up a bit.\n    if (a < ONE_ALPHA) {\n        discard;\n    }\n\n    return outputColor(vec4(color, a));\n}\n\nuniform vec2 uViewportSize;\nuniform uint uRenderMode;\n\nflat in float fLineWidth;\nin vec3 vColor;\nin vec2 vProjectedPosition;\nin float vProjectedW;\n\nout vec4 fragColor;\n\nvoid main() {\n    fragColor = lineColor(vColor, vProjectedPosition, vProjectedW, uViewportSize, uRenderMode, fLineWidth);\n}\n";
 
 // src/graph/edges/straight/Straight.data.vs.glsl
 var Straight_data_vs_default = "#version 300 es\n#define GLSLIFY 1\n\nlayout(location=0) in uint aSourceIndex;\nlayout(location=1) in uint aTargetIndex;\nlayout(location=2) in uint aSourceColor;\nlayout(location=3) in uint aTargetColor;\n\nflat out uint fSource;\nflat out uint fTarget;\nflat out uint fSourceColor;\nflat out uint fTargetColor;\n\nvoid main() {\n    fSource = aSourceIndex;\n    fTarget = aTargetIndex;\n    fSourceColor = aSourceColor;\n    fTargetColor = aTargetColor;\n}\n";
@@ -16787,7 +16827,7 @@ var Straight = class extends Edges {
 var Dashed_vs_default = "#version 300 es\n#define GLSLIFY 1\n\nlayout(location=0) in vec3 aVertex;\nlayout(location=1) in uint iPointA;\nlayout(location=2) in uint iPointB;\nlayout(location=3) in uint iColorA;\nlayout(location=4) in uint iColorB;\n\nuniform mat4 uViewMatrix;\nuniform mat4 uSceneMatrix;\nuniform mat4 uProjectionMatrix;\nuniform vec2 uViewportSize;\nuniform float uPixelRatio;\nuniform sampler2D uGraphPoints;\nuniform sampler2D uColorPalette;\nuniform uint uDashLength;\n\nuniform float uLineWidth;\n\nflat out float fLineWidth;\nout vec3 vColor;\nout float vDashLength;\nout vec2 vProjectedPosition;\nout float vProjectedW;\n\nvec4 valueForIndex(sampler2D tex, int index) {\n    int texWidth = textureSize(tex, 0).x;\n    int col = index % texWidth;\n    int row = index / texWidth;\n    return texelFetch(tex, ivec2(col, row), 0);\n}\n\nuvec4 uvalueForIndex(usampler2D tex, int index) {\n    int texWidth = textureSize(tex, 0).x;\n    int col = index % texWidth;\n    int row = index / texWidth;\n    return texelFetch(tex, ivec2(col, row), 0);\n}\n\nuint uivalueForIndex(usampler2D tex, int index) {\n    int texWidth = textureSize(tex, 0).x;\n    int col = index % texWidth;\n    int row = index / texWidth;\n    return texelFetch(tex, ivec2(col, row), 0)[0];\n}\n\nvoid main() {\n    vec4 pointA = valueForIndex(uGraphPoints, int(iPointA));\n    vec4 pointB = valueForIndex(uGraphPoints, int(iPointB));\n\n    vec3 direction = normalize(pointB.xyz - pointA.xyz);\n\n    vec3 offsetA = pointA.xyz + direction * pointA[3];\n    vec3 offsetB = pointB.xyz - direction * pointB[3];\n\n    float multA = aVertex.y;\n    float multB = 1.0 - aVertex.y;\n\n    vec4 colorA = valueForIndex(uColorPalette, int(iColorA));\n    vec4 colorB = valueForIndex(uColorPalette, int(iColorB));\n\n    vColor = colorA.rgb * multA + colorB.rgb * multB;\n\n    mat4 renderMatrix = uProjectionMatrix * uViewMatrix * uSceneMatrix;\n\n    vec4 aProjected = renderMatrix * vec4(offsetA, 1.0);\n    vec2 aScreen = (aProjected.xy / aProjected.w) * (uViewportSize / 2.0);\n\n    vec4 bProjected = renderMatrix * vec4(offsetB, 1.0);\n    vec2 bScreen = (bProjected.xy / bProjected.w) * (uViewportSize / 2.0);\n\n    vec2 screenDirection = normalize(bScreen - aScreen);\n    vec2 perp = vec2(-screenDirection.y, screenDirection.x);\n\n    fLineWidth = uLineWidth * uPixelRatio;\n    float offsetWidth = fLineWidth + 0.5;\n    vec4 position = aProjected * multA + bProjected * multB;\n    vec4 offset = vec4(((aVertex.x * perp * offsetWidth) / uViewportSize) * position.w, 0.0, 0.0);\n    gl_Position = position + offset;\n\n    vProjectedPosition = position.xy;\n    vProjectedW = position.w;\n\n    float screenDistance = distance(aScreen, bScreen);\n    vDashLength = (screenDistance / float(uDashLength)) * aVertex.y;\n}\n";
 
 // src/graph/edges/dashed/Dashed.fs.glsl
-var Dashed_fs_default = "#version 300 es\nprecision highp float;\n#define GLSLIFY 1\n\n// from https://en.wikipedia.org/wiki/SRGB#The_reverse_transformation\nfloat luminance_x_1540259130(float x) {\n    return x <= 0.04045 ? x / 12.92 : pow((x + 0.055) / 1.055, 2.4);\n}\nfloat color_l_1540259130(float l) {\n    return min(1.0, max(0.0, l <= 0.0031308 ? l * 12.92 : pow(l * 1.055, 1.0 / 2.4) - 0.055));\n}\n\n// from https://en.wikipedia.org/wiki/Relative_luminance\nfloat rgb2luminance(vec3 color) {\n    // relative luminance\n    // see http://www.w3.org/TR/2008/REC-WCAG20-20081211/#relativeluminancedef\n    float r = luminance_x_1540259130(color.r);\n    float g = luminance_x_1540259130(color.g);\n    float b = luminance_x_1540259130(color.b);\n    return 0.2126 * r + 0.7152 * g + 0.0722 * b;\n}\n\nvec3 setLuminance(vec3 color, float luminance) {\n    float r = luminance_x_1540259130(color.r) * 0.2126;\n    float g = luminance_x_1540259130(color.g) * 0.7152;\n    float b = luminance_x_1540259130(color.b) * 0.0722;\n    float colorLuminance = r + g + b;\n\n    float tr = luminance * (r / colorLuminance);\n    float tg = luminance * (g / colorLuminance);\n    float tb = luminance * (b / colorLuminance);\n\n    float rr = color_l_1540259130(tr / 0.2126);\n    float rg = color_l_1540259130(tg / 0.7152);\n    float rb = color_l_1540259130(tb / 0.0722);\n\n    return vec3(rr, rg, rb );\n}\n\n// https://www.w3.org/TR/WCAG20/#contrast-ratiodef\n// (L1 + 0.05) / (L2 + 0.05), where\n// - L1 is the relative luminance of the lighter of the colors, and\n// - L2 is the relative luminance of the darker of the colors.\nfloat findDarker(float luminance, float contrast) {\n    return (contrast * luminance) + (0.05 * contrast) - 0.05;\n}\nfloat findLighter(float luminance, float contrast) {\n    return (luminance + 0.05 - (0.05 * contrast)) / contrast;\n}\n\nvec3 contrastingColor(vec3 color, float contrast) {\n    float luminance = rgb2luminance(color);\n    float darker = findDarker(luminance, contrast);\n    float lighter = findLighter(luminance, contrast);\n\n    float targetLuminance;\n    if (darker < 0.0 || darker > 1.0) {\n        targetLuminance = lighter;\n    } else if (lighter < 0.0 || lighter > 1.0) {\n        targetLuminance = darker;\n    } else {\n        targetLuminance = abs(luminance - lighter) < abs(darker - luminance) ? lighter : darker;\n    }\n\n    return setLuminance(color, targetLuminance);\n}\n\nvec3 desaturateColor(vec3 color, float amount) {\n    float l = rgb2luminance(color);\n    vec3 gray = vec3(l, l, l);\n    return mix(color, gray, amount);\n}\n\nuniform vec4 uClearColor;\nuniform float uDesaturate;\nuniform float uBrightness;\nuniform float uFade;\nuniform float uAlpha;\n\nvec4 outputColor(vec4 color) {\n    // desaturate => fade => alpha\n    vec3 ret = mix(color.rgb, vec3(uBrightness + 1.0 / 2.0), abs(uBrightness));\n    ret = vec3(desaturateColor(ret, uDesaturate));\n    ret = mix(ret, uClearColor.rgb, uFade);\n    return vec4(ret, color.a * uAlpha);\n}\n\n#define MODE_DRAFT 0u\n#define MODE_MEDIUM 1u\n#define MODE_HIGH_PASS_1 2u\n#define MODE_HIGH_PASS_2 3u\n#define MODE_PICKING 4u\n\n#define ONE_ALPHA 0.00392156862 // 1.0 / 255.0\n\nfloat lineAlpha(vec2 position, float w, vec2 viewportSize, float lineWidth) {\n    vec2 lineCenter = ((position / w) * 0.5 + 0.5) * viewportSize;\n    float distOffset = (lineWidth - 1.0) * 0.5;\n    float dist = smoothstep(lineWidth * 0.5 - 0.5, lineWidth * 0.5 + 0.5, distance(lineCenter, gl_FragCoord.xy));\n    return (1.0 - dist);\n}\n\nvec4 lineColor(vec3 color, vec2 position, float w, vec2 viewportSize, uint mode, float lineWidth) {\n    if (mode < MODE_HIGH_PASS_1) {\n        return outputColor(vec4(color, 1.0));\n    }\n\n    float a = lineAlpha(position, w, viewportSize, lineWidth);\n\n    if (mode == MODE_HIGH_PASS_1) {\n        if (a == 1.0) {\n            return outputColor(vec4(color, a));\n        } else {\n            discard;\n        }\n    }\n\n    // Possible optimization.\n    // Edges run into fill rate issues because too many of them overlap, discarging pixels below a certain alpha\n    // threshold might help speed things up a bit.\n    if (a < ONE_ALPHA) {\n        discard;\n    }\n\n    return outputColor(vec4(color, a));\n}\n\nuniform vec2 uViewportSize;\nuniform uint uRenderMode;\n\nflat in float fLineWidth;\nin vec3 vColor;\nin float vDashLength;\nin vec2 vProjectedPosition;\nin float vProjectedW;\n\nout vec4 fragColor;\n\nvoid main() {\n    if (int(vDashLength) % 2 == 1) {\n        discard;\n    }\n    fragColor = lineColor(vColor, vProjectedPosition, vProjectedW, uViewportSize, uRenderMode, fLineWidth);\n}\n";
+var Dashed_fs_default = "#version 300 es\nprecision highp float;\n#define GLSLIFY 1\n\n// from https://en.wikipedia.org/wiki/SRGB#The_reverse_transformation\nfloat luminance_x_1540259130(float x) {\n    return x <= 0.04045 ? x / 12.92 : pow((x + 0.055) / 1.055, 2.4);\n}\nfloat color_l_1540259130(float l) {\n    return min(1.0, max(0.0, l <= 0.0031308 ? l * 12.92 : pow(l * 1.055, 1.0 / 2.4) - 0.055));\n}\n\n// from https://en.wikipedia.org/wiki/Relative_luminance\nfloat rgb2luminance(vec3 color) {\n    // relative luminance\n    // see http://www.w3.org/TR/2008/REC-WCAG20-20081211/#relativeluminancedef\n    float r = luminance_x_1540259130(color.r);\n    float g = luminance_x_1540259130(color.g);\n    float b = luminance_x_1540259130(color.b);\n    return 0.2126 * r + 0.7152 * g + 0.0722 * b;\n}\n\nvec3 setLuminance(vec3 color, float luminance) {\n    float r = luminance_x_1540259130(color.r) * 0.2126;\n    float g = luminance_x_1540259130(color.g) * 0.7152;\n    float b = luminance_x_1540259130(color.b) * 0.0722;\n    float colorLuminance = r + g + b;\n\n    float tr = luminance * (r / colorLuminance);\n    float tg = luminance * (g / colorLuminance);\n    float tb = luminance * (b / colorLuminance);\n\n    float rr = color_l_1540259130(tr / 0.2126);\n    float rg = color_l_1540259130(tg / 0.7152);\n    float rb = color_l_1540259130(tb / 0.0722);\n\n    return vec3(rr, rg, rb );\n}\n\n// https://www.w3.org/TR/WCAG20/#contrast-ratiodef\n// (L1 + 0.05) / (L2 + 0.05), where\n// - L1 is the relative luminance of the lighter of the colors, and\n// - L2 is the relative luminance of the darker of the colors.\nfloat findDarker(float luminance, float contrast) {\n    return (contrast * luminance) + (0.05 * contrast) - 0.05;\n}\nfloat findLighter(float luminance, float contrast) {\n    return (luminance + 0.05 - (0.05 * contrast)) / contrast;\n}\n\nvec3 contrastingColor(vec3 color, float contrast) {\n    float luminance = rgb2luminance(color);\n    float darker = findDarker(luminance, contrast);\n    float lighter = findLighter(luminance, contrast);\n\n    float targetLuminance;\n    if (darker < 0.0 || darker > 1.0) {\n        targetLuminance = lighter;\n    } else if (lighter < 0.0 || lighter > 1.0) {\n        targetLuminance = darker;\n    } else {\n        targetLuminance = abs(luminance - lighter) < abs(darker - luminance) ? lighter : darker;\n    }\n\n    return setLuminance(color, targetLuminance);\n}\n\nvec3 desaturateColor(vec3 color, float amount) {\n    float l = rgb2luminance(color);\n    vec3 gray = vec3(l, l, l);\n    return mix(color, gray, amount);\n}\n\nuniform vec4 uClearColor;\nuniform float uDesaturate;\nuniform float uBrightness;\nuniform float uFade;\nuniform float uAlpha;\n\nvec4 outputColor(vec4 color) {\n    // desaturate => fade => alpha\n    vec3 ret = mix(color.rgb, vec3(uBrightness + 1.0 / 2.0), abs(uBrightness));\n    ret = vec3(desaturateColor(ret, uDesaturate));\n    ret = mix(ret, uClearColor.rgb, uFade);\n    return vec4(ret, color.a * uAlpha);\n}\n\n#define MODE_DRAFT 0u\n#define MODE_MEDIUM 1u\n#define MODE_HIGH 2u\n#define MODE_HIGH_PASS_1 3u\n#define MODE_HIGH_PASS_2 4u\n#define MODE_PICKING 5u\n\n#define ONE_ALPHA 0.00392156862 // 1.0 / 255.0\n\nfloat lineAlpha(vec2 position, float w, vec2 viewportSize, float lineWidth) {\n    vec2 lineCenter = ((position / w) * 0.5 + 0.5) * viewportSize;\n    float distOffset = (lineWidth - 1.0) * 0.5;\n    float dist = smoothstep(lineWidth * 0.5 - 0.5, lineWidth * 0.5 + 0.5, distance(lineCenter, gl_FragCoord.xy));\n    return (1.0 - dist);\n}\n\nvec4 lineColor(vec3 color, vec2 position, float w, vec2 viewportSize, uint mode, float lineWidth) {\n    if (mode < MODE_HIGH_PASS_1) {\n        return outputColor(vec4(color, 1.0));\n    }\n\n    float a = lineAlpha(position, w, viewportSize, lineWidth);\n\n    if (mode == MODE_HIGH_PASS_1) {\n        if (a == 1.0) {\n            return outputColor(vec4(color, a));\n        } else {\n            discard;\n        }\n    }\n\n    // Possible optimization.\n    // Edges run into fill rate issues because too many of them overlap, discarging pixels below a certain alpha\n    // threshold might help speed things up a bit.\n    if (a < ONE_ALPHA) {\n        discard;\n    }\n\n    return outputColor(vec4(color, a));\n}\n\nuniform vec2 uViewportSize;\nuniform uint uRenderMode;\n\nflat in float fLineWidth;\nin vec3 vColor;\nin float vDashLength;\nin vec2 vProjectedPosition;\nin float vProjectedW;\n\nout vec4 fragColor;\n\nvoid main() {\n    if (int(vDashLength) % 2 == 1) {\n        discard;\n    }\n    fragColor = lineColor(vColor, vProjectedPosition, vProjectedW, uViewportSize, uRenderMode, fLineWidth);\n}\n";
 
 // src/graph/edges/dashed/Dashed.ts
 var Dashed = class extends Straight {
@@ -16813,7 +16853,7 @@ var Dashed = class extends Straight {
 var Gravity_vs_default = "#version 300 es\n#define GLSLIFY 1\n\nlayout(location=0) in vec3 aVertex;\nlayout(location=1) in uint iPointA;\nlayout(location=2) in uint iPointB;\nlayout(location=3) in uint iColorA;\nlayout(location=4) in uint iColorB;\n\nuniform mat4 uViewMatrix;\nuniform mat4 uSceneMatrix;\nuniform mat4 uProjectionMatrix;\nuniform vec2 uViewportSize;\nuniform float uPixelRatio;\nuniform float uGravity;\nuniform sampler2D uColorPalette;\n\nout vec3 vColor;\nout vec2 vProjectedPosition;\nout float vProjectedW;\n\nvec4 valueForIndex(sampler2D tex, int index) {\n    int texWidth = textureSize(tex, 0).x;\n    int col = index % texWidth;\n    int row = index / texWidth;\n    return texelFetch(tex, ivec2(col, row), 0);\n}\n\nuvec4 uvalueForIndex(usampler2D tex, int index) {\n    int texWidth = textureSize(tex, 0).x;\n    int col = index % texWidth;\n    int row = index / texWidth;\n    return texelFetch(tex, ivec2(col, row), 0);\n}\n\nuint uivalueForIndex(usampler2D tex, int index) {\n    int texWidth = textureSize(tex, 0).x;\n    int col = index % texWidth;\n    int row = index / texWidth;\n    return texelFetch(tex, ivec2(col, row), 0)[0];\n}\n\nvoid main() {\n    float multA = aVertex.x;\n    float multB = 1.0 - aVertex.x;\n\n    vec3 offsetA = valueForIndex(uGraphPoints, int(iPointA)).xyz;\n    vec3 offsetB = valueForIndex(uGraphPoints, int(iPointB)).xyz;\n\n    vec4 colorA = valueForIndex(uColorPalette, int(iColorA));\n    vec4 colorB = valueForIndex(uColorPalette, int(iColorB));\n\n    vColor = colorA.rgb * multA + colorB.rgb * multB;\n\n    vec3 direction = offsetB - offsetA;\n    vec3 middle = offsetA + direction * 0.5;\n    float distance = length(direction);\n\n    float toCenter = length(middle);\n    vec3 towardsCenter = (middle * -1.0) / toCenter;\n\n    vec3 gravity = middle + towardsCenter * min(toCenter, distance * uGravity);\n    vec3 position = gravity + pow(multB, 2.0) * (offsetB - gravity) + pow(multA, 2.0) * (offsetA - gravity);\n\n    mat4 renderMatrix = uProjectionMatrix * uViewMatrix * uSceneMatrix;\n    gl_Position = renderMatrix * vec4(position, 1.0);\n\n    vProjectedPosition = gl_Position.xy;\n    vProjectedW = gl_Position.w;\n}\n";
 
 // src/graph/edges/gravity/Gravity.fs.glsl
-var Gravity_fs_default = "#version 300 es\nprecision highp float;\n#define GLSLIFY 1\n\n// from https://en.wikipedia.org/wiki/SRGB#The_reverse_transformation\nfloat luminance_x_1540259130(float x) {\n    return x <= 0.04045 ? x / 12.92 : pow((x + 0.055) / 1.055, 2.4);\n}\nfloat color_l_1540259130(float l) {\n    return min(1.0, max(0.0, l <= 0.0031308 ? l * 12.92 : pow(l * 1.055, 1.0 / 2.4) - 0.055));\n}\n\n// from https://en.wikipedia.org/wiki/Relative_luminance\nfloat rgb2luminance(vec3 color) {\n    // relative luminance\n    // see http://www.w3.org/TR/2008/REC-WCAG20-20081211/#relativeluminancedef\n    float r = luminance_x_1540259130(color.r);\n    float g = luminance_x_1540259130(color.g);\n    float b = luminance_x_1540259130(color.b);\n    return 0.2126 * r + 0.7152 * g + 0.0722 * b;\n}\n\nvec3 setLuminance(vec3 color, float luminance) {\n    float r = luminance_x_1540259130(color.r) * 0.2126;\n    float g = luminance_x_1540259130(color.g) * 0.7152;\n    float b = luminance_x_1540259130(color.b) * 0.0722;\n    float colorLuminance = r + g + b;\n\n    float tr = luminance * (r / colorLuminance);\n    float tg = luminance * (g / colorLuminance);\n    float tb = luminance * (b / colorLuminance);\n\n    float rr = color_l_1540259130(tr / 0.2126);\n    float rg = color_l_1540259130(tg / 0.7152);\n    float rb = color_l_1540259130(tb / 0.0722);\n\n    return vec3(rr, rg, rb );\n}\n\n// https://www.w3.org/TR/WCAG20/#contrast-ratiodef\n// (L1 + 0.05) / (L2 + 0.05), where\n// - L1 is the relative luminance of the lighter of the colors, and\n// - L2 is the relative luminance of the darker of the colors.\nfloat findDarker(float luminance, float contrast) {\n    return (contrast * luminance) + (0.05 * contrast) - 0.05;\n}\nfloat findLighter(float luminance, float contrast) {\n    return (luminance + 0.05 - (0.05 * contrast)) / contrast;\n}\n\nvec3 contrastingColor(vec3 color, float contrast) {\n    float luminance = rgb2luminance(color);\n    float darker = findDarker(luminance, contrast);\n    float lighter = findLighter(luminance, contrast);\n\n    float targetLuminance;\n    if (darker < 0.0 || darker > 1.0) {\n        targetLuminance = lighter;\n    } else if (lighter < 0.0 || lighter > 1.0) {\n        targetLuminance = darker;\n    } else {\n        targetLuminance = abs(luminance - lighter) < abs(darker - luminance) ? lighter : darker;\n    }\n\n    return setLuminance(color, targetLuminance);\n}\n\nvec3 desaturateColor(vec3 color, float amount) {\n    float l = rgb2luminance(color);\n    vec3 gray = vec3(l, l, l);\n    return mix(color, gray, amount);\n}\n\nuniform vec4 uClearColor;\nuniform float uDesaturate;\nuniform float uBrightness;\nuniform float uFade;\nuniform float uAlpha;\n\nvec4 outputColor(vec4 color) {\n    // desaturate => fade => alpha\n    vec3 ret = mix(color.rgb, vec3(uBrightness + 1.0 / 2.0), abs(uBrightness));\n    ret = vec3(desaturateColor(ret, uDesaturate));\n    ret = mix(ret, uClearColor.rgb, uFade);\n    return vec4(ret, color.a * uAlpha);\n}\n\n#define MODE_DRAFT 0u\n#define MODE_MEDIUM 1u\n#define MODE_HIGH_PASS_1 2u\n#define MODE_HIGH_PASS_2 3u\n#define MODE_PICKING 4u\n\n#define ONE_ALPHA 0.00392156862 // 1.0 / 255.0\n\nfloat lineAlpha(vec2 position, float w, vec2 viewportSize, float lineWidth) {\n    vec2 lineCenter = ((position / w) * 0.5 + 0.5) * viewportSize;\n    float distOffset = (lineWidth - 1.0) * 0.5;\n    float dist = smoothstep(lineWidth * 0.5 - 0.5, lineWidth * 0.5 + 0.5, distance(lineCenter, gl_FragCoord.xy));\n    return (1.0 - dist);\n}\n\nvec4 lineColor(vec3 color, vec2 position, float w, vec2 viewportSize, uint mode, float lineWidth) {\n    if (mode < MODE_HIGH_PASS_1) {\n        return outputColor(vec4(color, 1.0));\n    }\n\n    float a = lineAlpha(position, w, viewportSize, lineWidth);\n\n    if (mode == MODE_HIGH_PASS_1) {\n        if (a == 1.0) {\n            return outputColor(vec4(color, a));\n        } else {\n            discard;\n        }\n    }\n\n    // Possible optimization.\n    // Edges run into fill rate issues because too many of them overlap, discarging pixels below a certain alpha\n    // threshold might help speed things up a bit.\n    if (a < ONE_ALPHA) {\n        discard;\n    }\n\n    return outputColor(vec4(color, a));\n}\n\nuniform vec2 uViewportSize;\nuniform uint uRenderMode;\n\nin vec3 vColor;\nin vec2 vProjectedPosition;\nin float vProjectedW;\n\nout vec4 fragColor;\n\nvoid main() {\n    fragColor = lineColor(vColor, vProjectedPosition, vProjectedW, uViewportSize, uRenderMode);\n}\n";
+var Gravity_fs_default = "#version 300 es\nprecision highp float;\n#define GLSLIFY 1\n\n// from https://en.wikipedia.org/wiki/SRGB#The_reverse_transformation\nfloat luminance_x_1540259130(float x) {\n    return x <= 0.04045 ? x / 12.92 : pow((x + 0.055) / 1.055, 2.4);\n}\nfloat color_l_1540259130(float l) {\n    return min(1.0, max(0.0, l <= 0.0031308 ? l * 12.92 : pow(l * 1.055, 1.0 / 2.4) - 0.055));\n}\n\n// from https://en.wikipedia.org/wiki/Relative_luminance\nfloat rgb2luminance(vec3 color) {\n    // relative luminance\n    // see http://www.w3.org/TR/2008/REC-WCAG20-20081211/#relativeluminancedef\n    float r = luminance_x_1540259130(color.r);\n    float g = luminance_x_1540259130(color.g);\n    float b = luminance_x_1540259130(color.b);\n    return 0.2126 * r + 0.7152 * g + 0.0722 * b;\n}\n\nvec3 setLuminance(vec3 color, float luminance) {\n    float r = luminance_x_1540259130(color.r) * 0.2126;\n    float g = luminance_x_1540259130(color.g) * 0.7152;\n    float b = luminance_x_1540259130(color.b) * 0.0722;\n    float colorLuminance = r + g + b;\n\n    float tr = luminance * (r / colorLuminance);\n    float tg = luminance * (g / colorLuminance);\n    float tb = luminance * (b / colorLuminance);\n\n    float rr = color_l_1540259130(tr / 0.2126);\n    float rg = color_l_1540259130(tg / 0.7152);\n    float rb = color_l_1540259130(tb / 0.0722);\n\n    return vec3(rr, rg, rb );\n}\n\n// https://www.w3.org/TR/WCAG20/#contrast-ratiodef\n// (L1 + 0.05) / (L2 + 0.05), where\n// - L1 is the relative luminance of the lighter of the colors, and\n// - L2 is the relative luminance of the darker of the colors.\nfloat findDarker(float luminance, float contrast) {\n    return (contrast * luminance) + (0.05 * contrast) - 0.05;\n}\nfloat findLighter(float luminance, float contrast) {\n    return (luminance + 0.05 - (0.05 * contrast)) / contrast;\n}\n\nvec3 contrastingColor(vec3 color, float contrast) {\n    float luminance = rgb2luminance(color);\n    float darker = findDarker(luminance, contrast);\n    float lighter = findLighter(luminance, contrast);\n\n    float targetLuminance;\n    if (darker < 0.0 || darker > 1.0) {\n        targetLuminance = lighter;\n    } else if (lighter < 0.0 || lighter > 1.0) {\n        targetLuminance = darker;\n    } else {\n        targetLuminance = abs(luminance - lighter) < abs(darker - luminance) ? lighter : darker;\n    }\n\n    return setLuminance(color, targetLuminance);\n}\n\nvec3 desaturateColor(vec3 color, float amount) {\n    float l = rgb2luminance(color);\n    vec3 gray = vec3(l, l, l);\n    return mix(color, gray, amount);\n}\n\nuniform vec4 uClearColor;\nuniform float uDesaturate;\nuniform float uBrightness;\nuniform float uFade;\nuniform float uAlpha;\n\nvec4 outputColor(vec4 color) {\n    // desaturate => fade => alpha\n    vec3 ret = mix(color.rgb, vec3(uBrightness + 1.0 / 2.0), abs(uBrightness));\n    ret = vec3(desaturateColor(ret, uDesaturate));\n    ret = mix(ret, uClearColor.rgb, uFade);\n    return vec4(ret, color.a * uAlpha);\n}\n\n#define MODE_DRAFT 0u\n#define MODE_MEDIUM 1u\n#define MODE_HIGH 2u\n#define MODE_HIGH_PASS_1 3u\n#define MODE_HIGH_PASS_2 4u\n#define MODE_PICKING 5u\n\n#define ONE_ALPHA 0.00392156862 // 1.0 / 255.0\n\nfloat lineAlpha(vec2 position, float w, vec2 viewportSize, float lineWidth) {\n    vec2 lineCenter = ((position / w) * 0.5 + 0.5) * viewportSize;\n    float distOffset = (lineWidth - 1.0) * 0.5;\n    float dist = smoothstep(lineWidth * 0.5 - 0.5, lineWidth * 0.5 + 0.5, distance(lineCenter, gl_FragCoord.xy));\n    return (1.0 - dist);\n}\n\nvec4 lineColor(vec3 color, vec2 position, float w, vec2 viewportSize, uint mode, float lineWidth) {\n    if (mode < MODE_HIGH_PASS_1) {\n        return outputColor(vec4(color, 1.0));\n    }\n\n    float a = lineAlpha(position, w, viewportSize, lineWidth);\n\n    if (mode == MODE_HIGH_PASS_1) {\n        if (a == 1.0) {\n            return outputColor(vec4(color, a));\n        } else {\n            discard;\n        }\n    }\n\n    // Possible optimization.\n    // Edges run into fill rate issues because too many of them overlap, discarging pixels below a certain alpha\n    // threshold might help speed things up a bit.\n    if (a < ONE_ALPHA) {\n        discard;\n    }\n\n    return outputColor(vec4(color, a));\n}\n\nuniform vec2 uViewportSize;\nuniform uint uRenderMode;\n\nin vec3 vColor;\nin vec2 vProjectedPosition;\nin float vProjectedW;\n\nout vec4 fragColor;\n\nvoid main() {\n    fragColor = lineColor(vColor, vProjectedPosition, vProjectedW, uViewportSize, uRenderMode);\n}\n";
 
 // src/graph/edges/gravity/Gravity.data.vs.glsl
 var Gravity_data_vs_default = "#version 300 es\n#define GLSLIFY 1\n\nlayout(location=0) in uint aSourceIndex;\nlayout(location=1) in uint aTargetIndex;\nlayout(location=2) in uint aSourceColor;\nlayout(location=3) in uint aTargetColor;\n\nuniform sampler2D uGraphPoints;\n\nflat out uint fSource;\nflat out uint fTarget;\nflat out uint fSourceColor;\nflat out uint fTargetColor;\n\nvoid main() {\n    fSource = aSourceIndex;\n    fTarget = aTargetIndex;\n    fSourceColor = aSourceColor;\n    fTargetColor = aTargetColor;\n}\n";
@@ -16894,7 +16934,7 @@ var Gravity = class extends Edges {
 var CurvedPath_vs_default = "#version 300 es\n#define GLSLIFY 1\n\nlayout(location=0) in vec3 aVertex;\nlayout(location=1) in vec3 iOffsetA;\nlayout(location=2) in vec3 iOffsetB;\nlayout(location=3) in vec3 iControl;\nlayout(location=4) in uint iColorA;\nlayout(location=5) in uint iColorB;\nlayout(location=6) in vec2 iColorMix;\n\nuniform mat4 uViewMatrix;\nuniform mat4 uSceneMatrix;\nuniform mat4 uProjectionMatrix;\nuniform vec2 uViewportSize;\nuniform float uPixelRatio;\nuniform sampler2D uColorPalette;\n\nuniform float uLineWidth;\nuniform float uSegments;\n\nflat out float fLineWidth;\nout vec3 vColor;\nout vec2 vProjectedPosition;\nout float vProjectedW;\n\nvec4 getColorByIndexFromTexture(sampler2D tex, int index) {\n    int texWidth = textureSize(tex, 0).x;\n    int col = index % texWidth;\n    int row = index / texWidth;\n    return texelFetch(tex, ivec2(col, row), 0);\n}\n\nvec3 bezier(vec3 p0, vec3 p1, vec3 p2, float t) {\n    return p1 + pow(1.0 - t, 2.0) * (p2 - p1) + pow(t, 2.0) * (p0 - p1);\n}\n\nvoid main() {\n    // bezier works fine with 0 > t > 1\n    float t0 = aVertex.y / uSegments;\n    float t1 = (aVertex.y + 1.0) / uSegments;\n\n    // calculate both bezier points\n    vec3 b0 = bezier(iOffsetA, iControl, iOffsetB, t0);\n    vec3 b1 = bezier(iOffsetA, iControl, iOffsetB, t1);\n\n    // project the points to the screen\n    mat4 renderMatrix = uProjectionMatrix * uViewMatrix * uSceneMatrix;\n    vec4 b0Projected = renderMatrix * vec4(b0, 1.0);\n    vec4 b1Projected = renderMatrix * vec4(b1, 1.0);\n\n    // get their screen coords\n    vec2 b0Screen = (b0Projected.xy / b0Projected.w) * uViewportSize * 0.5;\n    vec2 b1Screen = (b1Projected.xy / b1Projected.w) * uViewportSize * 0.5;\n\n    // get the direction and normal of the segment\n    vec2 direction = normalize(b1Screen - b0Screen);\n    vec2 normal = vec2(-direction.y, direction.x);\n\n    // calculate the pixel offset\n    fLineWidth = uLineWidth * uPixelRatio;\n    float offsetWidth = fLineWidth + 0.5;\n    vec4 offset = vec4(((aVertex.x * normal * offsetWidth) / uViewportSize) * b0Projected.w, 0.0, 0.0);\n\n    // set the final vertex position\n    gl_Position = b0Projected + offset;\n    vProjectedPosition = b0Projected.xy;\n    vProjectedW = b0Projected.w;\n\n    // calculate the color\n    vec4 colorA = getColorByIndexFromTexture(uColorPalette, int(iColorA));\n    vec4 colorB = getColorByIndexFromTexture(uColorPalette, int(iColorB));\n    vec3 mixColorA = mix(colorA.rgb, colorB.rgb, iColorMix[1]);\n    vec3 mixColorB = mix(colorA.rgb, colorB.rgb, iColorMix[0]);\n    vColor = mix(mixColorA.rgb, mixColorB.rgb, t0);\n}\n";
 
 // src/graph/edges/path/CurvedPath.fs.glsl
-var CurvedPath_fs_default = "#version 300 es\nprecision highp float;\n#define GLSLIFY 1\n\n// from https://en.wikipedia.org/wiki/SRGB#The_reverse_transformation\nfloat luminance_x_1540259130(float x) {\n    return x <= 0.04045 ? x / 12.92 : pow((x + 0.055) / 1.055, 2.4);\n}\nfloat color_l_1540259130(float l) {\n    return min(1.0, max(0.0, l <= 0.0031308 ? l * 12.92 : pow(l * 1.055, 1.0 / 2.4) - 0.055));\n}\n\n// from https://en.wikipedia.org/wiki/Relative_luminance\nfloat rgb2luminance(vec3 color) {\n    // relative luminance\n    // see http://www.w3.org/TR/2008/REC-WCAG20-20081211/#relativeluminancedef\n    float r = luminance_x_1540259130(color.r);\n    float g = luminance_x_1540259130(color.g);\n    float b = luminance_x_1540259130(color.b);\n    return 0.2126 * r + 0.7152 * g + 0.0722 * b;\n}\n\nvec3 setLuminance(vec3 color, float luminance) {\n    float r = luminance_x_1540259130(color.r) * 0.2126;\n    float g = luminance_x_1540259130(color.g) * 0.7152;\n    float b = luminance_x_1540259130(color.b) * 0.0722;\n    float colorLuminance = r + g + b;\n\n    float tr = luminance * (r / colorLuminance);\n    float tg = luminance * (g / colorLuminance);\n    float tb = luminance * (b / colorLuminance);\n\n    float rr = color_l_1540259130(tr / 0.2126);\n    float rg = color_l_1540259130(tg / 0.7152);\n    float rb = color_l_1540259130(tb / 0.0722);\n\n    return vec3(rr, rg, rb );\n}\n\n// https://www.w3.org/TR/WCAG20/#contrast-ratiodef\n// (L1 + 0.05) / (L2 + 0.05), where\n// - L1 is the relative luminance of the lighter of the colors, and\n// - L2 is the relative luminance of the darker of the colors.\nfloat findDarker(float luminance, float contrast) {\n    return (contrast * luminance) + (0.05 * contrast) - 0.05;\n}\nfloat findLighter(float luminance, float contrast) {\n    return (luminance + 0.05 - (0.05 * contrast)) / contrast;\n}\n\nvec3 contrastingColor(vec3 color, float contrast) {\n    float luminance = rgb2luminance(color);\n    float darker = findDarker(luminance, contrast);\n    float lighter = findLighter(luminance, contrast);\n\n    float targetLuminance;\n    if (darker < 0.0 || darker > 1.0) {\n        targetLuminance = lighter;\n    } else if (lighter < 0.0 || lighter > 1.0) {\n        targetLuminance = darker;\n    } else {\n        targetLuminance = abs(luminance - lighter) < abs(darker - luminance) ? lighter : darker;\n    }\n\n    return setLuminance(color, targetLuminance);\n}\n\nvec3 desaturateColor(vec3 color, float amount) {\n    float l = rgb2luminance(color);\n    vec3 gray = vec3(l, l, l);\n    return mix(color, gray, amount);\n}\n\nuniform vec4 uClearColor;\nuniform float uDesaturate;\nuniform float uBrightness;\nuniform float uFade;\nuniform float uAlpha;\n\nvec4 outputColor(vec4 color) {\n    // desaturate => fade => alpha\n    vec3 ret = mix(color.rgb, vec3(uBrightness + 1.0 / 2.0), abs(uBrightness));\n    ret = vec3(desaturateColor(ret, uDesaturate));\n    ret = mix(ret, uClearColor.rgb, uFade);\n    return vec4(ret, color.a * uAlpha);\n}\n\n#define MODE_DRAFT 0u\n#define MODE_MEDIUM 1u\n#define MODE_HIGH_PASS_1 2u\n#define MODE_HIGH_PASS_2 3u\n#define MODE_PICKING 4u\n\n#define ONE_ALPHA 0.00392156862 // 1.0 / 255.0\n\nfloat lineAlpha(vec2 position, float w, vec2 viewportSize, float lineWidth) {\n    vec2 lineCenter = ((position / w) * 0.5 + 0.5) * viewportSize;\n    float distOffset = (lineWidth - 1.0) * 0.5;\n    float dist = smoothstep(lineWidth * 0.5 - 0.5, lineWidth * 0.5 + 0.5, distance(lineCenter, gl_FragCoord.xy));\n    return (1.0 - dist);\n}\n\nvec4 lineColor(vec3 color, vec2 position, float w, vec2 viewportSize, uint mode, float lineWidth) {\n    if (mode < MODE_HIGH_PASS_1) {\n        return outputColor(vec4(color, 1.0));\n    }\n\n    float a = lineAlpha(position, w, viewportSize, lineWidth);\n\n    if (mode == MODE_HIGH_PASS_1) {\n        if (a == 1.0) {\n            return outputColor(vec4(color, a));\n        } else {\n            discard;\n        }\n    }\n\n    // Possible optimization.\n    // Edges run into fill rate issues because too many of them overlap, discarging pixels below a certain alpha\n    // threshold might help speed things up a bit.\n    if (a < ONE_ALPHA) {\n        discard;\n    }\n\n    return outputColor(vec4(color, a));\n}\n\nuniform vec2 uViewportSize;\nuniform uint uRenderMode;\n\nflat in float fLineWidth;\nin vec3 vColor;\nin vec2 vProjectedPosition;\nin float vProjectedW;\n\nout vec4 fragColor;\n\nvoid main() {\n    fragColor = lineColor(vColor, vProjectedPosition, vProjectedW, uViewportSize, uRenderMode, fLineWidth);\n}\n";
+var CurvedPath_fs_default = "#version 300 es\nprecision highp float;\n#define GLSLIFY 1\n\n// from https://en.wikipedia.org/wiki/SRGB#The_reverse_transformation\nfloat luminance_x_1540259130(float x) {\n    return x <= 0.04045 ? x / 12.92 : pow((x + 0.055) / 1.055, 2.4);\n}\nfloat color_l_1540259130(float l) {\n    return min(1.0, max(0.0, l <= 0.0031308 ? l * 12.92 : pow(l * 1.055, 1.0 / 2.4) - 0.055));\n}\n\n// from https://en.wikipedia.org/wiki/Relative_luminance\nfloat rgb2luminance(vec3 color) {\n    // relative luminance\n    // see http://www.w3.org/TR/2008/REC-WCAG20-20081211/#relativeluminancedef\n    float r = luminance_x_1540259130(color.r);\n    float g = luminance_x_1540259130(color.g);\n    float b = luminance_x_1540259130(color.b);\n    return 0.2126 * r + 0.7152 * g + 0.0722 * b;\n}\n\nvec3 setLuminance(vec3 color, float luminance) {\n    float r = luminance_x_1540259130(color.r) * 0.2126;\n    float g = luminance_x_1540259130(color.g) * 0.7152;\n    float b = luminance_x_1540259130(color.b) * 0.0722;\n    float colorLuminance = r + g + b;\n\n    float tr = luminance * (r / colorLuminance);\n    float tg = luminance * (g / colorLuminance);\n    float tb = luminance * (b / colorLuminance);\n\n    float rr = color_l_1540259130(tr / 0.2126);\n    float rg = color_l_1540259130(tg / 0.7152);\n    float rb = color_l_1540259130(tb / 0.0722);\n\n    return vec3(rr, rg, rb );\n}\n\n// https://www.w3.org/TR/WCAG20/#contrast-ratiodef\n// (L1 + 0.05) / (L2 + 0.05), where\n// - L1 is the relative luminance of the lighter of the colors, and\n// - L2 is the relative luminance of the darker of the colors.\nfloat findDarker(float luminance, float contrast) {\n    return (contrast * luminance) + (0.05 * contrast) - 0.05;\n}\nfloat findLighter(float luminance, float contrast) {\n    return (luminance + 0.05 - (0.05 * contrast)) / contrast;\n}\n\nvec3 contrastingColor(vec3 color, float contrast) {\n    float luminance = rgb2luminance(color);\n    float darker = findDarker(luminance, contrast);\n    float lighter = findLighter(luminance, contrast);\n\n    float targetLuminance;\n    if (darker < 0.0 || darker > 1.0) {\n        targetLuminance = lighter;\n    } else if (lighter < 0.0 || lighter > 1.0) {\n        targetLuminance = darker;\n    } else {\n        targetLuminance = abs(luminance - lighter) < abs(darker - luminance) ? lighter : darker;\n    }\n\n    return setLuminance(color, targetLuminance);\n}\n\nvec3 desaturateColor(vec3 color, float amount) {\n    float l = rgb2luminance(color);\n    vec3 gray = vec3(l, l, l);\n    return mix(color, gray, amount);\n}\n\nuniform vec4 uClearColor;\nuniform float uDesaturate;\nuniform float uBrightness;\nuniform float uFade;\nuniform float uAlpha;\n\nvec4 outputColor(vec4 color) {\n    // desaturate => fade => alpha\n    vec3 ret = mix(color.rgb, vec3(uBrightness + 1.0 / 2.0), abs(uBrightness));\n    ret = vec3(desaturateColor(ret, uDesaturate));\n    ret = mix(ret, uClearColor.rgb, uFade);\n    return vec4(ret, color.a * uAlpha);\n}\n\n#define MODE_DRAFT 0u\n#define MODE_MEDIUM 1u\n#define MODE_HIGH 2u\n#define MODE_HIGH_PASS_1 3u\n#define MODE_HIGH_PASS_2 4u\n#define MODE_PICKING 5u\n\n#define ONE_ALPHA 0.00392156862 // 1.0 / 255.0\n\nfloat lineAlpha(vec2 position, float w, vec2 viewportSize, float lineWidth) {\n    vec2 lineCenter = ((position / w) * 0.5 + 0.5) * viewportSize;\n    float distOffset = (lineWidth - 1.0) * 0.5;\n    float dist = smoothstep(lineWidth * 0.5 - 0.5, lineWidth * 0.5 + 0.5, distance(lineCenter, gl_FragCoord.xy));\n    return (1.0 - dist);\n}\n\nvec4 lineColor(vec3 color, vec2 position, float w, vec2 viewportSize, uint mode, float lineWidth) {\n    if (mode < MODE_HIGH_PASS_1) {\n        return outputColor(vec4(color, 1.0));\n    }\n\n    float a = lineAlpha(position, w, viewportSize, lineWidth);\n\n    if (mode == MODE_HIGH_PASS_1) {\n        if (a == 1.0) {\n            return outputColor(vec4(color, a));\n        } else {\n            discard;\n        }\n    }\n\n    // Possible optimization.\n    // Edges run into fill rate issues because too many of them overlap, discarging pixels below a certain alpha\n    // threshold might help speed things up a bit.\n    if (a < ONE_ALPHA) {\n        discard;\n    }\n\n    return outputColor(vec4(color, a));\n}\n\nuniform vec2 uViewportSize;\nuniform uint uRenderMode;\n\nflat in float fLineWidth;\nin vec3 vColor;\nin vec2 vProjectedPosition;\nin float vProjectedW;\n\nout vec4 fragColor;\n\nvoid main() {\n    fragColor = lineColor(vColor, vProjectedPosition, vProjectedW, uViewportSize, uRenderMode, fLineWidth);\n}\n";
 
 // src/graph/edges/path/CurvedPath.data.vs.glsl
 var CurvedPath_data_vs_default = "#version 300 es\n#define GLSLIFY 1\n\nlayout(location=0) in uint aSourceIndex;\nlayout(location=1) in uint aTargetIndex;\nlayout(location=2) in uvec3 aControl;\nlayout(location=3) in uint aSourceColor;\nlayout(location=4) in uint aTargetColor;\n\nuniform sampler2D uGraphPoints;\n\nout vec3 vSource;\nout vec3 vTarget;\nout vec3 vControl;\nflat out uint vSourceColor;\nflat out uint vTargetColor;\nout vec2 vColorMix;\n\nvec4 valueForIndex(sampler2D tex, int index) {\n    int texWidth = textureSize(tex, 0).x;\n    int col = index % texWidth;\n    int row = index / texWidth;\n    return texelFetch(tex, ivec2(col, row), 0);\n}\n\nuvec4 uvalueForIndex(usampler2D tex, int index) {\n    int texWidth = textureSize(tex, 0).x;\n    int col = index % texWidth;\n    int row = index / texWidth;\n    return texelFetch(tex, ivec2(col, row), 0);\n}\n\nuint uivalueForIndex(usampler2D tex, int index) {\n    int texWidth = textureSize(tex, 0).x;\n    int col = index % texWidth;\n    int row = index / texWidth;\n    return texelFetch(tex, ivec2(col, row), 0)[0];\n}\n\nvoid main() {\n    vec4 source = valueForIndex(uGraphPoints, int(aSourceIndex));\n    vec4 target = valueForIndex(uGraphPoints, int(aTargetIndex));\n    vec4 control = valueForIndex(uGraphPoints, int(aControl[0]));\n\n    // TODO: Optimize this to avoid branches. (If performance becomes a problem)\n    if (aControl[1] == 0u) {\n        vSource = source.xyz;\n    } else {\n        vSource = (source.xyz + control.xyz) / 2.0;\n    }\n\n    if (aControl[1] == aControl[2] - 1u) {\n        vTarget = target.xyz;\n    } else {\n        vTarget = (target.xyz + control.xyz) / 2.0;\n    }\n\n    vControl = control.xyz;\n\n    vSourceColor = aSourceColor;\n    vTargetColor = aTargetColor;\n\n    vColorMix = vec2(float(aControl[1]) / float(aControl[2]), float(aControl[1] + 1u) / float(aControl[2]));\n}\n";
@@ -17007,7 +17047,7 @@ var CurvedPath = class extends Edges {
 var StraightPath_vs_default = "#version 300 es\n#define GLSLIFY 1\n\nlayout(location=0) in vec3 aVertex;\nlayout(location=1) in uint iPointA;\nlayout(location=2) in uint iPointB;\nlayout(location=3) in uint iColorA;\nlayout(location=4) in uint iColorB;\nlayout(location=5) in vec2 iColorMix;\n\nuniform mat4 uViewMatrix;\nuniform mat4 uSceneMatrix;\nuniform mat4 uProjectionMatrix;\nuniform vec2 uViewportSize;\nuniform float uPixelRatio;\nuniform sampler2D uGraphPoints;\nuniform sampler2D uColorPalette;\n\nuniform float uLineWidth;\n\nflat out float fLineWidth;\nout vec3 vColor;\nout vec2 vProjectedPosition;\nout float vProjectedW;\n\nvec4 valueForIndex(sampler2D tex, int index) {\n    int texWidth = textureSize(tex, 0).x;\n    int col = index % texWidth;\n    int row = index / texWidth;\n    return texelFetch(tex, ivec2(col, row), 0);\n}\n\nuvec4 uvalueForIndex(usampler2D tex, int index) {\n    int texWidth = textureSize(tex, 0).x;\n    int col = index % texWidth;\n    int row = index / texWidth;\n    return texelFetch(tex, ivec2(col, row), 0);\n}\n\nuint uivalueForIndex(usampler2D tex, int index) {\n    int texWidth = textureSize(tex, 0).x;\n    int col = index % texWidth;\n    int row = index / texWidth;\n    return texelFetch(tex, ivec2(col, row), 0)[0];\n}\n\nvoid main() {\n    float multA = aVertex.y;\n    float multB = 1.0 - aVertex.y;\n\n    mat4 renderMatrix = uProjectionMatrix * uViewMatrix * uSceneMatrix;\n\n    vec3 offsetA = valueForIndex(uGraphPoints, int(iPointA)).xyz;\n    vec3 offsetB = valueForIndex(uGraphPoints, int(iPointB)).xyz;\n\n    vec4 aProjected = renderMatrix * vec4(offsetA, 1.0);\n    vec2 aScreen = aProjected.xy / aProjected.w * uViewportSize * 0.5;\n\n    vec4 bProjected = renderMatrix * vec4(offsetB, 1.0);\n    vec2 bScreen = bProjected.xy / bProjected.w * uViewportSize * 0.5;\n\n    vec2 direction = normalize(bScreen - aScreen);\n    vec2 perp = vec2(-direction.y, direction.x);\n\n    fLineWidth = uLineWidth * uPixelRatio;\n    float offsetWidth = fLineWidth + 0.5;\n    vec4 position = aProjected * multA + bProjected * multB;\n    vec4 offset = vec4(((aVertex.x * perp * offsetWidth) / uViewportSize) * position.w, 0.0, 0.0);\n    gl_Position = position + offset;\n\n    vProjectedPosition = position.xy;\n    vProjectedW = position.w;\n\n    // calculate the color\n    vec4 colorA = valueForIndex(uColorPalette, int(iColorA));\n    vec4 colorB = valueForIndex(uColorPalette, int(iColorB));\n    vec3 mixColorA = mix(colorA.rgb, colorB.rgb, iColorMix[1]);\n    vec3 mixColorB = mix(colorA.rgb, colorB.rgb, iColorMix[0]);\n    vColor = mixColorA.rgb * multB + mixColorB.rgb * multA;\n}\n";
 
 // src/graph/edges/path/StraightPath.fs.glsl
-var StraightPath_fs_default = "#version 300 es\nprecision highp float;\n#define GLSLIFY 1\n\n// from https://en.wikipedia.org/wiki/SRGB#The_reverse_transformation\nfloat luminance_x_1540259130(float x) {\n    return x <= 0.04045 ? x / 12.92 : pow((x + 0.055) / 1.055, 2.4);\n}\nfloat color_l_1540259130(float l) {\n    return min(1.0, max(0.0, l <= 0.0031308 ? l * 12.92 : pow(l * 1.055, 1.0 / 2.4) - 0.055));\n}\n\n// from https://en.wikipedia.org/wiki/Relative_luminance\nfloat rgb2luminance(vec3 color) {\n    // relative luminance\n    // see http://www.w3.org/TR/2008/REC-WCAG20-20081211/#relativeluminancedef\n    float r = luminance_x_1540259130(color.r);\n    float g = luminance_x_1540259130(color.g);\n    float b = luminance_x_1540259130(color.b);\n    return 0.2126 * r + 0.7152 * g + 0.0722 * b;\n}\n\nvec3 setLuminance(vec3 color, float luminance) {\n    float r = luminance_x_1540259130(color.r) * 0.2126;\n    float g = luminance_x_1540259130(color.g) * 0.7152;\n    float b = luminance_x_1540259130(color.b) * 0.0722;\n    float colorLuminance = r + g + b;\n\n    float tr = luminance * (r / colorLuminance);\n    float tg = luminance * (g / colorLuminance);\n    float tb = luminance * (b / colorLuminance);\n\n    float rr = color_l_1540259130(tr / 0.2126);\n    float rg = color_l_1540259130(tg / 0.7152);\n    float rb = color_l_1540259130(tb / 0.0722);\n\n    return vec3(rr, rg, rb );\n}\n\n// https://www.w3.org/TR/WCAG20/#contrast-ratiodef\n// (L1 + 0.05) / (L2 + 0.05), where\n// - L1 is the relative luminance of the lighter of the colors, and\n// - L2 is the relative luminance of the darker of the colors.\nfloat findDarker(float luminance, float contrast) {\n    return (contrast * luminance) + (0.05 * contrast) - 0.05;\n}\nfloat findLighter(float luminance, float contrast) {\n    return (luminance + 0.05 - (0.05 * contrast)) / contrast;\n}\n\nvec3 contrastingColor(vec3 color, float contrast) {\n    float luminance = rgb2luminance(color);\n    float darker = findDarker(luminance, contrast);\n    float lighter = findLighter(luminance, contrast);\n\n    float targetLuminance;\n    if (darker < 0.0 || darker > 1.0) {\n        targetLuminance = lighter;\n    } else if (lighter < 0.0 || lighter > 1.0) {\n        targetLuminance = darker;\n    } else {\n        targetLuminance = abs(luminance - lighter) < abs(darker - luminance) ? lighter : darker;\n    }\n\n    return setLuminance(color, targetLuminance);\n}\n\nvec3 desaturateColor(vec3 color, float amount) {\n    float l = rgb2luminance(color);\n    vec3 gray = vec3(l, l, l);\n    return mix(color, gray, amount);\n}\n\nuniform vec4 uClearColor;\nuniform float uDesaturate;\nuniform float uBrightness;\nuniform float uFade;\nuniform float uAlpha;\n\nvec4 outputColor(vec4 color) {\n    // desaturate => fade => alpha\n    vec3 ret = mix(color.rgb, vec3(uBrightness + 1.0 / 2.0), abs(uBrightness));\n    ret = vec3(desaturateColor(ret, uDesaturate));\n    ret = mix(ret, uClearColor.rgb, uFade);\n    return vec4(ret, color.a * uAlpha);\n}\n\n#define MODE_DRAFT 0u\n#define MODE_MEDIUM 1u\n#define MODE_HIGH_PASS_1 2u\n#define MODE_HIGH_PASS_2 3u\n#define MODE_PICKING 4u\n\n#define ONE_ALPHA 0.00392156862 // 1.0 / 255.0\n\nfloat lineAlpha(vec2 position, float w, vec2 viewportSize, float lineWidth) {\n    vec2 lineCenter = ((position / w) * 0.5 + 0.5) * viewportSize;\n    float distOffset = (lineWidth - 1.0) * 0.5;\n    float dist = smoothstep(lineWidth * 0.5 - 0.5, lineWidth * 0.5 + 0.5, distance(lineCenter, gl_FragCoord.xy));\n    return (1.0 - dist);\n}\n\nvec4 lineColor(vec3 color, vec2 position, float w, vec2 viewportSize, uint mode, float lineWidth) {\n    if (mode < MODE_HIGH_PASS_1) {\n        return outputColor(vec4(color, 1.0));\n    }\n\n    float a = lineAlpha(position, w, viewportSize, lineWidth);\n\n    if (mode == MODE_HIGH_PASS_1) {\n        if (a == 1.0) {\n            return outputColor(vec4(color, a));\n        } else {\n            discard;\n        }\n    }\n\n    // Possible optimization.\n    // Edges run into fill rate issues because too many of them overlap, discarging pixels below a certain alpha\n    // threshold might help speed things up a bit.\n    if (a < ONE_ALPHA) {\n        discard;\n    }\n\n    return outputColor(vec4(color, a));\n}\n\nuniform vec2 uViewportSize;\nuniform uint uRenderMode;\n\nflat in float fLineWidth;\nin vec3 vColor;\nin vec2 vProjectedPosition;\nin float vProjectedW;\n\nout vec4 fragColor;\n\nvoid main() {\n    fragColor = lineColor(vColor, vProjectedPosition, vProjectedW, uViewportSize, uRenderMode, fLineWidth);\n}\n";
+var StraightPath_fs_default = "#version 300 es\nprecision highp float;\n#define GLSLIFY 1\n\n// from https://en.wikipedia.org/wiki/SRGB#The_reverse_transformation\nfloat luminance_x_1540259130(float x) {\n    return x <= 0.04045 ? x / 12.92 : pow((x + 0.055) / 1.055, 2.4);\n}\nfloat color_l_1540259130(float l) {\n    return min(1.0, max(0.0, l <= 0.0031308 ? l * 12.92 : pow(l * 1.055, 1.0 / 2.4) - 0.055));\n}\n\n// from https://en.wikipedia.org/wiki/Relative_luminance\nfloat rgb2luminance(vec3 color) {\n    // relative luminance\n    // see http://www.w3.org/TR/2008/REC-WCAG20-20081211/#relativeluminancedef\n    float r = luminance_x_1540259130(color.r);\n    float g = luminance_x_1540259130(color.g);\n    float b = luminance_x_1540259130(color.b);\n    return 0.2126 * r + 0.7152 * g + 0.0722 * b;\n}\n\nvec3 setLuminance(vec3 color, float luminance) {\n    float r = luminance_x_1540259130(color.r) * 0.2126;\n    float g = luminance_x_1540259130(color.g) * 0.7152;\n    float b = luminance_x_1540259130(color.b) * 0.0722;\n    float colorLuminance = r + g + b;\n\n    float tr = luminance * (r / colorLuminance);\n    float tg = luminance * (g / colorLuminance);\n    float tb = luminance * (b / colorLuminance);\n\n    float rr = color_l_1540259130(tr / 0.2126);\n    float rg = color_l_1540259130(tg / 0.7152);\n    float rb = color_l_1540259130(tb / 0.0722);\n\n    return vec3(rr, rg, rb );\n}\n\n// https://www.w3.org/TR/WCAG20/#contrast-ratiodef\n// (L1 + 0.05) / (L2 + 0.05), where\n// - L1 is the relative luminance of the lighter of the colors, and\n// - L2 is the relative luminance of the darker of the colors.\nfloat findDarker(float luminance, float contrast) {\n    return (contrast * luminance) + (0.05 * contrast) - 0.05;\n}\nfloat findLighter(float luminance, float contrast) {\n    return (luminance + 0.05 - (0.05 * contrast)) / contrast;\n}\n\nvec3 contrastingColor(vec3 color, float contrast) {\n    float luminance = rgb2luminance(color);\n    float darker = findDarker(luminance, contrast);\n    float lighter = findLighter(luminance, contrast);\n\n    float targetLuminance;\n    if (darker < 0.0 || darker > 1.0) {\n        targetLuminance = lighter;\n    } else if (lighter < 0.0 || lighter > 1.0) {\n        targetLuminance = darker;\n    } else {\n        targetLuminance = abs(luminance - lighter) < abs(darker - luminance) ? lighter : darker;\n    }\n\n    return setLuminance(color, targetLuminance);\n}\n\nvec3 desaturateColor(vec3 color, float amount) {\n    float l = rgb2luminance(color);\n    vec3 gray = vec3(l, l, l);\n    return mix(color, gray, amount);\n}\n\nuniform vec4 uClearColor;\nuniform float uDesaturate;\nuniform float uBrightness;\nuniform float uFade;\nuniform float uAlpha;\n\nvec4 outputColor(vec4 color) {\n    // desaturate => fade => alpha\n    vec3 ret = mix(color.rgb, vec3(uBrightness + 1.0 / 2.0), abs(uBrightness));\n    ret = vec3(desaturateColor(ret, uDesaturate));\n    ret = mix(ret, uClearColor.rgb, uFade);\n    return vec4(ret, color.a * uAlpha);\n}\n\n#define MODE_DRAFT 0u\n#define MODE_MEDIUM 1u\n#define MODE_HIGH 2u\n#define MODE_HIGH_PASS_1 3u\n#define MODE_HIGH_PASS_2 4u\n#define MODE_PICKING 5u\n\n#define ONE_ALPHA 0.00392156862 // 1.0 / 255.0\n\nfloat lineAlpha(vec2 position, float w, vec2 viewportSize, float lineWidth) {\n    vec2 lineCenter = ((position / w) * 0.5 + 0.5) * viewportSize;\n    float distOffset = (lineWidth - 1.0) * 0.5;\n    float dist = smoothstep(lineWidth * 0.5 - 0.5, lineWidth * 0.5 + 0.5, distance(lineCenter, gl_FragCoord.xy));\n    return (1.0 - dist);\n}\n\nvec4 lineColor(vec3 color, vec2 position, float w, vec2 viewportSize, uint mode, float lineWidth) {\n    if (mode < MODE_HIGH_PASS_1) {\n        return outputColor(vec4(color, 1.0));\n    }\n\n    float a = lineAlpha(position, w, viewportSize, lineWidth);\n\n    if (mode == MODE_HIGH_PASS_1) {\n        if (a == 1.0) {\n            return outputColor(vec4(color, a));\n        } else {\n            discard;\n        }\n    }\n\n    // Possible optimization.\n    // Edges run into fill rate issues because too many of them overlap, discarging pixels below a certain alpha\n    // threshold might help speed things up a bit.\n    if (a < ONE_ALPHA) {\n        discard;\n    }\n\n    return outputColor(vec4(color, a));\n}\n\nuniform vec2 uViewportSize;\nuniform uint uRenderMode;\n\nflat in float fLineWidth;\nin vec3 vColor;\nin vec2 vProjectedPosition;\nin float vProjectedW;\n\nout vec4 fragColor;\n\nvoid main() {\n    fragColor = lineColor(vColor, vProjectedPosition, vProjectedW, uViewportSize, uRenderMode, fLineWidth);\n}\n";
 
 // src/graph/edges/path/StraightPath.data.vs.glsl
 var StraightPath_data_vs_default = "#version 300 es\n#define GLSLIFY 1\n\nlayout(location=0) in uint aSourceIndex;\nlayout(location=1) in uint aTargetIndex;\nlayout(location=2) in uvec2 aControl;\nlayout(location=3) in uint aSourceColor;\nlayout(location=4) in uint aTargetColor;\n\nuniform sampler2D uGraphPoints;\n\nflat out uint fSource;\nflat out uint fTarget;\nflat out uint fSourceColor;\nflat out uint fTargetColor;\nflat out vec2 fColorMix;\n\nvoid main() {\n    fSource = aSourceIndex;\n    fTarget = aTargetIndex;\n\n    fSourceColor = aSourceColor;\n    fTargetColor = aTargetColor;\n\n    fColorMix = vec2(float(aControl[0]) / float(aControl[1]), float(aControl[0] + 1u) / float(aControl[1]));\n}\n";
@@ -17121,7 +17161,7 @@ var StraightPath = class extends Edges {
 var ClusterBundle_vs_default = "#version 300 es\n#define GLSLIFY 1\n\nlayout(location=0) in vec3 aVertex;\nlayout(location=1) in vec3 iOffsetA;\nlayout(location=2) in vec3 iOffsetB;\nlayout(location=3) in vec3 iControl;\nlayout(location=4) in uint iColorA;\nlayout(location=5) in uint iColorB;\nlayout(location=6) in vec2 iColorMix;\n\nuniform mat4 uViewMatrix;\nuniform mat4 uSceneMatrix;\nuniform mat4 uProjectionMatrix;\nuniform vec2 uViewportSize;\nuniform float uPixelRatio;\nuniform sampler2D uColorPalette;\n\nuniform float uLineWidth;\nuniform float uSegments;\n\nflat out float fLineWidth;\nout vec3 vColor;\nout vec2 vProjectedPosition;\nout float vProjectedW;\n\nvec4 getColorByIndexFromTexture(sampler2D tex, int index) {\n    int texWidth = textureSize(tex, 0).x;\n    int col = index % texWidth;\n    int row = index / texWidth;\n    return texelFetch(tex, ivec2(col, row), 0);\n}\n\nvec3 bezier(vec3 p0, vec3 p1, vec3 p2, float t) {\n    return p1 + pow(1.0 - t, 2.0) * (p2 - p1) + pow(t, 2.0) * (p0 - p1);\n}\n\nvoid main() {\n    // bezier works fine with 0 > t > 1\n    float t0 = aVertex.y / uSegments;\n    float t1 = (aVertex.y + 1.0) / uSegments;\n\n    // calculate both bezier points\n    vec3 b0 = bezier(iOffsetA, iControl, iOffsetB, t0);\n    vec3 b1 = bezier(iOffsetA, iControl, iOffsetB, t1);\n\n    // project the points to the screen\n    mat4 renderMatrix = uProjectionMatrix * uViewMatrix * uSceneMatrix;\n    vec4 b0Projected = renderMatrix * vec4(b0, 1.0);\n    vec4 b1Projected = renderMatrix * vec4(b1, 1.0);\n\n    // get their screen coords\n    vec2 b0Screen = (b0Projected.xy / b0Projected.w) * uViewportSize * 0.5;\n    vec2 b1Screen = (b1Projected.xy / b1Projected.w) * uViewportSize * 0.5;\n\n    // get the direction and normal of the segment\n    vec2 direction = normalize(b1Screen - b0Screen);\n    vec2 normal = vec2(-direction.y, direction.x);\n\n    // calculate the pixel offset\n    fLineWidth = uLineWidth * uPixelRatio;\n    float offsetWidth = fLineWidth + 0.5;\n    vec4 offset = vec4(((aVertex.x * normal * offsetWidth) / uViewportSize) * b0Projected.w, 0.0, 0.0);\n\n    // set the final vertex position\n    gl_Position = b0Projected + offset;\n    vProjectedPosition = b0Projected.xy;\n    vProjectedW = b0Projected.w;\n\n    // calculate the color\n    vec4 colorA = getColorByIndexFromTexture(uColorPalette, int(iColorA));\n    vec4 colorB = getColorByIndexFromTexture(uColorPalette, int(iColorB));\n    vec3 mixColorA = mix(colorA.rgb, colorB.rgb, iColorMix[1]);\n    vec3 mixColorB = mix(colorA.rgb, colorB.rgb, iColorMix[0]);\n    vColor = mix(mixColorA.rgb, mixColorB.rgb, t0);\n}\n\n";
 
 // src/graph/edges/bundle/ClusterBundle.fs.glsl
-var ClusterBundle_fs_default = "#version 300 es\nprecision highp float;\n#define GLSLIFY 1\n\n// from https://en.wikipedia.org/wiki/SRGB#The_reverse_transformation\nfloat luminance_x_1540259130(float x) {\n    return x <= 0.04045 ? x / 12.92 : pow((x + 0.055) / 1.055, 2.4);\n}\nfloat color_l_1540259130(float l) {\n    return min(1.0, max(0.0, l <= 0.0031308 ? l * 12.92 : pow(l * 1.055, 1.0 / 2.4) - 0.055));\n}\n\n// from https://en.wikipedia.org/wiki/Relative_luminance\nfloat rgb2luminance(vec3 color) {\n    // relative luminance\n    // see http://www.w3.org/TR/2008/REC-WCAG20-20081211/#relativeluminancedef\n    float r = luminance_x_1540259130(color.r);\n    float g = luminance_x_1540259130(color.g);\n    float b = luminance_x_1540259130(color.b);\n    return 0.2126 * r + 0.7152 * g + 0.0722 * b;\n}\n\nvec3 setLuminance(vec3 color, float luminance) {\n    float r = luminance_x_1540259130(color.r) * 0.2126;\n    float g = luminance_x_1540259130(color.g) * 0.7152;\n    float b = luminance_x_1540259130(color.b) * 0.0722;\n    float colorLuminance = r + g + b;\n\n    float tr = luminance * (r / colorLuminance);\n    float tg = luminance * (g / colorLuminance);\n    float tb = luminance * (b / colorLuminance);\n\n    float rr = color_l_1540259130(tr / 0.2126);\n    float rg = color_l_1540259130(tg / 0.7152);\n    float rb = color_l_1540259130(tb / 0.0722);\n\n    return vec3(rr, rg, rb );\n}\n\n// https://www.w3.org/TR/WCAG20/#contrast-ratiodef\n// (L1 + 0.05) / (L2 + 0.05), where\n// - L1 is the relative luminance of the lighter of the colors, and\n// - L2 is the relative luminance of the darker of the colors.\nfloat findDarker(float luminance, float contrast) {\n    return (contrast * luminance) + (0.05 * contrast) - 0.05;\n}\nfloat findLighter(float luminance, float contrast) {\n    return (luminance + 0.05 - (0.05 * contrast)) / contrast;\n}\n\nvec3 contrastingColor(vec3 color, float contrast) {\n    float luminance = rgb2luminance(color);\n    float darker = findDarker(luminance, contrast);\n    float lighter = findLighter(luminance, contrast);\n\n    float targetLuminance;\n    if (darker < 0.0 || darker > 1.0) {\n        targetLuminance = lighter;\n    } else if (lighter < 0.0 || lighter > 1.0) {\n        targetLuminance = darker;\n    } else {\n        targetLuminance = abs(luminance - lighter) < abs(darker - luminance) ? lighter : darker;\n    }\n\n    return setLuminance(color, targetLuminance);\n}\n\nvec3 desaturateColor(vec3 color, float amount) {\n    float l = rgb2luminance(color);\n    vec3 gray = vec3(l, l, l);\n    return mix(color, gray, amount);\n}\n\nuniform vec4 uClearColor;\nuniform float uDesaturate;\nuniform float uBrightness;\nuniform float uFade;\nuniform float uAlpha;\n\nvec4 outputColor(vec4 color) {\n    // desaturate => fade => alpha\n    vec3 ret = mix(color.rgb, vec3(uBrightness + 1.0 / 2.0), abs(uBrightness));\n    ret = vec3(desaturateColor(ret, uDesaturate));\n    ret = mix(ret, uClearColor.rgb, uFade);\n    return vec4(ret, color.a * uAlpha);\n}\n\n#define MODE_DRAFT 0u\n#define MODE_MEDIUM 1u\n#define MODE_HIGH_PASS_1 2u\n#define MODE_HIGH_PASS_2 3u\n#define MODE_PICKING 4u\n\n#define ONE_ALPHA 0.00392156862 // 1.0 / 255.0\n\nfloat lineAlpha(vec2 position, float w, vec2 viewportSize, float lineWidth) {\n    vec2 lineCenter = ((position / w) * 0.5 + 0.5) * viewportSize;\n    float distOffset = (lineWidth - 1.0) * 0.5;\n    float dist = smoothstep(lineWidth * 0.5 - 0.5, lineWidth * 0.5 + 0.5, distance(lineCenter, gl_FragCoord.xy));\n    return (1.0 - dist);\n}\n\nvec4 lineColor(vec3 color, vec2 position, float w, vec2 viewportSize, uint mode, float lineWidth) {\n    if (mode < MODE_HIGH_PASS_1) {\n        return outputColor(vec4(color, 1.0));\n    }\n\n    float a = lineAlpha(position, w, viewportSize, lineWidth);\n\n    if (mode == MODE_HIGH_PASS_1) {\n        if (a == 1.0) {\n            return outputColor(vec4(color, a));\n        } else {\n            discard;\n        }\n    }\n\n    // Possible optimization.\n    // Edges run into fill rate issues because too many of them overlap, discarging pixels below a certain alpha\n    // threshold might help speed things up a bit.\n    if (a < ONE_ALPHA) {\n        discard;\n    }\n\n    return outputColor(vec4(color, a));\n}\n\nuniform vec2 uViewportSize;\nuniform uint uRenderMode;\n\nflat in float fLineWidth;\nin vec3 vColor;\nin vec2 vProjectedPosition;\nin float vProjectedW;\n\nout vec4 fragColor;\n\nvoid main() {\n    fragColor = lineColor(vColor, vProjectedPosition, vProjectedW, uViewportSize, uRenderMode, fLineWidth);\n}\n\n";
+var ClusterBundle_fs_default = "#version 300 es\nprecision highp float;\n#define GLSLIFY 1\n\n// from https://en.wikipedia.org/wiki/SRGB#The_reverse_transformation\nfloat luminance_x_1540259130(float x) {\n    return x <= 0.04045 ? x / 12.92 : pow((x + 0.055) / 1.055, 2.4);\n}\nfloat color_l_1540259130(float l) {\n    return min(1.0, max(0.0, l <= 0.0031308 ? l * 12.92 : pow(l * 1.055, 1.0 / 2.4) - 0.055));\n}\n\n// from https://en.wikipedia.org/wiki/Relative_luminance\nfloat rgb2luminance(vec3 color) {\n    // relative luminance\n    // see http://www.w3.org/TR/2008/REC-WCAG20-20081211/#relativeluminancedef\n    float r = luminance_x_1540259130(color.r);\n    float g = luminance_x_1540259130(color.g);\n    float b = luminance_x_1540259130(color.b);\n    return 0.2126 * r + 0.7152 * g + 0.0722 * b;\n}\n\nvec3 setLuminance(vec3 color, float luminance) {\n    float r = luminance_x_1540259130(color.r) * 0.2126;\n    float g = luminance_x_1540259130(color.g) * 0.7152;\n    float b = luminance_x_1540259130(color.b) * 0.0722;\n    float colorLuminance = r + g + b;\n\n    float tr = luminance * (r / colorLuminance);\n    float tg = luminance * (g / colorLuminance);\n    float tb = luminance * (b / colorLuminance);\n\n    float rr = color_l_1540259130(tr / 0.2126);\n    float rg = color_l_1540259130(tg / 0.7152);\n    float rb = color_l_1540259130(tb / 0.0722);\n\n    return vec3(rr, rg, rb );\n}\n\n// https://www.w3.org/TR/WCAG20/#contrast-ratiodef\n// (L1 + 0.05) / (L2 + 0.05), where\n// - L1 is the relative luminance of the lighter of the colors, and\n// - L2 is the relative luminance of the darker of the colors.\nfloat findDarker(float luminance, float contrast) {\n    return (contrast * luminance) + (0.05 * contrast) - 0.05;\n}\nfloat findLighter(float luminance, float contrast) {\n    return (luminance + 0.05 - (0.05 * contrast)) / contrast;\n}\n\nvec3 contrastingColor(vec3 color, float contrast) {\n    float luminance = rgb2luminance(color);\n    float darker = findDarker(luminance, contrast);\n    float lighter = findLighter(luminance, contrast);\n\n    float targetLuminance;\n    if (darker < 0.0 || darker > 1.0) {\n        targetLuminance = lighter;\n    } else if (lighter < 0.0 || lighter > 1.0) {\n        targetLuminance = darker;\n    } else {\n        targetLuminance = abs(luminance - lighter) < abs(darker - luminance) ? lighter : darker;\n    }\n\n    return setLuminance(color, targetLuminance);\n}\n\nvec3 desaturateColor(vec3 color, float amount) {\n    float l = rgb2luminance(color);\n    vec3 gray = vec3(l, l, l);\n    return mix(color, gray, amount);\n}\n\nuniform vec4 uClearColor;\nuniform float uDesaturate;\nuniform float uBrightness;\nuniform float uFade;\nuniform float uAlpha;\n\nvec4 outputColor(vec4 color) {\n    // desaturate => fade => alpha\n    vec3 ret = mix(color.rgb, vec3(uBrightness + 1.0 / 2.0), abs(uBrightness));\n    ret = vec3(desaturateColor(ret, uDesaturate));\n    ret = mix(ret, uClearColor.rgb, uFade);\n    return vec4(ret, color.a * uAlpha);\n}\n\n#define MODE_DRAFT 0u\n#define MODE_MEDIUM 1u\n#define MODE_HIGH 2u\n#define MODE_HIGH_PASS_1 3u\n#define MODE_HIGH_PASS_2 4u\n#define MODE_PICKING 5u\n\n#define ONE_ALPHA 0.00392156862 // 1.0 / 255.0\n\nfloat lineAlpha(vec2 position, float w, vec2 viewportSize, float lineWidth) {\n    vec2 lineCenter = ((position / w) * 0.5 + 0.5) * viewportSize;\n    float distOffset = (lineWidth - 1.0) * 0.5;\n    float dist = smoothstep(lineWidth * 0.5 - 0.5, lineWidth * 0.5 + 0.5, distance(lineCenter, gl_FragCoord.xy));\n    return (1.0 - dist);\n}\n\nvec4 lineColor(vec3 color, vec2 position, float w, vec2 viewportSize, uint mode, float lineWidth) {\n    if (mode < MODE_HIGH_PASS_1) {\n        return outputColor(vec4(color, 1.0));\n    }\n\n    float a = lineAlpha(position, w, viewportSize, lineWidth);\n\n    if (mode == MODE_HIGH_PASS_1) {\n        if (a == 1.0) {\n            return outputColor(vec4(color, a));\n        } else {\n            discard;\n        }\n    }\n\n    // Possible optimization.\n    // Edges run into fill rate issues because too many of them overlap, discarging pixels below a certain alpha\n    // threshold might help speed things up a bit.\n    if (a < ONE_ALPHA) {\n        discard;\n    }\n\n    return outputColor(vec4(color, a));\n}\n\nuniform vec2 uViewportSize;\nuniform uint uRenderMode;\n\nflat in float fLineWidth;\nin vec3 vColor;\nin vec2 vProjectedPosition;\nin float vProjectedW;\n\nout vec4 fragColor;\n\nvoid main() {\n    fragColor = lineColor(vColor, vProjectedPosition, vProjectedW, uViewportSize, uRenderMode, fLineWidth);\n}\n\n";
 
 // src/graph/edges/bundle/ClusterBundle.data.vs.glsl
 var ClusterBundle_data_vs_default = "#version 300 es\n#define GLSLIFY 1\n\nlayout(location=0) in uint aSourceIndex;\nlayout(location=1) in uint aTargetIndex;\nlayout(location=2) in uint aSourceClusterIndex;\nlayout(location=3) in uint aTargetClusterIndex;\nlayout(location=4) in uint aSourceColor;\nlayout(location=5) in uint aTargetColor;\nlayout(location=6) in uvec2 aHyperEdgeStats;\nlayout(location=7) in uint aIndex;\n\nuniform sampler2D uGraphPoints;\n\nout vec3 vSource;\nout vec3 vTarget;\nout vec3 vControl;\nflat out uint vSourceColor;\nflat out uint vTargetColor;\nout vec2 vColorMix;\n\nvec4 valueForIndex(sampler2D tex, int index) {\n    int texWidth = textureSize(tex, 0).x;\n    int col = index % texWidth;\n    int row = index / texWidth;\n    return texelFetch(tex, ivec2(col, row), 0);\n}\n\nuvec4 uvalueForIndex(usampler2D tex, int index) {\n    int texWidth = textureSize(tex, 0).x;\n    int col = index % texWidth;\n    int row = index / texWidth;\n    return texelFetch(tex, ivec2(col, row), 0);\n}\n\nuint uivalueForIndex(usampler2D tex, int index) {\n    int texWidth = textureSize(tex, 0).x;\n    int col = index % texWidth;\n    int row = index / texWidth;\n    return texelFetch(tex, ivec2(col, row), 0)[0];\n}\n\nvoid main() {\n    vec4 source = valueForIndex(uGraphPoints, int(aSourceIndex));\n    vec4 target = valueForIndex(uGraphPoints, int(aTargetIndex));\n    vec4 sourceCluster = valueForIndex(uGraphPoints, int(aSourceClusterIndex));\n    vec4 targetCluster = valueForIndex(uGraphPoints, int(aTargetClusterIndex));\n\n    vec3 direction = normalize(vec3(targetCluster.xy, 0.0) - vec3(sourceCluster.xy, 0.0));\n    // assume 2D and ignore Z, future Dario, make this 3D!\n    vec3 perp = vec3(-direction.y, direction.x, direction.z);\n    float minClusterRadius = min(sourceCluster[3], targetCluster[3]);\n    float edgeWidth = minClusterRadius * 0.0005; // magic number\n    float maxOffset = minClusterRadius * 0.1; // magic number\n    float offsetLength = min(maxOffset, edgeWidth * float(aHyperEdgeStats[1]));\n    vec3 offset = (-perp * offsetLength * 0.5) + (perp * (offsetLength / float(aHyperEdgeStats[1])) * float(aHyperEdgeStats[0]));\n\n    vec3 sourceClusterEdge = sourceCluster.xyz + direction * sourceCluster[3] + offset;\n    vec3 targetClusterEdge = targetCluster.xyz - direction * targetCluster[3] + offset;\n\n    float edgeToEdge = length(targetClusterEdge - sourceClusterEdge);\n    vec3 bundlePoint = sourceClusterEdge + direction * (edgeToEdge * 0.5);\n\n    vec3 sourceEdgeToNode = sourceClusterEdge - source.xyz - direction * source[3];\n    float sourceNodeAdjacent = dot(normalize(sourceEdgeToNode), direction) * length(sourceEdgeToNode);\n    vec3 sourceClusterControl = sourceClusterEdge - direction * min(sourceNodeAdjacent * 0.75, sourceCluster[3]);\n    vec3 sourceControlDirection = normalize(sourceClusterControl - source.xyz);\n    vec3 sourcePoint = source.xyz + sourceControlDirection * source[3];\n\n    vec3 targetEdgeToNode = target.xyz - targetClusterEdge - direction * target[3];\n    float targetNodeAdjacent = dot(normalize(targetEdgeToNode), direction) * length(targetEdgeToNode);\n    vec3 targetClusterControl = targetClusterEdge + direction * min(targetNodeAdjacent * 0.75, targetCluster[3]);\n    vec3 targetControlDirection = normalize(targetClusterControl - target.xyz);\n    vec3 targetPoint = target.xyz + targetControlDirection * target[3];\n\n    // TODO: Optimize this to avoid branches. (If performance becomes a problem)\n    if (aIndex == 0u) {\n        if (aSourceIndex == aSourceClusterIndex) {\n            vSource = sourcePoint;\n            vControl = sourcePoint;\n            vTarget = sourcePoint;\n        } else {\n            vSource = sourcePoint;\n            vControl = sourceClusterControl;\n            vTarget = (sourceClusterControl + bundlePoint) / 2.0;\n        }\n    } else if (aIndex == 1u) {\n        if (aSourceIndex == aSourceClusterIndex) {\n            vSource = sourcePoint;\n        } else {\n            vSource = (sourceClusterControl + bundlePoint) / 2.0;\n        }\n\n        vControl = bundlePoint;\n\n        if (aTargetIndex == aTargetClusterIndex) {\n            vTarget = targetPoint;\n        } else {\n            vTarget = (bundlePoint + targetClusterControl) / 2.0;\n        }\n    } else {\n        if (aTargetIndex == aTargetClusterIndex) {\n            vSource = targetPoint;\n            vControl = targetPoint;\n            vTarget = targetPoint;\n        } else {\n            vSource = (bundlePoint + targetClusterControl) / 2.0;\n            vControl = targetClusterControl;\n            vTarget = targetPoint;\n        }\n    }\n\n    vSourceColor = aSourceColor;\n    vTargetColor = aTargetColor;\n\n    vColorMix = vec2(float(aIndex) * 0.25, float(aIndex + 1u) * 0.25);\n}\n";
@@ -17292,7 +17332,7 @@ __export(mod_exports6, {
 });
 
 // src/graph/labels/point/PointLabel.fs.glsl
-var PointLabel_fs_default = "#version 300 es\nprecision highp float;\nprecision lowp usampler2D;\n#define GLSLIFY 1\n\nvec4 valueForIndex(sampler2D tex, int index) {\n    int texWidth = textureSize(tex, 0).x;\n    int col = index % texWidth;\n    int row = index / texWidth;\n    return texelFetch(tex, ivec2(col, row), 0);\n}\n\nuvec4 uvalueForIndex(usampler2D tex, int index) {\n    int texWidth = textureSize(tex, 0).x;\n    int col = index % texWidth;\n    int row = index / texWidth;\n    return texelFetch(tex, ivec2(col, row), 0);\n}\n\nuint uivalueForIndex(usampler2D tex, int index) {\n    int texWidth = textureSize(tex, 0).x;\n    int col = index % texWidth;\n    int row = index / texWidth;\n    return texelFetch(tex, ivec2(col, row), 0)[0];\n}\n\n// from https://en.wikipedia.org/wiki/SRGB#The_reverse_transformation\nfloat luminance_x(float x) {\n    return x <= 0.04045 ? x / 12.92 : pow((x + 0.055) / 1.055, 2.4);\n}\nfloat color_l(float l) {\n    return min(1.0, max(0.0, l <= 0.0031308 ? l * 12.92 : pow(l * 1.055, 1.0 / 2.4) - 0.055));\n}\n\n// from https://en.wikipedia.org/wiki/Relative_luminance\nfloat rgb2luminance(vec3 color) {\n    // relative luminance\n    // see http://www.w3.org/TR/2008/REC-WCAG20-20081211/#relativeluminancedef\n    float r = luminance_x(color.r);\n    float g = luminance_x(color.g);\n    float b = luminance_x(color.b);\n    return 0.2126 * r + 0.7152 * g + 0.0722 * b;\n}\n\nvec3 setLuminance(vec3 color, float luminance) {\n    float r = luminance_x(color.r) * 0.2126;\n    float g = luminance_x(color.g) * 0.7152;\n    float b = luminance_x(color.b) * 0.0722;\n    float colorLuminance = r + g + b;\n\n    float tr = luminance * (r / colorLuminance);\n    float tg = luminance * (g / colorLuminance);\n    float tb = luminance * (b / colorLuminance);\n\n    float rr = color_l(tr / 0.2126);\n    float rg = color_l(tg / 0.7152);\n    float rb = color_l(tb / 0.0722);\n\n    return vec3(rr, rg, rb );\n}\n\n// https://www.w3.org/TR/WCAG20/#contrast-ratiodef\n// (L1 + 0.05) / (L2 + 0.05), where\n// - L1 is the relative luminance of the lighter of the colors, and\n// - L2 is the relative luminance of the darker of the colors.\nfloat findDarker(float luminance, float contrast) {\n    return (contrast * luminance) + (0.05 * contrast) - 0.05;\n}\nfloat findLighter(float luminance, float contrast) {\n    return (luminance + 0.05 - (0.05 * contrast)) / contrast;\n}\n\nvec3 contrastingColor(vec3 color, float contrast) {\n    float luminance = rgb2luminance(color);\n    float darker = findDarker(luminance, contrast);\n    float lighter = findLighter(luminance, contrast);\n\n    float targetLuminance;\n    if (darker < 0.0 || darker > 1.0) {\n        targetLuminance = lighter;\n    } else if (lighter < 0.0 || lighter > 1.0) {\n        targetLuminance = darker;\n    } else {\n        targetLuminance = abs(luminance - lighter) < abs(darker - luminance) ? lighter : darker;\n    }\n\n    return setLuminance(color, targetLuminance);\n}\n\nvec3 desaturateColor(vec3 color, float amount) {\n    float l = rgb2luminance(color);\n    vec3 gray = vec3(l, l, l);\n    return mix(color, gray, amount);\n}\n\nuniform vec4 uClearColor;\nuniform float uDesaturate;\nuniform float uBrightness;\nuniform float uFade;\nuniform float uAlpha;\n\nvec4 outputColor(vec4 color) {\n    // desaturate => fade => alpha\n    vec3 ret = mix(color.rgb, vec3(uBrightness + 1.0 / 2.0), abs(uBrightness));\n    ret = vec3(desaturateColor(ret, uDesaturate));\n    ret = mix(ret, uClearColor.rgb, uFade);\n    return vec4(ret, color.a * uAlpha);\n}\n\n#define MODE_DRAFT 0u\n#define MODE_MEDIUM 1u\n#define MODE_HIGH_PASS_1 2u\n#define MODE_HIGH_PASS_2 3u\n#define MODE_PICKING 4u\n\nuniform usampler2D uLabelIndices;\nuniform usampler2D uCharBoxes;\nuniform sampler2D uCharTexture;\nuniform float uPixelRatio;\nuniform uint uRenderMode;\nuniform float uPadding;\n\nflat in vec4 fBackgroundColor;\nflat in vec4 fTextColor;\nflat in vec4 fLabelInfo;\nflat in float fPixelLength;\nflat in vec2 fCharTextureSize;\nin vec2 vFromCenter;\nin vec2 vStringCoords;\nin vec2 vPixelCoords;\n\nout vec4 fragColor;\n\nvoid main() {\n    float padding = uPadding * uPixelRatio;\n    vec4 finalColor;\n\n    if (vPixelCoords.x < padding || vPixelCoords.y < padding || vPixelCoords.x > fLabelInfo[2] + padding || vPixelCoords.y > fLabelInfo[3] + padding) {\n        finalColor = fBackgroundColor;\n    } else {\n        vec2 uvMultiplier = (vPixelCoords - padding) / fLabelInfo.ba;\n        float u = fLabelInfo[0] + fLabelInfo[1] * uvMultiplier.x;\n        float v = uvMultiplier.y;\n\n        float stringIndex = floor(u);\n        int charIndex = int(uivalueForIndex(uLabelIndices, int(stringIndex)));\n        vec4 charBox = vec4(uvalueForIndex(uCharBoxes, charIndex));\n        float charMult = u - stringIndex;\n\n        vec4 charBoxUV = charBox / vec4(fCharTextureSize, fCharTextureSize);\n\n        vec2 uv = vec2(charBoxUV[0] + charBoxUV[2] * charMult, charBoxUV[1] + charBoxUV[3] * v);\n        vec4 texPixel = texture(uCharTexture, uv);\n\n        float smoothing = 7.0 / fLabelInfo[3];\n        float distance = texPixel.a;\n        float textEdge = smoothstep(0.5 - smoothing, 0.5 + smoothing, distance);\n        finalColor = mix(fBackgroundColor, fTextColor, textEdge);\n    }\n\n    float threshold = uRenderMode == MODE_HIGH_PASS_1 ? 0.75 : 0.5;\n\n    if (uRenderMode != MODE_HIGH_PASS_2) {\n        if (finalColor.a < threshold) {\n            discard;\n        }\n        fragColor = outputColor(vec4(finalColor.rgb, 1.0));\n    } else {\n        if (finalColor.a == 1.0) {\n            discard;\n        }\n        fragColor = outputColor(finalColor);\n    }\n\n//    if ((uRenderMode != MODE_HIGH_PASS_2 && texPixel.a < threshold) || (uRenderMode == MODE_HIGH_PASS_2 && texPixel.a == 1.0)) {\n//        discard;\n//    }\n//    float alpha = uRenderMode == MODE_HIGH_PASS_2 ? texPixel.a : 1.0;\n//    fragColor = vec4(texPixel.rgb * fColor.rgb, alpha);\n}\n";
+var PointLabel_fs_default = "#version 300 es\nprecision highp float;\nprecision lowp usampler2D;\n#define GLSLIFY 1\n\nvec4 valueForIndex(sampler2D tex, int index) {\n    int texWidth = textureSize(tex, 0).x;\n    int col = index % texWidth;\n    int row = index / texWidth;\n    return texelFetch(tex, ivec2(col, row), 0);\n}\n\nuvec4 uvalueForIndex(usampler2D tex, int index) {\n    int texWidth = textureSize(tex, 0).x;\n    int col = index % texWidth;\n    int row = index / texWidth;\n    return texelFetch(tex, ivec2(col, row), 0);\n}\n\nuint uivalueForIndex(usampler2D tex, int index) {\n    int texWidth = textureSize(tex, 0).x;\n    int col = index % texWidth;\n    int row = index / texWidth;\n    return texelFetch(tex, ivec2(col, row), 0)[0];\n}\n\n// from https://en.wikipedia.org/wiki/SRGB#The_reverse_transformation\nfloat luminance_x(float x) {\n    return x <= 0.04045 ? x / 12.92 : pow((x + 0.055) / 1.055, 2.4);\n}\nfloat color_l(float l) {\n    return min(1.0, max(0.0, l <= 0.0031308 ? l * 12.92 : pow(l * 1.055, 1.0 / 2.4) - 0.055));\n}\n\n// from https://en.wikipedia.org/wiki/Relative_luminance\nfloat rgb2luminance(vec3 color) {\n    // relative luminance\n    // see http://www.w3.org/TR/2008/REC-WCAG20-20081211/#relativeluminancedef\n    float r = luminance_x(color.r);\n    float g = luminance_x(color.g);\n    float b = luminance_x(color.b);\n    return 0.2126 * r + 0.7152 * g + 0.0722 * b;\n}\n\nvec3 setLuminance(vec3 color, float luminance) {\n    float r = luminance_x(color.r) * 0.2126;\n    float g = luminance_x(color.g) * 0.7152;\n    float b = luminance_x(color.b) * 0.0722;\n    float colorLuminance = r + g + b;\n\n    float tr = luminance * (r / colorLuminance);\n    float tg = luminance * (g / colorLuminance);\n    float tb = luminance * (b / colorLuminance);\n\n    float rr = color_l(tr / 0.2126);\n    float rg = color_l(tg / 0.7152);\n    float rb = color_l(tb / 0.0722);\n\n    return vec3(rr, rg, rb );\n}\n\n// https://www.w3.org/TR/WCAG20/#contrast-ratiodef\n// (L1 + 0.05) / (L2 + 0.05), where\n// - L1 is the relative luminance of the lighter of the colors, and\n// - L2 is the relative luminance of the darker of the colors.\nfloat findDarker(float luminance, float contrast) {\n    return (contrast * luminance) + (0.05 * contrast) - 0.05;\n}\nfloat findLighter(float luminance, float contrast) {\n    return (luminance + 0.05 - (0.05 * contrast)) / contrast;\n}\n\nvec3 contrastingColor(vec3 color, float contrast) {\n    float luminance = rgb2luminance(color);\n    float darker = findDarker(luminance, contrast);\n    float lighter = findLighter(luminance, contrast);\n\n    float targetLuminance;\n    if (darker < 0.0 || darker > 1.0) {\n        targetLuminance = lighter;\n    } else if (lighter < 0.0 || lighter > 1.0) {\n        targetLuminance = darker;\n    } else {\n        targetLuminance = abs(luminance - lighter) < abs(darker - luminance) ? lighter : darker;\n    }\n\n    return setLuminance(color, targetLuminance);\n}\n\nvec3 desaturateColor(vec3 color, float amount) {\n    float l = rgb2luminance(color);\n    vec3 gray = vec3(l, l, l);\n    return mix(color, gray, amount);\n}\n\nuniform vec4 uClearColor;\nuniform float uDesaturate;\nuniform float uBrightness;\nuniform float uFade;\nuniform float uAlpha;\n\nvec4 outputColor(vec4 color) {\n    // desaturate => fade => alpha\n    vec3 ret = mix(color.rgb, vec3(uBrightness + 1.0 / 2.0), abs(uBrightness));\n    ret = vec3(desaturateColor(ret, uDesaturate));\n    ret = mix(ret, uClearColor.rgb, uFade);\n    return vec4(ret, color.a * uAlpha);\n}\n\n#define MODE_DRAFT 0u\n#define MODE_MEDIUM 1u\n#define MODE_HIGH 2u\n#define MODE_HIGH_PASS_1 3u\n#define MODE_HIGH_PASS_2 4u\n#define MODE_PICKING 5u\n\nuniform usampler2D uLabelIndices;\nuniform usampler2D uCharBoxes;\nuniform sampler2D uCharTexture;\nuniform float uPixelRatio;\nuniform uint uRenderMode;\nuniform float uPadding;\n\nflat in vec4 fBackgroundColor;\nflat in vec4 fTextColor;\nflat in vec4 fLabelInfo;\nflat in float fPixelLength;\nflat in vec2 fCharTextureSize;\nin vec2 vFromCenter;\nin vec2 vStringCoords;\nin vec2 vPixelCoords;\n\nout vec4 fragColor;\n\nvoid main() {\n    float padding = uPadding * uPixelRatio;\n    vec4 finalColor;\n\n    if (vPixelCoords.x < padding || vPixelCoords.y < padding || vPixelCoords.x > fLabelInfo[2] + padding || vPixelCoords.y > fLabelInfo[3] + padding) {\n        finalColor = fBackgroundColor;\n    } else {\n        vec2 uvMultiplier = (vPixelCoords - padding) / fLabelInfo.ba;\n        float u = fLabelInfo[0] + fLabelInfo[1] * uvMultiplier.x;\n        float v = uvMultiplier.y;\n\n        float stringIndex = floor(u);\n        int charIndex = int(uivalueForIndex(uLabelIndices, int(stringIndex)));\n        vec4 charBox = vec4(uvalueForIndex(uCharBoxes, charIndex));\n        float charMult = u - stringIndex;\n\n        vec4 charBoxUV = charBox / vec4(fCharTextureSize, fCharTextureSize);\n\n        vec2 uv = vec2(charBoxUV[0] + charBoxUV[2] * charMult, charBoxUV[1] + charBoxUV[3] * v);\n        vec4 texPixel = texture(uCharTexture, uv);\n\n        float smoothing = 7.0 / fLabelInfo[3];\n        float distance = texPixel.a;\n        float textEdge = smoothstep(0.5 - smoothing, 0.5 + smoothing, distance);\n        finalColor = mix(fBackgroundColor, fTextColor, textEdge);\n    }\n\n    float threshold = uRenderMode == MODE_HIGH_PASS_1 ? 0.75 : 0.5;\n\n    if (uRenderMode != MODE_HIGH_PASS_2) {\n        if (finalColor.a < threshold) {\n            discard;\n        }\n        fragColor = outputColor(vec4(finalColor.rgb, 1.0));\n    } else {\n        if (finalColor.a == 1.0) {\n            discard;\n        }\n        fragColor = outputColor(finalColor);\n    }\n\n//    if ((uRenderMode != MODE_HIGH_PASS_2 && texPixel.a < threshold) || (uRenderMode == MODE_HIGH_PASS_2 && texPixel.a == 1.0)) {\n//        discard;\n//    }\n//    float alpha = uRenderMode == MODE_HIGH_PASS_2 ? texPixel.a : 1.0;\n//    fragColor = vec4(texPixel.rgb * fColor.rgb, alpha);\n}\n";
 
 // src/graph/labels/point/PointLabel.vs.glsl
 var PointLabel_vs_default = `#version 300 es
@@ -17313,6 +17353,7 @@ layout(location=3) in uvec4 iLabel;
     uniform float uPixelRatio;
     uniform sampler2D uGraphPoints;
     uniform sampler2D uColorPalette;
+    uniform uint uCameraMode; // 0 = 2D; 1 = 3D;
 //};
 uniform usampler2D uLabelIndices;
 uniform usampler2D uCharBoxes;
@@ -17432,9 +17473,11 @@ void main() {
     // reset the rotation of the model-view matrix
     mat4 modelMatrix = uViewMatrix * uSceneMatrix * offsetMatrix;
     mat4 lookAtMatrix = mat4(modelMatrix);
-    lookAtMatrix[0] = vec4(1.0, 0.0, 0.0, lookAtMatrix[0][3]);
-    lookAtMatrix[1] = vec4(0.0, 1.0, 0.0, lookAtMatrix[1][3]);
-    lookAtMatrix[2] = vec4(0.0, 0.0, 1.0, lookAtMatrix[2][3]);
+    if (uCameraMode == 1u) {
+        lookAtMatrix[0] = vec4(1.0, 0.0, 0.0, lookAtMatrix[0][3]);
+        lookAtMatrix[1] = vec4(0.0, 1.0, 0.0, lookAtMatrix[1][3]);
+        lookAtMatrix[2] = vec4(0.0, 0.0, 1.0, lookAtMatrix[2][3]);
+    }
 
     // the on-screen center of this point
     vec4 quadCenter = uProjectionMatrix * lookAtMatrix * vec4(0.0, 0.0, 0.0, 1.0);
@@ -17498,7 +17541,7 @@ void main() {
     vec3 labelOffset = vec3(
         (radius + labelSize.x * 0.5 + labelMargin) * uLabelPlacement.x,
         (radius + labelSize.y * 0.5 + labelMargin) * uLabelPlacement.y,
-        0.01
+        uCameraMode == 1u ? 0.01 : 0.0
     );
 
     // compute the vertex position and its screen position
@@ -17971,6 +18014,7 @@ layout(location=3) in uvec4 iLabel;
     uniform float uPixelRatio;
     uniform sampler2D uGraphPoints;
     uniform sampler2D uColorPalette;
+    uniform uint uCameraMode; // 0 = 2D; 1 = 3D;
 //};
 uniform sampler2D uCharTexture;
 uniform float uVisibilityThreshold;
@@ -18093,9 +18137,11 @@ void main() {
     // reset the rotation of the model-view matrix
     mat4 modelMatrix = uViewMatrix * uSceneMatrix * offsetMatrix;
     mat4 lookAtMatrix = mat4(modelMatrix);
-    lookAtMatrix[0] = vec4(1.0, 0.0, 0.0, lookAtMatrix[0][3]);
-    lookAtMatrix[1] = vec4(0.0, 1.0, 0.0, lookAtMatrix[1][3]);
-    lookAtMatrix[2] = vec4(0.0, 0.0, 1.0, lookAtMatrix[2][3]);
+    if (uCameraMode == 1u) {
+        lookAtMatrix[0] = vec4(1.0, 0.0, 0.0, lookAtMatrix[0][3]);
+        lookAtMatrix[1] = vec4(0.0, 1.0, 0.0, lookAtMatrix[1][3]);
+        lookAtMatrix[2] = vec4(0.0, 0.0, 1.0, lookAtMatrix[2][3]);
+    }
 
     // the on-screen center of this point
     vec4 quadCenter = uProjectionMatrix * lookAtMatrix * vec4(0.0, 0.0, 0.0, 1.0);
@@ -18144,7 +18190,7 @@ void main() {
     // compute the vertex position and its screen position
     float pixelLength = radius / pixelRadius;
     float textRadius = radius + pixelLength * placementOffset;
-    vec3 labelOffset = vec3(0.0, 0.0, 0.01); // offset the label forward a tiny bit so it's always in front
+    vec3 labelOffset = vec3(0.0, 0.0, uCameraMode == 1u ? 0.01 : 0.0); // offset the label forward a tiny bit so it's always in front in 3D
     vec4 worldVertex = renderMatrix * vec4(aVertex * textRadius * visibilityMultiplier + labelOffset, 1.0);
 
     // find the number of label repetitions
@@ -18162,7 +18208,7 @@ void main() {
 `;
 
 // src/graph/labels/circular/CircularLabel.fs.glsl
-var CircularLabel_fs_default = "#version 300 es\nprecision highp float;\nprecision lowp usampler2D;\n#define GLSLIFY 1\n\n#define M_PI 3.14159265359\n#define M_2PI 6.28318530718\n\nvec4 valueForIndex(sampler2D tex, int index) {\n    int texWidth = textureSize(tex, 0).x;\n    int col = index % texWidth;\n    int row = index / texWidth;\n    return texelFetch(tex, ivec2(col, row), 0);\n}\n\nuvec4 uvalueForIndex(usampler2D tex, int index) {\n    int texWidth = textureSize(tex, 0).x;\n    int col = index % texWidth;\n    int row = index / texWidth;\n    return texelFetch(tex, ivec2(col, row), 0);\n}\n\nuint uivalueForIndex(usampler2D tex, int index) {\n    int texWidth = textureSize(tex, 0).x;\n    int col = index % texWidth;\n    int row = index / texWidth;\n    return texelFetch(tex, ivec2(col, row), 0)[0];\n}\n\n// from https://en.wikipedia.org/wiki/SRGB#The_reverse_transformation\nfloat luminance_x(float x) {\n    return x <= 0.04045 ? x / 12.92 : pow((x + 0.055) / 1.055, 2.4);\n}\nfloat color_l(float l) {\n    return min(1.0, max(0.0, l <= 0.0031308 ? l * 12.92 : pow(l * 1.055, 1.0 / 2.4) - 0.055));\n}\n\n// from https://en.wikipedia.org/wiki/Relative_luminance\nfloat rgb2luminance(vec3 color) {\n    // relative luminance\n    // see http://www.w3.org/TR/2008/REC-WCAG20-20081211/#relativeluminancedef\n    float r = luminance_x(color.r);\n    float g = luminance_x(color.g);\n    float b = luminance_x(color.b);\n    return 0.2126 * r + 0.7152 * g + 0.0722 * b;\n}\n\nvec3 setLuminance(vec3 color, float luminance) {\n    float r = luminance_x(color.r) * 0.2126;\n    float g = luminance_x(color.g) * 0.7152;\n    float b = luminance_x(color.b) * 0.0722;\n    float colorLuminance = r + g + b;\n\n    float tr = luminance * (r / colorLuminance);\n    float tg = luminance * (g / colorLuminance);\n    float tb = luminance * (b / colorLuminance);\n\n    float rr = color_l(tr / 0.2126);\n    float rg = color_l(tg / 0.7152);\n    float rb = color_l(tb / 0.0722);\n\n    return vec3(rr, rg, rb );\n}\n\n// https://www.w3.org/TR/WCAG20/#contrast-ratiodef\n// (L1 + 0.05) / (L2 + 0.05), where\n// - L1 is the relative luminance of the lighter of the colors, and\n// - L2 is the relative luminance of the darker of the colors.\nfloat findDarker(float luminance, float contrast) {\n    return (contrast * luminance) + (0.05 * contrast) - 0.05;\n}\nfloat findLighter(float luminance, float contrast) {\n    return (luminance + 0.05 - (0.05 * contrast)) / contrast;\n}\n\nvec3 contrastingColor(vec3 color, float contrast) {\n    float luminance = rgb2luminance(color);\n    float darker = findDarker(luminance, contrast);\n    float lighter = findLighter(luminance, contrast);\n\n    float targetLuminance;\n    if (darker < 0.0 || darker > 1.0) {\n        targetLuminance = lighter;\n    } else if (lighter < 0.0 || lighter > 1.0) {\n        targetLuminance = darker;\n    } else {\n        targetLuminance = abs(luminance - lighter) < abs(darker - luminance) ? lighter : darker;\n    }\n\n    return setLuminance(color, targetLuminance);\n}\n\nvec3 desaturateColor(vec3 color, float amount) {\n    float l = rgb2luminance(color);\n    vec3 gray = vec3(l, l, l);\n    return mix(color, gray, amount);\n}\n\nuniform vec4 uClearColor;\nuniform float uDesaturate;\nuniform float uBrightness;\nuniform float uFade;\nuniform float uAlpha;\n\nvec4 outputColor(vec4 color) {\n    // desaturate => fade => alpha\n    vec3 ret = mix(color.rgb, vec3(uBrightness + 1.0 / 2.0), abs(uBrightness));\n    ret = vec3(desaturateColor(ret, uDesaturate));\n    ret = mix(ret, uClearColor.rgb, uFade);\n    return vec4(ret, color.a * uAlpha);\n}\n\n#define MODE_DRAFT 0u\n#define MODE_MEDIUM 1u\n#define MODE_HIGH_PASS_1 2u\n#define MODE_HIGH_PASS_2 3u\n#define MODE_PICKING 4u\n\n// most of these come from this excellent post:\n// https://iquilezles.org/www/articles/distfunctions2d/distfunctions2d.htm\n\nfloat opRound(in float d, in float r) {\n    return d - r;\n}\n\nfloat opOnion(in float d, in float r) {\n    return abs(d) - r;\n}\n\nfloat sdCircle(in vec2 p, in float r ) {\n    return length(p) - r;\n}\n\nfloat sdEquilateralTriangle(in vec2 p, in float r) {\n    const float k = sqrt(3.0);\n    p.x = abs(p.x) - r;\n    p.y = p.y + (r) / k;\n    if (p.x + k * p.y > 0.0) {\n        p = vec2(p.x-k*p.y,-k*p.x-p.y) / 2.0;\n    }\n    p.x -= clamp(p.x, -2.0 * r, 0.0);\n    return -length(p) * sign(p.y);\n}\n\nfloat sdPentagon(in vec2 p, in float r) {\n    const vec3 k = vec3(0.809016994, 0.587785252, 0.726542528);\n    p.y = -(p.y) * 1.25;\n    p.x = abs(p.x) * 1.25;\n    p -= 2.0 * min(dot(vec2(-k.x, k.y), p), 0.0) * vec2(-k.x, k.y);\n    p -= 2.0 * min(dot(vec2(k.x, k.y), p), 0.0) * vec2(k.x, k.y);\n    p -= vec2(clamp(p.x, -r*k.z, r*k.z), r);\n    return length(p) * sign(p.y);\n}\n\nfloat sdOctagon(in vec2 p, in float r) {\n    // pi/8: cos, sin, tan.\n    const vec3 k = vec3(\n        -0.9238795325,   // sqrt(2+sqrt(2))/2\n        0.3826834323,   // sqrt(2-sqrt(2))/2\n        0.4142135623\n    ); // sqrt(2)-1\n    // reflections\n    p = abs(p) * 1.1;\n    p -= 2.0 * min(dot(vec2(k.x,k.y), p), 0.0) * vec2(k.x,k.y);\n    p -= 2.0 * min(dot(vec2(-k.x,k.y), p), 0.0) * vec2(-k.x,k.y);\n    // Polygon side.\n    p -= vec2(clamp(p.x, -k.z*r, k.z*r), r);\n    return length(p) * sign(p.y);\n}\n\nfloat sdStar(in vec2 p, in float r, in uint n, in float m) { // m=[2,n]\n    // these 4 lines can be precomputed for a given shape\n    float an = 3.141593 / float(n);\n    float en = 3.141593 / m;\n    vec2  acs = vec2(cos(an), sin(an));\n    vec2  ecs = vec2(cos(en), sin(en)); // ecs=vec2(0,1) and simplify, for regular polygon,\n\n    // reduce to first sector\n    float bn = mod(atan(p.x, p.y), 2.0 * an) - an;\n    p = length(p) * vec2(cos(bn), abs(sin(bn)));\n\n    // line sdf\n    p -= r * acs;\n    p += ecs * clamp(-dot(p, ecs), 0.0, r * acs.y / ecs.y);\n    return length(p) * sign(p.x);\n}\n\nfloat sdCross(in vec2 p, in float w, in float r) {\n    p = abs(p);\n    return length(p - min(p.x + p.y, w) * 0.5) - r;\n}\n\n// TODO: Precompute this, we always pass the same parameters tot his function (v, vec2(1.0, 0.3), 0.0)\nfloat sdPlus( in vec2 p, in vec2 b, float r ) {\n    p = abs(p);\n    p = (p.y > p.x) ? p.yx : p.xy;\n\n    vec2  q = p - b;\n    float k = max(q.y, q.x);\n    vec2  w = (k > 0.0) ? q : vec2(b.y - p.x, -k);\n\n    return sign(k)*length(max(w, 0.0)) + r;\n}\n\nuniform usampler2D uLabelIndices;\nuniform usampler2D uCharBoxes;\nuniform sampler2D uCharTexture;\nuniform float uPixelRatio;\nuniform uint uRenderMode;\nuniform vec2 uLabelDirection;\nuniform bool uMirror;\nuniform float uPadding;\n\nflat in vec4 fBackgroundColor;\nflat in vec4 fTextColor;\nflat in float fPixelRadius;\nflat in float fLabelStep;\nflat in vec2 fCharTextureSize;\nflat in vec4 fLabelInfo;\nflat in float fPixelLength;\nin vec2 vFromCenter;\n\nout vec4 fragColor;\n\nfloat cross_ish(vec2 a, vec2 b)\n{\n    return a.x * b.y - a.y * b.x;\n}\n\nvoid main() {\n    float padding = uPadding * uPixelRatio;\n    float fromCenter = length(vFromCenter);\n    float halfLabelWidth = fLabelInfo[2] * 0.5;\n    float halfLabelHeight = fLabelInfo[3] * 0.5;\n    float normalizedHeight = (halfLabelHeight + padding) / fPixelRadius;\n    float circle = fromCenter - (1.0 - normalizedHeight);\n    float ring = opOnion(circle, normalizedHeight);\n\n    vec2 positionVector = uLabelDirection;\n    float angle = atan(cross_ish(vFromCenter, positionVector), dot(vFromCenter, positionVector));\n    float angleDistance = angle * fPixelRadius;\n    float paddedLabelWidth = fLabelInfo[2] + padding * 2.0;\n    float offsetAngleDistance = angleDistance + halfLabelWidth + padding;\n\n    if (ring > 0.0 || fract(offsetAngleDistance / fLabelStep) >= paddedLabelWidth / fLabelStep) {\n        discard;\n    }\n\n    float width = fract(offsetAngleDistance / fLabelStep) * fLabelStep;\n    float height = (1.0 - fromCenter) * fPixelRadius - padding;\n    vec4 finalColor;\n\n    if (height < 0.0 || height > fLabelInfo[3] || width < padding || width > fLabelInfo[2] + padding) {\n        finalColor = fBackgroundColor;\n    } else {\n        float uProgress = (width - padding) / fLabelInfo[2];\n        if (uMirror) {\n            uProgress = 1.0 - uProgress;\n        }\n        float stringProgress = fLabelInfo[0] + fLabelInfo[1] * uProgress;\n        float stringIndex = floor(stringProgress);\n        int charIndex = int(uivalueForIndex(uLabelIndices, int(stringIndex)));\n        vec4 charBox = vec4(uvalueForIndex(uCharBoxes, charIndex));\n        float charMult = stringProgress - stringIndex;\n\n        vec4 charBoxUV = charBox / vec4(fCharTextureSize, fCharTextureSize);\n\n        vec2 uv = vec2(charBoxUV[0] + charBoxUV[2] * charMult, charBoxUV[1] + charBoxUV[3] * fLabelInfo[1]);\n        if (uMirror) {\n            uv = vec2(charBoxUV[0] + charBoxUV[2] * charMult, charBoxUV[1] + charBoxUV[3] * (height / fLabelInfo[3]));\n        } else {\n            uv = vec2(charBoxUV[0] + charBoxUV[2] * charMult, charBoxUV[1] + charBoxUV[3] * (1.0 - height / fLabelInfo[3]));\n        }\n\n        vec4 texPixel = texture(uCharTexture, uv);\n\n        float smoothing = 7.0 / fLabelInfo[3];\n        float distance = texPixel.a;\n        float textEdge = smoothstep(0.5 - smoothing, 0.5 + smoothing, distance);\n        finalColor = mix(fBackgroundColor, fTextColor, textEdge);\n    }\n\n    finalColor.a *= smoothstep(0.0, fPixelLength * 1.5, abs(ring));\n\n    float threshold = uRenderMode == MODE_HIGH_PASS_1 ? 0.75 : 0.5;\n\n    if (uRenderMode != MODE_HIGH_PASS_2) {\n        if (finalColor.a < threshold) {\n            discard;\n        }\n        fragColor = outputColor(vec4(finalColor.rgb, 1.0));\n    } else {\n        if (finalColor.a == 1.0) {\n            discard;\n        }\n        fragColor = outputColor(finalColor);\n    }\n}\n";
+var CircularLabel_fs_default = "#version 300 es\nprecision highp float;\nprecision lowp usampler2D;\n#define GLSLIFY 1\n\n#define M_PI 3.14159265359\n#define M_2PI 6.28318530718\n\nvec4 valueForIndex(sampler2D tex, int index) {\n    int texWidth = textureSize(tex, 0).x;\n    int col = index % texWidth;\n    int row = index / texWidth;\n    return texelFetch(tex, ivec2(col, row), 0);\n}\n\nuvec4 uvalueForIndex(usampler2D tex, int index) {\n    int texWidth = textureSize(tex, 0).x;\n    int col = index % texWidth;\n    int row = index / texWidth;\n    return texelFetch(tex, ivec2(col, row), 0);\n}\n\nuint uivalueForIndex(usampler2D tex, int index) {\n    int texWidth = textureSize(tex, 0).x;\n    int col = index % texWidth;\n    int row = index / texWidth;\n    return texelFetch(tex, ivec2(col, row), 0)[0];\n}\n\n// from https://en.wikipedia.org/wiki/SRGB#The_reverse_transformation\nfloat luminance_x(float x) {\n    return x <= 0.04045 ? x / 12.92 : pow((x + 0.055) / 1.055, 2.4);\n}\nfloat color_l(float l) {\n    return min(1.0, max(0.0, l <= 0.0031308 ? l * 12.92 : pow(l * 1.055, 1.0 / 2.4) - 0.055));\n}\n\n// from https://en.wikipedia.org/wiki/Relative_luminance\nfloat rgb2luminance(vec3 color) {\n    // relative luminance\n    // see http://www.w3.org/TR/2008/REC-WCAG20-20081211/#relativeluminancedef\n    float r = luminance_x(color.r);\n    float g = luminance_x(color.g);\n    float b = luminance_x(color.b);\n    return 0.2126 * r + 0.7152 * g + 0.0722 * b;\n}\n\nvec3 setLuminance(vec3 color, float luminance) {\n    float r = luminance_x(color.r) * 0.2126;\n    float g = luminance_x(color.g) * 0.7152;\n    float b = luminance_x(color.b) * 0.0722;\n    float colorLuminance = r + g + b;\n\n    float tr = luminance * (r / colorLuminance);\n    float tg = luminance * (g / colorLuminance);\n    float tb = luminance * (b / colorLuminance);\n\n    float rr = color_l(tr / 0.2126);\n    float rg = color_l(tg / 0.7152);\n    float rb = color_l(tb / 0.0722);\n\n    return vec3(rr, rg, rb );\n}\n\n// https://www.w3.org/TR/WCAG20/#contrast-ratiodef\n// (L1 + 0.05) / (L2 + 0.05), where\n// - L1 is the relative luminance of the lighter of the colors, and\n// - L2 is the relative luminance of the darker of the colors.\nfloat findDarker(float luminance, float contrast) {\n    return (contrast * luminance) + (0.05 * contrast) - 0.05;\n}\nfloat findLighter(float luminance, float contrast) {\n    return (luminance + 0.05 - (0.05 * contrast)) / contrast;\n}\n\nvec3 contrastingColor(vec3 color, float contrast) {\n    float luminance = rgb2luminance(color);\n    float darker = findDarker(luminance, contrast);\n    float lighter = findLighter(luminance, contrast);\n\n    float targetLuminance;\n    if (darker < 0.0 || darker > 1.0) {\n        targetLuminance = lighter;\n    } else if (lighter < 0.0 || lighter > 1.0) {\n        targetLuminance = darker;\n    } else {\n        targetLuminance = abs(luminance - lighter) < abs(darker - luminance) ? lighter : darker;\n    }\n\n    return setLuminance(color, targetLuminance);\n}\n\nvec3 desaturateColor(vec3 color, float amount) {\n    float l = rgb2luminance(color);\n    vec3 gray = vec3(l, l, l);\n    return mix(color, gray, amount);\n}\n\nuniform vec4 uClearColor;\nuniform float uDesaturate;\nuniform float uBrightness;\nuniform float uFade;\nuniform float uAlpha;\n\nvec4 outputColor(vec4 color) {\n    // desaturate => fade => alpha\n    vec3 ret = mix(color.rgb, vec3(uBrightness + 1.0 / 2.0), abs(uBrightness));\n    ret = vec3(desaturateColor(ret, uDesaturate));\n    ret = mix(ret, uClearColor.rgb, uFade);\n    return vec4(ret, color.a * uAlpha);\n}\n\n#define MODE_DRAFT 0u\n#define MODE_MEDIUM 1u\n#define MODE_HIGH 2u\n#define MODE_HIGH_PASS_1 3u\n#define MODE_HIGH_PASS_2 4u\n#define MODE_PICKING 5u\n\n// most of these come from this excellent post:\n// https://iquilezles.org/www/articles/distfunctions2d/distfunctions2d.htm\n\nfloat opRound(in float d, in float r) {\n    return d - r;\n}\n\nfloat opOnion(in float d, in float r) {\n    return abs(d) - r;\n}\n\nfloat sdCircle(in vec2 p, in float r ) {\n    return length(p) - r;\n}\n\nfloat sdEquilateralTriangle(in vec2 p, in float r) {\n    const float k = sqrt(3.0);\n    p.x = abs(p.x) - r;\n    p.y = p.y + (r) / k;\n    if (p.x + k * p.y > 0.0) {\n        p = vec2(p.x-k*p.y,-k*p.x-p.y) / 2.0;\n    }\n    p.x -= clamp(p.x, -2.0 * r, 0.0);\n    return -length(p) * sign(p.y);\n}\n\nfloat sdPentagon(in vec2 p, in float r) {\n    const vec3 k = vec3(0.809016994, 0.587785252, 0.726542528);\n    p.y = -(p.y) * 1.25;\n    p.x = abs(p.x) * 1.25;\n    p -= 2.0 * min(dot(vec2(-k.x, k.y), p), 0.0) * vec2(-k.x, k.y);\n    p -= 2.0 * min(dot(vec2(k.x, k.y), p), 0.0) * vec2(k.x, k.y);\n    p -= vec2(clamp(p.x, -r*k.z, r*k.z), r);\n    return length(p) * sign(p.y);\n}\n\nfloat sdOctagon(in vec2 p, in float r) {\n    // pi/8: cos, sin, tan.\n    const vec3 k = vec3(\n        -0.9238795325,   // sqrt(2+sqrt(2))/2\n        0.3826834323,   // sqrt(2-sqrt(2))/2\n        0.4142135623\n    ); // sqrt(2)-1\n    // reflections\n    p = abs(p) * 1.1;\n    p -= 2.0 * min(dot(vec2(k.x,k.y), p), 0.0) * vec2(k.x,k.y);\n    p -= 2.0 * min(dot(vec2(-k.x,k.y), p), 0.0) * vec2(-k.x,k.y);\n    // Polygon side.\n    p -= vec2(clamp(p.x, -k.z*r, k.z*r), r);\n    return length(p) * sign(p.y);\n}\n\nfloat sdStar(in vec2 p, in float r, in uint n, in float m) { // m=[2,n]\n    // these 4 lines can be precomputed for a given shape\n    float an = 3.141593 / float(n);\n    float en = 3.141593 / m;\n    vec2  acs = vec2(cos(an), sin(an));\n    vec2  ecs = vec2(cos(en), sin(en)); // ecs=vec2(0,1) and simplify, for regular polygon,\n\n    // reduce to first sector\n    float bn = mod(atan(p.x, p.y), 2.0 * an) - an;\n    p = length(p) * vec2(cos(bn), abs(sin(bn)));\n\n    // line sdf\n    p -= r * acs;\n    p += ecs * clamp(-dot(p, ecs), 0.0, r * acs.y / ecs.y);\n    return length(p) * sign(p.x);\n}\n\nfloat sdCross(in vec2 p, in float w, in float r) {\n    p = abs(p);\n    return length(p - min(p.x + p.y, w) * 0.5) - r;\n}\n\n// TODO: Precompute this, we always pass the same parameters tot his function (v, vec2(1.0, 0.3), 0.0)\nfloat sdPlus( in vec2 p, in vec2 b, float r ) {\n    p = abs(p);\n    p = (p.y > p.x) ? p.yx : p.xy;\n\n    vec2  q = p - b;\n    float k = max(q.y, q.x);\n    vec2  w = (k > 0.0) ? q : vec2(b.y - p.x, -k);\n\n    return sign(k)*length(max(w, 0.0)) + r;\n}\n\nuniform usampler2D uLabelIndices;\nuniform usampler2D uCharBoxes;\nuniform sampler2D uCharTexture;\nuniform float uPixelRatio;\nuniform uint uRenderMode;\nuniform vec2 uLabelDirection;\nuniform bool uMirror;\nuniform float uPadding;\n\nflat in vec4 fBackgroundColor;\nflat in vec4 fTextColor;\nflat in float fPixelRadius;\nflat in float fLabelStep;\nflat in vec2 fCharTextureSize;\nflat in vec4 fLabelInfo;\nflat in float fPixelLength;\nin vec2 vFromCenter;\n\nout vec4 fragColor;\n\nfloat cross_ish(vec2 a, vec2 b)\n{\n    return a.x * b.y - a.y * b.x;\n}\n\nvoid main() {\n    float padding = uPadding * uPixelRatio;\n    float fromCenter = length(vFromCenter);\n    float halfLabelWidth = fLabelInfo[2] * 0.5;\n    float halfLabelHeight = fLabelInfo[3] * 0.5;\n    float normalizedHeight = (halfLabelHeight + padding) / fPixelRadius;\n    float circle = fromCenter - (1.0 - normalizedHeight);\n    float ring = opOnion(circle, normalizedHeight);\n\n    vec2 positionVector = uLabelDirection;\n    float angle = atan(cross_ish(vFromCenter, positionVector), dot(vFromCenter, positionVector));\n    float angleDistance = angle * fPixelRadius;\n    float paddedLabelWidth = fLabelInfo[2] + padding * 2.0;\n    float offsetAngleDistance = angleDistance + halfLabelWidth + padding;\n\n    if (ring > 0.0 || fract(offsetAngleDistance / fLabelStep) >= paddedLabelWidth / fLabelStep) {\n        discard;\n    }\n\n    float width = fract(offsetAngleDistance / fLabelStep) * fLabelStep;\n    float height = (1.0 - fromCenter) * fPixelRadius - padding;\n    vec4 finalColor;\n\n    if (height < 0.0 || height > fLabelInfo[3] || width < padding || width > fLabelInfo[2] + padding) {\n        finalColor = fBackgroundColor;\n    } else {\n        float uProgress = (width - padding) / fLabelInfo[2];\n        if (uMirror) {\n            uProgress = 1.0 - uProgress;\n        }\n        float stringProgress = fLabelInfo[0] + fLabelInfo[1] * uProgress;\n        float stringIndex = floor(stringProgress);\n        int charIndex = int(uivalueForIndex(uLabelIndices, int(stringIndex)));\n        vec4 charBox = vec4(uvalueForIndex(uCharBoxes, charIndex));\n        float charMult = stringProgress - stringIndex;\n\n        vec4 charBoxUV = charBox / vec4(fCharTextureSize, fCharTextureSize);\n\n        vec2 uv = vec2(charBoxUV[0] + charBoxUV[2] * charMult, charBoxUV[1] + charBoxUV[3] * fLabelInfo[1]);\n        if (uMirror) {\n            uv = vec2(charBoxUV[0] + charBoxUV[2] * charMult, charBoxUV[1] + charBoxUV[3] * (height / fLabelInfo[3]));\n        } else {\n            uv = vec2(charBoxUV[0] + charBoxUV[2] * charMult, charBoxUV[1] + charBoxUV[3] * (1.0 - height / fLabelInfo[3]));\n        }\n\n        vec4 texPixel = texture(uCharTexture, uv);\n\n        float smoothing = 7.0 / fLabelInfo[3];\n        float distance = texPixel.a;\n        float textEdge = smoothstep(0.5 - smoothing, 0.5 + smoothing, distance);\n        finalColor = mix(fBackgroundColor, fTextColor, textEdge);\n    }\n\n    finalColor.a *= smoothstep(0.0, fPixelLength * 1.5, abs(ring));\n\n    float threshold = uRenderMode == MODE_HIGH_PASS_1 ? 0.75 : 0.5;\n\n    if (uRenderMode != MODE_HIGH_PASS_2) {\n        if (finalColor.a < threshold) {\n            discard;\n        }\n        fragColor = outputColor(vec4(finalColor.rgb, 1.0));\n    } else {\n        if (finalColor.a == 1.0) {\n            discard;\n        }\n        fragColor = outputColor(finalColor);\n    }\n}\n";
 
 // src/graph/labels/circular/CircularLabel.ts
 var CircularLabelPlacement;
@@ -18226,10 +18272,10 @@ var CircularLabel = class extends PointLabel {
 };
 
 // src/graph/labels/ring/RingLabel.vs.glsl
-var RingLabel_vs_default = '#version 300 es\n\nprecision lowp usampler2D;\n#define GLSLIFY 1\n\n#define M_PI 3.14159265359\n#define M_2PI 6.28318530718\n\nlayout(location=0) in vec3 aVertex;\nlayout(location=1) in uint iPoint;\nlayout(location=2) in uint iColor;\nlayout(location=3) in uvec4 iLabel;\n\n//layout(std140) uniform RenderUniforms {\n    uniform mat4 uViewMatrix;\n    uniform mat4 uSceneMatrix;\n    uniform mat4 uProjectionMatrix;\n    uniform vec2 uViewportSize;\n    uniform float uPixelRatio;\n    uniform sampler2D uGraphPoints;\n    uniform sampler2D uColorPalette;\n//};\nuniform sampler2D uCharTexture;\nuniform float uVisibilityThreshold;\nuniform vec2 uLabelPositioning;\nuniform int uRepeatLabel;\nuniform float uRepeatGap;\nuniform float uPlacementMargin;\nuniform float uLabelPlacement;\nuniform vec2 uLabelDirection;\nuniform bool uBackground;\nuniform float uPadding;\n\nflat out vec4 fBackgroundColor;\nflat out vec4 fTextColor;\nflat out vec4 fLabelInfo;\nflat out float fPixelRadius;\nflat out float fPixelLength;\nflat out float fThickness;\nflat out float fLabelStep;\nflat out vec2 fCharTextureSize;\n\nout vec2 vFromCenter;\n\nvec4 valueForIndex(sampler2D tex, int index) {\n    int texWidth = textureSize(tex, 0).x;\n    int col = index % texWidth;\n    int row = index / texWidth;\n    return texelFetch(tex, ivec2(col, row), 0);\n}\n\nuvec4 uvalueForIndex(usampler2D tex, int index) {\n    int texWidth = textureSize(tex, 0).x;\n    int col = index % texWidth;\n    int row = index / texWidth;\n    return texelFetch(tex, ivec2(col, row), 0);\n}\n\nuint uivalueForIndex(usampler2D tex, int index) {\n    int texWidth = textureSize(tex, 0).x;\n    int col = index % texWidth;\n    int row = index / texWidth;\n    return texelFetch(tex, ivec2(col, row), 0)[0];\n}\n\n// from https://en.wikipedia.org/wiki/SRGB#The_reverse_transformation\nfloat luminance_x(float x) {\n    return x <= 0.04045 ? x / 12.92 : pow((x + 0.055) / 1.055, 2.4);\n}\nfloat color_l(float l) {\n    return min(1.0, max(0.0, l <= 0.0031308 ? l * 12.92 : pow(l * 1.055, 1.0 / 2.4) - 0.055));\n}\n\n// from https://en.wikipedia.org/wiki/Relative_luminance\nfloat rgb2luminance(vec3 color) {\n    // relative luminance\n    // see http://www.w3.org/TR/2008/REC-WCAG20-20081211/#relativeluminancedef\n    float r = luminance_x(color.r);\n    float g = luminance_x(color.g);\n    float b = luminance_x(color.b);\n    return 0.2126 * r + 0.7152 * g + 0.0722 * b;\n}\n\nvec3 setLuminance(vec3 color, float luminance) {\n    float r = luminance_x(color.r) * 0.2126;\n    float g = luminance_x(color.g) * 0.7152;\n    float b = luminance_x(color.b) * 0.0722;\n    float colorLuminance = r + g + b;\n\n    float tr = luminance * (r / colorLuminance);\n    float tg = luminance * (g / colorLuminance);\n    float tb = luminance * (b / colorLuminance);\n\n    float rr = color_l(tr / 0.2126);\n    float rg = color_l(tg / 0.7152);\n    float rb = color_l(tb / 0.0722);\n\n    return vec3(rr, rg, rb );\n}\n\n// https://www.w3.org/TR/WCAG20/#contrast-ratiodef\n// (L1 + 0.05) / (L2 + 0.05), where\n// - L1 is the relative luminance of the lighter of the colors, and\n// - L2 is the relative luminance of the darker of the colors.\nfloat findDarker(float luminance, float contrast) {\n    return (contrast * luminance) + (0.05 * contrast) - 0.05;\n}\nfloat findLighter(float luminance, float contrast) {\n    return (luminance + 0.05 - (0.05 * contrast)) / contrast;\n}\n\nvec3 contrastingColor(vec3 color, float contrast) {\n    float luminance = rgb2luminance(color);\n    float darker = findDarker(luminance, contrast);\n    float lighter = findLighter(luminance, contrast);\n\n    float targetLuminance;\n    if (darker < 0.0 || darker > 1.0) {\n        targetLuminance = lighter;\n    } else if (lighter < 0.0 || lighter > 1.0) {\n        targetLuminance = darker;\n    } else {\n        targetLuminance = abs(luminance - lighter) < abs(darker - luminance) ? lighter : darker;\n    }\n\n    return setLuminance(color, targetLuminance);\n}\n\nvec3 desaturateColor(vec3 color, float amount) {\n    float l = rgb2luminance(color);\n    vec3 gray = vec3(l, l, l);\n    return mix(color, gray, amount);\n}\n\nvoid main() {\n    vec4 point = valueForIndex(uGraphPoints, int(iPoint));\n    vec3 position = point.xyz;\n    float radius = point.w;\n    // claculate the offset matrix, done as a matrix to be able to compute "billboard" vertices in the shader\n    mat4 offsetMatrix = mat4(1.0);\n    offsetMatrix[3] = vec4(position, 1.0);\n\n    // reset the rotation of the model-view matrix\n    mat4 modelMatrix = uViewMatrix * uSceneMatrix * offsetMatrix;\n    mat4 lookAtMatrix = mat4(modelMatrix);\n    lookAtMatrix[0] = vec4(1.0, 0.0, 0.0, lookAtMatrix[0][3]);\n    lookAtMatrix[1] = vec4(0.0, 1.0, 0.0, lookAtMatrix[1][3]);\n    lookAtMatrix[2] = vec4(0.0, 0.0, 1.0, lookAtMatrix[2][3]);\n\n    // the on-screen center of this point\n    vec4 quadCenter = uProjectionMatrix * lookAtMatrix * vec4(0.0, 0.0, 0.0, 1.0);\n    vec2 screenQuadCenter = quadCenter.xy / quadCenter.w;\n\n    // the on-screen position of a side of this quad\n    vec4 quadSide = uProjectionMatrix * lookAtMatrix * vec4(radius, 0.0, 0.0, 1.0);\n    vec2 screenQuadSide = quadSide.xy / quadSide.w;\n\n    // compute the pixel radius of this point for a size of 1 in world coordinates\n    float pixelRadius = length((screenQuadSide - screenQuadCenter) * uViewportSize * 0.5);\n\n    // send the size of the char texture to the fragment shader\n    fCharTextureSize = vec2(textureSize(uCharTexture, 0));\n\n    // send the render color to the fragment shader\n    vec4 color = valueForIndex(uColorPalette, int(iColor));\n    fBackgroundColor = vec4(color.rgb, 1.0);\n    fTextColor = vec4(contrastingColor(color.rgb, 7.0), 1.0);\n\n    // send thelabel info to the fragment shader\n    fLabelInfo = vec4(iLabel);\n\n    // calculate the label visibility\n    float visibilityThreshold = uVisibilityThreshold * uPixelRatio;\n    float visibilityMultiplier = smoothstep(visibilityThreshold * 0.5 - fLabelInfo[3], visibilityThreshold * 0.5, pixelRadius * 0.5);\n\n    // send the pixel radius of this label to the fragment shader\n    float padding = uPadding * uPixelRatio;\n    float minThickness = max(2.0, min(pixelRadius * 0.1, 3.0 * uPixelRatio));\n    fThickness = (minThickness + (fLabelInfo[3] + padding * 2.0 - minThickness) * visibilityMultiplier) * 0.5;\n    fPixelRadius = pixelRadius + fThickness;\n\n    // send the normalized length of a single pixel\n    fPixelLength = 1.0 / fPixelRadius;\n\n    // calculate the render matrix\n    mat4 renderMatrix = uProjectionMatrix * lookAtMatrix;\n\n    // send the normalized distance from the center to the fragment shader\n    vFromCenter = aVertex.xy;\n\n    // compute the vertex position and its screen position\n    float pixelLength = radius / pixelRadius;\n    float textRadius = radius + pixelLength * fThickness;\n    vec4 worldVertex = renderMatrix * vec4(aVertex * textRadius, 1.0);\n\n    // find the number of label repetitions\n    float repeatLabels = float(uint(uRepeatLabel));\n    float repeatGap = uRepeatGap * uPixelRatio;\n    float circumference = fPixelRadius * M_2PI;\n    float maxLabels = min(repeatLabels, floor(circumference / (fLabelInfo[2] + repeatGap + padding * 2.0)));\n    float maxLabelsLength = (fLabelInfo[2] + padding * 2.0) * maxLabels;\n    float labelGap = (circumference - maxLabelsLength) / maxLabels;\n    fLabelStep = fLabelInfo[2] + labelGap + padding * 2.0;\n\n    // set the render vertex location\n    gl_Position = worldVertex;\n}\n';
+var RingLabel_vs_default = '#version 300 es\n\nprecision lowp usampler2D;\n#define GLSLIFY 1\n\n#define M_PI 3.14159265359\n#define M_2PI 6.28318530718\n\nlayout(location=0) in vec3 aVertex;\nlayout(location=1) in uint iPoint;\nlayout(location=2) in uint iColor;\nlayout(location=3) in uvec4 iLabel;\n\n//layout(std140) uniform RenderUniforms {\n    uniform mat4 uViewMatrix;\n    uniform mat4 uSceneMatrix;\n    uniform mat4 uProjectionMatrix;\n    uniform vec2 uViewportSize;\n    uniform float uPixelRatio;\n    uniform sampler2D uGraphPoints;\n    uniform sampler2D uColorPalette;\n    uniform uint uCameraMode; // 0 = 2D; 1 = 3D;\n//};\nuniform sampler2D uCharTexture;\nuniform float uVisibilityThreshold;\nuniform vec2 uLabelPositioning;\nuniform int uRepeatLabel;\nuniform float uRepeatGap;\nuniform float uPlacementMargin;\nuniform float uLabelPlacement;\nuniform vec2 uLabelDirection;\nuniform bool uBackground;\nuniform float uPadding;\n\nflat out vec4 fBackgroundColor;\nflat out vec4 fTextColor;\nflat out vec4 fLabelInfo;\nflat out float fPixelRadius;\nflat out float fPixelLength;\nflat out float fThickness;\nflat out float fLabelStep;\nflat out vec2 fCharTextureSize;\n\nout vec2 vFromCenter;\n\nvec4 valueForIndex(sampler2D tex, int index) {\n    int texWidth = textureSize(tex, 0).x;\n    int col = index % texWidth;\n    int row = index / texWidth;\n    return texelFetch(tex, ivec2(col, row), 0);\n}\n\nuvec4 uvalueForIndex(usampler2D tex, int index) {\n    int texWidth = textureSize(tex, 0).x;\n    int col = index % texWidth;\n    int row = index / texWidth;\n    return texelFetch(tex, ivec2(col, row), 0);\n}\n\nuint uivalueForIndex(usampler2D tex, int index) {\n    int texWidth = textureSize(tex, 0).x;\n    int col = index % texWidth;\n    int row = index / texWidth;\n    return texelFetch(tex, ivec2(col, row), 0)[0];\n}\n\n// from https://en.wikipedia.org/wiki/SRGB#The_reverse_transformation\nfloat luminance_x(float x) {\n    return x <= 0.04045 ? x / 12.92 : pow((x + 0.055) / 1.055, 2.4);\n}\nfloat color_l(float l) {\n    return min(1.0, max(0.0, l <= 0.0031308 ? l * 12.92 : pow(l * 1.055, 1.0 / 2.4) - 0.055));\n}\n\n// from https://en.wikipedia.org/wiki/Relative_luminance\nfloat rgb2luminance(vec3 color) {\n    // relative luminance\n    // see http://www.w3.org/TR/2008/REC-WCAG20-20081211/#relativeluminancedef\n    float r = luminance_x(color.r);\n    float g = luminance_x(color.g);\n    float b = luminance_x(color.b);\n    return 0.2126 * r + 0.7152 * g + 0.0722 * b;\n}\n\nvec3 setLuminance(vec3 color, float luminance) {\n    float r = luminance_x(color.r) * 0.2126;\n    float g = luminance_x(color.g) * 0.7152;\n    float b = luminance_x(color.b) * 0.0722;\n    float colorLuminance = r + g + b;\n\n    float tr = luminance * (r / colorLuminance);\n    float tg = luminance * (g / colorLuminance);\n    float tb = luminance * (b / colorLuminance);\n\n    float rr = color_l(tr / 0.2126);\n    float rg = color_l(tg / 0.7152);\n    float rb = color_l(tb / 0.0722);\n\n    return vec3(rr, rg, rb );\n}\n\n// https://www.w3.org/TR/WCAG20/#contrast-ratiodef\n// (L1 + 0.05) / (L2 + 0.05), where\n// - L1 is the relative luminance of the lighter of the colors, and\n// - L2 is the relative luminance of the darker of the colors.\nfloat findDarker(float luminance, float contrast) {\n    return (contrast * luminance) + (0.05 * contrast) - 0.05;\n}\nfloat findLighter(float luminance, float contrast) {\n    return (luminance + 0.05 - (0.05 * contrast)) / contrast;\n}\n\nvec3 contrastingColor(vec3 color, float contrast) {\n    float luminance = rgb2luminance(color);\n    float darker = findDarker(luminance, contrast);\n    float lighter = findLighter(luminance, contrast);\n\n    float targetLuminance;\n    if (darker < 0.0 || darker > 1.0) {\n        targetLuminance = lighter;\n    } else if (lighter < 0.0 || lighter > 1.0) {\n        targetLuminance = darker;\n    } else {\n        targetLuminance = abs(luminance - lighter) < abs(darker - luminance) ? lighter : darker;\n    }\n\n    return setLuminance(color, targetLuminance);\n}\n\nvec3 desaturateColor(vec3 color, float amount) {\n    float l = rgb2luminance(color);\n    vec3 gray = vec3(l, l, l);\n    return mix(color, gray, amount);\n}\n\nvoid main() {\n    vec4 point = valueForIndex(uGraphPoints, int(iPoint));\n    vec3 position = point.xyz;\n    float radius = point.w;\n    // claculate the offset matrix, done as a matrix to be able to compute "billboard" vertices in the shader\n    mat4 offsetMatrix = mat4(1.0);\n    offsetMatrix[3] = vec4(position, 1.0);\n\n    // reset the rotation of the model-view matrix\n    mat4 modelMatrix = uViewMatrix * uSceneMatrix * offsetMatrix;\n    mat4 lookAtMatrix = mat4(modelMatrix);\n    if (uCameraMode == 1u) {\n        lookAtMatrix[0] = vec4(1.0, 0.0, 0.0, lookAtMatrix[0][3]);\n        lookAtMatrix[1] = vec4(0.0, 1.0, 0.0, lookAtMatrix[1][3]);\n        lookAtMatrix[2] = vec4(0.0, 0.0, 1.0, lookAtMatrix[2][3]);\n    }\n\n    // the on-screen center of this point\n    vec4 quadCenter = uProjectionMatrix * lookAtMatrix * vec4(0.0, 0.0, 0.0, 1.0);\n    vec2 screenQuadCenter = quadCenter.xy / quadCenter.w;\n\n    // the on-screen position of a side of this quad\n    vec4 quadSide = uProjectionMatrix * lookAtMatrix * vec4(radius, 0.0, 0.0, 1.0);\n    vec2 screenQuadSide = quadSide.xy / quadSide.w;\n\n    // compute the pixel radius of this point for a size of 1 in world coordinates\n    float pixelRadius = length((screenQuadSide - screenQuadCenter) * uViewportSize * 0.5);\n\n    // send the size of the char texture to the fragment shader\n    fCharTextureSize = vec2(textureSize(uCharTexture, 0));\n\n    // send the render color to the fragment shader\n    vec4 color = valueForIndex(uColorPalette, int(iColor));\n    fBackgroundColor = vec4(color.rgb, 1.0);\n    fTextColor = vec4(contrastingColor(color.rgb, 7.0), 1.0);\n\n    // send thelabel info to the fragment shader\n    fLabelInfo = vec4(iLabel);\n\n    // calculate the label visibility\n    float visibilityThreshold = uVisibilityThreshold * uPixelRatio;\n    float visibilityMultiplier = smoothstep(visibilityThreshold * 0.5 - fLabelInfo[3], visibilityThreshold * 0.5, pixelRadius * 0.5);\n\n    // send the pixel radius of this label to the fragment shader\n    float padding = uPadding * uPixelRatio;\n    float minThickness = max(2.0, min(pixelRadius * 0.1, 3.0 * uPixelRatio));\n    fThickness = (minThickness + (fLabelInfo[3] + padding * 2.0 - minThickness) * visibilityMultiplier) * 0.5;\n    fPixelRadius = pixelRadius + fThickness;\n\n    // send the normalized length of a single pixel\n    fPixelLength = 1.0 / fPixelRadius;\n\n    // calculate the render matrix\n    mat4 renderMatrix = uProjectionMatrix * lookAtMatrix;\n\n    // send the normalized distance from the center to the fragment shader\n    vFromCenter = aVertex.xy;\n\n    // compute the vertex position and its screen position\n    float pixelLength = radius / pixelRadius;\n    float textRadius = radius + pixelLength * fThickness;\n    vec4 worldVertex = renderMatrix * vec4(aVertex * textRadius, 1.0);\n\n    // find the number of label repetitions\n    float repeatLabels = float(uint(uRepeatLabel));\n    float repeatGap = uRepeatGap * uPixelRatio;\n    float circumference = fPixelRadius * M_2PI;\n    float maxLabels = min(repeatLabels, floor(circumference / (fLabelInfo[2] + repeatGap + padding * 2.0)));\n    float maxLabelsLength = (fLabelInfo[2] + padding * 2.0) * maxLabels;\n    float labelGap = (circumference - maxLabelsLength) / maxLabels;\n    fLabelStep = fLabelInfo[2] + labelGap + padding * 2.0;\n\n    // set the render vertex location\n    gl_Position = worldVertex;\n}\n';
 
 // src/graph/labels/ring/RingLabel.fs.glsl
-var RingLabel_fs_default = "#version 300 es\nprecision highp float;\nprecision lowp usampler2D;\n#define GLSLIFY 1\n\n#define M_PI 3.14159265359\n#define M_2PI 6.28318530718\n\nvec4 valueForIndex(sampler2D tex, int index) {\n    int texWidth = textureSize(tex, 0).x;\n    int col = index % texWidth;\n    int row = index / texWidth;\n    return texelFetch(tex, ivec2(col, row), 0);\n}\n\nuvec4 uvalueForIndex(usampler2D tex, int index) {\n    int texWidth = textureSize(tex, 0).x;\n    int col = index % texWidth;\n    int row = index / texWidth;\n    return texelFetch(tex, ivec2(col, row), 0);\n}\n\nuint uivalueForIndex(usampler2D tex, int index) {\n    int texWidth = textureSize(tex, 0).x;\n    int col = index % texWidth;\n    int row = index / texWidth;\n    return texelFetch(tex, ivec2(col, row), 0)[0];\n}\n\n// from https://en.wikipedia.org/wiki/SRGB#The_reverse_transformation\nfloat luminance_x(float x) {\n    return x <= 0.04045 ? x / 12.92 : pow((x + 0.055) / 1.055, 2.4);\n}\nfloat color_l(float l) {\n    return min(1.0, max(0.0, l <= 0.0031308 ? l * 12.92 : pow(l * 1.055, 1.0 / 2.4) - 0.055));\n}\n\n// from https://en.wikipedia.org/wiki/Relative_luminance\nfloat rgb2luminance(vec3 color) {\n    // relative luminance\n    // see http://www.w3.org/TR/2008/REC-WCAG20-20081211/#relativeluminancedef\n    float r = luminance_x(color.r);\n    float g = luminance_x(color.g);\n    float b = luminance_x(color.b);\n    return 0.2126 * r + 0.7152 * g + 0.0722 * b;\n}\n\nvec3 setLuminance(vec3 color, float luminance) {\n    float r = luminance_x(color.r) * 0.2126;\n    float g = luminance_x(color.g) * 0.7152;\n    float b = luminance_x(color.b) * 0.0722;\n    float colorLuminance = r + g + b;\n\n    float tr = luminance * (r / colorLuminance);\n    float tg = luminance * (g / colorLuminance);\n    float tb = luminance * (b / colorLuminance);\n\n    float rr = color_l(tr / 0.2126);\n    float rg = color_l(tg / 0.7152);\n    float rb = color_l(tb / 0.0722);\n\n    return vec3(rr, rg, rb );\n}\n\n// https://www.w3.org/TR/WCAG20/#contrast-ratiodef\n// (L1 + 0.05) / (L2 + 0.05), where\n// - L1 is the relative luminance of the lighter of the colors, and\n// - L2 is the relative luminance of the darker of the colors.\nfloat findDarker(float luminance, float contrast) {\n    return (contrast * luminance) + (0.05 * contrast) - 0.05;\n}\nfloat findLighter(float luminance, float contrast) {\n    return (luminance + 0.05 - (0.05 * contrast)) / contrast;\n}\n\nvec3 contrastingColor(vec3 color, float contrast) {\n    float luminance = rgb2luminance(color);\n    float darker = findDarker(luminance, contrast);\n    float lighter = findLighter(luminance, contrast);\n\n    float targetLuminance;\n    if (darker < 0.0 || darker > 1.0) {\n        targetLuminance = lighter;\n    } else if (lighter < 0.0 || lighter > 1.0) {\n        targetLuminance = darker;\n    } else {\n        targetLuminance = abs(luminance - lighter) < abs(darker - luminance) ? lighter : darker;\n    }\n\n    return setLuminance(color, targetLuminance);\n}\n\nvec3 desaturateColor(vec3 color, float amount) {\n    float l = rgb2luminance(color);\n    vec3 gray = vec3(l, l, l);\n    return mix(color, gray, amount);\n}\n\nuniform vec4 uClearColor;\nuniform float uDesaturate;\nuniform float uBrightness;\nuniform float uFade;\nuniform float uAlpha;\n\nvec4 outputColor(vec4 color) {\n    // desaturate => fade => alpha\n    vec3 ret = mix(color.rgb, vec3(uBrightness + 1.0 / 2.0), abs(uBrightness));\n    ret = vec3(desaturateColor(ret, uDesaturate));\n    ret = mix(ret, uClearColor.rgb, uFade);\n    return vec4(ret, color.a * uAlpha);\n}\n\n#define MODE_DRAFT 0u\n#define MODE_MEDIUM 1u\n#define MODE_HIGH_PASS_1 2u\n#define MODE_HIGH_PASS_2 3u\n#define MODE_PICKING 4u\n\n// most of these come from this excellent post:\n// https://iquilezles.org/www/articles/distfunctions2d/distfunctions2d.htm\n\nfloat opRound(in float d, in float r) {\n    return d - r;\n}\n\nfloat opOnion(in float d, in float r) {\n    return abs(d) - r;\n}\n\nfloat sdCircle(in vec2 p, in float r ) {\n    return length(p) - r;\n}\n\nfloat sdEquilateralTriangle(in vec2 p, in float r) {\n    const float k = sqrt(3.0);\n    p.x = abs(p.x) - r;\n    p.y = p.y + (r) / k;\n    if (p.x + k * p.y > 0.0) {\n        p = vec2(p.x-k*p.y,-k*p.x-p.y) / 2.0;\n    }\n    p.x -= clamp(p.x, -2.0 * r, 0.0);\n    return -length(p) * sign(p.y);\n}\n\nfloat sdPentagon(in vec2 p, in float r) {\n    const vec3 k = vec3(0.809016994, 0.587785252, 0.726542528);\n    p.y = -(p.y) * 1.25;\n    p.x = abs(p.x) * 1.25;\n    p -= 2.0 * min(dot(vec2(-k.x, k.y), p), 0.0) * vec2(-k.x, k.y);\n    p -= 2.0 * min(dot(vec2(k.x, k.y), p), 0.0) * vec2(k.x, k.y);\n    p -= vec2(clamp(p.x, -r*k.z, r*k.z), r);\n    return length(p) * sign(p.y);\n}\n\nfloat sdOctagon(in vec2 p, in float r) {\n    // pi/8: cos, sin, tan.\n    const vec3 k = vec3(\n        -0.9238795325,   // sqrt(2+sqrt(2))/2\n        0.3826834323,   // sqrt(2-sqrt(2))/2\n        0.4142135623\n    ); // sqrt(2)-1\n    // reflections\n    p = abs(p) * 1.1;\n    p -= 2.0 * min(dot(vec2(k.x,k.y), p), 0.0) * vec2(k.x,k.y);\n    p -= 2.0 * min(dot(vec2(-k.x,k.y), p), 0.0) * vec2(-k.x,k.y);\n    // Polygon side.\n    p -= vec2(clamp(p.x, -k.z*r, k.z*r), r);\n    return length(p) * sign(p.y);\n}\n\nfloat sdStar(in vec2 p, in float r, in uint n, in float m) { // m=[2,n]\n    // these 4 lines can be precomputed for a given shape\n    float an = 3.141593 / float(n);\n    float en = 3.141593 / m;\n    vec2  acs = vec2(cos(an), sin(an));\n    vec2  ecs = vec2(cos(en), sin(en)); // ecs=vec2(0,1) and simplify, for regular polygon,\n\n    // reduce to first sector\n    float bn = mod(atan(p.x, p.y), 2.0 * an) - an;\n    p = length(p) * vec2(cos(bn), abs(sin(bn)));\n\n    // line sdf\n    p -= r * acs;\n    p += ecs * clamp(-dot(p, ecs), 0.0, r * acs.y / ecs.y);\n    return length(p) * sign(p.x);\n}\n\nfloat sdCross(in vec2 p, in float w, in float r) {\n    p = abs(p);\n    return length(p - min(p.x + p.y, w) * 0.5) - r;\n}\n\n// TODO: Precompute this, we always pass the same parameters tot his function (v, vec2(1.0, 0.3), 0.0)\nfloat sdPlus( in vec2 p, in vec2 b, float r ) {\n    p = abs(p);\n    p = (p.y > p.x) ? p.yx : p.xy;\n\n    vec2  q = p - b;\n    float k = max(q.y, q.x);\n    vec2  w = (k > 0.0) ? q : vec2(b.y - p.x, -k);\n\n    return sign(k)*length(max(w, 0.0)) + r;\n}\n\nuniform usampler2D uLabelIndices;\nuniform usampler2D uCharBoxes;\nuniform sampler2D uCharTexture;\nuniform float uPixelRatio;\nuniform uint uRenderMode;\nuniform vec2 uLabelDirection;\nuniform bool uMirror;\nuniform float uPadding;\n\nflat in vec4 fBackgroundColor;\nflat in vec4 fTextColor;\nflat in float fPixelRadius;\nflat in float fLabelStep;\nflat in vec2 fCharTextureSize;\nflat in vec4 fLabelInfo;\nflat in float fPixelLength;\nflat in float fThickness;\nin vec2 vFromCenter;\n\nout vec4 fragColor;\n\nfloat cross_ish(vec2 a, vec2 b)\n{\n    return a.x * b.y - a.y * b.x;\n}\n\nvoid main() {\n    float padding = uPadding * uPixelRatio;\n    float fromCenter = length(vFromCenter);\n    float thickness = fThickness * fPixelLength;\n    float antialias = min(thickness, fPixelLength * 1.5);\n    float radius = 1.0 - thickness;\n    float circle = fromCenter - (1.0 - thickness);\n    float ring = opOnion(circle, thickness);\n    float modeDistance = uRenderMode == MODE_HIGH_PASS_1 ? -antialias : -antialias * 0.5;\n    float ringThreshold = uRenderMode == MODE_HIGH_PASS_2 ? 0.0 : modeDistance;\n\n    if (ring > ringThreshold) {\n        discard;\n    }\n\n    float halfLabelWidth = fLabelInfo[2] * 0.5;\n    float halfLabelHeight = fLabelInfo[3] * 0.5;\n    float normalizedHeight = (halfLabelHeight + padding) / fPixelRadius;\n\n    vec2 positionVector = uLabelDirection;\n    float angle = atan(cross_ish(vFromCenter, positionVector), dot(vFromCenter, positionVector));\n    float angleDistance = angle * fPixelRadius;\n    float paddedLabelWidth = fLabelInfo[2] + padding * 2.0;\n    float offsetAngleDistance = angleDistance + halfLabelWidth + padding;\n\n    float width = fract(offsetAngleDistance / fLabelStep) * fLabelStep;\n    float height = (1.0 - fromCenter) * fPixelRadius - padding;\n    vec4 finalColor;\n\n    if (height < 0.0 || height > fLabelInfo[3] || width < padding || width > fLabelInfo[2] + padding) {\n        finalColor = fBackgroundColor;\n    } else {\n        float uProgress = (width - padding) / fLabelInfo[2];\n        if (uMirror) {\n            uProgress = 1.0 - uProgress;\n        }\n        float stringProgress = fLabelInfo[0] + fLabelInfo[1] * uProgress;\n        float stringIndex = floor(stringProgress);\n        int charIndex = int(uivalueForIndex(uLabelIndices, int(stringIndex)));\n        vec4 charBox = vec4(uvalueForIndex(uCharBoxes, charIndex));\n        float charMult = stringProgress - stringIndex;\n\n        vec4 charBoxUV = charBox / vec4(fCharTextureSize, fCharTextureSize);\n\n        vec2 uv = vec2(charBoxUV[0] + charBoxUV[2] * charMult, charBoxUV[1] + charBoxUV[3] * fLabelInfo[1]);\n        if (uMirror) {\n            uv = vec2(charBoxUV[0] + charBoxUV[2] * charMult, charBoxUV[1] + charBoxUV[3] * (height / fLabelInfo[3]));\n        } else {\n            uv = vec2(charBoxUV[0] + charBoxUV[2] * charMult, charBoxUV[1] + charBoxUV[3] * (1.0 - height / fLabelInfo[3]));\n        }\n\n        vec4 texPixel = texture(uCharTexture, uv);\n\n        float smoothing = 7.0 / fLabelInfo[3];\n        float distance = texPixel.a;\n        float textEdge = smoothstep(0.5 - smoothing, 0.5 + smoothing, distance);\n        finalColor = mix(fBackgroundColor, fTextColor, textEdge);\n    }\n\n    if (uRenderMode == MODE_HIGH_PASS_2) {\n        if (ring < -antialias) {\n            discard;\n        }\n        fragColor = outputColor(vec4(finalColor.rgb, smoothstep(0.0, antialias, abs(ring))));\n    } else {\n        fragColor = outputColor(vec4(finalColor.rgb, 1.0));\n    }\n\n//    fragColor = vec4(1.0,0.0,1.0,1.0);\n}\n";
+var RingLabel_fs_default = "#version 300 es\nprecision highp float;\nprecision lowp usampler2D;\n#define GLSLIFY 1\n\n#define M_PI 3.14159265359\n#define M_2PI 6.28318530718\n\nvec4 valueForIndex(sampler2D tex, int index) {\n    int texWidth = textureSize(tex, 0).x;\n    int col = index % texWidth;\n    int row = index / texWidth;\n    return texelFetch(tex, ivec2(col, row), 0);\n}\n\nuvec4 uvalueForIndex(usampler2D tex, int index) {\n    int texWidth = textureSize(tex, 0).x;\n    int col = index % texWidth;\n    int row = index / texWidth;\n    return texelFetch(tex, ivec2(col, row), 0);\n}\n\nuint uivalueForIndex(usampler2D tex, int index) {\n    int texWidth = textureSize(tex, 0).x;\n    int col = index % texWidth;\n    int row = index / texWidth;\n    return texelFetch(tex, ivec2(col, row), 0)[0];\n}\n\n// from https://en.wikipedia.org/wiki/SRGB#The_reverse_transformation\nfloat luminance_x(float x) {\n    return x <= 0.04045 ? x / 12.92 : pow((x + 0.055) / 1.055, 2.4);\n}\nfloat color_l(float l) {\n    return min(1.0, max(0.0, l <= 0.0031308 ? l * 12.92 : pow(l * 1.055, 1.0 / 2.4) - 0.055));\n}\n\n// from https://en.wikipedia.org/wiki/Relative_luminance\nfloat rgb2luminance(vec3 color) {\n    // relative luminance\n    // see http://www.w3.org/TR/2008/REC-WCAG20-20081211/#relativeluminancedef\n    float r = luminance_x(color.r);\n    float g = luminance_x(color.g);\n    float b = luminance_x(color.b);\n    return 0.2126 * r + 0.7152 * g + 0.0722 * b;\n}\n\nvec3 setLuminance(vec3 color, float luminance) {\n    float r = luminance_x(color.r) * 0.2126;\n    float g = luminance_x(color.g) * 0.7152;\n    float b = luminance_x(color.b) * 0.0722;\n    float colorLuminance = r + g + b;\n\n    float tr = luminance * (r / colorLuminance);\n    float tg = luminance * (g / colorLuminance);\n    float tb = luminance * (b / colorLuminance);\n\n    float rr = color_l(tr / 0.2126);\n    float rg = color_l(tg / 0.7152);\n    float rb = color_l(tb / 0.0722);\n\n    return vec3(rr, rg, rb );\n}\n\n// https://www.w3.org/TR/WCAG20/#contrast-ratiodef\n// (L1 + 0.05) / (L2 + 0.05), where\n// - L1 is the relative luminance of the lighter of the colors, and\n// - L2 is the relative luminance of the darker of the colors.\nfloat findDarker(float luminance, float contrast) {\n    return (contrast * luminance) + (0.05 * contrast) - 0.05;\n}\nfloat findLighter(float luminance, float contrast) {\n    return (luminance + 0.05 - (0.05 * contrast)) / contrast;\n}\n\nvec3 contrastingColor(vec3 color, float contrast) {\n    float luminance = rgb2luminance(color);\n    float darker = findDarker(luminance, contrast);\n    float lighter = findLighter(luminance, contrast);\n\n    float targetLuminance;\n    if (darker < 0.0 || darker > 1.0) {\n        targetLuminance = lighter;\n    } else if (lighter < 0.0 || lighter > 1.0) {\n        targetLuminance = darker;\n    } else {\n        targetLuminance = abs(luminance - lighter) < abs(darker - luminance) ? lighter : darker;\n    }\n\n    return setLuminance(color, targetLuminance);\n}\n\nvec3 desaturateColor(vec3 color, float amount) {\n    float l = rgb2luminance(color);\n    vec3 gray = vec3(l, l, l);\n    return mix(color, gray, amount);\n}\n\nuniform vec4 uClearColor;\nuniform float uDesaturate;\nuniform float uBrightness;\nuniform float uFade;\nuniform float uAlpha;\n\nvec4 outputColor(vec4 color) {\n    // desaturate => fade => alpha\n    vec3 ret = mix(color.rgb, vec3(uBrightness + 1.0 / 2.0), abs(uBrightness));\n    ret = vec3(desaturateColor(ret, uDesaturate));\n    ret = mix(ret, uClearColor.rgb, uFade);\n    return vec4(ret, color.a * uAlpha);\n}\n\n#define MODE_DRAFT 0u\n#define MODE_MEDIUM 1u\n#define MODE_HIGH 2u\n#define MODE_HIGH_PASS_1 3u\n#define MODE_HIGH_PASS_2 4u\n#define MODE_PICKING 5u\n\n// most of these come from this excellent post:\n// https://iquilezles.org/www/articles/distfunctions2d/distfunctions2d.htm\n\nfloat opRound(in float d, in float r) {\n    return d - r;\n}\n\nfloat opOnion(in float d, in float r) {\n    return abs(d) - r;\n}\n\nfloat sdCircle(in vec2 p, in float r ) {\n    return length(p) - r;\n}\n\nfloat sdEquilateralTriangle(in vec2 p, in float r) {\n    const float k = sqrt(3.0);\n    p.x = abs(p.x) - r;\n    p.y = p.y + (r) / k;\n    if (p.x + k * p.y > 0.0) {\n        p = vec2(p.x-k*p.y,-k*p.x-p.y) / 2.0;\n    }\n    p.x -= clamp(p.x, -2.0 * r, 0.0);\n    return -length(p) * sign(p.y);\n}\n\nfloat sdPentagon(in vec2 p, in float r) {\n    const vec3 k = vec3(0.809016994, 0.587785252, 0.726542528);\n    p.y = -(p.y) * 1.25;\n    p.x = abs(p.x) * 1.25;\n    p -= 2.0 * min(dot(vec2(-k.x, k.y), p), 0.0) * vec2(-k.x, k.y);\n    p -= 2.0 * min(dot(vec2(k.x, k.y), p), 0.0) * vec2(k.x, k.y);\n    p -= vec2(clamp(p.x, -r*k.z, r*k.z), r);\n    return length(p) * sign(p.y);\n}\n\nfloat sdOctagon(in vec2 p, in float r) {\n    // pi/8: cos, sin, tan.\n    const vec3 k = vec3(\n        -0.9238795325,   // sqrt(2+sqrt(2))/2\n        0.3826834323,   // sqrt(2-sqrt(2))/2\n        0.4142135623\n    ); // sqrt(2)-1\n    // reflections\n    p = abs(p) * 1.1;\n    p -= 2.0 * min(dot(vec2(k.x,k.y), p), 0.0) * vec2(k.x,k.y);\n    p -= 2.0 * min(dot(vec2(-k.x,k.y), p), 0.0) * vec2(-k.x,k.y);\n    // Polygon side.\n    p -= vec2(clamp(p.x, -k.z*r, k.z*r), r);\n    return length(p) * sign(p.y);\n}\n\nfloat sdStar(in vec2 p, in float r, in uint n, in float m) { // m=[2,n]\n    // these 4 lines can be precomputed for a given shape\n    float an = 3.141593 / float(n);\n    float en = 3.141593 / m;\n    vec2  acs = vec2(cos(an), sin(an));\n    vec2  ecs = vec2(cos(en), sin(en)); // ecs=vec2(0,1) and simplify, for regular polygon,\n\n    // reduce to first sector\n    float bn = mod(atan(p.x, p.y), 2.0 * an) - an;\n    p = length(p) * vec2(cos(bn), abs(sin(bn)));\n\n    // line sdf\n    p -= r * acs;\n    p += ecs * clamp(-dot(p, ecs), 0.0, r * acs.y / ecs.y);\n    return length(p) * sign(p.x);\n}\n\nfloat sdCross(in vec2 p, in float w, in float r) {\n    p = abs(p);\n    return length(p - min(p.x + p.y, w) * 0.5) - r;\n}\n\n// TODO: Precompute this, we always pass the same parameters tot his function (v, vec2(1.0, 0.3), 0.0)\nfloat sdPlus( in vec2 p, in vec2 b, float r ) {\n    p = abs(p);\n    p = (p.y > p.x) ? p.yx : p.xy;\n\n    vec2  q = p - b;\n    float k = max(q.y, q.x);\n    vec2  w = (k > 0.0) ? q : vec2(b.y - p.x, -k);\n\n    return sign(k)*length(max(w, 0.0)) + r;\n}\n\nuniform usampler2D uLabelIndices;\nuniform usampler2D uCharBoxes;\nuniform sampler2D uCharTexture;\nuniform float uPixelRatio;\nuniform uint uRenderMode;\nuniform vec2 uLabelDirection;\nuniform bool uMirror;\nuniform float uPadding;\n\nflat in vec4 fBackgroundColor;\nflat in vec4 fTextColor;\nflat in float fPixelRadius;\nflat in float fLabelStep;\nflat in vec2 fCharTextureSize;\nflat in vec4 fLabelInfo;\nflat in float fPixelLength;\nflat in float fThickness;\nin vec2 vFromCenter;\n\nout vec4 fragColor;\n\nfloat cross_ish(vec2 a, vec2 b)\n{\n    return a.x * b.y - a.y * b.x;\n}\n\nvoid main() {\n    float padding = uPadding * uPixelRatio;\n    float fromCenter = length(vFromCenter);\n    float thickness = fThickness * fPixelLength;\n    float antialias = min(thickness, fPixelLength * 1.5);\n    float radius = 1.0 - thickness;\n    float circle = fromCenter - (1.0 - thickness);\n    float ring = opOnion(circle, thickness);\n    float modeDistance = uRenderMode == MODE_HIGH_PASS_1 ? -antialias : -antialias * 0.5;\n    float ringThreshold = uRenderMode == MODE_HIGH_PASS_2 ? 0.0 : modeDistance;\n\n    if (ring > ringThreshold) {\n        discard;\n    }\n\n    float halfLabelWidth = fLabelInfo[2] * 0.5;\n    float halfLabelHeight = fLabelInfo[3] * 0.5;\n    float normalizedHeight = (halfLabelHeight + padding) / fPixelRadius;\n\n    vec2 positionVector = uLabelDirection;\n    float angle = atan(cross_ish(vFromCenter, positionVector), dot(vFromCenter, positionVector));\n    float angleDistance = angle * fPixelRadius;\n    float paddedLabelWidth = fLabelInfo[2] + padding * 2.0;\n    float offsetAngleDistance = angleDistance + halfLabelWidth + padding;\n\n    float width = fract(offsetAngleDistance / fLabelStep) * fLabelStep;\n    float height = (1.0 - fromCenter) * fPixelRadius - padding;\n    vec4 finalColor;\n\n    if (height < 0.0 || height > fLabelInfo[3] || width < padding || width > fLabelInfo[2] + padding) {\n        finalColor = fBackgroundColor;\n    } else {\n        float uProgress = (width - padding) / fLabelInfo[2];\n        if (uMirror) {\n            uProgress = 1.0 - uProgress;\n        }\n        float stringProgress = fLabelInfo[0] + fLabelInfo[1] * uProgress;\n        float stringIndex = floor(stringProgress);\n        int charIndex = int(uivalueForIndex(uLabelIndices, int(stringIndex)));\n        vec4 charBox = vec4(uvalueForIndex(uCharBoxes, charIndex));\n        float charMult = stringProgress - stringIndex;\n\n        vec4 charBoxUV = charBox / vec4(fCharTextureSize, fCharTextureSize);\n\n        vec2 uv = vec2(charBoxUV[0] + charBoxUV[2] * charMult, charBoxUV[1] + charBoxUV[3] * fLabelInfo[1]);\n        if (uMirror) {\n            uv = vec2(charBoxUV[0] + charBoxUV[2] * charMult, charBoxUV[1] + charBoxUV[3] * (height / fLabelInfo[3]));\n        } else {\n            uv = vec2(charBoxUV[0] + charBoxUV[2] * charMult, charBoxUV[1] + charBoxUV[3] * (1.0 - height / fLabelInfo[3]));\n        }\n\n        vec4 texPixel = texture(uCharTexture, uv);\n\n        float smoothing = 7.0 / fLabelInfo[3];\n        float distance = texPixel.a;\n        float textEdge = smoothstep(0.5 - smoothing, 0.5 + smoothing, distance);\n        finalColor = mix(fBackgroundColor, fTextColor, textEdge);\n    }\n\n    if (uRenderMode == MODE_HIGH_PASS_2) {\n        if (ring < -antialias) {\n            discard;\n        }\n        fragColor = outputColor(vec4(finalColor.rgb, smoothstep(0.0, antialias, abs(ring))));\n    } else {\n        fragColor = outputColor(vec4(finalColor.rgb, 1.0));\n    }\n\n//    fragColor = vec4(1.0,0.0,1.0,1.0);\n}\n";
 
 // src/graph/labels/ring/RingLabel.ts
 var RingLabel = class extends CircularLabel {
@@ -18836,23 +18882,42 @@ var Layer = class extends EventEmitter {
     this._labelsFarDepth = value;
     this.updateLabelsDepths();
   }
-  render(context, mode, uniforms) {
-    this.renderEdges(context, mode, uniforms);
-    this.renderNodes(context, mode, uniforms);
-    this.renderLabels(context, mode, uniforms);
+  render(context, mode, uniforms, index = 0) {
+    const offset = index * -3;
+    if (mode === RenderMode.HIGH) {
+      this.renderLabels(context, RenderMode.HIGH_PASS_1, uniforms[1], offset - 2, true);
+      this.renderNodes(context, RenderMode.HIGH_PASS_1, uniforms[1], offset - 1, true);
+      this.renderEdges(context, RenderMode.HIGH_PASS_1, uniforms[1], offset, true);
+      this.renderEdges(context, RenderMode.HIGH_PASS_1, uniforms[1], offset, false);
+      this.renderEdges(context, RenderMode.HIGH_PASS_2, uniforms[2], offset, false);
+      this.renderNodes(context, RenderMode.HIGH_PASS_1, uniforms[1], offset - 1, false);
+      this.renderNodes(context, RenderMode.HIGH_PASS_2, uniforms[2], offset - 1, false);
+      this.renderLabels(context, RenderMode.HIGH_PASS_1, uniforms[1], offset - 2, false);
+      this.renderLabels(context, RenderMode.HIGH_PASS_2, uniforms[2], offset - 2, false);
+    } else {
+      this.renderLabels(context, mode, uniforms[0], offset - 2, true);
+      this.renderNodes(context, mode, uniforms[0], offset - 1, true);
+      this.renderEdges(context, mode, uniforms[0], offset, true);
+      this.renderEdges(context, mode, uniforms[0], offset, false);
+      this.renderNodes(context, mode, uniforms[0], offset - 1, false);
+      this.renderLabels(context, mode, uniforms[0], offset - 2, false);
+    }
   }
-  renderNodes(context, mode, uniforms) {
-    if (this._nodes && this._nodes.enabled) {
+  renderNodes(context, mode, uniforms, offset, opaque) {
+    if (this._nodes && this._nodes.enabled && (this._nodes.opaque === opaque || mode === RenderMode.HIGH_PASS_2)) {
+      context.polygonOffset(0, offset);
       this._nodes.render(context, mode, uniforms);
     }
   }
-  renderEdges(context, mode, uniforms) {
-    if (this._edges && this._edges.enabled) {
+  renderEdges(context, mode, uniforms, offset, opaque) {
+    if (this._edges && this._edges.enabled && (this._edges.opaque === opaque || mode === RenderMode.HIGH_PASS_2)) {
+      context.polygonOffset(0, offset);
       this._edges.render(context, mode, uniforms);
     }
   }
-  renderLabels(context, mode, uniforms) {
-    if (this._labels && this.labels.enabled) {
+  renderLabels(context, mode, uniforms, offset, opaque) {
+    if (this._labels && this._labels.enabled && (this._labels.opaque === opaque || mode === RenderMode.HIGH_PASS_2)) {
+      context.polygonOffset(0, offset);
       this._labels.render(context, mode, uniforms);
     }
   }
@@ -18879,8 +18944,38 @@ var Layer = class extends EventEmitter {
   }
 };
 
+// src/UX/mouse/drag/DragTranslate.ts
+var DragTranslate = class extends DragModule {
+  handleMouse(event, state, delta) {
+    if (state.buttons[this.button]) {
+      this.viewport.graph.translate([delta[0], -delta[1], 0]);
+      this.viewport.render();
+    }
+  }
+};
+
+// src/UX/mouse/scroll/ScrollScale.ts
+var ScrollScale = class extends ScrollModule {
+  handleMouse(event, state, delta) {
+    const speed = Math.max(1.001, this.speed * Math.abs(delta) * 0.25);
+    const oldScale = this.viewport.graph.scale;
+    if (delta > 0) {
+      this.viewport.graph.scale = this.viewport.graph.scale / speed;
+    } else {
+      this.viewport.graph.scale = this.viewport.graph.scale * speed;
+    }
+    const coords = vec2_exports.fromValues(state.glCoords[0] - this.viewport.size[0] * 0.5, state.glCoords[1] - this.viewport.size[1] * 0.5);
+    const distance4 = vec2_exports.fromValues(coords[0] - this.viewport.graph.translation[0], coords[1] - this.viewport.graph.translation[1]);
+    const scale6 = this.viewport.graph.scale / oldScale;
+    const scaled = vec2_exports.fromValues(distance4[0] * scale6, distance4[1] * scale6);
+    const offset = vec2_exports.sub(vec2_exports.create(), scaled, distance4);
+    this.viewport.graph.translate(vec3_exports.fromValues(-offset[0], -offset[1], 0));
+    this.viewport.render();
+  }
+};
+
 // src/grafer/GraferController.ts
-var kDefaultOptions2 = {
+var kDefaultOptions3 = {
   viewport: null
 };
 var GraferController = class extends EventEmitter {
@@ -18895,20 +18990,27 @@ var GraferController = class extends EventEmitter {
   }
   constructor(canvas, data, options) {
     super();
-    const opts = Object.assign({}, kDefaultOptions2, options);
+    const opts = Object.assign({}, kDefaultOptions3, options);
     this._viewport = new Viewport(canvas, opts.viewport);
     this._generateIdPrev = 0;
-    const dolly = new ScrollDolly(this._viewport);
-    dolly.enabled = true;
-    const truck = new DragTruck(this._viewport);
-    truck.button = "primary";
-    truck.enabled = true;
-    const rotation = new DragRotation(this._viewport);
-    rotation.button = "secondary";
-    rotation.enabled = true;
-    const pan = new DragPan(this._viewport);
-    pan.button = "auxiliary";
-    pan.enabled = true;
+    if (this._viewport.camera.mode === CameraMode["2D"]) {
+      const translate2 = new DragTranslate(this._viewport);
+      translate2.enabled = true;
+      const scale6 = new ScrollScale(this._viewport);
+      scale6.enabled = true;
+    } else {
+      const dolly = new ScrollDolly(this._viewport);
+      dolly.enabled = true;
+      const truck = new DragTruck(this._viewport);
+      truck.button = "primary";
+      truck.enabled = true;
+      const rotation = new DragRotation(this._viewport);
+      rotation.button = "secondary";
+      rotation.enabled = true;
+      const pan = new DragPan(this._viewport);
+      pan.button = "auxiliary";
+      pan.enabled = true;
+    }
     if (data) {
       this.loadData(data);
     }
@@ -18924,8 +19026,18 @@ var GraferController = class extends EventEmitter {
     if (this._viewport.graph) {
       const bbCenter = this._viewport.graph.bbCenter;
       const bbDiagonal = this._viewport.graph.bbDiagonal;
-      this._viewport.camera.position = [-bbCenter[0], -bbCenter[1], -bbCenter[2] - bbDiagonal];
-      this._viewport.camera.farPlane = Math.max(bbDiagonal * 2, 1e3);
+      if (this._viewport.camera.mode === CameraMode["2D"]) {
+        const bb = this._viewport.graph.bb;
+        const bbWidth = Math.abs(bb.min[0]) + Math.abs(bb.max[0]);
+        const bbHeight = Math.abs(bb.min[1]) + Math.abs(bb.max[1]);
+        const size = this._viewport.size;
+        const scale6 = Math.min(size[0] / bbWidth, size[1] / bbHeight);
+        this._viewport.graph.scale = scale6;
+        this._viewport.graph.translate([-bbCenter[0] * scale6, -bbCenter[1] * scale6, 0]);
+      } else {
+        this._viewport.camera.position = [-bbCenter[0], -bbCenter[1], -bbCenter[2] - bbDiagonal];
+        this._viewport.camera.farPlane = Math.max(bbDiagonal * 2, 1e3);
+      }
       this._viewport.render();
     }
   }
@@ -18982,7 +19094,7 @@ var GraferController = class extends EventEmitter {
     const labels = this.addLabels(labelsData, useColors);
     if (nodes || edges || labels) {
       const layer = new Layer(nodes, edges, labels, name);
-      graph.layers.unshift(layer);
+      graph.layers.push(layer);
       layer.on(EventEmitter.omniEvent, (...args) => this.emit(...args));
       if ("options" in layerData) {
         const options = layerData.options;
@@ -19146,6 +19258,2289 @@ var GraferController = class extends EventEmitter {
     }
   }
 };
+
+// examples/src/playground.ts
+var kPolarNight = [
+  { r: 59, g: 66, b: 82 },
+  { r: 67, g: 76, b: 94 },
+  { r: 76, g: 86, b: 106 }
+];
+var kSnowStorm = [
+  { r: 216, g: 222, b: 233 },
+  { r: 229, g: 233, b: 240 },
+  { r: 236, g: 239, b: 244 }
+];
+var kFrost = [
+  { r: 143, g: 188, b: 187 },
+  { r: 136, g: 192, b: 208 },
+  { r: 129, g: 161, b: 193 },
+  { r: 94, g: 129, b: 172 }
+];
+var kAurora = [
+  { r: 191, g: 97, b: 106 },
+  { r: 208, g: 135, b: 112 },
+  { r: 235, g: 203, b: 139 },
+  { r: 163, g: 190, b: 140 },
+  { r: 180, g: 142, b: 173 }
+];
+var kGradient = [
+  { r: 76, g: 86, b: 106 },
+  { r: 85, g: 95, b: 115 },
+  { r: 93, g: 103, b: 124 },
+  { r: 102, g: 112, b: 133 },
+  { r: 111, g: 121, b: 143 },
+  { r: 120, g: 130, b: 152 },
+  { r: 130, g: 140, b: 162 },
+  { r: 139, g: 149, b: 171 },
+  { r: 148, g: 159, b: 181 },
+  { r: 158, g: 168, b: 191 },
+  { r: 168, g: 178, b: 201 },
+  { r: 177, g: 188, b: 211 },
+  { r: 187, g: 198, b: 221 },
+  { r: 197, g: 208, b: 231 },
+  { r: 207, g: 218, b: 241 },
+  { r: 217, g: 228, b: 252 },
+  { r: 228, g: 238, b: 255 },
+  { r: 238, g: 248, b: 255 },
+  { r: 248, g: 255, b: 255 },
+  { r: 255, g: 255, b: 255 }
+];
+var kColorPresets = [
+  { name: "none", colors: null },
+  { name: "polar night", colors: kPolarNight },
+  { name: "snow storm", colors: kSnowStorm },
+  { name: "frost", colors: kFrost },
+  { name: "aurora", colors: kAurora },
+  { name: "gradient", colors: kGradient }
+];
+var colorsRgbToArr = (colors2) => colors2.map((val) => Object.values(val));
+function createColorsSelector(folder, colors2) {
+  const dummy = { preset: 0 };
+  const presetOptions = {};
+  for (let i = 0, n = kColorPresets.length; i < n; ++i) {
+    presetOptions[kColorPresets[i].name] = i;
+  }
+  const preset = folder.addInput(dummy, "preset", { options: presetOptions });
+  const remove = folder.addButton({ title: "remove color" });
+  preset.on("change", (value) => {
+    if (value > 0) {
+      colors2.length = 0;
+      colors2.push(...kColorPresets[value].colors);
+      const items = folder.controller.uiContainer.items;
+      while (items.length > 3) {
+        items[items.length - 3].viewModel.dispose();
+      }
+      for (let i = 0, n = colors2.length; i < n; ++i) {
+        folder.addInput(colors2, `${i}`, { index: i + 1 });
+      }
+      remove.hidden = colors2.length <= 1;
+    }
+  });
+  for (let i = 0, n = colors2.length; i < n; ++i) {
+    folder.addInput(colors2, `${i}`, { index: i + 1 });
+  }
+  remove.hidden = colors2.length <= 1;
+  remove.on("click", () => {
+    colors2.pop();
+    const items = folder.controller.uiContainer.items;
+    items[items.length - 3].viewModel.dispose();
+    remove.hidden = colors2.length <= 1;
+    dummy.preset = 0;
+    preset.refresh();
+  });
+  folder.addButton({ title: "add color" }).on("click", () => {
+    const lastColor = colors2[colors2.length - 1];
+    const color = { r: lastColor.r, g: lastColor.g, b: lastColor.b };
+    colors2.push(color);
+    folder.addInput(colors2, `${colors2.length - 1}`, { index: colors2.length });
+    remove.hidden = colors2.length <= 1;
+    dummy.preset = 0;
+    preset.refresh();
+  });
+}
+function createFileInput(cb) {
+  const input = document.createElement("input");
+  input.type = "file";
+  input.multiple = false;
+  input.addEventListener("change", cb);
+  return input;
+}
+var gLayerCount = 0;
+function createFilesSelector(pane, layers, updateLoadBtn) {
+  const result = {
+    name: `layer_${gLayerCount++}`,
+    ready: false,
+    nodes: "No file selected.",
+    nodesFile: null,
+    nodesMapping: "",
+    edges: "No file selected.",
+    edgesFile: null,
+    edgesMapping: "",
+    meta: "No file selected.",
+    metaFile: null,
+    colors: [...kAurora]
+  };
+  const layersInd = layers.length;
+  const folder = pane.addFolder({
+    title: result.name,
+    index: layersInd
+  });
+  folder.addInput(result, "name");
+  folder.addSeparator();
+  const nodesInput = createFileInput(() => {
+    if (nodesInput.files.length) {
+      result.nodesFile = nodesInput.files[0];
+      result.nodes = result.nodesFile.name;
+      result.ready = true;
+    } else {
+      result.nodes = "No file selected.";
+      result.nodesFile = null;
+      result.ready = false;
+    }
+    updateLoadBtn();
+  });
+  folder.addMonitor(result, "nodes");
+  folder.addButton({ title: "browse..." }).on("click", () => nodesInput.click());
+  folder.addInput({ nodesMapping: result.nodesMapping }, "nodesMapping").on("change", (stringVal) => {
+    layers[layersInd].nodesMapping = stringVal;
+  });
+  folder.addSeparator();
+  const edgesInput = createFileInput(() => {
+    if (edgesInput.files.length) {
+      result.edgesFile = edgesInput.files[0];
+      result.edges = result.edgesFile.name;
+    } else {
+      result.edges = "No file selected.";
+      result.edgesFile = null;
+    }
+  });
+  folder.addMonitor(result, "edges");
+  folder.addButton({ title: "browse..." }).on("click", () => edgesInput.click());
+  folder.addInput({ edgesMapping: result.edgesMapping }, "edgesMapping").on("change", (stringVal) => {
+    layers[layersInd].edgesMapping = stringVal;
+  });
+  folder.addSeparator();
+  const metaInput = createFileInput(() => {
+    if (metaInput.files.length) {
+      result.metaFile = metaInput.files[0];
+      result.meta = result.metaFile.name;
+    } else {
+      result.meta = "No file selected.";
+      result.metaFile = null;
+    }
+  });
+  folder.addMonitor(result, "meta");
+  folder.addButton({ title: "browse..." }).on("click", () => metaInput.click());
+  folder.addSeparator();
+  const colors2 = folder.addFolder({ title: "colors", expanded: false });
+  createColorsSelector(colors2, result.colors);
+  folder.addSeparator();
+  const misc = folder.addFolder({ title: "misc", expanded: false });
+  misc.addMonitor(result, "ready");
+  misc.addButton({ title: "remove layer" }).on("click", () => {
+    const i = layers.indexOf(result);
+    if (i !== -1) {
+      layers.splice(i, 1);
+      folder.dispose();
+      updateLoadBtn();
+    }
+  });
+  folder.addSeparator();
+  return result;
+}
+async function loadLayers(layers) {
+  const loadedLayers = [];
+  for (let i = 0, n = layers.length; i < n; ++i) {
+    loadedLayers.push({
+      nodes: await LocalJSONL.loadNodes(layers[i].nodesFile, []),
+      edges: null,
+      meta: null
+    });
+  }
+  const stats = mod_exports8.normalizeNodeLayers(loadedLayers.map((layer) => layer.nodes));
+  for (let i = 0, n = layers.length; i < n; ++i) {
+    if (layers[i].edgesFile) {
+      loadedLayers[i].edges = await LocalJSONL.loadEdges(layers[i].edgesFile, loadedLayers[i].nodes);
+    }
+    if (layers[i].metaFile) {
+      loadedLayers[i].meta = await LocalJSONL.loadMeta(layers[i].metaFile);
+    }
+  }
+  return {
+    layers: loadedLayers,
+    stats
+  };
+}
+async function playground(container) {
+  render(html`<div id="menu" class="start_menu"></div>`, container);
+  const menu = new import_tweakpane2.default({
+    title: "Grafer Loader",
+    container: document.querySelector("#menu")
+  });
+  const layersFile = [];
+  const addBtn = menu.addButton({ title: "add layer" });
+  const loadBtn = menu.addButton({ title: "load" });
+  const updateLoadBtn = () => {
+    if (layersFile.length) {
+      for (let i = 0, n = layersFile.length; i < n; ++i) {
+        if (!layersFile[i].ready) {
+          loadBtn.hidden = true;
+          return;
+        }
+      }
+      loadBtn.hidden = false;
+    } else {
+      loadBtn.hidden = true;
+    }
+  };
+  loadBtn.hidden = true;
+  addBtn.on("click", () => {
+    layersFile.push(createFilesSelector(menu, layersFile, updateLoadBtn));
+    updateLoadBtn();
+  });
+  loadBtn.on("click", async () => {
+    menu.dispose();
+    const loading = new import_tweakpane2.default({
+      title: "loading...",
+      container: document.querySelector("#menu")
+    });
+    try {
+      render(html`<canvas class="grafer_container"></canvas><mouse-interactions></mouse-interactions>`, container);
+      const canvas = document.querySelector(".grafer_container");
+      const loaded = await loadLayers(layersFile);
+      const layers = [];
+      const colorsArr = [];
+      const pointsData = [];
+      const pointsMap = new Map();
+      loaded.layers.map((layer, layerInd) => {
+        const { nodesMapping, edgesMapping, colors: colors2 } = layersFile[layerInd];
+        layers.push({
+          nodes: {
+            data: layer.nodes.nodes,
+            mappings: nodesMapping ? new Function(`return (${nodesMapping})`)() : {}
+          },
+          edges: {
+            data: layer.edges ? layer.edges.edges : [],
+            mappings: edgesMapping ? new Function(`return (${edgesMapping})`)() : {}
+          }
+        });
+        layer.nodes.points.map((point, pointInd) => {
+          if (!pointsMap.has(point.id)) {
+            pointsData.push(point);
+            pointsMap.set(point.id, [layerInd, pointInd]);
+          }
+        });
+        colorsArr.push(...colorsRgbToArr(colors2));
+      });
+      const points2 = {
+        data: pointsData
+      };
+      const grafer = new GraferController(canvas, { points: points2, layers, colors: colorsArr });
+      const { viewport } = grafer;
+      const dolly = new mod_exports12.mouse.ScrollDolly(viewport);
+      dolly.enabled = true;
+      const truck = new mod_exports12.mouse.DragTruck(viewport);
+      truck.button = "primary";
+      truck.enabled = true;
+      const rotation = new mod_exports12.mouse.DragRotation(viewport);
+      rotation.button = "secondary";
+      rotation.enabled = true;
+      const pan = new mod_exports12.mouse.DragPan(viewport);
+      pan.button = "auxiliary";
+      pan.enabled = true;
+      const debug = new mod_exports12.DebugMenu(viewport);
+      debug.registerUX(dolly);
+      debug.registerUX(truck);
+      debug.registerUX(rotation);
+      debug.registerUX(pan);
+    } catch (e) {
+      loading.addMonitor({ error: e.toString() }, "error");
+      throw e;
+    }
+    loading.dispose();
+  });
+}
+
+// examples/src/basic/mod.ts
+var mod_exports13 = {};
+__export(mod_exports13, {
+  edgeColors: () => edgeColors,
+  minimal: () => minimal,
+  minimal3D: () => minimal3D,
+  nodeColors: () => nodeColors,
+  nodeID: () => nodeID,
+  nodeRadius: () => nodeRadius,
+  picking: () => picking
+});
+
+// examples/src/basic/minimal.ts
+async function minimal(container) {
+  render(html`<canvas class="grafer_container"></canvas><mouse-interactions></mouse-interactions>`, container);
+  const canvas = document.querySelector(".grafer_container");
+  const nodes = {
+    data: [
+      { x: -8.6, y: 5 },
+      { x: 8.6, y: 5 },
+      { x: 0, y: -10 },
+      { x: 0, y: 0 }
+    ]
+  };
+  const edges = {
+    data: [
+      { source: 0, target: 1 },
+      { source: 1, target: 2 },
+      { source: 2, target: 0 },
+      { source: 3, target: 0 },
+      { source: 3, target: 1 },
+      { source: 3, target: 2 }
+    ]
+  };
+  const layers = [
+    { nodes, edges }
+  ];
+  new GraferController(canvas, { layers });
+}
+
+// examples/src/basic/minimal3D.ts
+async function minimal3D(container) {
+  render(html`<canvas class="grafer_container"></canvas><mouse-interactions></mouse-interactions>`, container);
+  const canvas = document.querySelector(".grafer_container");
+  const nodes = {
+    data: [
+      { x: -8.6, y: 5, z: 5 },
+      { x: 8.6, y: 5, z: 5 },
+      { x: 0, y: -10, z: 0 },
+      { x: 0, y: 5, z: -8.6 },
+      { x: 0, y: 0, z: 0 }
+    ]
+  };
+  const edges = {
+    data: [
+      { source: 0, target: 1 },
+      { source: 0, target: 2 },
+      { source: 0, target: 3 },
+      { source: 1, target: 2 },
+      { source: 1, target: 3 },
+      { source: 2, target: 3 },
+      { source: 4, target: 0 },
+      { source: 4, target: 1 },
+      { source: 4, target: 2 },
+      { source: 4, target: 3 }
+    ]
+  };
+  const layers = [
+    { nodes, edges }
+  ];
+  new GraferController(canvas, { layers });
+}
+
+// examples/src/basic/nodeColors.ts
+async function nodeColors(container) {
+  render(html`<canvas class="grafer_container"></canvas><mouse-interactions></mouse-interactions>`, container);
+  const canvas = document.querySelector(".grafer_container");
+  const nodes = {
+    data: [
+      { x: -8.6, y: 5, z: 5, color: "limegreen" },
+      { x: 8.6, y: 5, z: 5, color: "#af3a6f" },
+      { x: 0, y: -10, z: 0, color: [128, 230, 255] },
+      { x: 0, y: 5, z: -8.6, color: "rgb(40, 40, 189)" },
+      { x: 0, y: 0, z: 0, color: "yellow" }
+    ]
+  };
+  const edges = {
+    data: [
+      { source: 0, target: 1 },
+      { source: 0, target: 2 },
+      { source: 0, target: 3 },
+      { source: 1, target: 2 },
+      { source: 1, target: 3 },
+      { source: 2, target: 3 },
+      { source: 4, target: 0 },
+      { source: 4, target: 1 },
+      { source: 4, target: 2 },
+      { source: 4, target: 3 }
+    ]
+  };
+  const layers = [
+    { nodes, edges }
+  ];
+  new GraferController(canvas, { layers });
+}
+
+// examples/src/basic/edgeColors.ts
+async function edgeColors(container) {
+  render(html`<canvas class="grafer_container"></canvas><mouse-interactions></mouse-interactions>`, container);
+  const canvas = document.querySelector(".grafer_container");
+  const nodes = {
+    data: [
+      { x: -8.6, y: 5 },
+      { x: 8.6, y: 5 },
+      { x: 0, y: -10 },
+      { x: 0, y: 0 }
+    ]
+  };
+  const edges = {
+    data: [
+      { source: 0, target: 1, sourceColor: "#5e81ac", targetColor: "#b48ead" },
+      { source: 1, target: 2, sourceColor: "#b48ead", targetColor: "#88c0d0" },
+      { source: 2, target: 0, sourceColor: "#88c0d0", targetColor: "#5e81ac" },
+      { source: 3, target: 0, sourceColor: "orange", targetColor: "#5e81ac" },
+      { source: 3, target: 1, sourceColor: "orange", targetColor: "#b48ead" },
+      { source: 3, target: 2, sourceColor: "orange", targetColor: "#88c0d0" }
+    ]
+  };
+  const layers = [
+    { nodes, edges }
+  ];
+  new GraferController(canvas, { layers });
+}
+
+// examples/src/basic/nodeRadius.ts
+async function nodeRadius(container) {
+  render(html`<canvas class="grafer_container"></canvas><mouse-interactions></mouse-interactions>`, container);
+  const canvas = document.querySelector(".grafer_container");
+  const nodes = {
+    data: [
+      { x: -8.6, y: 5 },
+      { x: 8.6, y: 5 },
+      { x: 0, y: -10 },
+      { x: 0, y: 0, color: "red", radius: 2.5 }
+    ]
+  };
+  const edges = {
+    data: [
+      { source: 0, target: 1 },
+      { source: 1, target: 2 },
+      { source: 2, target: 0 },
+      { source: 3, target: 0 },
+      { source: 3, target: 1 },
+      { source: 3, target: 2 }
+    ]
+  };
+  const layers = [
+    { nodes, edges }
+  ];
+  new GraferController(canvas, { layers });
+}
+
+// examples/src/basic/nodeID.ts
+async function nodeID(container) {
+  render(html`<canvas class="grafer_container"></canvas><mouse-interactions></mouse-interactions>`, container);
+  const canvas = document.querySelector(".grafer_container");
+  const nodes = {
+    data: [
+      { id: "left", x: -8.6, y: 5 },
+      { id: "right", x: 8.6, y: 5 },
+      { id: "bottom", x: 0, y: -10 },
+      { id: "center", x: 0, y: 0 }
+    ]
+  };
+  const edges = {
+    data: [
+      { source: "left", target: "right" },
+      { source: "right", target: "bottom" },
+      { source: "bottom", target: "left" },
+      { source: "center", target: "left" },
+      { source: "center", target: "right" },
+      { source: "center", target: "bottom" }
+    ]
+  };
+  const layers = [
+    { nodes, edges }
+  ];
+  new GraferController(canvas, { layers });
+}
+
+// examples/src/basic/picking.ts
+async function picking(container) {
+  render(html`<canvas class="grafer_container"></canvas><mouse-interactions></mouse-interactions>`, container);
+  const canvas = document.querySelector(".grafer_container");
+  const nodes = {
+    data: [
+      { id: "left", x: -8.6, y: 5 },
+      { id: "right", x: 8.6, y: 5 },
+      { id: "bottom", x: 0, y: -10 },
+      { id: "center", x: 0, y: 0 }
+    ]
+  };
+  const edges = {
+    data: [
+      { source: "left", target: "right" },
+      { source: "right", target: "bottom" },
+      { source: "bottom", target: "left" },
+      { source: "center", target: "left" },
+      { source: "center", target: "right" },
+      { source: "center", target: "bottom" }
+    ]
+  };
+  const layers = [
+    { name: "Awesomeness", nodes, edges }
+  ];
+  const printEvent = (event, detail) => {
+    console.log(`${event.description} => layer:"${detail.layer}" ${detail.type}:"${detail.id}"`);
+  };
+  const controller = new GraferController(canvas, { layers });
+  controller.on(mod_exports12.picking.PickingManager.events.hoverOn, printEvent);
+  controller.on(mod_exports12.picking.PickingManager.events.hoverOff, printEvent);
+  controller.on(mod_exports12.picking.PickingManager.events.click, printEvent);
+}
+
+// examples/src/data/mod.ts
+var mod_exports14 = {};
+__export(mod_exports14, {
+  addPoints: () => addPoints,
+  colors: () => colors,
+  mappings: () => mappings,
+  points: () => points,
+  separateNodesEdges: () => separateNodesEdges
+});
+
+// examples/src/data/points.ts
+async function points(container) {
+  const points2 = {
+    data: [
+      { id: "left", x: -8.6, y: 5 },
+      { id: "right", x: 8.6, y: 5 },
+      { id: "bottom", x: 0, y: -10 },
+      { id: "center", x: 0, y: 0 }
+    ]
+  };
+  const nodes = {
+    data: [
+      { point: "left" },
+      { point: "right" },
+      { point: "bottom" },
+      { point: "center" }
+    ]
+  };
+  const edges = {
+    data: [
+      { source: "left", target: "right" },
+      { source: "right", target: "bottom" },
+      { source: "bottom", target: "left" },
+      { source: "center", target: "left" },
+      { source: "center", target: "right" },
+      { source: "center", target: "bottom" }
+    ]
+  };
+  const layers = [
+    { nodes, edges }
+  ];
+  render(html`<canvas class="grafer_container"></canvas><mouse-interactions></mouse-interactions>`, container);
+  const canvas = document.querySelector(".grafer_container");
+  new GraferController(canvas, { points: points2, layers });
+}
+
+// examples/src/data/addPoints.ts
+function generateRandomPointData(startIndex, count) {
+  const data = [];
+  for (let i = 0; i < count; ++i) {
+    data.push({
+      id: `p_${startIndex + i}`,
+      x: Math.random() * 200 - 100,
+      y: Math.random() * 200 - 100,
+      radius: 1
+    });
+  }
+  return data;
+}
+var gPointCount = 0;
+function addNewPoints(controller) {
+  const data = generateRandomPointData(gPointCount, 50);
+  controller.viewport.graph.addPoints(data);
+  const nodeData = data.map((p) => ({ point: p.id }));
+  const layer = {
+    nodes: {
+      data: nodeData
+    }
+  };
+  controller.addLayer(layer, `newNodes_${gPointCount}`);
+  controller.render();
+  gPointCount += 50;
+}
+async function addPoints(container) {
+  const points2 = {
+    data: [
+      { id: "tl", x: -100, y: -100, radius: 4 },
+      { id: "tr", x: 100, y: -100, radius: 4 },
+      { id: "bl", x: -100, y: 100, radius: 4 },
+      { id: "br", x: 100, y: 100, radius: 4 }
+    ]
+  };
+  const nodes = {
+    data: [
+      { point: "tl" },
+      { point: "tr" },
+      { point: "bl" },
+      { point: "br" }
+    ]
+  };
+  const edges = {
+    data: [
+      { source: "tl", target: "tr" },
+      { source: "tr", target: "br" },
+      { source: "br", target: "bl" },
+      { source: "bl", target: "tl" }
+    ]
+  };
+  const layers = [
+    { nodes, edges }
+  ];
+  render(html`<canvas class="grafer_container"></canvas><mouse-interactions></mouse-interactions>`, container);
+  const canvas = document.querySelector(".grafer_container");
+  const controller = new GraferController(canvas, { points: points2, layers });
+  addNewPoints(controller);
+  setInterval(() => addNewPoints(controller), 5e3);
+}
+
+// examples/src/data/separateNodesEdges.ts
+async function separateNodesEdges(container) {
+  const points2 = {
+    data: [
+      { id: "top-left", x: -8.6, y: 5, radius: 0 },
+      { id: "top-right", x: 8.6, y: 5, radius: 0 },
+      { id: "top-center", x: 0, y: 10 },
+      { id: "bottom-left", x: -8.6, y: -5 },
+      { id: "bottom-right", x: 8.6, y: -5 },
+      { id: "bottom-center", x: 0, y: -10, radius: 0 },
+      { id: "origin", x: 0, y: 0 }
+    ]
+  };
+  const nodes = {
+    data: [
+      { point: "bottom-left" },
+      { point: "bottom-right" },
+      { point: "top-center" },
+      { point: "origin" }
+    ]
+  };
+  const edges = {
+    data: [
+      { source: "top-left", target: "top-right" },
+      { source: "top-right", target: "bottom-center" },
+      { source: "bottom-center", target: "top-left" },
+      { source: "origin", target: "top-left" },
+      { source: "origin", target: "top-right" },
+      { source: "origin", target: "bottom-center" }
+    ]
+  };
+  const layers = [
+    { nodes },
+    { edges }
+  ];
+  render(html`<canvas class="grafer_container"></canvas><mouse-interactions></mouse-interactions>`, container);
+  const canvas = document.querySelector(".grafer_container");
+  new GraferController(canvas, { points: points2, layers });
+}
+
+// examples/src/data/colors.ts
+async function colors(container) {
+  const colors2 = [
+    "red",
+    "limegreen",
+    [0, 0, 255],
+    "#88c0d0"
+  ];
+  const points2 = {
+    data: [
+      { id: "left", x: -8.6, y: 5 },
+      { id: "right", x: 8.6, y: 5 },
+      { id: "bottom", x: 0, y: -10 },
+      { id: "center", x: 0, y: 0 }
+    ]
+  };
+  const nodes = {
+    data: [
+      { point: "left", color: 0 },
+      { point: "right", color: 1 },
+      { point: "bottom", color: 2 },
+      { point: "center", color: 3 }
+    ]
+  };
+  const edges = {
+    data: [
+      { source: "left", target: "right", sourceColor: 0, targetColor: 1 },
+      { source: "right", target: "bottom", sourceColor: 1, targetColor: 2 },
+      { source: "bottom", target: "left", sourceColor: 2, targetColor: 0 },
+      { source: "center", target: "left", sourceColor: 3, targetColor: 0 },
+      { source: "center", target: "right", sourceColor: 3, targetColor: 1 },
+      { source: "center", target: "bottom", sourceColor: 3, targetColor: 2 }
+    ]
+  };
+  const layers = [
+    { nodes, edges }
+  ];
+  render(html`<canvas class="grafer_container"></canvas><mouse-interactions></mouse-interactions>`, container);
+  const canvas = document.querySelector(".grafer_container");
+  new GraferController(canvas, { colors: colors2, points: points2, layers });
+}
+
+// examples/src/data/mappings.ts
+async function mappings(container) {
+  const colors2 = [
+    "red",
+    "limegreen",
+    [0, 0, 255],
+    "#88c0d0",
+    [255, 255, 0],
+    [0, 255, 255],
+    [255, 0, 255],
+    "white"
+  ];
+  const points2 = {
+    data: [
+      { id: "left", x: -8.6, y: 5 },
+      { id: "right", x: 8.6, y: 5 },
+      { id: "bottom", x: 0, y: -10 },
+      { id: "center", x: 0, y: 0 }
+    ]
+  };
+  const nodes = {
+    data: [
+      { point: "left", color: 0 },
+      { point: "right", color: 1 },
+      { point: "bottom", color: 2 },
+      { point: "center", color: 3 }
+    ]
+  };
+  const edges = {
+    data: [
+      { source: "left", target: "right", color: 4 },
+      { source: "right", target: "bottom", color: 5 },
+      { source: "bottom", target: "left", color: 6 },
+      { source: "center", target: "left", color: 7 },
+      { source: "center", target: "right", color: 7 },
+      { source: "center", target: "bottom", color: 7 }
+    ],
+    mappings: {
+      sourceColor: (entry) => entry.color,
+      targetColor: (entry) => entry.color
+    }
+  };
+  const layers = [
+    { nodes, edges }
+  ];
+  render(html`<canvas class="grafer_container"></canvas><mouse-interactions></mouse-interactions>`, container);
+  const canvas = document.querySelector(".grafer_container");
+  new GraferController(canvas, { colors: colors2, points: points2, layers });
+}
+
+// examples/src/nodes/mod.ts
+var mod_exports15 = {};
+__export(mod_exports15, {
+  circle: () => circle,
+  cross: () => cross4,
+  octagon: () => octagon,
+  pentagon: () => pentagon,
+  plus: () => plus,
+  ring: () => ring,
+  star: () => star,
+  triangle: () => triangle
+});
+
+// examples/src/nodes/circle.ts
+function createNodePoints(count, radius = 10) {
+  const PI2 = Math.PI * 2;
+  const degStep = PI2 / count;
+  const result = [];
+  for (let angle3 = 0, i = 0; angle3 < PI2; angle3 += degStep, ++i) {
+    const pX = Math.cos(angle3) * radius;
+    const pY = Math.sin(angle3) * radius;
+    result.push({
+      id: `p${i}-${radius}`,
+      x: pX,
+      y: pY
+    });
+  }
+  return result;
+}
+async function circle(container) {
+  const nodes = {
+    type: "Circle",
+    data: [
+      ...createNodePoints(10, 10),
+      ...createNodePoints(5, 5)
+    ]
+  };
+  const layers = [
+    { nodes }
+  ];
+  render(html`<canvas class="grafer_container"></canvas><mouse-interactions></mouse-interactions>`, container);
+  const canvas = document.querySelector(".grafer_container");
+  new GraferController(canvas, { layers });
+}
+
+// examples/src/nodes/ring.ts
+function createNodePoints2(count, radius = 10) {
+  const PI2 = Math.PI * 2;
+  const degStep = PI2 / count;
+  const result = [];
+  for (let angle3 = 0, i = 0; angle3 < PI2; angle3 += degStep, ++i) {
+    const pX = Math.cos(angle3) * radius;
+    const pY = Math.sin(angle3) * radius;
+    result.push({
+      id: `p${i}-${radius}`,
+      x: pX,
+      y: pY
+    });
+  }
+  return result;
+}
+async function ring(container) {
+  const nodes = {
+    type: "Ring",
+    data: [
+      ...createNodePoints2(10, 10),
+      ...createNodePoints2(5, 5)
+    ]
+  };
+  const layers = [
+    { nodes }
+  ];
+  render(html`<canvas class="grafer_container"></canvas><mouse-interactions></mouse-interactions>`, container);
+  const canvas = document.querySelector(".grafer_container");
+  new GraferController(canvas, { layers });
+}
+
+// examples/src/nodes/triangle.ts
+function createNodePoints3(count, radius = 10) {
+  const PI2 = Math.PI * 2;
+  const degStep = PI2 / count;
+  const result = [];
+  for (let angle3 = 0, i = 0; angle3 < PI2; angle3 += degStep, ++i) {
+    const pX = Math.cos(angle3) * radius;
+    const pY = Math.sin(angle3) * radius;
+    result.push({
+      id: `p${i}-${radius}`,
+      x: pX,
+      y: pY
+    });
+  }
+  return result;
+}
+async function triangle(container) {
+  const nodes = {
+    type: "Triangle",
+    data: [
+      ...createNodePoints3(10, 10),
+      ...createNodePoints3(5, 5)
+    ]
+  };
+  const layers = [
+    { nodes }
+  ];
+  render(html`<canvas class="grafer_container"></canvas><mouse-interactions></mouse-interactions>`, container);
+  const canvas = document.querySelector(".grafer_container");
+  new GraferController(canvas, { layers });
+}
+
+// examples/src/nodes/pentagon.ts
+function createNodePoints4(count, radius = 10) {
+  const PI2 = Math.PI * 2;
+  const degStep = PI2 / count;
+  const result = [];
+  for (let angle3 = 0, i = 0; angle3 < PI2; angle3 += degStep, ++i) {
+    const pX = Math.cos(angle3) * radius;
+    const pY = Math.sin(angle3) * radius;
+    result.push({
+      id: `p${i}-${radius}`,
+      x: pX,
+      y: pY
+    });
+  }
+  return result;
+}
+async function pentagon(container) {
+  const nodes = {
+    type: "Pentagon",
+    data: [
+      ...createNodePoints4(10, 10),
+      ...createNodePoints4(5, 5)
+    ]
+  };
+  const layers = [
+    { nodes }
+  ];
+  render(html`<canvas class="grafer_container"></canvas><mouse-interactions></mouse-interactions>`, container);
+  const canvas = document.querySelector(".grafer_container");
+  new GraferController(canvas, { layers });
+}
+
+// examples/src/nodes/octagon.ts
+function createNodePoints5(count, radius = 10) {
+  const PI2 = Math.PI * 2;
+  const degStep = PI2 / count;
+  const result = [];
+  for (let angle3 = 0, i = 0; angle3 < PI2; angle3 += degStep, ++i) {
+    const pX = Math.cos(angle3) * radius;
+    const pY = Math.sin(angle3) * radius;
+    result.push({
+      id: `p${i}-${radius}`,
+      x: pX,
+      y: pY
+    });
+  }
+  return result;
+}
+async function octagon(container) {
+  const nodes = {
+    type: "Octagon",
+    data: [
+      ...createNodePoints5(10, 10),
+      ...createNodePoints5(5, 5)
+    ]
+  };
+  const layers = [
+    { nodes }
+  ];
+  render(html`<canvas class="grafer_container"></canvas><mouse-interactions></mouse-interactions>`, container);
+  const canvas = document.querySelector(".grafer_container");
+  new GraferController(canvas, { layers });
+}
+
+// examples/src/nodes/star.ts
+function createNodePoints6(count, radius = 10) {
+  const PI2 = Math.PI * 2;
+  const degStep = PI2 / count;
+  const result = [];
+  for (let angle3 = 0, i = 0; angle3 < PI2; angle3 += degStep, ++i) {
+    const pX = Math.cos(angle3) * radius;
+    const pY = Math.sin(angle3) * radius;
+    result.push({
+      id: `p${i}-${radius}`,
+      x: pX,
+      y: pY
+    });
+  }
+  return result;
+}
+async function star(container) {
+  const nodesStar5 = {
+    type: "Star",
+    data: createNodePoints6(10, 10)
+  };
+  const nodesStar10 = {
+    type: "Star",
+    data: createNodePoints6(5, 5),
+    options: {
+      sides: 10,
+      angleDivisor: 2.5
+    }
+  };
+  const layers = [
+    { nodes: nodesStar5 },
+    { nodes: nodesStar10 }
+  ];
+  render(html`<canvas class="grafer_container"></canvas><mouse-interactions></mouse-interactions>`, container);
+  const canvas = document.querySelector(".grafer_container");
+  new GraferController(canvas, { layers });
+}
+
+// examples/src/nodes/cross.ts
+function createNodePoints7(count, radius = 10) {
+  const PI2 = Math.PI * 2;
+  const degStep = PI2 / count;
+  const result = [];
+  for (let angle3 = 0, i = 0; angle3 < PI2; angle3 += degStep, ++i) {
+    const pX = Math.cos(angle3) * radius;
+    const pY = Math.sin(angle3) * radius;
+    result.push({
+      id: `p${i}-${radius}`,
+      x: pX,
+      y: pY
+    });
+  }
+  return result;
+}
+async function cross4(container) {
+  const nodes = {
+    type: "Cross",
+    data: [
+      ...createNodePoints7(10, 10),
+      ...createNodePoints7(5, 5)
+    ]
+  };
+  const layers = [
+    { nodes }
+  ];
+  render(html`<canvas class="grafer_container"></canvas><mouse-interactions></mouse-interactions>`, container);
+  const canvas = document.querySelector(".grafer_container");
+  new GraferController(canvas, { layers });
+}
+
+// examples/src/nodes/plus.ts
+function createNodePoints8(count, radius = 10) {
+  const PI2 = Math.PI * 2;
+  const degStep = PI2 / count;
+  const result = [];
+  for (let angle3 = 0, i = 0; angle3 < PI2; angle3 += degStep, ++i) {
+    const pX = Math.cos(angle3) * radius;
+    const pY = Math.sin(angle3) * radius;
+    result.push({
+      id: `p${i}-${radius}`,
+      x: pX,
+      y: pY
+    });
+  }
+  return result;
+}
+async function plus(container) {
+  const nodes = {
+    type: "Plus",
+    data: [
+      ...createNodePoints8(10, 10),
+      ...createNodePoints8(5, 5)
+    ]
+  };
+  const layers = [
+    { nodes }
+  ];
+  render(html`<canvas class="grafer_container"></canvas><mouse-interactions></mouse-interactions>`, container);
+  const canvas = document.querySelector(".grafer_container");
+  new GraferController(canvas, { layers });
+}
+
+// examples/src/edges/mod.ts
+var mod_exports16 = {};
+__export(mod_exports16, {
+  bundling: () => bundling,
+  circuitBoard: () => circuitBoard,
+  curvedPaths: () => curvedPaths,
+  dashed: () => dashed,
+  straightPaths: () => straightPaths
+});
+
+// examples/src/edges/dashed.ts
+async function dashed(container) {
+  const nodes = {
+    data: [
+      { x: -8.6, y: 5 },
+      { x: 8.6, y: 5 },
+      { x: 0, y: -10 },
+      { x: 0, y: 0 }
+    ]
+  };
+  const edges = {
+    data: [
+      { source: 0, target: 1 },
+      { source: 1, target: 2 },
+      { source: 2, target: 0 },
+      { source: 3, target: 0 },
+      { source: 3, target: 1 },
+      { source: 3, target: 2 }
+    ],
+    type: "Dashed"
+  };
+  const layers = [
+    { nodes, edges }
+  ];
+  render(html`<canvas class="grafer_container"></canvas><mouse-interactions></mouse-interactions>`, container);
+  const canvas = document.querySelector(".grafer_container");
+  new GraferController(canvas, { layers });
+}
+
+// examples/src/edges/curvedPaths.ts
+async function curvedPaths(container) {
+  const colors2 = [
+    "red",
+    "limegreen",
+    [0, 0, 255],
+    "#88c0d0"
+  ];
+  const points2 = {
+    data: [
+      { id: "left", x: -8.6, y: 5 },
+      { id: "right", x: 8.6, y: 5 },
+      { id: "bottom", x: 0, y: -10, z: -5 },
+      { id: "center", x: 0, y: 0, z: 5 }
+    ]
+  };
+  const nodes = {
+    data: [
+      { point: "left", color: 3 },
+      { point: "right", color: 1 },
+      { point: "bottom", radius: 0.2 },
+      { point: "center", radius: 0.2 }
+    ],
+    mappings: {
+      radius: (entry) => entry.radius || 1
+    }
+  };
+  const edges = {
+    type: "CurvedPath",
+    data: [
+      { source: "left", target: "right", control: ["center", "bottom"], sourceColor: 3, targetColor: 1 }
+    ]
+  };
+  const edgesDashed = {
+    type: "Dashed",
+    data: [
+      { source: "left", target: "center" },
+      { source: "center", target: "bottom" },
+      { source: "bottom", target: "right" }
+    ]
+  };
+  const layers = [
+    { nodes, edges },
+    { edges: edgesDashed }
+  ];
+  render(html`<canvas class="grafer_container"></canvas><mouse-interactions></mouse-interactions>`, container);
+  const canvas = document.querySelector(".grafer_container");
+  new GraferController(canvas, { colors: colors2, points: points2, layers });
+}
+
+// examples/src/edges/straightPaths.ts
+async function straightPaths(container) {
+  const colors2 = [
+    "red",
+    "limegreen",
+    [0, 0, 255],
+    "#88c0d0"
+  ];
+  const points2 = {
+    data: [
+      { id: "left", x: -15, y: 0 },
+      { id: "right", x: 15, y: 0 },
+      { id: "p0", x: -13, y: 0 },
+      { id: "p1", x: -12, y: -5 },
+      { id: "p2", x: -11, y: 5 },
+      { id: "p3", x: -10, y: 0 },
+      { id: "p4", x: -2, y: 0 },
+      { id: "p5", x: -1, y: -5 },
+      { id: "p6", x: 0, y: 5 },
+      { id: "p7", x: 1, y: 0 },
+      { id: "p8", x: 9, y: 0 },
+      { id: "p9", x: 10, y: -5 },
+      { id: "p10", x: 11, y: 5 },
+      { id: "p11", x: 12, y: 0 }
+    ]
+  };
+  const nodes = {
+    data: [
+      { point: "left", color: 3 },
+      { point: "right", color: 1 }
+    ],
+    mappings: {
+      radius: (entry) => entry.radius || 1
+    }
+  };
+  const controls = [];
+  for (let i = 0; i < 12; ++i) {
+    controls.push(`p${i}`);
+  }
+  const edges = {
+    type: "StraightPath",
+    data: [
+      { source: "left", target: "right", control: controls, sourceColor: 3, targetColor: 1 }
+    ]
+  };
+  const layers = [
+    { nodes, edges }
+  ];
+  render(html`<canvas class="grafer_container"></canvas><mouse-interactions></mouse-interactions>`, container);
+  const canvas = document.querySelector(".grafer_container");
+  new GraferController(canvas, { colors: colors2, points: points2, layers });
+}
+
+// examples/src/edges/circuitBoard.ts
+async function circuitBoard(container) {
+  const colors2 = [
+    "#d08770",
+    "#88c0d0"
+  ];
+  const points2 = {
+    data: [
+      { id: "p1-p1", x: -10, y: -5 },
+      { id: "p1-c1", x: 8, y: -5 },
+      { id: "p1-c2", x: 10, y: -5 },
+      { id: "p1-c3", x: 10, y: -3 },
+      { id: "p1-p2", x: 10, y: 11 },
+      { id: "p2-p1", x: -10, y: -8 },
+      { id: "p2-c1", x: 10, y: -8 },
+      { id: "p2-c2", x: 13, y: -8 },
+      { id: "p2-c3", x: 13, y: -5 },
+      { id: "p2-p2", x: 13, y: 11 },
+      { id: "p3-p1", x: -10, y: -11 },
+      { id: "p3-c1", x: 12, y: -11 },
+      { id: "p3-c2", x: 16, y: -11 },
+      { id: "p3-c3", x: 16, y: -7 },
+      { id: "p3-p2", x: 16, y: 11 },
+      { id: "origin", x: 0, y: 5, radius: 8 }
+    ]
+  };
+  const nodes = {
+    data: [
+      { point: "p1-p1" },
+      { point: "p1-p2" },
+      { point: "p2-p1" },
+      { point: "p2-p2" },
+      { point: "p3-p1" },
+      { point: "p3-p2" },
+      { point: "origin", color: 1 }
+    ]
+  };
+  const edges = {
+    type: "CurvedPath",
+    data: [
+      { source: "p1-p1", target: "p1-p2", control: ["p1-c1", "p1-c2", "p1-c3"] },
+      { source: "p2-p1", target: "p2-p2", control: ["p2-c1", "p2-c2", "p2-c3"] },
+      { source: "p3-p1", target: "p3-p2", control: ["p3-c1", "p3-c2", "p3-c3"] }
+    ]
+  };
+  const layers = [
+    { nodes, edges }
+  ];
+  render(html`<canvas class="grafer_container"></canvas><mouse-interactions></mouse-interactions>`, container);
+  const canvas = document.querySelector(".grafer_container");
+  new GraferController(canvas, { colors: colors2, points: points2, layers });
+}
+
+// examples/src/edges/bundling.ts
+function createClusterNodePoints(cluster, x, y, r, count) {
+  const PI2 = Math.PI * 2;
+  const degStep = PI2 / count;
+  const radius = r - 7;
+  const result = [];
+  for (let angle3 = 0, i = 0; angle3 < PI2; angle3 += degStep, ++i) {
+    const pX = Math.cos(angle3) * (Math.random() * radius + 5);
+    const pY = Math.sin(angle3) * (Math.random() * radius + 5);
+    result.push({
+      id: `${cluster}-p${i}`,
+      x: x + pX,
+      y: y + pY
+    });
+  }
+  return result;
+}
+function createInnerEdges(cluster) {
+  const result = [];
+  for (let i = 0, n = cluster.length; i < n; ++i) {
+    const n1 = cluster[i];
+    for (let ii = i + 1, nn = cluster.length; ii < nn; ++ii) {
+      if (Math.random() > 0.75) {
+        const n2 = cluster[ii];
+        result.push({
+          source: n1.id,
+          target: n2.id,
+          sourceColor: 2,
+          targetColor: 2
+        });
+      }
+    }
+  }
+  return result;
+}
+async function bundling(container) {
+  const colors2 = [
+    "#d08770",
+    "#88c0d0",
+    "#ebcb8b"
+  ];
+  const pointsC1 = createClusterNodePoints("c1", -30, 0, 20, 12);
+  const nodesC1 = pointsC1.map((p) => ({ point: p.id }));
+  const pointsC2 = createClusterNodePoints("c2", 40, 0, 25, 14);
+  const nodesC2 = pointsC2.map((p) => ({ point: p.id }));
+  const points2 = {
+    data: [
+      { id: "c1", x: -30, y: 0 },
+      { id: "c1-c1", x: -10, y: 0 },
+      { id: "c1-c2", x: -0, y: 0 },
+      ...pointsC1,
+      { id: "c2", x: 40, y: 0 },
+      { id: "c2-c1", x: 15, y: 0 },
+      { id: "c2-c2", x: 5, y: 0 },
+      ...pointsC2
+    ]
+  };
+  const nodes = {
+    data: [
+      ...nodesC1,
+      ...nodesC2
+    ]
+  };
+  const clusters = {
+    type: "Ring",
+    data: [
+      { point: "c1", radius: 20, color: 1 },
+      { point: "c2", radius: 25, color: 1 }
+    ],
+    mappings: {
+      radius: (entry) => entry.radius
+    },
+    options: {
+      billboard: false
+    }
+  };
+  const clusterEdgesData = [];
+  for (let i = 0, n = pointsC1.length; i < n; ++i) {
+    const pointA = pointsC1[i];
+    for (let ii = 0, nn = pointsC2.length; ii < nn; ++ii) {
+      if (Math.random() > 0.5) {
+        const pointB = pointsC2[ii];
+        clusterEdgesData.push({
+          source: pointA.id,
+          target: pointB.id,
+          control: ["c1-c1", "c1-c2", "c2-c2", "c2-c1"],
+          sourceColor: 1,
+          targetColor: 1
+        });
+      }
+    }
+  }
+  const clusterEdges = {
+    type: "CurvedPath",
+    data: clusterEdgesData,
+    options: {
+      alpha: 0.04,
+      nearDepth: 0.9
+    }
+  };
+  const nodesEdges = {
+    data: [
+      ...createInnerEdges(pointsC1),
+      ...createInnerEdges(pointsC2)
+    ],
+    options: {
+      alpha: 0.55,
+      nearDepth: 0.9
+    }
+  };
+  const layers = [
+    { nodes: clusters, edges: clusterEdges },
+    { nodes, edges: nodesEdges }
+  ];
+  render(html`<canvas class="grafer_container"></canvas><mouse-interactions></mouse-interactions>`, container);
+  const canvas = document.querySelector(".grafer_container");
+  new GraferController(canvas, { colors: colors2, points: points2, layers });
+}
+
+// examples/src/labels/mod.ts
+var mod_exports17 = {};
+__export(mod_exports17, {
+  circularLabel: () => circularLabel,
+  pointLabel: () => pointLabel,
+  ringLabel: () => ringLabel
+});
+
+// examples/src/labels/pointLabel.ts
+function createNodePoints9(count, radius = 10) {
+  const PI2 = Math.PI * 2;
+  const degStep = PI2 / count;
+  const result = [];
+  for (let angle3 = 0, i = 0; angle3 < PI2; angle3 += degStep, ++i) {
+    const pX = Math.cos(angle3) * radius;
+    const pY = Math.sin(angle3) * radius;
+    result.push({
+      id: `p${i}-${radius}`,
+      x: pX,
+      y: pY,
+      radius: 2,
+      label: `Node p${i}-r${radius}`,
+      color: Math.round(Math.random() * 4),
+      fontSize: 16
+    });
+  }
+  return result;
+}
+async function pointLabel(container) {
+  const nodes = {
+    type: "Circle",
+    data: [
+      ...createNodePoints9(10, 10),
+      ...createNodePoints9(5, 5)
+    ]
+  };
+  const labels = {
+    type: "PointLabel",
+    data: nodes.data,
+    options: {
+      visibilityThreshold: 50,
+      labelPlacement: 1,
+      renderBackground: true,
+      padding: 6
+    }
+  };
+  const layers = [
+    { nodes, labels }
+  ];
+  const colors2 = [
+    "#bf616a",
+    "#d08770",
+    "#ebcb8b",
+    "#a3be8c",
+    "#b48ead"
+  ];
+  render(html`<canvas class="grafer_container"></canvas><mouse-interactions></mouse-interactions>`, container);
+  const canvas = document.querySelector(".grafer_container");
+  new GraferController(canvas, { colors: colors2, layers });
+}
+
+// examples/src/labels/circularLabel.ts
+function createNodePoints10(count, radius = 10) {
+  const PI2 = Math.PI * 2;
+  const degStep = PI2 / count;
+  const result = [];
+  for (let angle3 = 0, i = 0; angle3 < PI2; angle3 += degStep, ++i) {
+    const pX = Math.cos(angle3) * radius;
+    const pY = Math.sin(angle3) * radius;
+    result.push({
+      id: `p${i}-${radius}`,
+      x: pX,
+      y: pY,
+      radius: 2,
+      label: `NODE P${i}-R${radius}`,
+      color: Math.round(Math.random() * 4) + 1,
+      background: true,
+      fontSize: 16
+    });
+  }
+  return result;
+}
+async function circularLabel(container) {
+  const nodes = {
+    type: "Circle",
+    data: [
+      ...createNodePoints10(10, 16),
+      ...createNodePoints10(5, 8)
+    ]
+  };
+  const labels = {
+    type: "CircularLabel",
+    data: nodes.data,
+    options: {
+      visibilityThreshold: 40,
+      repeatLabel: -1,
+      placementMargin: 5,
+      renderBackground: true,
+      mirror: false,
+      padding: 6,
+      repeatGap: 25
+    }
+  };
+  const layers = [
+    { nodes, labels }
+  ];
+  const colors2 = [
+    "white",
+    "#bf616a",
+    "#d08770",
+    "#ebcb8b",
+    "#a3be8c",
+    "#b48ead"
+  ];
+  render(html`<canvas class="grafer_container"></canvas><mouse-interactions></mouse-interactions>`, container);
+  const canvas = document.querySelector(".grafer_container");
+  new GraferController(canvas, { colors: colors2, layers });
+}
+
+// examples/src/labels/ringLabel.ts
+function createNodePoints11(count, radius = 10) {
+  const PI2 = Math.PI * 2;
+  const degStep = PI2 / count;
+  const result = [];
+  for (let angle3 = 0, i = 0; angle3 < PI2; angle3 += degStep, ++i) {
+    const pX = Math.cos(angle3) * radius;
+    const pY = Math.sin(angle3) * radius;
+    result.push({
+      id: `p${i}-${radius}`,
+      x: pX,
+      y: pY,
+      radius: 2,
+      label: `NODE P${i}-R${radius}`,
+      color: Math.round(Math.random() * 4) + 1,
+      background: false,
+      fontSize: 12,
+      padding: 0
+    });
+  }
+  return result;
+}
+async function ringLabel(container) {
+  const nodes = {
+    type: "Circle",
+    data: [
+      ...createNodePoints11(10, 16),
+      ...createNodePoints11(5, 8)
+    ]
+  };
+  const labels = {
+    type: "RingLabel",
+    data: nodes.data,
+    options: {
+      visibilityThreshold: 100,
+      repeatLabel: 5,
+      repeatGap: 15
+    }
+  };
+  const layers = [
+    { labels }
+  ];
+  const colors2 = [
+    "white",
+    "#bf616a",
+    "#d08770",
+    "#ebcb8b",
+    "#a3be8c",
+    "#b48ead"
+  ];
+  render(html`<canvas class="grafer_container"></canvas><mouse-interactions></mouse-interactions>`, container);
+  const canvas = document.querySelector(".grafer_container");
+  new GraferController(canvas, { colors: colors2, layers });
+}
+
+// examples/src/aske/mod.ts
+var mod_exports18 = {};
+__export(mod_exports18, {
+  bundledEdgesLoader: () => bundledEdgesLoader,
+  knowledgeViewLoader: () => knowledgeViewLoader
+});
+
+// examples/src/aske/bundledEdgesLoader.ts
+var import_tweakpane3 = __toModule(require_tweakpane());
+async function parseJSONL2(input, cb) {
+  const file = await DataFile.fromLocalSource(input);
+  const sizeOf16MB = 16 * 1024 * 1024;
+  const byteLength = await file.byteLength;
+  const decoder = new TextDecoder();
+  const lineBreak = "\n".charCodeAt(0);
+  for (let offset = 0; offset <= byteLength; offset += sizeOf16MB) {
+    const chunkEnd = Math.min(offset + sizeOf16MB, byteLength);
+    const chunk = await file.loadData(offset, chunkEnd);
+    const view = new DataView(chunk);
+    let start = 0;
+    for (let i = 0, n = chunk.byteLength; i < n; ++i) {
+      if (view.getUint8(i) === lineBreak || offset + i === byteLength) {
+        const statementBuffer = new Uint8Array(chunk, start, i - start);
+        start = i + 1;
+        const str6 = decoder.decode(statementBuffer);
+        const json = JSON.parse(str6);
+        cb(json);
+      }
+    }
+    if (start < chunk.byteLength) {
+      offset -= chunk.byteLength - start;
+    }
+  }
+}
+function createFileInput2(cb) {
+  const input = document.createElement("input");
+  input.type = "file";
+  input.multiple = false;
+  input.addEventListener("change", cb);
+  return input;
+}
+function renderMenu2(container, cb) {
+  render(html`<div id="menu" class="start_menu"></div>`, container);
+  const result = {
+    points: "No file selected.",
+    pointsFile: null,
+    clusters: "No file selected.",
+    clustersFile: null,
+    clusterEdgesMode: "curved",
+    clusterEdges: "No file selected.",
+    clusterEdgesFile: null,
+    nodes: "No file selected.",
+    nodesFile: null,
+    nodeEdges: "No file selected.",
+    nodeEdgesFile: null
+  };
+  const menu = new import_tweakpane3.default({
+    title: "Grafer Loader",
+    container: document.querySelector("#menu")
+  });
+  const pointsInput = createFileInput2(() => {
+    if (pointsInput.files.length) {
+      result.pointsFile = pointsInput.files[0];
+      result.points = result.pointsFile.name;
+    } else {
+      result.points = "No file selected.";
+      result.pointsFile = null;
+    }
+  });
+  menu.addMonitor(result, "points");
+  menu.addButton({ title: "browse..." }).on("click", () => pointsInput.click());
+  menu.addSeparator();
+  const clustersInput = createFileInput2(() => {
+    if (clustersInput.files.length) {
+      result.clustersFile = clustersInput.files[0];
+      result.clusters = result.clustersFile.name;
+    } else {
+      result.clusters = "No file selected.";
+      result.clustersFile = null;
+    }
+  });
+  menu.addMonitor(result, "clusters");
+  menu.addButton({ title: "browse..." }).on("click", () => clustersInput.click());
+  menu.addInput(result, "clusterEdgesMode", {
+    options: {
+      bundle: "bundle",
+      straight: "straight",
+      curved: "curved"
+    }
+  });
+  const clusterEdgesInput = createFileInput2(() => {
+    if (clusterEdgesInput.files.length) {
+      result.clusterEdgesFile = clusterEdgesInput.files[0];
+      result.clusterEdges = result.clusterEdgesFile.name;
+    } else {
+      result.clusterEdges = "No file selected.";
+      result.clusterEdgesFile = null;
+    }
+  });
+  menu.addMonitor(result, "clusterEdges");
+  menu.addButton({ title: "browse..." }).on("click", () => clusterEdgesInput.click());
+  menu.addSeparator();
+  const nodesInput = createFileInput2(() => {
+    if (nodesInput.files.length) {
+      result.nodesFile = nodesInput.files[0];
+      result.nodes = result.nodesFile.name;
+    } else {
+      result.nodes = "No file selected.";
+      result.nodesFile = null;
+    }
+  });
+  menu.addMonitor(result, "nodes");
+  menu.addButton({ title: "browse..." }).on("click", () => nodesInput.click());
+  const nodeEdgesInput = createFileInput2(() => {
+    if (nodeEdgesInput.files.length) {
+      result.nodeEdgesFile = nodeEdgesInput.files[0];
+      result.nodeEdges = result.nodeEdgesFile.name;
+    } else {
+      result.nodeEdges = "No file selected.";
+      result.nodeEdgesFile = null;
+    }
+  });
+  menu.addMonitor(result, "nodeEdges");
+  menu.addButton({ title: "browse..." }).on("click", () => nodeEdgesInput.click());
+  const loadBtn = menu.addButton({ title: "load" });
+  loadBtn.on("click", () => {
+    cb(result);
+  });
+}
+async function loadGraph(container, info) {
+  if (info.pointsFile) {
+    render(html`<canvas class="grafer_container"></canvas>`, container);
+    const canvas = document.querySelector(".grafer_container");
+    const layers = [];
+    const points2 = {
+      data: []
+    };
+    await parseJSONL2(info.pointsFile, (json) => {
+      points2.data.push(json);
+    });
+    const clusterBundleEdges = {
+      type: "ClusterBundle",
+      data: [],
+      options: {
+        alpha: 0.04,
+        nearDepth: 0.9
+      }
+    };
+    const clusterStraightEdges = {
+      type: "Straight",
+      data: [],
+      options: {
+        alpha: 0.04,
+        nearDepth: 0.9
+      },
+      mappings: {
+        source: (entry) => "sourceCluster" in entry ? entry.sourceCluster : entry.source,
+        target: (entry) => "targetCluster" in entry ? entry.targetCluster : entry.target
+      }
+    };
+    const clusterCurvedEdges = {
+      type: "CurvedPath",
+      data: [],
+      options: {
+        alpha: 0.04,
+        nearDepth: 0.9
+      }
+    };
+    let edges;
+    if (info.clusterEdgesMode === "bundle") {
+      edges = clusterBundleEdges;
+    } else if (info.clusterEdgesMode === "curved") {
+      edges = clusterCurvedEdges;
+    } else {
+      edges = clusterStraightEdges;
+    }
+    const clusterLayer = {
+      name: "Clusters",
+      labels: {
+        type: "RingLabel",
+        data: [],
+        mappings: {
+          background: () => false,
+          fontSize: () => 14,
+          padding: () => 0
+        },
+        options: {
+          visibilityThreshold: 160,
+          repeatLabel: -1,
+          repeatGap: 64
+        }
+      },
+      edges
+    };
+    layers.push(clusterLayer);
+    if (info.clustersFile) {
+      const nodes = clusterLayer.labels;
+      await parseJSONL2(info.clustersFile, (json) => {
+        nodes.data.push(Object.assign({}, json, {
+          color: 3
+        }));
+      });
+    }
+    if (info.clusterEdgesFile) {
+      const edges2 = clusterLayer.edges;
+      await parseJSONL2(info.clusterEdgesFile, (json) => {
+        edges2.data.push(Object.assign({}, json, {
+          sourceColor: 0,
+          targetColor: 0
+        }));
+      });
+    }
+    const nodeLayer = {
+      name: "Nodes",
+      nodes: {
+        type: "Circle",
+        data: []
+      },
+      edges: {
+        data: [],
+        options: {
+          alpha: 0.55,
+          nearDepth: 0.9
+        }
+      },
+      labels: {
+        type: "PointLabel",
+        data: [],
+        mappings: {
+          background: () => true,
+          fontSize: () => 12,
+          padding: () => [8, 5]
+        },
+        options: {
+          visibilityThreshold: 8,
+          labelPlacement: mod_exports7.labels.PointLabelPlacement.TOP,
+          renderBackground: true
+        }
+      }
+    };
+    layers.push(nodeLayer);
+    if (info.nodesFile) {
+      const nodes = nodeLayer.nodes;
+      await parseJSONL2(info.nodesFile, (json) => {
+        nodes.data.push(Object.assign({}, json, {
+          color: 1
+        }));
+      });
+      nodeLayer.labels.data = nodes.data;
+    }
+    if (info.nodeEdgesFile) {
+      const edges2 = nodeLayer.edges;
+      await parseJSONL2(info.nodeEdgesFile, (json) => {
+        edges2.data.push(Object.assign({}, json, {
+          sourceColor: 2,
+          targetColor: 2
+        }));
+      });
+    }
+    const colors2 = [
+      "#5e81ac",
+      "#d08770",
+      "#ebcb8b",
+      "#81a1c1"
+    ];
+    const controller = new GraferController(canvas, { points: points2, colors: colors2, layers });
+    new mod_exports12.DebugMenu(controller.viewport);
+  }
+}
+async function bundledEdgesLoader(container) {
+  renderMenu2(container, (result) => {
+    loadGraph(container, result);
+  });
+}
+
+// examples/src/aske/knowledeViewLoader.ts
+var import_tweakpane4 = __toModule(require_tweakpane());
+
+// examples/src/aske/convertDataToGraferV4.ts
+import alphaShape from "https://cdn.skypack.dev/alpha-shape";
+async function parseJSONL3(input, cb) {
+  const file = await DataFile.fromLocalSource(input);
+  const sizeOf16MB = 16 * 1024 * 1024;
+  const byteLength = await file.byteLength;
+  const decoder = new TextDecoder();
+  const lineBreak = "\n".charCodeAt(0);
+  for (let offset = 0; offset <= byteLength; offset += sizeOf16MB) {
+    const chunkEnd = Math.min(offset + sizeOf16MB, byteLength);
+    const chunk = await file.loadData(offset, chunkEnd);
+    const view = new DataView(chunk);
+    let start = 0;
+    for (let i = 0, n = chunk.byteLength; i < n; ++i) {
+      if (view.getUint8(i) === lineBreak || offset + i === byteLength) {
+        const statementBuffer = new Uint8Array(chunk, start, i - start);
+        start = i + 1;
+        const str6 = decoder.decode(statementBuffer);
+        const json = JSON.parse(str6);
+        cb(json);
+      }
+    }
+    if (start < chunk.byteLength) {
+      offset -= chunk.byteLength - start;
+    }
+  }
+}
+async function convertDataToGraferV4(info) {
+  let lineNumber;
+  let colorIndex = 0;
+  console.log("Loading points...");
+  const points2 = new Map();
+  lineNumber = 0;
+  await parseJSONL3(info.nodeLayoutFile, (json) => {
+    if (lineNumber++) {
+      points2.set(json.node_id, {
+        id: json.node_id,
+        x: json.coors[0] * info.positionScale,
+        y: json.coors[1] * info.positionScale,
+        z: 0,
+        radius: info.pointRadius
+      });
+    }
+  });
+  console.log("Loading groups...");
+  const groupLevels = [];
+  const centroids = new Map();
+  const groups = new Map();
+  lineNumber = 0;
+  await parseJSONL3(info.groupsFile, (json) => {
+    if (lineNumber++) {
+      const level = json.level;
+      while (level >= groupLevels.length) {
+        groupLevels.push([]);
+      }
+      groupLevels[level].push(json);
+      groups.set(json.id, json);
+      centroids.set(json.id, {
+        id: json.id,
+        point: json.node_id_centroid,
+        label: "",
+        color: colorIndex++,
+        level: json.level,
+        top: false
+      });
+    }
+  });
+  console.log("Loading node attributes...");
+  const noiseNodes = [];
+  const nodeLevelMap = new Map();
+  lineNumber = 0;
+  await parseJSONL3(info.nodeAttsFile, (json) => {
+    if (lineNumber++) {
+      const groupIDs = json.group_ids;
+      if (groupIDs) {
+        for (const groupID of groupIDs) {
+          const group = groups.get(groupID);
+          if (!group.computedChildren) {
+            group.computedChildren = [];
+          }
+          group.computedChildren.push(json.node_id);
+        }
+        nodeLevelMap.set(json.node_id, groups.get(groupIDs[groupIDs.length - 1]).level);
+      } else {
+        noiseNodes.push(json.node_id);
+        nodeLevelMap.set(json.node_id, -1);
+      }
+    }
+  });
+  console.log(`Sorting group levels: ${groupLevels.length}`);
+  for (let i = 0, n = groupLevels.length; i < n; ++i) {
+    console.log(`Level ${i}: ${groupLevels[i].length}`);
+    groupLevels[i].sort((a, b) => b.computedChildren.length - a.computedChildren.length);
+    const l = [];
+    for (const group of groupLevels[i]) {
+      l.push(group.computedChildren.length);
+      if (group.computedChildren.length > info.topGroupThreshold) {
+        centroids.get(group.id).top = true;
+        group.top = true;
+      } else {
+        group.top = false;
+      }
+    }
+    console.log(l);
+  }
+  console.log("Computing color indices...");
+  const nodeColors2 = new Map();
+  const groupColors = new Map();
+  for (const id of noiseNodes) {
+    nodeColors2.set(id, colorIndex);
+  }
+  for (let i = groupLevels.length - 1; i >= 0; --i) {
+    for (const group of groupLevels[i]) {
+      let colors2 = groupColors.get(group.id);
+      if (!colors2) {
+        colors2 = {
+          id: group.id,
+          level: i,
+          primary: ++colorIndex,
+          inherited: new Set(),
+          top: group.top
+        };
+        groupColors.set(group.id, colors2);
+      }
+      for (const nodeID2 of group.computedChildren) {
+        if (nodeColors2.has(nodeID2)) {
+          colors2.inherited.add(nodeColors2.get(nodeID2));
+        } else {
+          nodeColors2.set(nodeID2, colors2.primary);
+        }
+      }
+    }
+  }
+  for (const colors2 of groupColors.values()) {
+    colors2.inherited = Array.from(colors2.inherited);
+  }
+  console.log("Loading nodes...");
+  const nodes = [];
+  const nodeMap = new Map();
+  lineNumber = 0;
+  await parseJSONL3(info.nodesFile, (json) => {
+    if (lineNumber++) {
+      nodes.push({
+        id: json.id,
+        point: json.id,
+        color: nodeColors2.get(json.id),
+        level: nodeLevelMap.get(json.id)
+      });
+      nodeMap.set(json.id, json);
+    }
+  });
+  console.log("Computing labels...");
+  for (const group of groups.values()) {
+    const node = nodeMap.get(group.node_id_centroid);
+    const label = node.name.length > info.maxLabelLength + 3 ? `${node.name.substr(0, info.maxLabelLength)}...` : node.name;
+    centroids.get(group.id).label = label;
+  }
+  console.log("Computing alpha shapes...");
+  const shapes = [];
+  for (let i = 0, n = groupLevels.length; i < n; ++i) {
+    console.log(`Level ${i}...`);
+    console.log("0%");
+    for (let ii = 0, nn = groupLevels[i].length; ii < nn; ++ii) {
+      const group = groupLevels[i][ii];
+      const coors = [];
+      for (const node of group.computedChildren) {
+        const point = points2.get(node);
+        coors.push([point.x / info.positionScale, point.y / info.positionScale]);
+      }
+      const cells = alphaShape(info.alpha, coors);
+      for (const cell of cells) {
+        const cellPoints = [];
+        for (let i2 = 0, n2 = cell.length; i2 < n2; ++i2) {
+          const id = `s_${points2.size}_${n2}`;
+          points2.set(id, {
+            id,
+            x: coors[cell[i2]][0] * info.positionScale,
+            y: coors[cell[i2]][1] * info.positionScale,
+            z: 0,
+            radius: 1
+          });
+          cellPoints.push(id);
+        }
+        if (cellPoints.length > 2) {
+          throw `Cells with more than 2 points are not supported. ${cell.toString()}`;
+        } else {
+          shapes.push({
+            id: `s_${shapes.length}`,
+            source: cellPoints[0],
+            target: cellPoints[1],
+            sourceColor: nodeColors2.get(group.node_id_centroid),
+            targetColor: nodeColors2.get(group.node_id_centroid),
+            group: group.node_id_centroid,
+            level: i
+          });
+        }
+      }
+      console.log(`${Math.floor((ii + 1) / nn * 100)}%`);
+    }
+  }
+  console.log(shapes);
+  console.log(`TOTAL COLORS: ${colorIndex}`);
+  return {
+    points: [...points2.values()],
+    nodes,
+    shapes,
+    colors: [...groupColors.values()],
+    centroids: [...centroids.values()]
+  };
+}
+
+// examples/src/aske/knowledeViewLoader.ts
+var import_chroma_js3 = __toModule(require_chroma());
+function createFileInput3(cb) {
+  const input = document.createElement("input");
+  input.type = "file";
+  input.multiple = false;
+  input.addEventListener("change", cb);
+  return input;
+}
+function createFileMenu(menu, result, key) {
+  const input = createFileInput3(() => {
+    if (input.files.length) {
+      result[`${key}File`] = input.files[0];
+      result[key] = result[`${key}File`].name;
+    } else {
+      result[key] = "No file selected.";
+      result[`${key}File`] = null;
+    }
+  });
+  menu.addMonitor(result, key);
+  menu.addButton({ title: "browse..." }).on("click", () => input.click());
+}
+function renderMenu3(container, cb) {
+  render(html`<div id="menu" class="start_menu"></div>`, container);
+  const result = {
+    nodes: "No file selected.",
+    nodesFile: null,
+    nodeAtts: "No file selected.",
+    nodeAttsFile: null,
+    nodeLayout: "No file selected.",
+    nodeLayoutFile: null,
+    groups: "No file selected.",
+    groupsFile: null,
+    alpha: 18,
+    level: 0,
+    levelCount: 3,
+    maxLabelLength: 25,
+    topGroupThreshold: 500,
+    pointRadius: 20,
+    positionScale: 5e4
+  };
+  const menu = new import_tweakpane4.default({
+    title: "Grafer Loader",
+    container: document.querySelector("#menu")
+  });
+  createFileMenu(menu, result, "nodes");
+  menu.addSeparator();
+  createFileMenu(menu, result, "nodeAtts");
+  menu.addSeparator();
+  createFileMenu(menu, result, "nodeLayout");
+  menu.addSeparator();
+  createFileMenu(menu, result, "groups");
+  menu.addSeparator();
+  menu.addInput(result, "alpha");
+  menu.addSeparator();
+  menu.addInput(result, "level");
+  menu.addSeparator();
+  menu.addInput(result, "levelCount");
+  menu.addSeparator();
+  menu.addInput(result, "maxLabelLength");
+  menu.addSeparator();
+  menu.addInput(result, "topGroupThreshold");
+  menu.addSeparator();
+  menu.addInput(result, "pointRadius");
+  menu.addSeparator();
+  menu.addInput(result, "positionScale");
+  menu.addSeparator();
+  const loadBtn = menu.addButton({ title: "load" });
+  loadBtn.on("click", () => {
+    cb(result);
+  });
+}
+function getBasicLayer(name, nodeType, visibilityThreshold, pixelSizing = true) {
+  const data = [];
+  return {
+    name,
+    nodes: {
+      type: nodeType,
+      data,
+      mappings: {
+        radius: () => 100
+      },
+      options: {
+        pixelSizing,
+        nearDepth: 0.26,
+        farDepth: 0.5
+      }
+    },
+    labels: {
+      type: "PointLabel",
+      data,
+      mappings: {
+        background: () => true,
+        fontSize: () => 12,
+        padding: () => [8, 5]
+      },
+      options: {
+        visibilityThreshold,
+        labelPlacement: mod_exports7.labels.PointLabelPlacement.CENTER,
+        renderBackground: true,
+        nearDepth: 0,
+        farDepth: 0.25
+      }
+    }
+  };
+}
+function makeCentroidLayers(layers, data, levels = 4) {
+  const centroidLayersTop = [];
+  const centroidLayers = [];
+  for (let i = 0; i < levels; ++i) {
+    centroidLayersTop.push(getBasicLayer(`Centroids_top_${i}`, "Ring", 0.01));
+    centroidLayers.push(getBasicLayer(`Centroids_${i}`, "Ring", 0.1));
+  }
+  const centroidMap = new Map();
+  for (const centroid of data) {
+    const nodes = centroid.top ? centroidLayersTop[centroid.level].nodes : centroidLayers[centroid.level].nodes;
+    nodes.data.push(centroid);
+    centroidMap.set(centroid.id, centroid);
+  }
+  layers.push(...centroidLayersTop, ...centroidLayers);
+  return centroidMap;
+}
+function computeColors(colors2, colorMap, colorLevels, centroidMap, levelNumber = 0) {
+  const level = colorLevels.get(levelNumber);
+  const topStep = Math.floor(360 / level.top.length);
+  const lowStep = Math.floor(topStep / Math.ceil(level.low.length / level.top.length + 1));
+  for (let i = 0, n = level.top.length; i < n; ++i) {
+    const info = level.top[i];
+    const color = import_chroma_js3.default.hsl(topStep * i, 1, 0.5).hex();
+    const centroid = centroidMap.get(info.id);
+    colors2[centroid.color] = color;
+    colors2[info.primary] = color;
+    for (const childID of info.inherited) {
+      colors2[childID] = color;
+    }
+  }
+  for (let i = 0, n = level.low.length; i < n; ++i) {
+    const info = level.low[i];
+    const color = import_chroma_js3.default.hsl(lowStep * (i + 1), 1, 0.5).hex();
+    const centroid = centroidMap.get(info.id);
+    colors2[centroid.color] = color;
+    colors2[info.primary] = color;
+    for (const childID of info.inherited) {
+      colors2[childID] = color;
+    }
+  }
+  const gray = "#a0a0a0";
+  for (let i = 0, n = colors2.length; i < n; ++i) {
+    if (colors2[i] === null) {
+      colors2[i] = gray;
+    }
+  }
+}
+function loadLevelLayers(nodes, shapes) {
+  const levelMap = new Map();
+  for (const node of nodes) {
+    if (!levelMap.has(node.level)) {
+      levelMap.set(node.level, {
+        name: `Level_${node.level === -1 ? "noise" : node.level}`,
+        nodes: {
+          type: "Circle",
+          data: [],
+          options: {
+            pixelSizing: true
+          }
+        },
+        edges: {
+          data: [],
+          options: {
+            alpha: 0.55,
+            nearDepth: 0.9
+          }
+        }
+      });
+    }
+    levelMap.get(node.level).nodes.data.push(node);
+  }
+  for (const shape of shapes) {
+    if (!levelMap.has(shape.level)) {
+      levelMap.set(shape.level, {
+        name: `Level_${shape.level === -1 ? "noise" : shape.level}`,
+        nodes: {
+          type: "Circle",
+          data: [],
+          options: {
+            pixelSizing: true
+          }
+        },
+        edges: {
+          data: [],
+          options: {
+            alpha: 0.55,
+            nearDepth: 0.9
+          }
+        }
+      });
+    }
+    levelMap.get(shape.level).edges.data.push(shape);
+  }
+  return levelMap.values();
+}
+async function loadGraph2(container, info) {
+  if (!info.nodesFile || !info.nodeAttsFile || !info.nodeLayoutFile || !info.groupsFile) {
+    return;
+  }
+  const data = await convertDataToGraferV4(info);
+  render(html`<canvas class="grafer_container"></canvas>`, container);
+  const canvas = document.querySelector(".grafer_container");
+  const layers = [];
+  const colors2 = [];
+  const colorMap = new Map();
+  const colorLevels = new Map();
+  for (const color of data.colors) {
+    if (colors2.length <= color.primary) {
+      for (let i = colors2.length; i <= color.primary; ++i) {
+        colors2.push(null);
+      }
+    }
+    colorMap.set(color.id, color);
+    let colorLevel = colorLevels.get(color.level);
+    if (!colorLevel) {
+      colorLevel = {
+        top: [],
+        low: []
+      };
+      colorLevels.set(color.level, colorLevel);
+    }
+    if (color.top) {
+      colorLevel.top.push(color);
+    } else {
+      colorLevel.low.push(color);
+    }
+  }
+  const points2 = {
+    data: data.points
+  };
+  layers.push(...loadLevelLayers(data.nodes, data.shapes));
+  const centroidMap = makeCentroidLayers(layers, data.centroids, info.levelCount);
+  if (colorMap.size) {
+    computeColors(colors2, colorMap, colorLevels, centroidMap, info.level);
+  }
+  const controller = new GraferController(canvas, { points: points2, colors: colors2, layers }, {
+    viewport: {
+      colorRegistryType: mod_exports3.colors.ColorRegistryType.indexed,
+      colorRegistryCapacity: colors2.length
+    }
+  });
+  const graphLayers = controller.viewport.graph.layers;
+  for (const layer of graphLayers) {
+    const components = layer.name.split("_");
+    if (components[0] === "Centroids") {
+      const level = parseInt(components[components.length - 1]);
+      if (level !== info.level) {
+        layer.enabled = false;
+      }
+    }
+  }
+  new mod_exports12.DebugMenu(controller.viewport);
+}
+async function knowledgeViewLoader(container) {
+  renderMenu3(container, (result) => {
+    loadGraph2(container, result);
+  });
+}
 
 // node_modules/lit-html/lib/modify-template.js
 var walkerNodeFilter = 133;
@@ -19794,2534 +22189,6 @@ LitElement["finalized"] = true;
 LitElement.render = render2;
 LitElement.shadowRootOptions = { mode: "open" };
 
-// src/grafer/GraferView.ts
-var GraferView = class extends LitElement {
-  constructor() {
-    super(...arguments);
-    this._controller = null;
-  }
-  static get styles() {
-    return css`
-            :host {
-                display: flex;
-                align-items: stretch;
-            }
-            #grafer_canvas {
-                flex-grow: 1;
-                max-width: 100%;
-                max-height: 100%;
-            }
-        `;
-  }
-  static get properties() {
-    return {
-      points: { type: Object },
-      colors: { type: Object },
-      layers: { type: Object }
-    };
-  }
-  get controller() {
-    return this._controller;
-  }
-  connectedCallback() {
-    super.connectedCallback();
-  }
-  firstUpdated(_changedProperties) {
-    super.firstUpdated(_changedProperties);
-    this.canvas = this.shadowRoot.getElementById("grafer_canvas");
-    this._controller = new GraferController(this.canvas, {
-      points: this.points,
-      colors: this.colors,
-      layers: this.layers
-    });
-    this._controller.on(EventEmitter.omniEvent, (event, ...args) => {
-      const eventName = typeof event === "symbol" ? event.description : event;
-      this.dispatchEvent(new CustomEvent(eventName, { detail: args }));
-    });
-  }
-  render() {
-    return html`<canvas id="grafer_canvas"></canvas>`;
-  }
-};
-GraferView = __decorateClass([
-  customElement("grafer-view")
-], GraferView);
-
-// examples/src/playground.ts
-var kPolarNight = [
-  { r: 59, g: 66, b: 82 },
-  { r: 67, g: 76, b: 94 },
-  { r: 76, g: 86, b: 106 }
-];
-var kSnowStorm = [
-  { r: 216, g: 222, b: 233 },
-  { r: 229, g: 233, b: 240 },
-  { r: 236, g: 239, b: 244 }
-];
-var kFrost = [
-  { r: 143, g: 188, b: 187 },
-  { r: 136, g: 192, b: 208 },
-  { r: 129, g: 161, b: 193 },
-  { r: 94, g: 129, b: 172 }
-];
-var kAurora = [
-  { r: 191, g: 97, b: 106 },
-  { r: 208, g: 135, b: 112 },
-  { r: 235, g: 203, b: 139 },
-  { r: 163, g: 190, b: 140 },
-  { r: 180, g: 142, b: 173 }
-];
-var kGradient = [
-  { r: 76, g: 86, b: 106 },
-  { r: 85, g: 95, b: 115 },
-  { r: 93, g: 103, b: 124 },
-  { r: 102, g: 112, b: 133 },
-  { r: 111, g: 121, b: 143 },
-  { r: 120, g: 130, b: 152 },
-  { r: 130, g: 140, b: 162 },
-  { r: 139, g: 149, b: 171 },
-  { r: 148, g: 159, b: 181 },
-  { r: 158, g: 168, b: 191 },
-  { r: 168, g: 178, b: 201 },
-  { r: 177, g: 188, b: 211 },
-  { r: 187, g: 198, b: 221 },
-  { r: 197, g: 208, b: 231 },
-  { r: 207, g: 218, b: 241 },
-  { r: 217, g: 228, b: 252 },
-  { r: 228, g: 238, b: 255 },
-  { r: 238, g: 248, b: 255 },
-  { r: 248, g: 255, b: 255 },
-  { r: 255, g: 255, b: 255 }
-];
-var kColorPresets = [
-  { name: "none", colors: null },
-  { name: "polar night", colors: kPolarNight },
-  { name: "snow storm", colors: kSnowStorm },
-  { name: "frost", colors: kFrost },
-  { name: "aurora", colors: kAurora },
-  { name: "gradient", colors: kGradient }
-];
-var colorsRgbToArr = (colors2) => colors2.map((val) => Object.values(val));
-function createColorsSelector(folder, colors2) {
-  const dummy = { preset: 0 };
-  const presetOptions = {};
-  for (let i = 0, n = kColorPresets.length; i < n; ++i) {
-    presetOptions[kColorPresets[i].name] = i;
-  }
-  const preset = folder.addInput(dummy, "preset", { options: presetOptions });
-  const remove = folder.addButton({ title: "remove color" });
-  preset.on("change", (value) => {
-    if (value > 0) {
-      colors2.length = 0;
-      colors2.push(...kColorPresets[value].colors);
-      const items = folder.controller.uiContainer.items;
-      while (items.length > 3) {
-        items[items.length - 3].viewModel.dispose();
-      }
-      for (let i = 0, n = colors2.length; i < n; ++i) {
-        folder.addInput(colors2, `${i}`, { index: i + 1 });
-      }
-      remove.hidden = colors2.length <= 1;
-    }
-  });
-  for (let i = 0, n = colors2.length; i < n; ++i) {
-    folder.addInput(colors2, `${i}`, { index: i + 1 });
-  }
-  remove.hidden = colors2.length <= 1;
-  remove.on("click", () => {
-    colors2.pop();
-    const items = folder.controller.uiContainer.items;
-    items[items.length - 3].viewModel.dispose();
-    remove.hidden = colors2.length <= 1;
-    dummy.preset = 0;
-    preset.refresh();
-  });
-  folder.addButton({ title: "add color" }).on("click", () => {
-    const lastColor = colors2[colors2.length - 1];
-    const color = { r: lastColor.r, g: lastColor.g, b: lastColor.b };
-    colors2.push(color);
-    folder.addInput(colors2, `${colors2.length - 1}`, { index: colors2.length });
-    remove.hidden = colors2.length <= 1;
-    dummy.preset = 0;
-    preset.refresh();
-  });
-}
-function createFileInput(cb) {
-  const input = document.createElement("input");
-  input.type = "file";
-  input.multiple = false;
-  input.addEventListener("change", cb);
-  return input;
-}
-var gLayerCount = 0;
-function createFilesSelector(pane, layers, updateLoadBtn) {
-  const result = {
-    name: `layer_${gLayerCount++}`,
-    ready: false,
-    nodes: "No file selected.",
-    nodesFile: null,
-    nodesMapping: "",
-    edges: "No file selected.",
-    edgesFile: null,
-    edgesMapping: "",
-    meta: "No file selected.",
-    metaFile: null,
-    colors: [...kAurora]
-  };
-  const layersInd = layers.length;
-  const folder = pane.addFolder({
-    title: result.name,
-    index: layersInd
-  });
-  folder.addInput(result, "name");
-  folder.addSeparator();
-  const nodesInput = createFileInput(() => {
-    if (nodesInput.files.length) {
-      result.nodesFile = nodesInput.files[0];
-      result.nodes = result.nodesFile.name;
-      result.ready = true;
-    } else {
-      result.nodes = "No file selected.";
-      result.nodesFile = null;
-      result.ready = false;
-    }
-    updateLoadBtn();
-  });
-  folder.addMonitor(result, "nodes");
-  folder.addButton({ title: "browse..." }).on("click", () => nodesInput.click());
-  folder.addInput({ nodesMapping: result.nodesMapping }, "nodesMapping").on("change", (stringVal) => {
-    layers[layersInd].nodesMapping = stringVal;
-  });
-  folder.addSeparator();
-  const edgesInput = createFileInput(() => {
-    if (edgesInput.files.length) {
-      result.edgesFile = edgesInput.files[0];
-      result.edges = result.edgesFile.name;
-    } else {
-      result.edges = "No file selected.";
-      result.edgesFile = null;
-    }
-  });
-  folder.addMonitor(result, "edges");
-  folder.addButton({ title: "browse..." }).on("click", () => edgesInput.click());
-  folder.addInput({ edgesMapping: result.edgesMapping }, "edgesMapping").on("change", (stringVal) => {
-    layers[layersInd].edgesMapping = stringVal;
-  });
-  folder.addSeparator();
-  const metaInput = createFileInput(() => {
-    if (metaInput.files.length) {
-      result.metaFile = metaInput.files[0];
-      result.meta = result.metaFile.name;
-    } else {
-      result.meta = "No file selected.";
-      result.metaFile = null;
-    }
-  });
-  folder.addMonitor(result, "meta");
-  folder.addButton({ title: "browse..." }).on("click", () => metaInput.click());
-  folder.addSeparator();
-  const colors2 = folder.addFolder({ title: "colors", expanded: false });
-  createColorsSelector(colors2, result.colors);
-  folder.addSeparator();
-  const misc = folder.addFolder({ title: "misc", expanded: false });
-  misc.addMonitor(result, "ready");
-  misc.addButton({ title: "remove layer" }).on("click", () => {
-    const i = layers.indexOf(result);
-    if (i !== -1) {
-      layers.splice(i, 1);
-      folder.dispose();
-      updateLoadBtn();
-    }
-  });
-  folder.addSeparator();
-  return result;
-}
-async function loadLayers(layers) {
-  const loadedLayers = [];
-  for (let i = 0, n = layers.length; i < n; ++i) {
-    loadedLayers.push({
-      nodes: await LocalJSONL.loadNodes(layers[i].nodesFile, []),
-      edges: null,
-      meta: null
-    });
-  }
-  const stats = mod_exports8.normalizeNodeLayers(loadedLayers.map((layer) => layer.nodes));
-  for (let i = 0, n = layers.length; i < n; ++i) {
-    if (layers[i].edgesFile) {
-      loadedLayers[i].edges = await LocalJSONL.loadEdges(layers[i].edgesFile, loadedLayers[i].nodes);
-    }
-    if (layers[i].metaFile) {
-      loadedLayers[i].meta = await LocalJSONL.loadMeta(layers[i].metaFile);
-    }
-  }
-  return {
-    layers: loadedLayers,
-    stats
-  };
-}
-async function playground(container) {
-  render(html`<div id="menu" class="start_menu"></div>`, container);
-  const menu = new import_tweakpane2.default({
-    title: "Grafer Loader",
-    container: document.querySelector("#menu")
-  });
-  const layersFile = [];
-  const addBtn = menu.addButton({ title: "add layer" });
-  const loadBtn = menu.addButton({ title: "load" });
-  const updateLoadBtn = () => {
-    if (layersFile.length) {
-      for (let i = 0, n = layersFile.length; i < n; ++i) {
-        if (!layersFile[i].ready) {
-          loadBtn.hidden = true;
-          return;
-        }
-      }
-      loadBtn.hidden = false;
-    } else {
-      loadBtn.hidden = true;
-    }
-  };
-  loadBtn.hidden = true;
-  addBtn.on("click", () => {
-    layersFile.push(createFilesSelector(menu, layersFile, updateLoadBtn));
-    updateLoadBtn();
-  });
-  loadBtn.on("click", async () => {
-    menu.dispose();
-    const loading = new import_tweakpane2.default({
-      title: "loading...",
-      container: document.querySelector("#menu")
-    });
-    try {
-      render(html`<canvas class="grafer_container"></canvas><mouse-interactions></mouse-interactions>`, container);
-      const canvas = document.querySelector(".grafer_container");
-      const loaded = await loadLayers(layersFile);
-      const layers = [];
-      const colorsArr = [];
-      const pointsData = [];
-      const pointsMap = new Map();
-      loaded.layers.map((layer, layerInd) => {
-        const { nodesMapping, edgesMapping, colors: colors2 } = layersFile[layerInd];
-        layers.push({
-          nodes: {
-            data: layer.nodes.nodes,
-            mappings: nodesMapping ? new Function(`return (${nodesMapping})`)() : {}
-          },
-          edges: {
-            data: layer.edges ? layer.edges.edges : [],
-            mappings: edgesMapping ? new Function(`return (${edgesMapping})`)() : {}
-          }
-        });
-        layer.nodes.points.map((point, pointInd) => {
-          if (!pointsMap.has(point.id)) {
-            pointsData.push(point);
-            pointsMap.set(point.id, [layerInd, pointInd]);
-          }
-        });
-        colorsArr.push(...colorsRgbToArr(colors2));
-      });
-      const points2 = {
-        data: pointsData
-      };
-      const grafer = new GraferController(canvas, { points: points2, layers, colors: colorsArr });
-      const { viewport } = grafer;
-      const dolly = new mod_exports12.mouse.ScrollDolly(viewport);
-      dolly.enabled = true;
-      const truck = new mod_exports12.mouse.DragTruck(viewport);
-      truck.button = "primary";
-      truck.enabled = true;
-      const rotation = new mod_exports12.mouse.DragRotation(viewport);
-      rotation.button = "secondary";
-      rotation.enabled = true;
-      const pan = new mod_exports12.mouse.DragPan(viewport);
-      pan.button = "auxiliary";
-      pan.enabled = true;
-      const debug = new mod_exports12.DebugMenu(viewport);
-      debug.registerUX(dolly);
-      debug.registerUX(truck);
-      debug.registerUX(rotation);
-      debug.registerUX(pan);
-    } catch (e) {
-      loading.addMonitor({ error: e.toString() }, "error");
-      throw e;
-    }
-    loading.dispose();
-  });
-}
-
-// examples/src/basic/mod.ts
-var mod_exports15 = {};
-__export(mod_exports15, {
-  html: () => mod_exports13,
-  js: () => mod_exports14
-});
-
-// examples/src/basic/html/mod.ts
-var mod_exports13 = {};
-__export(mod_exports13, {
-  edgeColors: () => edgeColors,
-  minimal: () => minimal,
-  minimal3D: () => minimal3D,
-  nodeColors: () => nodeColors,
-  nodeID: () => nodeID,
-  nodeRadius: () => nodeRadius,
-  picking: () => picking
-});
-
-// examples/src/basic/html/minimal.ts
-async function minimal(container) {
-  const nodes = {
-    data: [
-      { x: -8.6, y: 5 },
-      { x: 8.6, y: 5 },
-      { x: 0, y: -10 },
-      { x: 0, y: 0 }
-    ]
-  };
-  const edges = {
-    data: [
-      { source: 0, target: 1 },
-      { source: 1, target: 2 },
-      { source: 2, target: 0 },
-      { source: 3, target: 0 },
-      { source: 3, target: 1 },
-      { source: 3, target: 2 }
-    ]
-  };
-  const layers = [
-    { nodes, edges }
-  ];
-  render(html`<grafer-view class="grafer_container" .layers="${layers}"></grafer-view><mouse-interactions></mouse-interactions>`, container);
-}
-
-// examples/src/basic/html/minimal3D.ts
-async function minimal3D(container) {
-  const nodes = {
-    data: [
-      { x: -8.6, y: 5, z: 5 },
-      { x: 8.6, y: 5, z: 5 },
-      { x: 0, y: -10, z: 0 },
-      { x: 0, y: 5, z: -8.6 },
-      { x: 0, y: 0, z: 0 }
-    ]
-  };
-  const edges = {
-    data: [
-      { source: 0, target: 1 },
-      { source: 0, target: 2 },
-      { source: 0, target: 3 },
-      { source: 1, target: 2 },
-      { source: 1, target: 3 },
-      { source: 2, target: 3 },
-      { source: 4, target: 0 },
-      { source: 4, target: 1 },
-      { source: 4, target: 2 },
-      { source: 4, target: 3 }
-    ]
-  };
-  const layers = [
-    { nodes, edges }
-  ];
-  render(html`<grafer-view class="grafer_container" .layers="${layers}"></grafer-view><mouse-interactions></mouse-interactions>`, container);
-}
-
-// examples/src/basic/html/nodeColors.ts
-async function nodeColors(container) {
-  const nodes = {
-    data: [
-      { x: -8.6, y: 5, z: 5, color: "limegreen" },
-      { x: 8.6, y: 5, z: 5, color: "#af3a6f" },
-      { x: 0, y: -10, z: 0, color: [128, 230, 255] },
-      { x: 0, y: 5, z: -8.6, color: "rgb(40, 40, 189)" },
-      { x: 0, y: 0, z: 0, color: "yellow" }
-    ]
-  };
-  const edges = {
-    data: [
-      { source: 0, target: 1 },
-      { source: 0, target: 2 },
-      { source: 0, target: 3 },
-      { source: 1, target: 2 },
-      { source: 1, target: 3 },
-      { source: 2, target: 3 },
-      { source: 4, target: 0 },
-      { source: 4, target: 1 },
-      { source: 4, target: 2 },
-      { source: 4, target: 3 }
-    ]
-  };
-  const layers = [
-    { nodes, edges }
-  ];
-  render(html`<grafer-view class="grafer_container" .layers="${layers}"></grafer-view><mouse-interactions></mouse-interactions>`, container);
-}
-
-// examples/src/basic/html/edgeColors.ts
-async function edgeColors(container) {
-  const nodes = {
-    data: [
-      { x: -8.6, y: 5 },
-      { x: 8.6, y: 5 },
-      { x: 0, y: -10 },
-      { x: 0, y: 0 }
-    ]
-  };
-  const edges = {
-    data: [
-      { source: 0, target: 1, sourceColor: "#5e81ac", targetColor: "#b48ead" },
-      { source: 1, target: 2, sourceColor: "#b48ead", targetColor: "#88c0d0" },
-      { source: 2, target: 0, sourceColor: "#88c0d0", targetColor: "#5e81ac" },
-      { source: 3, target: 0, sourceColor: "orange", targetColor: "#5e81ac" },
-      { source: 3, target: 1, sourceColor: "orange", targetColor: "#b48ead" },
-      { source: 3, target: 2, sourceColor: "orange", targetColor: "#88c0d0" }
-    ]
-  };
-  const layers = [
-    { nodes, edges }
-  ];
-  render(html`<grafer-view class="grafer_container" .layers="${layers}"></grafer-view><mouse-interactions></mouse-interactions>`, container);
-}
-
-// examples/src/basic/html/nodeRadius.ts
-async function nodeRadius(container) {
-  const nodes = {
-    data: [
-      { x: -8.6, y: 5 },
-      { x: 8.6, y: 5 },
-      { x: 0, y: -10 },
-      { x: 0, y: 0, color: "red", radius: 2.5 }
-    ]
-  };
-  const edges = {
-    data: [
-      { source: 0, target: 1 },
-      { source: 1, target: 2 },
-      { source: 2, target: 0 },
-      { source: 3, target: 0 },
-      { source: 3, target: 1 },
-      { source: 3, target: 2 }
-    ]
-  };
-  const layers = [
-    { nodes, edges }
-  ];
-  render(html`<grafer-view class="grafer_container" .layers="${layers}"></grafer-view><mouse-interactions></mouse-interactions>`, container);
-}
-
-// examples/src/basic/html/nodeID.ts
-async function nodeID(container) {
-  const nodes = {
-    data: [
-      { id: "left", x: -8.6, y: 5 },
-      { id: "right", x: 8.6, y: 5 },
-      { id: "bottom", x: 0, y: -10 },
-      { id: "center", x: 0, y: 0 }
-    ]
-  };
-  const edges = {
-    data: [
-      { source: "left", target: "right" },
-      { source: "right", target: "bottom" },
-      { source: "bottom", target: "left" },
-      { source: "center", target: "left" },
-      { source: "center", target: "right" },
-      { source: "center", target: "bottom" }
-    ]
-  };
-  const layers = [
-    { nodes, edges }
-  ];
-  render(html`<grafer-view class="grafer_container" .layers="${layers}"></grafer-view><mouse-interactions></mouse-interactions>`, container);
-}
-
-// examples/src/basic/html/picking.ts
-async function picking(container) {
-  const nodes = {
-    data: [
-      { id: "left", x: -8.6, y: 5 },
-      { id: "right", x: 8.6, y: 5 },
-      { id: "bottom", x: 0, y: -10 },
-      { id: "center", x: 0, y: 0 }
-    ]
-  };
-  const edges = {
-    data: [
-      { source: "left", target: "right" },
-      { source: "right", target: "bottom" },
-      { source: "bottom", target: "left" },
-      { source: "center", target: "left" },
-      { source: "center", target: "right" },
-      { source: "center", target: "bottom" }
-    ]
-  };
-  const layers = [
-    { name: "Awesomeness", nodes, edges }
-  ];
-  const printEvent = (event) => {
-    const detail = event.detail[0];
-    console.log(`${event.type} => layer:"${detail.layer}" ${detail.type}:"${detail.id}"`);
-  };
-  render(html`
-        <grafer-view
-            class="grafer_container"
-            .layers="${layers}"
-            @grafer_hover_on="${printEvent}"
-            @grafer_hover_off="${printEvent}"
-            @grafer_click="${printEvent}"
-        ></grafer-view>
-        <mouse-interactions></mouse-interactions>
-    `, container);
-}
-
-// examples/src/basic/js/mod.ts
-var mod_exports14 = {};
-__export(mod_exports14, {
-  edgeColors: () => edgeColors2,
-  minimal: () => minimal2,
-  minimal3D: () => minimal3D2,
-  nodeColors: () => nodeColors2,
-  nodeID: () => nodeID2,
-  nodeRadius: () => nodeRadius2,
-  picking: () => picking2
-});
-
-// examples/src/basic/js/minimal.ts
-async function minimal2(container) {
-  render(html`<canvas class="grafer_container"></canvas><mouse-interactions></mouse-interactions>`, container);
-  const canvas = document.querySelector(".grafer_container");
-  const nodes = {
-    data: [
-      { x: -8.6, y: 5 },
-      { x: 8.6, y: 5 },
-      { x: 0, y: -10 },
-      { x: 0, y: 0 }
-    ]
-  };
-  const edges = {
-    data: [
-      { source: 0, target: 1 },
-      { source: 1, target: 2 },
-      { source: 2, target: 0 },
-      { source: 3, target: 0 },
-      { source: 3, target: 1 },
-      { source: 3, target: 2 }
-    ]
-  };
-  const layers = [
-    { nodes, edges }
-  ];
-  new GraferController(canvas, { layers });
-}
-
-// examples/src/basic/js/minimal3D.ts
-async function minimal3D2(container) {
-  render(html`<canvas class="grafer_container"></canvas><mouse-interactions></mouse-interactions>`, container);
-  const canvas = document.querySelector(".grafer_container");
-  const nodes = {
-    data: [
-      { x: -8.6, y: 5, z: 5 },
-      { x: 8.6, y: 5, z: 5 },
-      { x: 0, y: -10, z: 0 },
-      { x: 0, y: 5, z: -8.6 },
-      { x: 0, y: 0, z: 0 }
-    ]
-  };
-  const edges = {
-    data: [
-      { source: 0, target: 1 },
-      { source: 0, target: 2 },
-      { source: 0, target: 3 },
-      { source: 1, target: 2 },
-      { source: 1, target: 3 },
-      { source: 2, target: 3 },
-      { source: 4, target: 0 },
-      { source: 4, target: 1 },
-      { source: 4, target: 2 },
-      { source: 4, target: 3 }
-    ]
-  };
-  const layers = [
-    { nodes, edges }
-  ];
-  new GraferController(canvas, { layers });
-}
-
-// examples/src/basic/js/nodeColors.ts
-async function nodeColors2(container) {
-  render(html`<canvas class="grafer_container"></canvas><mouse-interactions></mouse-interactions>`, container);
-  const canvas = document.querySelector(".grafer_container");
-  const nodes = {
-    data: [
-      { x: -8.6, y: 5, z: 5, color: "limegreen" },
-      { x: 8.6, y: 5, z: 5, color: "#af3a6f" },
-      { x: 0, y: -10, z: 0, color: [128, 230, 255] },
-      { x: 0, y: 5, z: -8.6, color: "rgb(40, 40, 189)" },
-      { x: 0, y: 0, z: 0, color: "yellow" }
-    ]
-  };
-  const edges = {
-    data: [
-      { source: 0, target: 1 },
-      { source: 0, target: 2 },
-      { source: 0, target: 3 },
-      { source: 1, target: 2 },
-      { source: 1, target: 3 },
-      { source: 2, target: 3 },
-      { source: 4, target: 0 },
-      { source: 4, target: 1 },
-      { source: 4, target: 2 },
-      { source: 4, target: 3 }
-    ]
-  };
-  const layers = [
-    { nodes, edges }
-  ];
-  new GraferController(canvas, { layers });
-}
-
-// examples/src/basic/js/edgeColors.ts
-async function edgeColors2(container) {
-  render(html`<canvas class="grafer_container"></canvas><mouse-interactions></mouse-interactions>`, container);
-  const canvas = document.querySelector(".grafer_container");
-  const nodes = {
-    data: [
-      { x: -8.6, y: 5 },
-      { x: 8.6, y: 5 },
-      { x: 0, y: -10 },
-      { x: 0, y: 0 }
-    ]
-  };
-  const edges = {
-    data: [
-      { source: 0, target: 1, sourceColor: "#5e81ac", targetColor: "#b48ead" },
-      { source: 1, target: 2, sourceColor: "#b48ead", targetColor: "#88c0d0" },
-      { source: 2, target: 0, sourceColor: "#88c0d0", targetColor: "#5e81ac" },
-      { source: 3, target: 0, sourceColor: "orange", targetColor: "#5e81ac" },
-      { source: 3, target: 1, sourceColor: "orange", targetColor: "#b48ead" },
-      { source: 3, target: 2, sourceColor: "orange", targetColor: "#88c0d0" }
-    ]
-  };
-  const layers = [
-    { nodes, edges }
-  ];
-  new GraferController(canvas, { layers });
-}
-
-// examples/src/basic/js/nodeRadius.ts
-async function nodeRadius2(container) {
-  render(html`<canvas class="grafer_container"></canvas><mouse-interactions></mouse-interactions>`, container);
-  const canvas = document.querySelector(".grafer_container");
-  const nodes = {
-    data: [
-      { x: -8.6, y: 5 },
-      { x: 8.6, y: 5 },
-      { x: 0, y: -10 },
-      { x: 0, y: 0, color: "red", radius: 2.5 }
-    ]
-  };
-  const edges = {
-    data: [
-      { source: 0, target: 1 },
-      { source: 1, target: 2 },
-      { source: 2, target: 0 },
-      { source: 3, target: 0 },
-      { source: 3, target: 1 },
-      { source: 3, target: 2 }
-    ]
-  };
-  const layers = [
-    { nodes, edges }
-  ];
-  new GraferController(canvas, { layers });
-}
-
-// examples/src/basic/js/nodeID.ts
-async function nodeID2(container) {
-  render(html`<canvas class="grafer_container"></canvas><mouse-interactions></mouse-interactions>`, container);
-  const canvas = document.querySelector(".grafer_container");
-  const nodes = {
-    data: [
-      { id: "left", x: -8.6, y: 5 },
-      { id: "right", x: 8.6, y: 5 },
-      { id: "bottom", x: 0, y: -10 },
-      { id: "center", x: 0, y: 0 }
-    ]
-  };
-  const edges = {
-    data: [
-      { source: "left", target: "right" },
-      { source: "right", target: "bottom" },
-      { source: "bottom", target: "left" },
-      { source: "center", target: "left" },
-      { source: "center", target: "right" },
-      { source: "center", target: "bottom" }
-    ]
-  };
-  const layers = [
-    { nodes, edges }
-  ];
-  new GraferController(canvas, { layers });
-}
-
-// examples/src/basic/js/picking.ts
-async function picking2(container) {
-  render(html`<canvas class="grafer_container"></canvas><mouse-interactions></mouse-interactions>`, container);
-  const canvas = document.querySelector(".grafer_container");
-  const nodes = {
-    data: [
-      { id: "left", x: -8.6, y: 5 },
-      { id: "right", x: 8.6, y: 5 },
-      { id: "bottom", x: 0, y: -10 },
-      { id: "center", x: 0, y: 0 }
-    ]
-  };
-  const edges = {
-    data: [
-      { source: "left", target: "right" },
-      { source: "right", target: "bottom" },
-      { source: "bottom", target: "left" },
-      { source: "center", target: "left" },
-      { source: "center", target: "right" },
-      { source: "center", target: "bottom" }
-    ]
-  };
-  const layers = [
-    { name: "Awesomeness", nodes, edges }
-  ];
-  const printEvent = (event, detail) => {
-    console.log(`${event.description} => layer:"${detail.layer}" ${detail.type}:"${detail.id}"`);
-  };
-  const controller = new GraferController(canvas, { layers });
-  controller.on(mod_exports12.picking.PickingManager.events.hoverOn, printEvent);
-  controller.on(mod_exports12.picking.PickingManager.events.hoverOff, printEvent);
-  controller.on(mod_exports12.picking.PickingManager.events.click, printEvent);
-}
-
-// examples/src/data/mod.ts
-var mod_exports16 = {};
-__export(mod_exports16, {
-  addPoints: () => addPoints,
-  colors: () => colors,
-  mappings: () => mappings,
-  points: () => points,
-  separateNodesEdges: () => separateNodesEdges
-});
-
-// examples/src/data/points.ts
-async function points(container) {
-  const points2 = {
-    data: [
-      { id: "left", x: -8.6, y: 5 },
-      { id: "right", x: 8.6, y: 5 },
-      { id: "bottom", x: 0, y: -10 },
-      { id: "center", x: 0, y: 0 }
-    ]
-  };
-  const nodes = {
-    data: [
-      { point: "left" },
-      { point: "right" },
-      { point: "bottom" },
-      { point: "center" }
-    ]
-  };
-  const edges = {
-    data: [
-      { source: "left", target: "right" },
-      { source: "right", target: "bottom" },
-      { source: "bottom", target: "left" },
-      { source: "center", target: "left" },
-      { source: "center", target: "right" },
-      { source: "center", target: "bottom" }
-    ]
-  };
-  const layers = [
-    { nodes, edges }
-  ];
-  render(html`<grafer-view class="grafer_container" .points="${points2}" .layers="${layers}"></grafer-view><mouse-interactions></mouse-interactions>`, container);
-}
-
-// examples/src/data/addPoints.ts
-function generateRandomPointData(startIndex, count) {
-  const data = [];
-  for (let i = 0; i < count; ++i) {
-    data.push({
-      id: `p_${startIndex + i}`,
-      x: Math.random() * 200 - 100,
-      y: Math.random() * 200 - 100,
-      radius: 1
-    });
-  }
-  return data;
-}
-var gPointCount = 0;
-function addNewPoints(controller) {
-  const data = generateRandomPointData(gPointCount, 50);
-  controller.viewport.graph.addPoints(data);
-  const nodeData = data.map((p) => ({ point: p.id }));
-  const layer = {
-    nodes: {
-      data: nodeData
-    }
-  };
-  controller.addLayer(layer, `newNodes_${gPointCount}`);
-  controller.render();
-  gPointCount += 50;
-}
-async function addPoints(container) {
-  const points2 = {
-    data: [
-      { id: "tl", x: -100, y: -100, radius: 4 },
-      { id: "tr", x: 100, y: -100, radius: 4 },
-      { id: "bl", x: -100, y: 100, radius: 4 },
-      { id: "br", x: 100, y: 100, radius: 4 }
-    ]
-  };
-  const nodes = {
-    data: [
-      { point: "tl" },
-      { point: "tr" },
-      { point: "bl" },
-      { point: "br" }
-    ]
-  };
-  const edges = {
-    data: [
-      { source: "tl", target: "tr" },
-      { source: "tr", target: "br" },
-      { source: "br", target: "bl" },
-      { source: "bl", target: "tl" }
-    ]
-  };
-  const layers = [
-    { nodes, edges }
-  ];
-  render(html`<canvas class="grafer_container"></canvas><mouse-interactions></mouse-interactions>`, container);
-  const canvas = document.querySelector(".grafer_container");
-  const controller = new GraferController(canvas, { points: points2, layers });
-  addNewPoints(controller);
-  setInterval(() => addNewPoints(controller), 5e3);
-}
-
-// examples/src/data/separateNodesEdges.ts
-async function separateNodesEdges(container) {
-  const points2 = {
-    data: [
-      { id: "top-left", x: -8.6, y: 5, radius: 0 },
-      { id: "top-right", x: 8.6, y: 5, radius: 0 },
-      { id: "top-center", x: 0, y: 10 },
-      { id: "bottom-left", x: -8.6, y: -5 },
-      { id: "bottom-right", x: 8.6, y: -5 },
-      { id: "bottom-center", x: 0, y: -10, radius: 0 },
-      { id: "origin", x: 0, y: 0 }
-    ]
-  };
-  const nodes = {
-    data: [
-      { point: "bottom-left" },
-      { point: "bottom-right" },
-      { point: "top-center" },
-      { point: "origin" }
-    ]
-  };
-  const edges = {
-    data: [
-      { source: "top-left", target: "top-right" },
-      { source: "top-right", target: "bottom-center" },
-      { source: "bottom-center", target: "top-left" },
-      { source: "origin", target: "top-left" },
-      { source: "origin", target: "top-right" },
-      { source: "origin", target: "bottom-center" }
-    ]
-  };
-  const layers = [
-    { nodes },
-    { edges }
-  ];
-  render(html`<grafer-view class="grafer_container" .points="${points2}" .layers="${layers}"></grafer-view><mouse-interactions></mouse-interactions>`, container);
-}
-
-// examples/src/data/colors.ts
-async function colors(container) {
-  const colors2 = [
-    "red",
-    "limegreen",
-    [0, 0, 255],
-    "#88c0d0"
-  ];
-  const points2 = {
-    data: [
-      { id: "left", x: -8.6, y: 5 },
-      { id: "right", x: 8.6, y: 5 },
-      { id: "bottom", x: 0, y: -10 },
-      { id: "center", x: 0, y: 0 }
-    ]
-  };
-  const nodes = {
-    data: [
-      { point: "left", color: 0 },
-      { point: "right", color: 1 },
-      { point: "bottom", color: 2 },
-      { point: "center", color: 3 }
-    ]
-  };
-  const edges = {
-    data: [
-      { source: "left", target: "right", sourceColor: 0, targetColor: 1 },
-      { source: "right", target: "bottom", sourceColor: 1, targetColor: 2 },
-      { source: "bottom", target: "left", sourceColor: 2, targetColor: 0 },
-      { source: "center", target: "left", sourceColor: 3, targetColor: 0 },
-      { source: "center", target: "right", sourceColor: 3, targetColor: 1 },
-      { source: "center", target: "bottom", sourceColor: 3, targetColor: 2 }
-    ]
-  };
-  const layers = [
-    { nodes, edges }
-  ];
-  render(html`<grafer-view class="grafer_container" .colors="${colors2}" .points="${points2}" .layers="${layers}"></grafer-view><mouse-interactions></mouse-interactions>`, container);
-}
-
-// examples/src/data/mappings.ts
-async function mappings(container) {
-  const colors2 = [
-    "red",
-    "limegreen",
-    [0, 0, 255],
-    "#88c0d0",
-    [255, 255, 0],
-    [0, 255, 255],
-    [255, 0, 255],
-    "white"
-  ];
-  const points2 = {
-    data: [
-      { id: "left", x: -8.6, y: 5 },
-      { id: "right", x: 8.6, y: 5 },
-      { id: "bottom", x: 0, y: -10 },
-      { id: "center", x: 0, y: 0 }
-    ]
-  };
-  const nodes = {
-    data: [
-      { point: "left", color: 0 },
-      { point: "right", color: 1 },
-      { point: "bottom", color: 2 },
-      { point: "center", color: 3 }
-    ]
-  };
-  const edges = {
-    data: [
-      { source: "left", target: "right", color: 4 },
-      { source: "right", target: "bottom", color: 5 },
-      { source: "bottom", target: "left", color: 6 },
-      { source: "center", target: "left", color: 7 },
-      { source: "center", target: "right", color: 7 },
-      { source: "center", target: "bottom", color: 7 }
-    ],
-    mappings: {
-      sourceColor: (entry) => entry.color,
-      targetColor: (entry) => entry.color
-    }
-  };
-  const layers = [
-    { nodes, edges }
-  ];
-  render(html`<grafer-view class="grafer_container" .colors="${colors2}" .points="${points2}" .layers="${layers}"></grafer-view><mouse-interactions></mouse-interactions>`, container);
-}
-
-// examples/src/nodes/mod.ts
-var mod_exports17 = {};
-__export(mod_exports17, {
-  circle: () => circle,
-  cross: () => cross4,
-  octagon: () => octagon,
-  pentagon: () => pentagon,
-  plus: () => plus,
-  ring: () => ring,
-  star: () => star,
-  triangle: () => triangle
-});
-
-// examples/src/nodes/circle.ts
-function createNodePoints(count, radius = 10) {
-  const PI2 = Math.PI * 2;
-  const degStep = PI2 / count;
-  const result = [];
-  for (let angle3 = 0, i = 0; angle3 < PI2; angle3 += degStep, ++i) {
-    const pX = Math.cos(angle3) * radius;
-    const pY = Math.sin(angle3) * radius;
-    result.push({
-      id: `p${i}-${radius}`,
-      x: pX,
-      y: pY
-    });
-  }
-  return result;
-}
-async function circle(container) {
-  const nodes = {
-    type: "Circle",
-    data: [
-      ...createNodePoints(10, 10),
-      ...createNodePoints(5, 5)
-    ]
-  };
-  const layers = [
-    { nodes }
-  ];
-  render(html`<grafer-view class="grafer_container" .layers="${layers}"></grafer-view><mouse-interactions></mouse-interactions>`, container);
-}
-
-// examples/src/nodes/ring.ts
-function createNodePoints2(count, radius = 10) {
-  const PI2 = Math.PI * 2;
-  const degStep = PI2 / count;
-  const result = [];
-  for (let angle3 = 0, i = 0; angle3 < PI2; angle3 += degStep, ++i) {
-    const pX = Math.cos(angle3) * radius;
-    const pY = Math.sin(angle3) * radius;
-    result.push({
-      id: `p${i}-${radius}`,
-      x: pX,
-      y: pY
-    });
-  }
-  return result;
-}
-async function ring(container) {
-  const nodes = {
-    type: "Ring",
-    data: [
-      ...createNodePoints2(10, 10),
-      ...createNodePoints2(5, 5)
-    ]
-  };
-  const layers = [
-    { nodes }
-  ];
-  render(html`<grafer-view class="grafer_container" .layers="${layers}"></grafer-view><mouse-interactions></mouse-interactions>`, container);
-}
-
-// examples/src/nodes/triangle.ts
-function createNodePoints3(count, radius = 10) {
-  const PI2 = Math.PI * 2;
-  const degStep = PI2 / count;
-  const result = [];
-  for (let angle3 = 0, i = 0; angle3 < PI2; angle3 += degStep, ++i) {
-    const pX = Math.cos(angle3) * radius;
-    const pY = Math.sin(angle3) * radius;
-    result.push({
-      id: `p${i}-${radius}`,
-      x: pX,
-      y: pY
-    });
-  }
-  return result;
-}
-async function triangle(container) {
-  const nodes = {
-    type: "Triangle",
-    data: [
-      ...createNodePoints3(10, 10),
-      ...createNodePoints3(5, 5)
-    ]
-  };
-  const layers = [
-    { nodes }
-  ];
-  render(html`<grafer-view class="grafer_container" .layers="${layers}"></grafer-view><mouse-interactions></mouse-interactions>`, container);
-}
-
-// examples/src/nodes/pentagon.ts
-function createNodePoints4(count, radius = 10) {
-  const PI2 = Math.PI * 2;
-  const degStep = PI2 / count;
-  const result = [];
-  for (let angle3 = 0, i = 0; angle3 < PI2; angle3 += degStep, ++i) {
-    const pX = Math.cos(angle3) * radius;
-    const pY = Math.sin(angle3) * radius;
-    result.push({
-      id: `p${i}-${radius}`,
-      x: pX,
-      y: pY
-    });
-  }
-  return result;
-}
-async function pentagon(container) {
-  const nodes = {
-    type: "Pentagon",
-    data: [
-      ...createNodePoints4(10, 10),
-      ...createNodePoints4(5, 5)
-    ]
-  };
-  const layers = [
-    { nodes }
-  ];
-  render(html`<grafer-view class="grafer_container" .layers="${layers}"></grafer-view><mouse-interactions></mouse-interactions>`, container);
-}
-
-// examples/src/nodes/octagon.ts
-function createNodePoints5(count, radius = 10) {
-  const PI2 = Math.PI * 2;
-  const degStep = PI2 / count;
-  const result = [];
-  for (let angle3 = 0, i = 0; angle3 < PI2; angle3 += degStep, ++i) {
-    const pX = Math.cos(angle3) * radius;
-    const pY = Math.sin(angle3) * radius;
-    result.push({
-      id: `p${i}-${radius}`,
-      x: pX,
-      y: pY
-    });
-  }
-  return result;
-}
-async function octagon(container) {
-  const nodes = {
-    type: "Octagon",
-    data: [
-      ...createNodePoints5(10, 10),
-      ...createNodePoints5(5, 5)
-    ]
-  };
-  const layers = [
-    { nodes }
-  ];
-  render(html`<grafer-view class="grafer_container" .layers="${layers}"></grafer-view><mouse-interactions></mouse-interactions>`, container);
-}
-
-// examples/src/nodes/star.ts
-function createNodePoints6(count, radius = 10) {
-  const PI2 = Math.PI * 2;
-  const degStep = PI2 / count;
-  const result = [];
-  for (let angle3 = 0, i = 0; angle3 < PI2; angle3 += degStep, ++i) {
-    const pX = Math.cos(angle3) * radius;
-    const pY = Math.sin(angle3) * radius;
-    result.push({
-      id: `p${i}-${radius}`,
-      x: pX,
-      y: pY
-    });
-  }
-  return result;
-}
-async function star(container) {
-  const nodesStar5 = {
-    type: "Star",
-    data: createNodePoints6(10, 10)
-  };
-  const nodesStar10 = {
-    type: "Star",
-    data: createNodePoints6(5, 5),
-    options: {
-      sides: 10,
-      angleDivisor: 2.5
-    }
-  };
-  const layers = [
-    { nodes: nodesStar5 },
-    { nodes: nodesStar10 }
-  ];
-  render(html`<grafer-view class="grafer_container" .layers="${layers}"></grafer-view><mouse-interactions></mouse-interactions>`, container);
-}
-
-// examples/src/nodes/cross.ts
-function createNodePoints7(count, radius = 10) {
-  const PI2 = Math.PI * 2;
-  const degStep = PI2 / count;
-  const result = [];
-  for (let angle3 = 0, i = 0; angle3 < PI2; angle3 += degStep, ++i) {
-    const pX = Math.cos(angle3) * radius;
-    const pY = Math.sin(angle3) * radius;
-    result.push({
-      id: `p${i}-${radius}`,
-      x: pX,
-      y: pY
-    });
-  }
-  return result;
-}
-async function cross4(container) {
-  const nodes = {
-    type: "Cross",
-    data: [
-      ...createNodePoints7(10, 10),
-      ...createNodePoints7(5, 5)
-    ]
-  };
-  const layers = [
-    { nodes }
-  ];
-  render(html`<grafer-view class="grafer_container" .layers="${layers}"></grafer-view><mouse-interactions></mouse-interactions>`, container);
-}
-
-// examples/src/nodes/plus.ts
-function createNodePoints8(count, radius = 10) {
-  const PI2 = Math.PI * 2;
-  const degStep = PI2 / count;
-  const result = [];
-  for (let angle3 = 0, i = 0; angle3 < PI2; angle3 += degStep, ++i) {
-    const pX = Math.cos(angle3) * radius;
-    const pY = Math.sin(angle3) * radius;
-    result.push({
-      id: `p${i}-${radius}`,
-      x: pX,
-      y: pY
-    });
-  }
-  return result;
-}
-async function plus(container) {
-  const nodes = {
-    type: "Plus",
-    data: [
-      ...createNodePoints8(10, 10),
-      ...createNodePoints8(5, 5)
-    ]
-  };
-  const layers = [
-    { nodes }
-  ];
-  render(html`<grafer-view class="grafer_container" .layers="${layers}"></grafer-view><mouse-interactions></mouse-interactions>`, container);
-}
-
-// examples/src/edges/mod.ts
-var mod_exports18 = {};
-__export(mod_exports18, {
-  bundling: () => bundling,
-  circuitBoard: () => circuitBoard,
-  curvedPaths: () => curvedPaths,
-  dashed: () => dashed,
-  straightPaths: () => straightPaths
-});
-
-// examples/src/edges/dashed.ts
-async function dashed(container) {
-  const nodes = {
-    data: [
-      { x: -8.6, y: 5 },
-      { x: 8.6, y: 5 },
-      { x: 0, y: -10 },
-      { x: 0, y: 0 }
-    ]
-  };
-  const edges = {
-    data: [
-      { source: 0, target: 1 },
-      { source: 1, target: 2 },
-      { source: 2, target: 0 },
-      { source: 3, target: 0 },
-      { source: 3, target: 1 },
-      { source: 3, target: 2 }
-    ],
-    type: "Dashed"
-  };
-  const layers = [
-    { nodes, edges }
-  ];
-  render(html`<grafer-view class="grafer_container" .layers="${layers}"></grafer-view><mouse-interactions></mouse-interactions>`, container);
-}
-
-// examples/src/edges/curvedPaths.ts
-async function curvedPaths(container) {
-  const colors2 = [
-    "red",
-    "limegreen",
-    [0, 0, 255],
-    "#88c0d0"
-  ];
-  const points2 = {
-    data: [
-      { id: "left", x: -8.6, y: 5 },
-      { id: "right", x: 8.6, y: 5 },
-      { id: "bottom", x: 0, y: -10, z: -5 },
-      { id: "center", x: 0, y: 0, z: 5 }
-    ]
-  };
-  const nodes = {
-    data: [
-      { point: "left", color: 3 },
-      { point: "right", color: 1 },
-      { point: "bottom", radius: 0.2 },
-      { point: "center", radius: 0.2 }
-    ],
-    mappings: {
-      radius: (entry) => entry.radius || 1
-    }
-  };
-  const edges = {
-    type: "CurvedPath",
-    data: [
-      { source: "left", target: "right", control: ["center", "bottom"], sourceColor: 3, targetColor: 1 }
-    ]
-  };
-  const edgesDashed = {
-    type: "Dashed",
-    data: [
-      { source: "left", target: "center" },
-      { source: "center", target: "bottom" },
-      { source: "bottom", target: "right" }
-    ]
-  };
-  const layers = [
-    { nodes, edges },
-    { edges: edgesDashed }
-  ];
-  render(html`<grafer-view class="grafer_container" .colors="${colors2}" .points="${points2}" .layers="${layers}"></grafer-view><mouse-interactions></mouse-interactions>`, container);
-}
-
-// examples/src/edges/straightPaths.ts
-async function straightPaths(container) {
-  const colors2 = [
-    "red",
-    "limegreen",
-    [0, 0, 255],
-    "#88c0d0"
-  ];
-  const points2 = {
-    data: [
-      { id: "left", x: -15, y: 0 },
-      { id: "right", x: 15, y: 0 },
-      { id: "p0", x: -13, y: 0 },
-      { id: "p1", x: -12, y: -5 },
-      { id: "p2", x: -11, y: 5 },
-      { id: "p3", x: -10, y: 0 },
-      { id: "p4", x: -2, y: 0 },
-      { id: "p5", x: -1, y: -5 },
-      { id: "p6", x: 0, y: 5 },
-      { id: "p7", x: 1, y: 0 },
-      { id: "p8", x: 9, y: 0 },
-      { id: "p9", x: 10, y: -5 },
-      { id: "p10", x: 11, y: 5 },
-      { id: "p11", x: 12, y: 0 }
-    ]
-  };
-  const nodes = {
-    data: [
-      { point: "left", color: 3 },
-      { point: "right", color: 1 }
-    ],
-    mappings: {
-      radius: (entry) => entry.radius || 1
-    }
-  };
-  const controls = [];
-  for (let i = 0; i < 12; ++i) {
-    controls.push(`p${i}`);
-  }
-  const edges = {
-    type: "StraightPath",
-    data: [
-      { source: "left", target: "right", control: controls, sourceColor: 3, targetColor: 1 }
-    ]
-  };
-  const layers = [
-    { nodes, edges }
-  ];
-  render(html`<grafer-view class="grafer_container" .colors="${colors2}" .points="${points2}" .layers="${layers}"></grafer-view><mouse-interactions></mouse-interactions>`, container);
-}
-
-// examples/src/edges/circuitBoard.ts
-async function circuitBoard(container) {
-  const colors2 = [
-    "#d08770",
-    "#88c0d0"
-  ];
-  const points2 = {
-    data: [
-      { id: "p1-p1", x: -10, y: -5 },
-      { id: "p1-c1", x: 8, y: -5 },
-      { id: "p1-c2", x: 10, y: -5 },
-      { id: "p1-c3", x: 10, y: -3 },
-      { id: "p1-p2", x: 10, y: 11 },
-      { id: "p2-p1", x: -10, y: -8 },
-      { id: "p2-c1", x: 10, y: -8 },
-      { id: "p2-c2", x: 13, y: -8 },
-      { id: "p2-c3", x: 13, y: -5 },
-      { id: "p2-p2", x: 13, y: 11 },
-      { id: "p3-p1", x: -10, y: -11 },
-      { id: "p3-c1", x: 12, y: -11 },
-      { id: "p3-c2", x: 16, y: -11 },
-      { id: "p3-c3", x: 16, y: -7 },
-      { id: "p3-p2", x: 16, y: 11 },
-      { id: "origin", x: 0, y: 5, radius: 8 }
-    ]
-  };
-  const nodes = {
-    data: [
-      { point: "p1-p1" },
-      { point: "p1-p2" },
-      { point: "p2-p1" },
-      { point: "p2-p2" },
-      { point: "p3-p1" },
-      { point: "p3-p2" },
-      { point: "origin", color: 1 }
-    ]
-  };
-  const edges = {
-    type: "CurvedPath",
-    data: [
-      { source: "p1-p1", target: "p1-p2", control: ["p1-c1", "p1-c2", "p1-c3"] },
-      { source: "p2-p1", target: "p2-p2", control: ["p2-c1", "p2-c2", "p2-c3"] },
-      { source: "p3-p1", target: "p3-p2", control: ["p3-c1", "p3-c2", "p3-c3"] }
-    ]
-  };
-  const layers = [
-    { nodes, edges }
-  ];
-  render(html`<grafer-view class="grafer_container" .colors="${colors2}" .points="${points2}" .layers="${layers}"></grafer-view><mouse-interactions></mouse-interactions>`, container);
-}
-
-// examples/src/edges/bundling.ts
-function createClusterNodePoints(cluster, x, y, r, count) {
-  const PI2 = Math.PI * 2;
-  const degStep = PI2 / count;
-  const radius = r - 7;
-  const result = [];
-  for (let angle3 = 0, i = 0; angle3 < PI2; angle3 += degStep, ++i) {
-    const pX = Math.cos(angle3) * (Math.random() * radius + 5);
-    const pY = Math.sin(angle3) * (Math.random() * radius + 5);
-    result.push({
-      id: `${cluster}-p${i}`,
-      x: x + pX,
-      y: y + pY
-    });
-  }
-  return result;
-}
-function createInnerEdges(cluster) {
-  const result = [];
-  for (let i = 0, n = cluster.length; i < n; ++i) {
-    const n1 = cluster[i];
-    for (let ii = i + 1, nn = cluster.length; ii < nn; ++ii) {
-      if (Math.random() > 0.75) {
-        const n2 = cluster[ii];
-        result.push({
-          source: n1.id,
-          target: n2.id,
-          sourceColor: 2,
-          targetColor: 2
-        });
-      }
-    }
-  }
-  return result;
-}
-async function bundling(container) {
-  const colors2 = [
-    "#d08770",
-    "#88c0d0",
-    "#ebcb8b"
-  ];
-  const pointsC1 = createClusterNodePoints("c1", -30, 0, 20, 12);
-  const nodesC1 = pointsC1.map((p) => ({ point: p.id }));
-  const pointsC2 = createClusterNodePoints("c2", 40, 0, 25, 14);
-  const nodesC2 = pointsC2.map((p) => ({ point: p.id }));
-  const points2 = {
-    data: [
-      { id: "c1", x: -30, y: 0 },
-      { id: "c1-c1", x: -10, y: 0 },
-      { id: "c1-c2", x: -0, y: 0 },
-      ...pointsC1,
-      { id: "c2", x: 40, y: 0 },
-      { id: "c2-c1", x: 15, y: 0 },
-      { id: "c2-c2", x: 5, y: 0 },
-      ...pointsC2
-    ]
-  };
-  const nodes = {
-    data: [
-      ...nodesC1,
-      ...nodesC2
-    ]
-  };
-  const clusters = {
-    type: "Ring",
-    data: [
-      { point: "c1", radius: 20, color: 1 },
-      { point: "c2", radius: 25, color: 1 }
-    ],
-    mappings: {
-      radius: (entry) => entry.radius
-    },
-    options: {
-      billboard: false
-    }
-  };
-  const clusterEdgesData = [];
-  for (let i = 0, n = pointsC1.length; i < n; ++i) {
-    const pointA = pointsC1[i];
-    for (let ii = 0, nn = pointsC2.length; ii < nn; ++ii) {
-      if (Math.random() > 0.5) {
-        const pointB = pointsC2[ii];
-        clusterEdgesData.push({
-          source: pointA.id,
-          target: pointB.id,
-          control: ["c1-c1", "c1-c2", "c2-c2", "c2-c1"],
-          sourceColor: 1,
-          targetColor: 1
-        });
-      }
-    }
-  }
-  const clusterEdges = {
-    type: "CurvedPath",
-    data: clusterEdgesData,
-    options: {
-      alpha: 0.04,
-      nearDepth: 0.9
-    }
-  };
-  const nodesEdges = {
-    data: [
-      ...createInnerEdges(pointsC1),
-      ...createInnerEdges(pointsC2)
-    ],
-    options: {
-      alpha: 0.55,
-      nearDepth: 0.9
-    }
-  };
-  const layers = [
-    { nodes: clusters, edges: clusterEdges },
-    { nodes, edges: nodesEdges }
-  ];
-  render(html`<grafer-view class="grafer_container" .colors="${colors2}" .points="${points2}" .layers="${layers}"></grafer-view><mouse-interactions></mouse-interactions>`, container);
-}
-
-// examples/src/labels/mod.ts
-var mod_exports19 = {};
-__export(mod_exports19, {
-  circularLabel: () => circularLabel,
-  pointLabel: () => pointLabel,
-  ringLabel: () => ringLabel
-});
-
-// examples/src/labels/pointLabel.ts
-function createNodePoints9(count, radius = 10) {
-  const PI2 = Math.PI * 2;
-  const degStep = PI2 / count;
-  const result = [];
-  for (let angle3 = 0, i = 0; angle3 < PI2; angle3 += degStep, ++i) {
-    const pX = Math.cos(angle3) * radius;
-    const pY = Math.sin(angle3) * radius;
-    result.push({
-      id: `p${i}-${radius}`,
-      x: pX,
-      y: pY,
-      radius: 2,
-      label: `Node p${i}-r${radius}`,
-      color: Math.round(Math.random() * 4),
-      fontSize: 16
-    });
-  }
-  return result;
-}
-async function pointLabel(container) {
-  const nodes = {
-    type: "Circle",
-    data: [
-      ...createNodePoints9(10, 10),
-      ...createNodePoints9(5, 5)
-    ]
-  };
-  const labels = {
-    type: "PointLabel",
-    data: nodes.data,
-    options: {
-      visibilityThreshold: 50,
-      labelPlacement: 1,
-      renderBackground: true,
-      padding: 6
-    }
-  };
-  const layers = [
-    { nodes, labels }
-  ];
-  const colors2 = [
-    "#bf616a",
-    "#d08770",
-    "#ebcb8b",
-    "#a3be8c",
-    "#b48ead"
-  ];
-  render(html`<grafer-view class="grafer_container" .colors="${colors2}" .layers="${layers}"></grafer-view><mouse-interactions></mouse-interactions>`, container);
-}
-
-// examples/src/labels/circularLabel.ts
-function createNodePoints10(count, radius = 10) {
-  const PI2 = Math.PI * 2;
-  const degStep = PI2 / count;
-  const result = [];
-  for (let angle3 = 0, i = 0; angle3 < PI2; angle3 += degStep, ++i) {
-    const pX = Math.cos(angle3) * radius;
-    const pY = Math.sin(angle3) * radius;
-    result.push({
-      id: `p${i}-${radius}`,
-      x: pX,
-      y: pY,
-      radius: 2,
-      label: `NODE P${i}-R${radius}`,
-      color: Math.round(Math.random() * 4) + 1,
-      background: true,
-      fontSize: 16
-    });
-  }
-  return result;
-}
-async function circularLabel(container) {
-  const nodes = {
-    type: "Circle",
-    data: [
-      ...createNodePoints10(10, 16),
-      ...createNodePoints10(5, 8)
-    ]
-  };
-  const labels = {
-    type: "CircularLabel",
-    data: nodes.data,
-    options: {
-      visibilityThreshold: 40,
-      repeatLabel: -1,
-      placementMargin: 5,
-      renderBackground: true,
-      mirror: false,
-      padding: 6,
-      repeatGap: 25
-    }
-  };
-  const layers = [
-    { nodes, labels }
-  ];
-  const colors2 = [
-    "white",
-    "#bf616a",
-    "#d08770",
-    "#ebcb8b",
-    "#a3be8c",
-    "#b48ead"
-  ];
-  render(html`
-        <grafer-view class="grafer_container" .colors="${colors2}" .layers="${layers}"></grafer-view>
-        <canvas id="debug_canvas" class="grafer_container"></canvas>
-        <mouse-interactions></mouse-interactions>
-    `, container);
-}
-
-// examples/src/labels/ringLabel.ts
-function createNodePoints11(count, radius = 10) {
-  const PI2 = Math.PI * 2;
-  const degStep = PI2 / count;
-  const result = [];
-  for (let angle3 = 0, i = 0; angle3 < PI2; angle3 += degStep, ++i) {
-    const pX = Math.cos(angle3) * radius;
-    const pY = Math.sin(angle3) * radius;
-    result.push({
-      id: `p${i}-${radius}`,
-      x: pX,
-      y: pY,
-      radius: 2,
-      label: `NODE P${i}-R${radius}`,
-      color: Math.round(Math.random() * 4) + 1,
-      background: false,
-      fontSize: 12,
-      padding: 0
-    });
-  }
-  return result;
-}
-async function ringLabel(container) {
-  const nodes = {
-    type: "Circle",
-    data: [
-      ...createNodePoints11(10, 16),
-      ...createNodePoints11(5, 8)
-    ]
-  };
-  const labels = {
-    type: "RingLabel",
-    data: nodes.data,
-    options: {
-      visibilityThreshold: 100,
-      repeatLabel: 5,
-      repeatGap: 15
-    }
-  };
-  const layers = [
-    { labels }
-  ];
-  const colors2 = [
-    "white",
-    "#bf616a",
-    "#d08770",
-    "#ebcb8b",
-    "#a3be8c",
-    "#b48ead"
-  ];
-  render(html`
-        <grafer-view class="grafer_container" .colors="${colors2}" .layers="${layers}"></grafer-view>
-        <canvas id="debug_canvas" class="grafer_container"></canvas>
-        <mouse-interactions></mouse-interactions>
-    `, container);
-}
-
-// examples/src/aske/mod.ts
-var mod_exports20 = {};
-__export(mod_exports20, {
-  bundledEdgesLoader: () => bundledEdgesLoader,
-  knowledgeViewLoader: () => knowledgeViewLoader
-});
-
-// examples/src/aske/bundledEdgesLoader.ts
-var import_tweakpane3 = __toModule(require_tweakpane());
-async function parseJSONL2(input, cb) {
-  const file = await DataFile.fromLocalSource(input);
-  const sizeOf16MB = 16 * 1024 * 1024;
-  const byteLength = await file.byteLength;
-  const decoder = new TextDecoder();
-  const lineBreak = "\n".charCodeAt(0);
-  for (let offset = 0; offset <= byteLength; offset += sizeOf16MB) {
-    const chunkEnd = Math.min(offset + sizeOf16MB, byteLength);
-    const chunk = await file.loadData(offset, chunkEnd);
-    const view = new DataView(chunk);
-    let start = 0;
-    for (let i = 0, n = chunk.byteLength; i < n; ++i) {
-      if (view.getUint8(i) === lineBreak || offset + i === byteLength) {
-        const statementBuffer = new Uint8Array(chunk, start, i - start);
-        start = i + 1;
-        const str6 = decoder.decode(statementBuffer);
-        const json = JSON.parse(str6);
-        cb(json);
-      }
-    }
-    if (start < chunk.byteLength) {
-      offset -= chunk.byteLength - start;
-    }
-  }
-}
-function createFileInput2(cb) {
-  const input = document.createElement("input");
-  input.type = "file";
-  input.multiple = false;
-  input.addEventListener("change", cb);
-  return input;
-}
-function renderMenu2(container, cb) {
-  render(html`<div id="menu" class="start_menu"></div>`, container);
-  const result = {
-    points: "No file selected.",
-    pointsFile: null,
-    clusters: "No file selected.",
-    clustersFile: null,
-    clusterEdgesMode: "curved",
-    clusterEdges: "No file selected.",
-    clusterEdgesFile: null,
-    nodes: "No file selected.",
-    nodesFile: null,
-    nodeEdges: "No file selected.",
-    nodeEdgesFile: null
-  };
-  const menu = new import_tweakpane3.default({
-    title: "Grafer Loader",
-    container: document.querySelector("#menu")
-  });
-  const pointsInput = createFileInput2(() => {
-    if (pointsInput.files.length) {
-      result.pointsFile = pointsInput.files[0];
-      result.points = result.pointsFile.name;
-    } else {
-      result.points = "No file selected.";
-      result.pointsFile = null;
-    }
-  });
-  menu.addMonitor(result, "points");
-  menu.addButton({ title: "browse..." }).on("click", () => pointsInput.click());
-  menu.addSeparator();
-  const clustersInput = createFileInput2(() => {
-    if (clustersInput.files.length) {
-      result.clustersFile = clustersInput.files[0];
-      result.clusters = result.clustersFile.name;
-    } else {
-      result.clusters = "No file selected.";
-      result.clustersFile = null;
-    }
-  });
-  menu.addMonitor(result, "clusters");
-  menu.addButton({ title: "browse..." }).on("click", () => clustersInput.click());
-  menu.addInput(result, "clusterEdgesMode", {
-    options: {
-      bundle: "bundle",
-      straight: "straight",
-      curved: "curved"
-    }
-  });
-  const clusterEdgesInput = createFileInput2(() => {
-    if (clusterEdgesInput.files.length) {
-      result.clusterEdgesFile = clusterEdgesInput.files[0];
-      result.clusterEdges = result.clusterEdgesFile.name;
-    } else {
-      result.clusterEdges = "No file selected.";
-      result.clusterEdgesFile = null;
-    }
-  });
-  menu.addMonitor(result, "clusterEdges");
-  menu.addButton({ title: "browse..." }).on("click", () => clusterEdgesInput.click());
-  menu.addSeparator();
-  const nodesInput = createFileInput2(() => {
-    if (nodesInput.files.length) {
-      result.nodesFile = nodesInput.files[0];
-      result.nodes = result.nodesFile.name;
-    } else {
-      result.nodes = "No file selected.";
-      result.nodesFile = null;
-    }
-  });
-  menu.addMonitor(result, "nodes");
-  menu.addButton({ title: "browse..." }).on("click", () => nodesInput.click());
-  const nodeEdgesInput = createFileInput2(() => {
-    if (nodeEdgesInput.files.length) {
-      result.nodeEdgesFile = nodeEdgesInput.files[0];
-      result.nodeEdges = result.nodeEdgesFile.name;
-    } else {
-      result.nodeEdges = "No file selected.";
-      result.nodeEdgesFile = null;
-    }
-  });
-  menu.addMonitor(result, "nodeEdges");
-  menu.addButton({ title: "browse..." }).on("click", () => nodeEdgesInput.click());
-  const loadBtn = menu.addButton({ title: "load" });
-  loadBtn.on("click", () => {
-    cb(result);
-  });
-}
-async function loadGraph(container, info) {
-  if (info.pointsFile) {
-    render(html`<canvas class="grafer_container"></canvas>`, container);
-    const canvas = document.querySelector(".grafer_container");
-    const layers = [];
-    const points2 = {
-      data: []
-    };
-    await parseJSONL2(info.pointsFile, (json) => {
-      points2.data.push(json);
-    });
-    const clusterBundleEdges = {
-      type: "ClusterBundle",
-      data: [],
-      options: {
-        alpha: 0.04,
-        nearDepth: 0.9
-      }
-    };
-    const clusterStraightEdges = {
-      type: "Straight",
-      data: [],
-      options: {
-        alpha: 0.04,
-        nearDepth: 0.9
-      },
-      mappings: {
-        source: (entry) => "sourceCluster" in entry ? entry.sourceCluster : entry.source,
-        target: (entry) => "targetCluster" in entry ? entry.targetCluster : entry.target
-      }
-    };
-    const clusterCurvedEdges = {
-      type: "CurvedPath",
-      data: [],
-      options: {
-        alpha: 0.04,
-        nearDepth: 0.9
-      }
-    };
-    let edges;
-    if (info.clusterEdgesMode === "bundle") {
-      edges = clusterBundleEdges;
-    } else if (info.clusterEdgesMode === "curved") {
-      edges = clusterCurvedEdges;
-    } else {
-      edges = clusterStraightEdges;
-    }
-    const clusterLayer = {
-      name: "Clusters",
-      labels: {
-        type: "RingLabel",
-        data: [],
-        mappings: {
-          background: () => false,
-          fontSize: () => 14,
-          padding: () => 0
-        },
-        options: {
-          visibilityThreshold: 160,
-          repeatLabel: -1,
-          repeatGap: 64
-        }
-      },
-      edges
-    };
-    layers.push(clusterLayer);
-    if (info.clustersFile) {
-      const nodes = clusterLayer.labels;
-      await parseJSONL2(info.clustersFile, (json) => {
-        nodes.data.push(Object.assign({}, json, {
-          color: 3
-        }));
-      });
-    }
-    if (info.clusterEdgesFile) {
-      const edges2 = clusterLayer.edges;
-      await parseJSONL2(info.clusterEdgesFile, (json) => {
-        edges2.data.push(Object.assign({}, json, {
-          sourceColor: 0,
-          targetColor: 0
-        }));
-      });
-    }
-    const nodeLayer = {
-      name: "Nodes",
-      nodes: {
-        type: "Circle",
-        data: []
-      },
-      edges: {
-        data: [],
-        options: {
-          alpha: 0.55,
-          nearDepth: 0.9
-        }
-      },
-      labels: {
-        type: "PointLabel",
-        data: [],
-        mappings: {
-          background: () => true,
-          fontSize: () => 12,
-          padding: () => [8, 5]
-        },
-        options: {
-          visibilityThreshold: 8,
-          labelPlacement: mod_exports7.labels.PointLabelPlacement.TOP,
-          renderBackground: true
-        }
-      }
-    };
-    layers.unshift(nodeLayer);
-    if (info.nodesFile) {
-      const nodes = nodeLayer.nodes;
-      await parseJSONL2(info.nodesFile, (json) => {
-        nodes.data.push(Object.assign({}, json, {
-          color: 1
-        }));
-      });
-      nodeLayer.labels.data = nodes.data;
-    }
-    if (info.nodeEdgesFile) {
-      const edges2 = nodeLayer.edges;
-      await parseJSONL2(info.nodeEdgesFile, (json) => {
-        edges2.data.push(Object.assign({}, json, {
-          sourceColor: 2,
-          targetColor: 2
-        }));
-      });
-    }
-    const colors2 = [
-      "#5e81ac",
-      "#d08770",
-      "#ebcb8b",
-      "#81a1c1"
-    ];
-    const controller = new GraferController(canvas, { points: points2, colors: colors2, layers });
-    new mod_exports12.DebugMenu(controller.viewport);
-  }
-}
-async function bundledEdgesLoader(container) {
-  renderMenu2(container, (result) => {
-    loadGraph(container, result);
-  });
-}
-
-// examples/src/aske/knowledeViewLoader.ts
-var import_tweakpane4 = __toModule(require_tweakpane());
-
-// examples/src/aske/convertDataToGraferV4.ts
-import alphaShape from "https://cdn.skypack.dev/alpha-shape";
-async function parseJSONL3(input, cb) {
-  const file = await DataFile.fromLocalSource(input);
-  const sizeOf16MB = 16 * 1024 * 1024;
-  const byteLength = await file.byteLength;
-  const decoder = new TextDecoder();
-  const lineBreak = "\n".charCodeAt(0);
-  for (let offset = 0; offset <= byteLength; offset += sizeOf16MB) {
-    const chunkEnd = Math.min(offset + sizeOf16MB, byteLength);
-    const chunk = await file.loadData(offset, chunkEnd);
-    const view = new DataView(chunk);
-    let start = 0;
-    for (let i = 0, n = chunk.byteLength; i < n; ++i) {
-      if (view.getUint8(i) === lineBreak || offset + i === byteLength) {
-        const statementBuffer = new Uint8Array(chunk, start, i - start);
-        start = i + 1;
-        const str6 = decoder.decode(statementBuffer);
-        const json = JSON.parse(str6);
-        cb(json);
-      }
-    }
-    if (start < chunk.byteLength) {
-      offset -= chunk.byteLength - start;
-    }
-  }
-}
-async function convertDataToGraferV4(info) {
-  let lineNumber;
-  let colorIndex = 0;
-  console.log("Loading points...");
-  const points2 = new Map();
-  lineNumber = 0;
-  await parseJSONL3(info.nodeLayoutFile, (json) => {
-    if (lineNumber++) {
-      points2.set(json.node_id, {
-        id: json.node_id,
-        x: json.coors[0] * info.positionScale,
-        y: json.coors[1] * info.positionScale,
-        z: 0,
-        radius: info.pointRadius
-      });
-    }
-  });
-  console.log("Loading groups...");
-  const groupLevels = [];
-  const centroids = new Map();
-  const groups = new Map();
-  lineNumber = 0;
-  await parseJSONL3(info.groupsFile, (json) => {
-    if (lineNumber++) {
-      const level = json.level;
-      while (level >= groupLevels.length) {
-        groupLevels.push([]);
-      }
-      groupLevels[level].push(json);
-      groups.set(json.id, json);
-      centroids.set(json.id, {
-        id: json.id,
-        point: json.node_id_centroid,
-        label: "",
-        color: colorIndex++,
-        level: json.level,
-        top: false
-      });
-    }
-  });
-  console.log("Loading node attributes...");
-  const noiseNodes = [];
-  const nodeLevelMap = new Map();
-  lineNumber = 0;
-  await parseJSONL3(info.nodeAttsFile, (json) => {
-    if (lineNumber++) {
-      const groupIDs = json.group_ids;
-      if (groupIDs) {
-        for (const groupID of groupIDs) {
-          const group = groups.get(groupID);
-          if (!group.computedChildren) {
-            group.computedChildren = [];
-          }
-          group.computedChildren.push(json.node_id);
-        }
-        nodeLevelMap.set(json.node_id, groups.get(groupIDs[groupIDs.length - 1]).level);
-      } else {
-        noiseNodes.push(json.node_id);
-        nodeLevelMap.set(json.node_id, -1);
-      }
-    }
-  });
-  console.log(`Sorting group levels: ${groupLevels.length}`);
-  for (let i = 0, n = groupLevels.length; i < n; ++i) {
-    console.log(`Level ${i}: ${groupLevels[i].length}`);
-    groupLevels[i].sort((a, b) => b.computedChildren.length - a.computedChildren.length);
-    const l = [];
-    for (const group of groupLevels[i]) {
-      l.push(group.computedChildren.length);
-      if (group.computedChildren.length > info.topGroupThreshold) {
-        centroids.get(group.id).top = true;
-        group.top = true;
-      } else {
-        group.top = false;
-      }
-    }
-    console.log(l);
-  }
-  console.log("Computing color indices...");
-  const nodeColors3 = new Map();
-  const groupColors = new Map();
-  for (const id of noiseNodes) {
-    nodeColors3.set(id, colorIndex);
-  }
-  for (let i = groupLevels.length - 1; i >= 0; --i) {
-    for (const group of groupLevels[i]) {
-      let colors2 = groupColors.get(group.id);
-      if (!colors2) {
-        colors2 = {
-          id: group.id,
-          level: i,
-          primary: ++colorIndex,
-          inherited: new Set(),
-          top: group.top
-        };
-        groupColors.set(group.id, colors2);
-      }
-      for (const nodeID3 of group.computedChildren) {
-        if (nodeColors3.has(nodeID3)) {
-          colors2.inherited.add(nodeColors3.get(nodeID3));
-        } else {
-          nodeColors3.set(nodeID3, colors2.primary);
-        }
-      }
-    }
-  }
-  for (const colors2 of groupColors.values()) {
-    colors2.inherited = Array.from(colors2.inherited);
-  }
-  console.log("Loading nodes...");
-  const nodes = [];
-  const nodeMap = new Map();
-  lineNumber = 0;
-  await parseJSONL3(info.nodesFile, (json) => {
-    if (lineNumber++) {
-      nodes.push({
-        id: json.id,
-        point: json.id,
-        color: nodeColors3.get(json.id),
-        level: nodeLevelMap.get(json.id)
-      });
-      nodeMap.set(json.id, json);
-    }
-  });
-  console.log("Computing labels...");
-  for (const group of groups.values()) {
-    const node = nodeMap.get(group.node_id_centroid);
-    const label = node.name.length > info.maxLabelLength + 3 ? `${node.name.substr(0, info.maxLabelLength)}...` : node.name;
-    centroids.get(group.id).label = label;
-  }
-  console.log("Computing alpha shapes...");
-  const shapes = [];
-  for (let i = 0, n = groupLevels.length; i < n; ++i) {
-    console.log(`Level ${i}...`);
-    console.log("0%");
-    for (let ii = 0, nn = groupLevels[i].length; ii < nn; ++ii) {
-      const group = groupLevels[i][ii];
-      const coors = [];
-      for (const node of group.computedChildren) {
-        const point = points2.get(node);
-        coors.push([point.x / info.positionScale, point.y / info.positionScale]);
-      }
-      const cells = alphaShape(info.alpha, coors);
-      for (const cell of cells) {
-        const cellPoints = [];
-        for (let i2 = 0, n2 = cell.length; i2 < n2; ++i2) {
-          const id = `s_${points2.size}_${n2}`;
-          points2.set(id, {
-            id,
-            x: coors[cell[i2]][0] * info.positionScale,
-            y: coors[cell[i2]][1] * info.positionScale,
-            z: 0,
-            radius: 1
-          });
-          cellPoints.push(id);
-        }
-        if (cellPoints.length > 2) {
-          throw `Cells with more than 2 points are not supported. ${cell.toString()}`;
-        } else {
-          shapes.push({
-            id: `s_${shapes.length}`,
-            source: cellPoints[0],
-            target: cellPoints[1],
-            sourceColor: nodeColors3.get(group.node_id_centroid),
-            targetColor: nodeColors3.get(group.node_id_centroid),
-            group: group.node_id_centroid,
-            level: i
-          });
-        }
-      }
-      console.log(`${Math.floor((ii + 1) / nn * 100)}%`);
-    }
-  }
-  console.log(shapes);
-  console.log(`TOTAL COLORS: ${colorIndex}`);
-  return {
-    points: [...points2.values()],
-    nodes,
-    shapes,
-    colors: [...groupColors.values()],
-    centroids: [...centroids.values()]
-  };
-}
-
-// examples/src/aske/knowledeViewLoader.ts
-var import_chroma_js3 = __toModule(require_chroma());
-function createFileInput3(cb) {
-  const input = document.createElement("input");
-  input.type = "file";
-  input.multiple = false;
-  input.addEventListener("change", cb);
-  return input;
-}
-function createFileMenu(menu, result, key) {
-  const input = createFileInput3(() => {
-    if (input.files.length) {
-      result[`${key}File`] = input.files[0];
-      result[key] = result[`${key}File`].name;
-    } else {
-      result[key] = "No file selected.";
-      result[`${key}File`] = null;
-    }
-  });
-  menu.addMonitor(result, key);
-  menu.addButton({ title: "browse..." }).on("click", () => input.click());
-}
-function renderMenu3(container, cb) {
-  render(html`<div id="menu" class="start_menu"></div>`, container);
-  const result = {
-    nodes: "No file selected.",
-    nodesFile: null,
-    nodeAtts: "No file selected.",
-    nodeAttsFile: null,
-    nodeLayout: "No file selected.",
-    nodeLayoutFile: null,
-    groups: "No file selected.",
-    groupsFile: null,
-    alpha: 18,
-    level: 0,
-    levelCount: 3,
-    maxLabelLength: 25,
-    topGroupThreshold: 500,
-    pointRadius: 20,
-    positionScale: 5e4
-  };
-  const menu = new import_tweakpane4.default({
-    title: "Grafer Loader",
-    container: document.querySelector("#menu")
-  });
-  createFileMenu(menu, result, "nodes");
-  menu.addSeparator();
-  createFileMenu(menu, result, "nodeAtts");
-  menu.addSeparator();
-  createFileMenu(menu, result, "nodeLayout");
-  menu.addSeparator();
-  createFileMenu(menu, result, "groups");
-  menu.addSeparator();
-  menu.addInput(result, "alpha");
-  menu.addSeparator();
-  menu.addInput(result, "level");
-  menu.addSeparator();
-  menu.addInput(result, "levelCount");
-  menu.addSeparator();
-  menu.addInput(result, "maxLabelLength");
-  menu.addSeparator();
-  menu.addInput(result, "topGroupThreshold");
-  menu.addSeparator();
-  menu.addInput(result, "pointRadius");
-  menu.addSeparator();
-  menu.addInput(result, "positionScale");
-  menu.addSeparator();
-  const loadBtn = menu.addButton({ title: "load" });
-  loadBtn.on("click", () => {
-    cb(result);
-  });
-}
-function getBasicLayer(name, nodeType, visibilityThreshold, pixelSizing = true) {
-  const data = [];
-  return {
-    name,
-    nodes: {
-      type: nodeType,
-      data,
-      mappings: {
-        radius: () => 100
-      },
-      options: {
-        pixelSizing,
-        nearDepth: 0.26,
-        farDepth: 0.5
-      }
-    },
-    labels: {
-      type: "PointLabel",
-      data,
-      mappings: {
-        background: () => true,
-        fontSize: () => 12,
-        padding: () => [8, 5]
-      },
-      options: {
-        visibilityThreshold,
-        labelPlacement: mod_exports7.labels.PointLabelPlacement.CENTER,
-        renderBackground: true,
-        nearDepth: 0,
-        farDepth: 0.25
-      }
-    }
-  };
-}
-function makeCentroidLayers(layers, data, levels = 4) {
-  const centroidLayersTop = [];
-  const centroidLayers = [];
-  for (let i = 0; i < levels; ++i) {
-    centroidLayersTop.push(getBasicLayer(`Centroids_top_${i}`, "Ring", 0.01));
-    centroidLayers.push(getBasicLayer(`Centroids_${i}`, "Ring", 0.1));
-  }
-  const centroidMap = new Map();
-  for (const centroid of data) {
-    const nodes = centroid.top ? centroidLayersTop[centroid.level].nodes : centroidLayers[centroid.level].nodes;
-    nodes.data.push(centroid);
-    centroidMap.set(centroid.id, centroid);
-  }
-  layers.push(...centroidLayersTop, ...centroidLayers);
-  return centroidMap;
-}
-function computeColors(colors2, colorMap, colorLevels, centroidMap, levelNumber = 0) {
-  const level = colorLevels.get(levelNumber);
-  const topStep = Math.floor(360 / level.top.length);
-  const lowStep = Math.floor(topStep / Math.ceil(level.low.length / level.top.length + 1));
-  for (let i = 0, n = level.top.length; i < n; ++i) {
-    const info = level.top[i];
-    const color = import_chroma_js3.default.hsl(topStep * i, 1, 0.5).hex();
-    const centroid = centroidMap.get(info.id);
-    colors2[centroid.color] = color;
-    colors2[info.primary] = color;
-    for (const childID of info.inherited) {
-      colors2[childID] = color;
-    }
-  }
-  for (let i = 0, n = level.low.length; i < n; ++i) {
-    const info = level.low[i];
-    const color = import_chroma_js3.default.hsl(lowStep * (i + 1), 1, 0.5).hex();
-    const centroid = centroidMap.get(info.id);
-    colors2[centroid.color] = color;
-    colors2[info.primary] = color;
-    for (const childID of info.inherited) {
-      colors2[childID] = color;
-    }
-  }
-  const gray = "#a0a0a0";
-  for (let i = 0, n = colors2.length; i < n; ++i) {
-    if (colors2[i] === null) {
-      colors2[i] = gray;
-    }
-  }
-}
-function loadLevelLayers(nodes, shapes) {
-  const levelMap = new Map();
-  for (const node of nodes) {
-    if (!levelMap.has(node.level)) {
-      levelMap.set(node.level, {
-        name: `Level_${node.level === -1 ? "noise" : node.level}`,
-        nodes: {
-          type: "Circle",
-          data: [],
-          options: {
-            pixelSizing: true
-          }
-        },
-        edges: {
-          data: [],
-          options: {
-            alpha: 0.55,
-            nearDepth: 0.9
-          }
-        }
-      });
-    }
-    levelMap.get(node.level).nodes.data.push(node);
-  }
-  for (const shape of shapes) {
-    if (!levelMap.has(shape.level)) {
-      levelMap.set(shape.level, {
-        name: `Level_${shape.level === -1 ? "noise" : shape.level}`,
-        nodes: {
-          type: "Circle",
-          data: [],
-          options: {
-            pixelSizing: true
-          }
-        },
-        edges: {
-          data: [],
-          options: {
-            alpha: 0.55,
-            nearDepth: 0.9
-          }
-        }
-      });
-    }
-    levelMap.get(shape.level).edges.data.push(shape);
-  }
-  return levelMap.values();
-}
-async function loadGraph2(container, info) {
-  if (!info.nodesFile || !info.nodeAttsFile || !info.nodeLayoutFile || !info.groupsFile) {
-    return;
-  }
-  const data = await convertDataToGraferV4(info);
-  render(html`<canvas class="grafer_container"></canvas>`, container);
-  const canvas = document.querySelector(".grafer_container");
-  const layers = [];
-  const colors2 = [];
-  const colorMap = new Map();
-  const colorLevels = new Map();
-  for (const color of data.colors) {
-    if (colors2.length <= color.primary) {
-      for (let i = colors2.length; i <= color.primary; ++i) {
-        colors2.push(null);
-      }
-    }
-    colorMap.set(color.id, color);
-    let colorLevel = colorLevels.get(color.level);
-    if (!colorLevel) {
-      colorLevel = {
-        top: [],
-        low: []
-      };
-      colorLevels.set(color.level, colorLevel);
-    }
-    if (color.top) {
-      colorLevel.top.push(color);
-    } else {
-      colorLevel.low.push(color);
-    }
-  }
-  const points2 = {
-    data: data.points
-  };
-  layers.push(...loadLevelLayers(data.nodes, data.shapes));
-  const centroidMap = makeCentroidLayers(layers, data.centroids, info.levelCount);
-  if (colorMap.size) {
-    computeColors(colors2, colorMap, colorLevels, centroidMap, info.level);
-  }
-  const controller = new GraferController(canvas, { points: points2, colors: colors2, layers }, {
-    viewport: {
-      colorRegistryType: mod_exports3.colors.ColorRegistryType.indexed,
-      colorRegistryCapacity: colors2.length
-    }
-  });
-  const graphLayers = controller.viewport.graph.layers;
-  for (const layer of graphLayers) {
-    const components = layer.name.split("_");
-    if (components[0] === "Centroids") {
-      const level = parseInt(components[components.length - 1]);
-      if (level !== info.level) {
-        layer.enabled = false;
-      }
-    }
-  }
-  new mod_exports12.DebugMenu(controller.viewport);
-}
-async function knowledgeViewLoader(container) {
-  renderMenu3(container, (result) => {
-    loadGraph2(container, result);
-  });
-}
-
 // examples/src/HelpElements.ts
 var MouseInteractions = class extends LitElement {
   static get styles() {
@@ -22355,12 +22222,12 @@ MouseInteractions = __decorateClass([
 
 // examples/src/mod.ts
 var examples = {
-  basic: mod_exports15,
-  data: mod_exports16,
-  nodes: mod_exports17,
-  edges: mod_exports18,
-  labels: mod_exports19,
-  aske: mod_exports20,
+  basic: mod_exports13,
+  data: mod_exports14,
+  nodes: mod_exports15,
+  edges: mod_exports16,
+  labels: mod_exports17,
+  aske: mod_exports18,
   playground
 };
 function getExample(examples2, path) {
