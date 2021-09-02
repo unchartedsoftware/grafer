@@ -1,7 +1,7 @@
 import {html, render} from 'lit-html';
-import {GraferController} from '../../../../src/mod';
+import {GraferController, UX} from '../../../src/mod';
 
-export async function nodeID(container: HTMLElement): Promise<void> {
+export async function picking(container: HTMLElement): Promise<void> {
     render(html`<canvas class="grafer_container"></canvas><mouse-interactions></mouse-interactions>`, container);
     const canvas = document.querySelector('.grafer_container') as HTMLCanvasElement;
 
@@ -27,8 +27,17 @@ export async function nodeID(container: HTMLElement): Promise<void> {
     };
 
     const layers = [
-        { nodes, edges },
+        // let's name the layer
+        { name: 'Awesomeness', nodes, edges },
     ];
 
-    new GraferController(canvas, { layers });
+    const printEvent = (event, detail): void => {
+        // eslint-disable-next-line
+        console.log(`${event.description} => layer:"${detail.layer}" ${detail.type}:"${detail.id}"`);
+    };
+
+    const controller = new GraferController(canvas, { layers });
+    controller.on(UX.picking.PickingManager.events.hoverOn, printEvent);
+    controller.on(UX.picking.PickingManager.events.hoverOff, printEvent);
+    controller.on(UX.picking.PickingManager.events.click, printEvent);
 }

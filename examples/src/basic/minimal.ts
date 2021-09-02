@@ -1,13 +1,16 @@
 import {html, render} from 'lit-html';
-import '../../../../src/grafer/GraferView';
+import {GraferController} from '../../../src/mod';
 
-export async function nodeRadius(container: HTMLElement): Promise<void> {
+export async function minimal(container: HTMLElement): Promise<void> {
+    render(html`<canvas class="grafer_container"></canvas><mouse-interactions></mouse-interactions>`, container);
+    const canvas = document.querySelector('.grafer_container') as HTMLCanvasElement;
+
     const nodes = {
         data: [
             { x: -8.6, y: 5.0 },
             { x: 8.6, y: 5.0 },
             { x: 0.0, y: -10.0 },
-            { x: 0.0, y: 0.0, color: 'red', radius: 2.5 },
+            { x: 0.0, y: 0.0 },
         ],
     };
 
@@ -27,5 +30,5 @@ export async function nodeRadius(container: HTMLElement): Promise<void> {
         { nodes, edges },
     ];
 
-    render(html`<grafer-view class="grafer_container" .layers="${layers}"></grafer-view><mouse-interactions></mouse-interactions>`, container);
+    new GraferController(canvas, { layers });
 }

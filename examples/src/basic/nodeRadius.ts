@@ -1,5 +1,5 @@
 import {html, render} from 'lit-html';
-import {GraferController} from '../../../../src/mod';
+import {GraferController} from '../../../src/mod';
 
 export async function nodeRadius(container: HTMLElement): Promise<void> {
     render(html`<canvas class="grafer_container"></canvas><mouse-interactions></mouse-interactions>`, container);

@@ -1,2 +1,7 @@
-export * as html from './html/mod';
-export * as js from './js/mod';
+export * from './minimal';
+export * from './minimal3D';
+export * from './nodeColors';
+export * from './edgeColors';
+export * from './nodeRadius';
+export * from './nodeID';
+export * from './picking';

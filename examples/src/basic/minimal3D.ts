@@ -1,17 +1,17 @@
 import {html, render} from 'lit-html';
-import {GraferController} from '../../../../src/mod';
+import {GraferController} from '../../../src/mod';
 
-export async function nodeColors(container: HTMLElement): Promise<void> {
+export async function minimal3D(container: HTMLElement): Promise<void> {
     render(html`<canvas class="grafer_container"></canvas><mouse-interactions></mouse-interactions>`, container);
     const canvas = document.querySelector('.grafer_container') as HTMLCanvasElement;
 
     const nodes = {
         data: [
-            { x: -8.6, y: 5.0, z: 5.0, color: 'limegreen' },
-            { x: 8.6, y: 5.0, z: 5.0, color: '#af3a6f' },
-            { x: 0.0, y: -10.0, z: 0.0, color: [128, 230, 255] },
-            { x: 0.0, y: 5.0, z: -8.6, color: 'rgb(40, 40, 189)' },
-            { x: 0.0, y: 0.0, z: 0.0, color: 'yellow' },
+            { x: -8.6, y: 5.0, z: 5.0 },
+            { x: 8.6, y: 5.0, z: 5.0 },
+            { x: 0.0, y: -10.0, z: 0.0 },
+            { x: 0.0, y: 5.0, z: -8.6 },
+            { x: 0.0, y: 0.0, z: 0.0 },
         ],
     };
 
