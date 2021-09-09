@@ -36,6 +36,7 @@ interface EventEntry {
 
 export interface MouseState {
     valid: boolean;
+    pixelRatio: number;
     clientCoords: vec2;
     canvasCoords: vec2;
     glCoords: vec2;
@@ -86,6 +87,7 @@ export class MouseHandler extends EventEmitter.mixin(UXModule) {
 
         this.state = {
             valid: false,
+            pixelRatio: this.pixelRatio,
             clientCoords: vec2.create(),
             canvasCoords: vec2.create(),
             glCoords: vec2.create(),
@@ -104,6 +106,7 @@ export class MouseHandler extends EventEmitter.mixin(UXModule) {
 
         this.newState = {
             valid: false,
+            pixelRatio: this.pixelRatio,
             clientCoords: vec2.create(),
             canvasCoords: vec2.create(),
             glCoords: vec2.create(),
@@ -134,6 +137,8 @@ export class MouseHandler extends EventEmitter.mixin(UXModule) {
     public resize(rect: DOMRect, pixelRatio: number): void {
         this.rect = rect;
         this.pixelRatio = pixelRatio;
+        this.state.pixelRatio = this.pixelRatio;
+        this.newState.pixelRatio = this.pixelRatio;
         this.syntheticUpdate(kEvents.move);
     }
 
