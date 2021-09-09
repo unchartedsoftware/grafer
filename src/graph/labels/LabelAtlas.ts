@@ -161,7 +161,7 @@ export class LabelAtlas {
 
     protected renderCharTexture(char: string, size: number, context: CanvasRenderingContext2D, canvas: HTMLCanvasElement, font: string, bold: boolean): ImageData {
         const pixelRatio = this.labelPixelRatio;
-        const fontString = `${bold ? 'bold ' : ''}${size * pixelRatio}px "${font}"`;
+        const fontString = `${bold ? 'bold ' : ''}${size * pixelRatio}px ${font}`;
 
         if (!this.spaceSizeMap.has(size)) {
             context.font = fontString;
