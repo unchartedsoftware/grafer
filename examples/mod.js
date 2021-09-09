@@ -15447,6 +15447,7 @@ var MouseHandler = class extends EventEmitter.mixin(UXModule) {
     this.pixelRatio = pixelRatio;
     this.state = {
       valid: false,
+      pixelRatio: this.pixelRatio,
       clientCoords: vec2_exports.create(),
       canvasCoords: vec2_exports.create(),
       glCoords: vec2_exports.create(),
@@ -15464,6 +15465,7 @@ var MouseHandler = class extends EventEmitter.mixin(UXModule) {
     };
     this.newState = {
       valid: false,
+      pixelRatio: this.pixelRatio,
       clientCoords: vec2_exports.create(),
       canvasCoords: vec2_exports.create(),
       glCoords: vec2_exports.create(),
@@ -15493,6 +15495,8 @@ var MouseHandler = class extends EventEmitter.mixin(UXModule) {
   resize(rect, pixelRatio) {
     this.rect = rect;
     this.pixelRatio = pixelRatio;
+    this.state.pixelRatio = this.pixelRatio;
+    this.newState.pixelRatio = this.pixelRatio;
     this.syntheticUpdate(kEvents.move);
   }
   hookEvents() {
@@ -18948,7 +18952,7 @@ var Layer = class extends EventEmitter {
 var DragTranslate = class extends DragModule {
   handleMouse(event, state, delta) {
     if (state.buttons[this.button]) {
-      this.viewport.graph.translate([delta[0], -delta[1], 0]);
+      this.viewport.graph.translate([delta[0] * state.pixelRatio, -delta[1] * state.pixelRatio, 0]);
       this.viewport.render();
     }
   }
@@ -18957,7 +18961,7 @@ var DragTranslate = class extends DragModule {
 // src/UX/mouse/scroll/ScrollScale.ts
 var ScrollScale = class extends ScrollModule {
   handleMouse(event, state, delta) {
-    const speed = Math.max(1.001, this.speed * Math.abs(delta) * 0.25);
+    const speed = 1 + this.speed * Math.abs(delta) * 0.05;
     const oldScale = this.viewport.graph.scale;
     if (delta > 0) {
       this.viewport.graph.scale = this.viewport.graph.scale / speed;
