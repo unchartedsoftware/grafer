@@ -4,7 +4,7 @@ import {ScrollModule} from './ScrollModule';
 
 export class ScrollScale extends ScrollModule {
     protected handleMouse(event: symbol, state: MouseState, delta: number): void {
-        const speed = Math.max(1.001, this.speed * Math.abs(delta) * 0.25);
+        const speed = 1.0 + this.speed * Math.abs(delta) * 0.05;
         const oldScale = this.viewport.graph.scale;
 
         if (delta > 0) {
