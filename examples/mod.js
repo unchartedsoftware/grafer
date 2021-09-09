@@ -17715,7 +17715,7 @@ var LabelAtlas = class {
   }
   renderCharTexture(char, size, context, canvas, font, bold) {
     const pixelRatio = this.labelPixelRatio;
-    const fontString = `${bold ? "bold " : ""}${size * pixelRatio}px "${font}"`;
+    const fontString = `${bold ? "bold " : ""}${size * pixelRatio}px ${font}`;
     if (!this.spaceSizeMap.has(size)) {
       context.font = fontString;
       context.imageSmoothingEnabled = false;
