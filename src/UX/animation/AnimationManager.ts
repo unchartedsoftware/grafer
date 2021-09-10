@@ -33,7 +33,8 @@ export class AnimationManager {
         });
 
         if (needsAnimationFrame) {
-            requestAnimationFrame(() => this.animationFrame());
+            const time = performance.now();
+            requestAnimationFrame(() => this.animationFrame(time));
         }
     }
 
@@ -67,7 +68,7 @@ export class AnimationManager {
         }
 
         if (this.targets.size !== 0) {
-            requestAnimationFrame(() => this.animationFrame());
+            requestAnimationFrame(() => this.animationFrame(time));
         }
     }
 }
