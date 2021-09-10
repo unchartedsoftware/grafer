@@ -8,7 +8,6 @@ interface AnimationEntry {
     cb: AnimationFrameCallback;
     easing: Easing;
     duration: number;
-    lastUpdate: number;
     currentTime: number;
 }
 
@@ -30,8 +29,7 @@ export class AnimationManager {
             cb,
             easing,
             duration,
-            lastUpdate: performance.now(),
-            currentTime: 0,
+            currentTime: null,
         });
 
         if (needsAnimationFrame) {
@@ -39,12 +37,17 @@ export class AnimationManager {
         }
     }
 
-    private animationFrame(): void {
+    private animationFrame(last): void {
         const time = performance.now();
+        const dt = time - last;
         for (const [target, animations] of this.targets) {
             for (const [property, entry] of animations) {
-                entry.currentTime += time - entry.lastUpdate;
-                entry.lastUpdate = time;
+                if (entry.currentTime === null) {
+                    entry.currentTime = 0;
+                    continue;
+                }
+
+                entry.currentTime += dt;
 
                 const progress = Math.min(entry.currentTime / entry.duration, 1);
                 entry.interpolator.setPropertyValue(entry.easing(progress));
