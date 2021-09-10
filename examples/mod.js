@@ -16015,6 +16015,9 @@ var Graph = class extends EventEmitter.mixin(GraphPoints) {
   get translation() {
     return this._translation;
   }
+  set translation(value) {
+    vec3_exports.set(this._translation, value[0], value[1], value[2]);
+  }
   get scale() {
     return this._scale[0];
   }
@@ -18667,19 +18670,23 @@ var AnimationManager = class {
       cb,
       easing,
       duration,
-      lastUpdate: performance.now(),
-      currentTime: 0
+      currentTime: null
     });
     if (needsAnimationFrame) {
-      requestAnimationFrame(() => this.animationFrame());
+      const time = performance.now();
+      requestAnimationFrame(() => this.animationFrame(time));
     }
   }
-  animationFrame() {
+  animationFrame(last) {
     const time = performance.now();
+    const dt = time - last;
     for (const [target, animations] of this.targets) {
       for (const [property, entry] of animations) {
-        entry.currentTime += time - entry.lastUpdate;
-        entry.lastUpdate = time;
+        if (entry.currentTime === null) {
+          entry.currentTime = 0;
+          continue;
+        }
+        entry.currentTime += dt;
         const progress = Math.min(entry.currentTime / entry.duration, 1);
         entry.interpolator.setPropertyValue(entry.easing(progress));
         if (entry.cb) {
@@ -18694,7 +18701,7 @@ var AnimationManager = class {
       }
     }
     if (this.targets.size !== 0) {
-      requestAnimationFrame(() => this.animationFrame());
+      requestAnimationFrame(() => this.animationFrame(time));
     }
   }
 };
