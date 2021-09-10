@@ -42,6 +42,9 @@ export class Graph extends EventEmitter.mixin(GraphPoints) implements Renderable
     public get translation(): vec3 {
         return this._translation;
     }
+    public set translation(value: vec3) {
+        vec3.set(this._translation, value[0], value[1], value[2]);
+    }
 
     private readonly _scale: vec3;
     public get scale(): number {
