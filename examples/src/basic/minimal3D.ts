@@ -1,5 +1,5 @@
 import {html, render} from 'lit-html';
-import { CameraMode } from 'src/renderer/Camera';
+import {CameraMode} from 'src/renderer/mod';
 import {GraferController} from '../../../src/mod';
 
 export async function minimal3D(container: HTMLElement): Promise<void> {

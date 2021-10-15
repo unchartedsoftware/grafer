@@ -1,4 +1,5 @@
 import {html, render} from 'lit-html';
+import {CameraMode} from 'src/renderer/mod';
 import {GraferController} from '../../../src/mod';
 
 export async function nodeColors(container: HTMLElement): Promise<void> {
@@ -37,5 +38,11 @@ export async function nodeColors(container: HTMLElement): Promise<void> {
         { nodes, edges },
     ];
 
-    new GraferController(canvas, { layers });
+    new GraferController(canvas, { layers }, {
+        viewport: {
+            camera: {
+                mode: CameraMode['3D'],
+            },
+        },
+    });
 }
