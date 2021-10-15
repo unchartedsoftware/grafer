@@ -1,5 +1,5 @@
 import {html, render} from 'lit-html';
-import {CameraMode} from 'src/renderer/mod';
+import {CameraMode} from '../../../src/renderer/mod';
 import {GraferController} from '../../../src/mod';
 
 export async function nodeColors(container: HTMLElement): Promise<void> {
