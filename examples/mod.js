@@ -19642,7 +19642,13 @@ async function minimal3D(container) {
   const layers = [
     { nodes, edges }
   ];
-  new GraferController(canvas, { layers });
+  new GraferController(canvas, { layers }, {
+    viewport: {
+      camera: {
+        mode: CameraMode["3D"]
+      }
+    }
+  });
 }
 
 // examples/src/basic/nodeColors.ts
@@ -19675,7 +19681,13 @@ async function nodeColors(container) {
   const layers = [
     { nodes, edges }
   ];
-  new GraferController(canvas, { layers });
+  new GraferController(canvas, { layers }, {
+    viewport: {
+      camera: {
+        mode: CameraMode["3D"]
+      }
+    }
+  });
 }
 
 // examples/src/basic/edgeColors.ts
