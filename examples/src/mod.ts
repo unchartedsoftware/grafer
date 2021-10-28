@@ -5,6 +5,7 @@ import * as data from './data/mod';
 import * as nodes from './nodes/mod';
 import * as edges from './edges/mod';
 import * as labels from './labels/mod';
+import * as UX from './UX/mod';
 import * as aske from './aske/mod';
 import './HelpElements';
 
@@ -14,6 +15,7 @@ const examples = {
     nodes,
     edges,
     labels,
+    UX,
     aske,
     playground,
 };
