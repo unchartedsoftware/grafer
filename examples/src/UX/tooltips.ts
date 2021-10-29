@@ -104,11 +104,12 @@ export async function tooltips(container: HTMLElement): Promise<void> {
             .tooltiptext {
                 visibility: hidden;
                 width: 120px;
-                background-color: orange;
+                background-color: hsl(0, 0.0%, 92.5%);
                 color: black;
                 text-align: center;
                 padding: 5px 0;
                 border-radius: 6px;
+                border: 3px solid hsl(224, 6.4%, 66.1%);
 
                 /* Position the tooltip text - see examples below! */
                 position: absolute;
