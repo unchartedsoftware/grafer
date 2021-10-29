@@ -7304,7 +7304,7 @@ var require_chroma = __commonJS({
       var screen = function(a, b) {
         return 255 * (1 - (1 - a / 255) * (1 - b / 255));
       };
-      var overlay = function(a, b) {
+      var overlay2 = function(a, b) {
         return b < 128 ? 2 * a * b / 255 : 255 * (1 - 2 * (1 - a / 255) * (1 - b / 255));
       };
       var burn = function(a, b) {
@@ -7320,7 +7320,7 @@ var require_chroma = __commonJS({
       blend.normal = blend_f(each(normal));
       blend.multiply = blend_f(each(multiply6));
       blend.screen = blend_f(each(screen));
-      blend.overlay = blend_f(each(overlay));
+      blend.overlay = blend_f(each(overlay2));
       blend.darken = blend_f(each(darken$1));
       blend.lighten = blend_f(each(lighten));
       blend.dodge = blend_f(each(dodge));
@@ -19576,13 +19576,11 @@ async function playground(container) {
 var mod_exports13 = {};
 __export(mod_exports13, {
   edgeColors: () => edgeColors,
-  embedded: () => embedded,
   minimal: () => minimal,
   minimal3D: () => minimal3D,
   nodeColors: () => nodeColors,
   nodeID: () => nodeID,
-  nodeRadius: () => nodeRadius,
-  picking: () => picking
+  nodeRadius: () => nodeRadius
 });
 
 // examples/src/basic/minimal.ts
@@ -19773,139 +19771,6 @@ async function nodeID(container) {
     { nodes, edges }
   ];
   new GraferController(canvas, { layers });
-}
-
-// examples/src/basic/picking.ts
-async function picking(container) {
-  render(html`<canvas class="grafer_container"></canvas><mouse-interactions></mouse-interactions>`, container);
-  const canvas = document.querySelector(".grafer_container");
-  const nodes = {
-    data: [
-      { id: "left", x: -8.6, y: 5 },
-      { id: "right", x: 8.6, y: 5 },
-      { id: "bottom", x: 0, y: -10 },
-      { id: "center", x: 0, y: 0 }
-    ]
-  };
-  const edges = {
-    data: [
-      { source: "left", target: "right" },
-      { source: "right", target: "bottom" },
-      { source: "bottom", target: "left" },
-      { source: "center", target: "left" },
-      { source: "center", target: "right" },
-      { source: "center", target: "bottom" }
-    ]
-  };
-  const layers = [
-    { name: "Awesomeness", nodes, edges }
-  ];
-  const printEvent = (event, detail) => {
-    console.log(`${event.description} => layer:"${detail.layer}" ${detail.type}:"${detail.id}"`);
-  };
-  const controller = new GraferController(canvas, { layers });
-  controller.on(mod_exports12.picking.PickingManager.events.hoverOn, printEvent);
-  controller.on(mod_exports12.picking.PickingManager.events.hoverOff, printEvent);
-  controller.on(mod_exports12.picking.PickingManager.events.click, printEvent);
-}
-
-// examples/src/basic/embedded.ts
-async function embedded(container) {
-  render(html`
-        <style>
-            .wrapper {
-                display: grid;
-                grid-template-columns: 200px minmax(0, 1fr) 150px;
-                grid-template-rows: 4rem minmax(0, 1fr) 5rem;
-                height: 100%;
-                width: 100%;
-            }
-            .grafer_container {
-                width: 100%;
-                height: 100%;
-            }
-            header {
-                grid-column: 1 / -1;
-            }
-            nav {
-                grid-column: 1;
-            }
-            main {
-                grid-column: 2 / -2;
-            }
-            aside {
-                grid-column: -2;
-            }
-            footer {
-                grid-column: 1 / -1;
-            }
-
-            /* Styling */
-            header, nav, aside, main, footer {
-                border: 3px solid;
-            }
-            header {
-                border-color: hsl(45deg 100% 50%);
-                background-color: hsl(45deg 100% 50% / 0.2);
-            }
-            main {
-                border-color: hsl(220deg 100% 50%);
-                background-color: hsl(220deg 100% 50% / 0.2);
-            }
-            nav {
-                border-color: hsl(170deg 100% 35%);
-                background-color: hsl(170deg 100% 35% / 0.2);
-            }
-            aside {
-                border-color: hsl(300deg 100% 45%);
-                background-color: hsl(300deg 100% 45% / 0.2);
-            }
-            footer {
-                border-color: hsl(350deg 100% 60%);
-                background-color: hsl(350deg 100% 60% / 0.2);
-            }
-        </style>
-
-        <div class="wrapper">
-            <header></header>
-            <nav></nav>
-            <main>
-                <canvas class="grafer_container"></canvas>
-                <mouse-interactions></mouse-interactions>
-            </main>
-            <aside></aside>
-            <footer></footer>
-        </div>
-        `, container);
-  const canvas = document.querySelector(".grafer_container");
-  const nodes = {
-    data: [
-      { id: "left", x: -8.6, y: 5 },
-      { id: "right", x: 8.6, y: 5 },
-      { id: "bottom", x: 0, y: -10 },
-      { id: "center", x: 0, y: 0 }
-    ]
-  };
-  const edges = {
-    data: [
-      { source: "left", target: "right" },
-      { source: "right", target: "bottom" },
-      { source: "bottom", target: "left" },
-      { source: "center", target: "left" },
-      { source: "center", target: "right" },
-      { source: "center", target: "bottom" }
-    ]
-  };
-  const layers = [
-    { name: "Awesomeness", nodes, edges }
-  ];
-  const printEvent = (event, detail) => {
-    console.log(`${event.description} => layer:"${detail.layer}" ${detail.type}:"${detail.id}"`);
-  };
-  const controller = new GraferController(canvas, { layers });
-  controller.on(mod_exports12.picking.PickingManager.events.hoverOn, printEvent);
-  controller.on(mod_exports12.picking.PickingManager.events.hoverOff, printEvent);
-  controller.on(mod_exports12.picking.PickingManager.events.click, printEvent);
 }
 
 // examples/src/data/mod.ts
@@ -20911,9 +20776,499 @@ async function ringLabel(container) {
   new GraferController(canvas, { colors: colors2, layers });
 }
 
-// examples/src/aske/mod.ts
+// examples/src/UX/mod.ts
 var mod_exports18 = {};
 __export(mod_exports18, {
+  embedded: () => embedded,
+  overlay: () => overlay,
+  picking: () => picking,
+  tooltips: () => tooltips
+});
+
+// examples/src/UX/picking.ts
+async function picking(container) {
+  render(html`<canvas class="grafer_container"></canvas><mouse-interactions></mouse-interactions>`, container);
+  const canvas = document.querySelector(".grafer_container");
+  const nodes = {
+    data: [
+      { id: "left", x: -8.6, y: 5 },
+      { id: "right", x: 8.6, y: 5 },
+      { id: "bottom", x: 0, y: -10 },
+      { id: "center", x: 0, y: 0 }
+    ]
+  };
+  const edges = {
+    data: [
+      { source: "left", target: "right" },
+      { source: "right", target: "bottom" },
+      { source: "bottom", target: "left" },
+      { source: "center", target: "left" },
+      { source: "center", target: "right" },
+      { source: "center", target: "bottom" }
+    ]
+  };
+  const layers = [
+    { name: "Awesomeness", nodes, edges }
+  ];
+  const printEvent = (event, detail) => {
+    console.log(`${event.description} => layer:"${detail.layer}" ${detail.type}:"${detail.id}"`);
+  };
+  const controller = new GraferController(canvas, { layers });
+  controller.on(mod_exports12.picking.PickingManager.events.hoverOn, printEvent);
+  controller.on(mod_exports12.picking.PickingManager.events.hoverOff, printEvent);
+  controller.on(mod_exports12.picking.PickingManager.events.click, printEvent);
+}
+
+// examples/src/UX/embedded.ts
+var WINDOW_DEVICE_PIXEL_RATIO = window.devicePixelRatio;
+function worldToPixel(controller, position) {
+  const { camera } = controller.viewport;
+  const renderMatrix = mat4_exports.mul(mat4_exports.create(), camera.projectionMatrix, camera.viewMatrix);
+  mat4_exports.mul(renderMatrix, renderMatrix, controller.viewport.graph.matrix);
+  const projected = vec4_exports.set(vec4_exports.create(), position[0], position[1], position[2], 1);
+  vec4_exports.transformMat4(projected, projected, renderMatrix);
+  const { size } = controller.viewport;
+  const x = projected[0] / projected[3] * size[0] * 0.5 + size[0] * 0.5;
+  const y = projected[1] / projected[3] * size[1] * 0.5 + size[1] * 0.5;
+  return vec2_exports.set(vec2_exports.create(), x, y);
+}
+async function embedded(container) {
+  render(html`
+        <style>
+            .overlay_container {
+                width: 100%;
+                height: 100%;
+                position: absolute;
+                top: 0;
+                left: 0;
+                pointer-events: none;
+            }
+            .wrapper {
+                display: grid;
+                grid-template-columns: 200px minmax(0, 1fr) 150px;
+                grid-template-rows: 4rem minmax(0, 1fr) 5rem;
+                height: 100%;
+                width: 100%;
+            }
+            .grafer_container {
+                width: 100%;
+                height: 100%;
+            }
+            header {
+                grid-column: 1 / -1;
+            }
+            nav {
+                grid-column: 1;
+            }
+            main {
+                grid-column: 2 / -2;
+            }
+            aside {
+                grid-column: -2;
+            }
+            footer {
+                grid-column: 1 / -1;
+            }
+
+            /* Styling */
+            header, nav, aside, main, footer {
+                border: 3px solid;
+            }
+            header {
+                border-color: hsl(45deg 100% 50%);
+                background-color: hsl(45deg 100% 50% / 0.2);
+            }
+            main {
+                border-color: hsl(220deg 100% 50%);
+                background-color: hsl(220deg 100% 50% / 0.2);
+            }
+            nav {
+                border-color: hsl(170deg 100% 35%);
+                background-color: hsl(170deg 100% 35% / 0.2);
+            }
+            aside {
+                border-color: hsl(300deg 100% 45%);
+                background-color: hsl(300deg 100% 45% / 0.2);
+            }
+            footer {
+                border-color: hsl(350deg 100% 60%);
+                background-color: hsl(350deg 100% 60% / 0.2);
+            }
+        </style>
+
+        <div class="wrapper">
+            <header></header>
+            <nav></nav>
+            <main>
+                <canvas class="grafer_container"></canvas>
+                <mouse-interactions></mouse-interactions>
+                <canvas class="overlay_container"></canvas>
+            </main>
+            <aside></aside>
+            <footer></footer>
+        </div>
+        `, container);
+  const canvas = document.querySelector(".grafer_container");
+  const nodes = {
+    data: [
+      { id: 0, x: -8.6, y: 5 },
+      { id: 1, x: 8.6, y: 5 },
+      { id: 2, x: 0, y: -10 },
+      { id: 3, x: 0, y: 0 }
+    ]
+  };
+  const edges = {
+    data: [
+      { source: "left", target: "right" },
+      { source: "right", target: "bottom" },
+      { source: "bottom", target: "left" },
+      { source: "center", target: "left" },
+      { source: "center", target: "right" },
+      { source: "center", target: "bottom" }
+    ]
+  };
+  const layers = [
+    { name: "Awesomeness", nodes, edges }
+  ];
+  const printEventFactory = (controller2, ctx2) => {
+    return (event, detail) => {
+      console.log(`${event.description} => layer:"${detail.layer}" ${detail.type}:"${detail.id}"`);
+      const point = controller2.viewport.graph.getPointByID(detail.id);
+      const pxPoint = worldToPixel(controller2, point);
+      const bb = controller2.viewport.canvas.getBoundingClientRect();
+      const rect2 = ctx2.canvas.getBoundingClientRect();
+      ctx2.canvas.width = rect2.width * WINDOW_DEVICE_PIXEL_RATIO;
+      ctx2.canvas.height = rect2.height * WINDOW_DEVICE_PIXEL_RATIO;
+      ctx2.clearRect(0, 0, ctx2.canvas.width * WINDOW_DEVICE_PIXEL_RATIO, ctx2.canvas.height * WINDOW_DEVICE_PIXEL_RATIO);
+      ctx2.beginPath();
+      ctx2.arc(bb.left * WINDOW_DEVICE_PIXEL_RATIO + pxPoint[0], bb.bottom * WINDOW_DEVICE_PIXEL_RATIO - pxPoint[1], 10, 0, 2 * Math.PI);
+      ctx2.fillStyle = "#" + Math.floor(Math.random() * 16777215).toString(16);
+      ctx2.fill();
+      ctx2.stroke();
+    };
+  };
+  const canvasDraw = document.querySelector(".overlay_container");
+  const rect = canvasDraw.getBoundingClientRect();
+  canvasDraw.width = rect.width * WINDOW_DEVICE_PIXEL_RATIO;
+  canvasDraw.height = rect.height * WINDOW_DEVICE_PIXEL_RATIO;
+  const ctx = canvasDraw.getContext("2d");
+  const controller = new GraferController(canvas, { layers });
+  controller.on(mod_exports12.picking.PickingManager.events.click, printEventFactory(controller, ctx));
+}
+
+// examples/src/UX/overlay.ts
+var WINDOW_DEVICE_PIXEL_RATIO2 = window.devicePixelRatio;
+var PixelPointXPosition;
+(function(PixelPointXPosition3) {
+  PixelPointXPosition3[PixelPointXPosition3["CENTER"] = 0] = "CENTER";
+  PixelPointXPosition3[PixelPointXPosition3["LEFT"] = -1] = "LEFT";
+  PixelPointXPosition3[PixelPointXPosition3["RIGHT"] = 1] = "RIGHT";
+})(PixelPointXPosition || (PixelPointXPosition = {}));
+var PixelPointYPosition;
+(function(PixelPointYPosition3) {
+  PixelPointYPosition3[PixelPointYPosition3["CENTER"] = 0] = "CENTER";
+  PixelPointYPosition3[PixelPointYPosition3["TOP"] = 1] = "TOP";
+  PixelPointYPosition3[PixelPointYPosition3["BOTTOM"] = -1] = "BOTTOM";
+})(PixelPointYPosition || (PixelPointYPosition = {}));
+function worldToPixel2(controller, position, pxptXPos = 0, pxptYPos = 0) {
+  const { camera } = controller.viewport;
+  const renderMatrix = mat4_exports.mul(mat4_exports.create(), camera.projectionMatrix, camera.viewMatrix);
+  mat4_exports.mul(renderMatrix, renderMatrix, controller.viewport.graph.matrix);
+  const projected = vec4_exports.set(vec4_exports.create(), position[0] + pxptXPos * position[3], position[1] + pxptYPos * position[3], position[2], 1);
+  vec4_exports.transformMat4(projected, projected, renderMatrix);
+  const { size } = controller.viewport;
+  const x = projected[0] / projected[3] * size[0] * 0.5 + size[0] * 0.5;
+  const y = projected[1] / projected[3] * size[1] * 0.5 + size[1] * 0.5;
+  return vec2_exports.set(vec2_exports.create(), x, y);
+}
+var onHoverOnEventFactory = (controller, tooltipCtx) => {
+  return (event, detail) => {
+    const point = controller.viewport.graph.getPointByID(detail.id);
+    const pxPoint = worldToPixel2(controller, point, 0, 0);
+    const graphBB = controller.viewport.canvas.getBoundingClientRect();
+    const tooltipBB = tooltipCtx.canvas.getBoundingClientRect();
+    tooltipCtx.canvas.width = tooltipBB.width * WINDOW_DEVICE_PIXEL_RATIO2;
+    tooltipCtx.canvas.height = tooltipBB.height * WINDOW_DEVICE_PIXEL_RATIO2;
+    tooltipCtx.clearRect(0, 0, tooltipCtx.canvas.width, tooltipCtx.canvas.height);
+    tooltipCtx.beginPath();
+    tooltipCtx.arc(pxPoint[0], graphBB.height * WINDOW_DEVICE_PIXEL_RATIO2 - pxPoint[1], 10, 0, 2 * Math.PI);
+    tooltipCtx.fillStyle = "red";
+    tooltipCtx.fill();
+    tooltipCtx.stroke();
+  };
+};
+var onHoverOffEventFactory = (tooltipCtx) => {
+  return () => {
+    const tooltipBB = tooltipCtx.canvas.getBoundingClientRect();
+    tooltipCtx.canvas.width = tooltipBB.width * WINDOW_DEVICE_PIXEL_RATIO2;
+    tooltipCtx.canvas.height = tooltipBB.height * WINDOW_DEVICE_PIXEL_RATIO2;
+    tooltipCtx.clearRect(0, 0, tooltipCtx.canvas.width, tooltipCtx.canvas.height);
+  };
+};
+async function overlay(container) {
+  render(html`
+        <style>
+            .overlay_container {
+                width: 100%;
+                height: 100%;
+                position: absolute;
+                top: 0;
+                left: 0;
+                pointer-events: none;
+            }
+            .wrapper {
+                display: grid;
+                grid-template-columns: 200px minmax(0, 1fr) 150px;
+                grid-template-rows: 4rem minmax(0, 1fr) 5rem;
+                height: 100%;
+                width: 100%;
+            }
+            .grafer_container {
+                width: 100%;
+                height: 100%;
+            }
+            header {
+                grid-column: 1 / -1;
+            }
+            nav {
+                grid-column: 1;
+            }
+            main {
+                grid-column: 2 / -2;
+                position: relative;
+            }
+            aside {
+                grid-column: -2;
+            }
+            footer {
+                grid-column: 1 / -1;
+            }
+
+            /* Styling */
+            header, nav, aside, main, footer {
+                border: 3px solid;
+            }
+            header {
+                border-color: hsl(45deg 100% 50%);
+                background-color: hsl(45deg 100% 50% / 0.2);
+            }
+            main {
+                border-color: hsl(220deg 100% 50%);
+                background-color: hsl(220deg 100% 50% / 0.2);
+            }
+            nav {
+                border-color: hsl(170deg 100% 35%);
+                background-color: hsl(170deg 100% 35% / 0.2);
+            }
+            aside {
+                border-color: hsl(300deg 100% 45%);
+                background-color: hsl(300deg 100% 45% / 0.2);
+            }
+            footer {
+                border-color: hsl(350deg 100% 60%);
+                background-color: hsl(350deg 100% 60% / 0.2);
+            }
+        </style>
+
+        <div class="wrapper">
+            <header></header>
+            <nav></nav>
+            <main>
+                <canvas class="grafer_container"></canvas>
+                <mouse-interactions></mouse-interactions>
+                <canvas class="overlay_container"></canvas>
+            </main>
+            <aside></aside>
+            <footer></footer>
+        </div>
+        `, container);
+  const canvas = document.querySelector(".grafer_container");
+  const nodes = {
+    data: [
+      { id: 0, x: -8.6, y: 5 },
+      { id: 1, x: 8.6, y: 5 },
+      { id: 2, x: 0, y: -10 },
+      { id: 3, x: 0, y: 0, radius: 2.5 }
+    ]
+  };
+  const edges = {
+    data: [
+      { source: "left", target: "right" },
+      { source: "right", target: "bottom" },
+      { source: "bottom", target: "left" },
+      { source: "center", target: "left" },
+      { source: "center", target: "right" },
+      { source: "center", target: "bottom" }
+    ]
+  };
+  const layers = [
+    { name: "Awesomeness", nodes, edges }
+  ];
+  const tooltipCanvas = document.querySelector(".overlay_container");
+  const tooltipBB = tooltipCanvas.getBoundingClientRect();
+  tooltipCanvas.width = tooltipBB.width * WINDOW_DEVICE_PIXEL_RATIO2;
+  tooltipCanvas.height = tooltipBB.height * WINDOW_DEVICE_PIXEL_RATIO2;
+  const tooltipCtx = tooltipCanvas.getContext("2d");
+  const controller = new GraferController(canvas, { layers });
+  controller.on(mod_exports12.picking.PickingManager.events.hoverOn, onHoverOnEventFactory(controller, tooltipCtx));
+  controller.on(mod_exports12.picking.PickingManager.events.hoverOff, onHoverOffEventFactory(tooltipCtx));
+}
+
+// examples/src/UX/tooltips.ts
+var WINDOW_DEVICE_PIXEL_RATIO3 = window.devicePixelRatio;
+var PixelPointXPosition2;
+(function(PixelPointXPosition3) {
+  PixelPointXPosition3[PixelPointXPosition3["CENTER"] = 0] = "CENTER";
+  PixelPointXPosition3[PixelPointXPosition3["LEFT"] = -1] = "LEFT";
+  PixelPointXPosition3[PixelPointXPosition3["RIGHT"] = 1] = "RIGHT";
+})(PixelPointXPosition2 || (PixelPointXPosition2 = {}));
+var PixelPointYPosition2;
+(function(PixelPointYPosition3) {
+  PixelPointYPosition3[PixelPointYPosition3["CENTER"] = 0] = "CENTER";
+  PixelPointYPosition3[PixelPointYPosition3["TOP"] = 1] = "TOP";
+  PixelPointYPosition3[PixelPointYPosition3["BOTTOM"] = -1] = "BOTTOM";
+})(PixelPointYPosition2 || (PixelPointYPosition2 = {}));
+function worldToPixel3(controller, position, pxptXPos = 0, pxptYPos = 0) {
+  const { camera } = controller.viewport;
+  const renderMatrix = mat4_exports.mul(mat4_exports.create(), camera.projectionMatrix, camera.viewMatrix);
+  mat4_exports.mul(renderMatrix, renderMatrix, controller.viewport.graph.matrix);
+  const projected = vec4_exports.set(vec4_exports.create(), position[0] + pxptXPos * position[3], position[1] + pxptYPos * position[3], position[2], 1);
+  vec4_exports.transformMat4(projected, projected, renderMatrix);
+  const { size } = controller.viewport;
+  const x = projected[0] / projected[3] * size[0] * 0.5 + size[0] * 0.5;
+  const y = projected[1] / projected[3] * size[1] * 0.5 + size[1] * 0.5;
+  return vec2_exports.set(vec2_exports.create(), x, y);
+}
+var onHoverOnEventFactory2 = (controller) => {
+  return (event, detail) => {
+    const point = controller.viewport.graph.getPointByID(detail.id);
+    const pxPoint = worldToPixel3(controller, point, 1, 1);
+    const tooltipEl = document.querySelector(".tooltiptext");
+    tooltipEl.style.left = `${pxPoint[0] / WINDOW_DEVICE_PIXEL_RATIO3}px`;
+    tooltipEl.style.bottom = `${pxPoint[1] / WINDOW_DEVICE_PIXEL_RATIO3}px`;
+    tooltipEl.style.visibility = "visible";
+  };
+};
+var onHoverOffEvent = () => {
+  const tooltipEl = document.querySelector(".tooltiptext");
+  tooltipEl.style.visibility = "hidden";
+};
+async function tooltips(container) {
+  render(html`
+        <style>
+            .wrapper {
+                display: grid;
+                grid-template-columns: 200px minmax(0, 1fr) 150px;
+                grid-template-rows: 4rem minmax(0, 1fr) 5rem;
+                height: 100%;
+                width: 100%;
+            }
+            .grafer_container {
+                width: 100%;
+                height: 100%;
+            }
+            header {
+                grid-column: 1 / -1;
+            }
+            nav {
+                grid-column: 1;
+            }
+            main {
+                grid-column: 2 / -2;
+                position: relative;
+            }
+            aside {
+                grid-column: -2;
+            }
+            footer {
+                grid-column: 1 / -1;
+            }
+
+            /* Styling */
+            header, nav, aside, main, footer {
+                border: 3px solid;
+            }
+            header {
+                border-color: hsl(45deg 100% 50%);
+                background-color: hsl(45deg 100% 50% / 0.2);
+            }
+            main {
+                border-color: hsl(220deg 100% 50%);
+                background-color: hsl(220deg 100% 50% / 0.2);
+            }
+            nav {
+                border-color: hsl(170deg 100% 35%);
+                background-color: hsl(170deg 100% 35% / 0.2);
+            }
+            aside {
+                border-color: hsl(300deg 100% 45%);
+                background-color: hsl(300deg 100% 45% / 0.2);
+            }
+            footer {
+                border-color: hsl(350deg 100% 60%);
+                background-color: hsl(350deg 100% 60% / 0.2);
+            }
+            /* Tooltip text */
+            .tooltiptext {
+                visibility: hidden;
+                width: 120px;
+                background-color: hsl(0, 0.0%, 92.5%);
+                color: black;
+                text-align: center;
+                padding: 5px 0;
+                border-radius: 6px;
+                border: 3px solid hsl(224, 6.4%, 66.1%);
+
+                /* Position the tooltip text - see examples below! */
+                position: absolute;
+                x: 10px;
+                y: 10px;
+                z-index: 1;
+            }
+        </style>
+
+        <div class="wrapper">
+            <header></header>
+            <nav></nav>
+            <main>
+                <canvas class="grafer_container"></canvas>
+                <mouse-interactions></mouse-interactions>
+                <span class="tooltiptext">Tooltip text</span>
+            </main>
+            <aside></aside>
+            <footer></footer>
+        </div>
+        `, container);
+  const canvas = document.querySelector(".grafer_container");
+  const nodes = {
+    data: [
+      { id: 0, x: -8.6, y: 5 },
+      { id: 1, x: 8.6, y: 5 },
+      { id: 2, x: 0, y: -10 },
+      { id: 3, x: 0, y: 0, radius: 2.5 }
+    ]
+  };
+  const edges = {
+    data: [
+      { source: "left", target: "right" },
+      { source: "right", target: "bottom" },
+      { source: "bottom", target: "left" },
+      { source: "center", target: "left" },
+      { source: "center", target: "right" },
+      { source: "center", target: "bottom" }
+    ]
+  };
+  const layers = [
+    { name: "Awesomeness", nodes, edges }
+  ];
+  const controller = new GraferController(canvas, { layers });
+  controller.on(mod_exports12.picking.PickingManager.events.hoverOn, onHoverOnEventFactory2(controller));
+  controller.on(mod_exports12.picking.PickingManager.events.hoverOff, onHoverOffEvent);
+}
+
+// examples/src/aske/mod.ts
+var mod_exports19 = {};
+__export(mod_exports19, {
   bundledEdgesLoader: () => bundledEdgesLoader,
   knowledgeViewLoader: () => knowledgeViewLoader
 });
@@ -22350,7 +22705,8 @@ var examples = {
   nodes: mod_exports15,
   edges: mod_exports16,
   labels: mod_exports17,
-  aske: mod_exports18,
+  UX: mod_exports18,
+  aske: mod_exports19,
   playground
 };
 function getExample(examples2, path) {
