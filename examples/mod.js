@@ -18317,10 +18317,11 @@ __export(mod_exports8, {
 });
 
 // src/UX/mod.ts
-var mod_exports12 = {};
-__export(mod_exports12, {
+var mod_exports13 = {};
+__export(mod_exports13, {
   DebugMenu: () => DebugMenu,
   animation: () => mod_exports11,
+  coordinate: () => mod_exports12,
   mouse: () => mod_exports9,
   picking: () => mod_exports10
 });
@@ -18703,6 +18704,46 @@ var AnimationManager = class {
     if (this.targets.size !== 0) {
       requestAnimationFrame(() => this.animationFrame(time));
     }
+  }
+};
+
+// src/UX/coordinate/mod.ts
+var mod_exports12 = {};
+__export(mod_exports12, {
+  Coordinate: () => Coordinate,
+  PixelCoordXPosition: () => PixelCoordXPosition,
+  PixelCoordYPosition: () => PixelCoordYPosition
+});
+
+// src/UX/coordinate/Coordinate.ts
+var PixelCoordXPosition;
+(function(PixelCoordXPosition2) {
+  PixelCoordXPosition2[PixelCoordXPosition2["CENTER"] = 0] = "CENTER";
+  PixelCoordXPosition2[PixelCoordXPosition2["LEFT"] = -1] = "LEFT";
+  PixelCoordXPosition2[PixelCoordXPosition2["RIGHT"] = 1] = "RIGHT";
+})(PixelCoordXPosition || (PixelCoordXPosition = {}));
+var PixelCoordYPosition;
+(function(PixelCoordYPosition2) {
+  PixelCoordYPosition2[PixelCoordYPosition2["CENTER"] = 0] = "CENTER";
+  PixelCoordYPosition2[PixelCoordYPosition2["TOP"] = 1] = "TOP";
+  PixelCoordYPosition2[PixelCoordYPosition2["BOTTOM"] = -1] = "BOTTOM";
+})(PixelCoordYPosition || (PixelCoordYPosition = {}));
+var kDefaultPixelCoordPosition = {
+  x: 0,
+  y: 0
+};
+var Coordinate = class {
+  static worldPointToRelativePixelCoordinate(controller, point, position) {
+    position = Object.assign({}, kDefaultPixelCoordPosition, position);
+    const camera = controller.viewport.camera;
+    const renderMatrix = mat4_exports.mul(mat4_exports.create(), camera.projectionMatrix, camera.viewMatrix);
+    mat4_exports.mul(renderMatrix, renderMatrix, controller.viewport.graph.matrix);
+    const projected = vec4_exports.set(vec4_exports.create(), point[0] + position.x * point[3], point[1] + position.y * point[3], point[2], 1);
+    vec4_exports.transformMat4(projected, projected, renderMatrix);
+    const size = controller.viewport.size;
+    const x = projected[0] / projected[3] * size[0] * 0.5 + size[0] * 0.5;
+    const y = projected[1] / projected[3] * size[1] * 0.5 + size[1] * 0.5;
+    return vec2_exports.set(vec2_exports.create(), x, y);
   }
 };
 
@@ -19548,18 +19589,18 @@ async function playground(container) {
       };
       const grafer = new GraferController(canvas, { points: points2, layers, colors: colorsArr });
       const { viewport } = grafer;
-      const dolly = new mod_exports12.mouse.ScrollDolly(viewport);
+      const dolly = new mod_exports13.mouse.ScrollDolly(viewport);
       dolly.enabled = true;
-      const truck = new mod_exports12.mouse.DragTruck(viewport);
+      const truck = new mod_exports13.mouse.DragTruck(viewport);
       truck.button = "primary";
       truck.enabled = true;
-      const rotation = new mod_exports12.mouse.DragRotation(viewport);
+      const rotation = new mod_exports13.mouse.DragRotation(viewport);
       rotation.button = "secondary";
       rotation.enabled = true;
-      const pan = new mod_exports12.mouse.DragPan(viewport);
+      const pan = new mod_exports13.mouse.DragPan(viewport);
       pan.button = "auxiliary";
       pan.enabled = true;
-      const debug = new mod_exports12.DebugMenu(viewport);
+      const debug = new mod_exports13.DebugMenu(viewport);
       debug.registerUX(dolly);
       debug.registerUX(truck);
       debug.registerUX(rotation);
@@ -19573,8 +19614,8 @@ async function playground(container) {
 }
 
 // examples/src/basic/mod.ts
-var mod_exports13 = {};
-__export(mod_exports13, {
+var mod_exports14 = {};
+__export(mod_exports14, {
   edgeColors: () => edgeColors,
   minimal: () => minimal,
   minimal3D: () => minimal3D,
@@ -19774,8 +19815,8 @@ async function nodeID(container) {
 }
 
 // examples/src/data/mod.ts
-var mod_exports14 = {};
-__export(mod_exports14, {
+var mod_exports15 = {};
+__export(mod_exports15, {
   addPoints: () => addPoints,
   colors: () => colors,
   mappings: () => mappings,
@@ -20014,8 +20055,8 @@ async function mappings(container) {
 }
 
 // examples/src/nodes/mod.ts
-var mod_exports15 = {};
-__export(mod_exports15, {
+var mod_exports16 = {};
+__export(mod_exports16, {
   circle: () => circle,
   cross: () => cross4,
   octagon: () => octagon,
@@ -20289,8 +20330,8 @@ async function plus(container) {
 }
 
 // examples/src/edges/mod.ts
-var mod_exports16 = {};
-__export(mod_exports16, {
+var mod_exports17 = {};
+__export(mod_exports17, {
   bundling: () => bundling,
   circuitBoard: () => circuitBoard,
   curvedPaths: () => curvedPaths,
@@ -20603,8 +20644,8 @@ async function bundling(container) {
 }
 
 // examples/src/labels/mod.ts
-var mod_exports17 = {};
-__export(mod_exports17, {
+var mod_exports18 = {};
+__export(mod_exports18, {
   circularLabel: () => circularLabel,
   pointLabel: () => pointLabel,
   ringLabel: () => ringLabel
@@ -20777,8 +20818,8 @@ async function ringLabel(container) {
 }
 
 // examples/src/UX/mod.ts
-var mod_exports18 = {};
-__export(mod_exports18, {
+var mod_exports19 = {};
+__export(mod_exports19, {
   embedded: () => embedded,
   overlay: () => overlay,
   picking: () => picking,
@@ -20814,9 +20855,9 @@ async function picking(container) {
     console.log(`${event.description} => layer:"${detail.layer}" ${detail.type}:"${detail.id}"`);
   };
   const controller = new GraferController(canvas, { layers });
-  controller.on(mod_exports12.picking.PickingManager.events.hoverOn, printEvent);
-  controller.on(mod_exports12.picking.PickingManager.events.hoverOff, printEvent);
-  controller.on(mod_exports12.picking.PickingManager.events.click, printEvent);
+  controller.on(mod_exports13.picking.PickingManager.events.hoverOn, printEvent);
+  controller.on(mod_exports13.picking.PickingManager.events.hoverOff, printEvent);
+  controller.on(mod_exports13.picking.PickingManager.events.click, printEvent);
 }
 
 // examples/src/UX/embedded.ts
@@ -20953,38 +20994,18 @@ async function embedded(container) {
   canvasDraw.height = rect.height * WINDOW_DEVICE_PIXEL_RATIO;
   const ctx = canvasDraw.getContext("2d");
   const controller = new GraferController(canvas, { layers });
-  controller.on(mod_exports12.picking.PickingManager.events.click, printEventFactory(controller, ctx));
+  controller.on(mod_exports13.picking.PickingManager.events.click, printEventFactory(controller, ctx));
 }
 
 // examples/src/UX/overlay.ts
 var WINDOW_DEVICE_PIXEL_RATIO2 = window.devicePixelRatio;
-var PixelPointXPosition;
-(function(PixelPointXPosition3) {
-  PixelPointXPosition3[PixelPointXPosition3["CENTER"] = 0] = "CENTER";
-  PixelPointXPosition3[PixelPointXPosition3["LEFT"] = -1] = "LEFT";
-  PixelPointXPosition3[PixelPointXPosition3["RIGHT"] = 1] = "RIGHT";
-})(PixelPointXPosition || (PixelPointXPosition = {}));
-var PixelPointYPosition;
-(function(PixelPointYPosition3) {
-  PixelPointYPosition3[PixelPointYPosition3["CENTER"] = 0] = "CENTER";
-  PixelPointYPosition3[PixelPointYPosition3["TOP"] = 1] = "TOP";
-  PixelPointYPosition3[PixelPointYPosition3["BOTTOM"] = -1] = "BOTTOM";
-})(PixelPointYPosition || (PixelPointYPosition = {}));
-function worldToPixel2(controller, position, pxptXPos = 0, pxptYPos = 0) {
-  const { camera } = controller.viewport;
-  const renderMatrix = mat4_exports.mul(mat4_exports.create(), camera.projectionMatrix, camera.viewMatrix);
-  mat4_exports.mul(renderMatrix, renderMatrix, controller.viewport.graph.matrix);
-  const projected = vec4_exports.set(vec4_exports.create(), position[0] + pxptXPos * position[3], position[1] + pxptYPos * position[3], position[2], 1);
-  vec4_exports.transformMat4(projected, projected, renderMatrix);
-  const { size } = controller.viewport;
-  const x = projected[0] / projected[3] * size[0] * 0.5 + size[0] * 0.5;
-  const y = projected[1] / projected[3] * size[1] * 0.5 + size[1] * 0.5;
-  return vec2_exports.set(vec2_exports.create(), x, y);
-}
 var onHoverOnEventFactory = (controller, tooltipCtx) => {
   return (event, detail) => {
     const point = controller.viewport.graph.getPointByID(detail.id);
-    const pxPoint = worldToPixel2(controller, point, 0, 0);
+    const pxPoint = mod_exports13.coordinate.Coordinate.worldPointToRelativePixelCoordinate(controller, point, {
+      x: mod_exports13.coordinate.PixelCoordXPosition.CENTER,
+      y: mod_exports13.coordinate.PixelCoordYPosition.CENTER
+    });
     const graphBB = controller.viewport.canvas.getBoundingClientRect();
     const tooltipBB = tooltipCtx.canvas.getBoundingClientRect();
     tooltipCtx.canvas.width = tooltipBB.width * WINDOW_DEVICE_PIXEL_RATIO2;
@@ -21110,39 +21131,19 @@ async function overlay(container) {
   tooltipCanvas.height = tooltipBB.height * WINDOW_DEVICE_PIXEL_RATIO2;
   const tooltipCtx = tooltipCanvas.getContext("2d");
   const controller = new GraferController(canvas, { layers });
-  controller.on(mod_exports12.picking.PickingManager.events.hoverOn, onHoverOnEventFactory(controller, tooltipCtx));
-  controller.on(mod_exports12.picking.PickingManager.events.hoverOff, onHoverOffEventFactory(tooltipCtx));
+  controller.on(mod_exports13.picking.PickingManager.events.hoverOn, onHoverOnEventFactory(controller, tooltipCtx));
+  controller.on(mod_exports13.picking.PickingManager.events.hoverOff, onHoverOffEventFactory(tooltipCtx));
 }
 
 // examples/src/UX/tooltips.ts
 var WINDOW_DEVICE_PIXEL_RATIO3 = window.devicePixelRatio;
-var PixelPointXPosition2;
-(function(PixelPointXPosition3) {
-  PixelPointXPosition3[PixelPointXPosition3["CENTER"] = 0] = "CENTER";
-  PixelPointXPosition3[PixelPointXPosition3["LEFT"] = -1] = "LEFT";
-  PixelPointXPosition3[PixelPointXPosition3["RIGHT"] = 1] = "RIGHT";
-})(PixelPointXPosition2 || (PixelPointXPosition2 = {}));
-var PixelPointYPosition2;
-(function(PixelPointYPosition3) {
-  PixelPointYPosition3[PixelPointYPosition3["CENTER"] = 0] = "CENTER";
-  PixelPointYPosition3[PixelPointYPosition3["TOP"] = 1] = "TOP";
-  PixelPointYPosition3[PixelPointYPosition3["BOTTOM"] = -1] = "BOTTOM";
-})(PixelPointYPosition2 || (PixelPointYPosition2 = {}));
-function worldToPixel3(controller, position, pxptXPos = 0, pxptYPos = 0) {
-  const { camera } = controller.viewport;
-  const renderMatrix = mat4_exports.mul(mat4_exports.create(), camera.projectionMatrix, camera.viewMatrix);
-  mat4_exports.mul(renderMatrix, renderMatrix, controller.viewport.graph.matrix);
-  const projected = vec4_exports.set(vec4_exports.create(), position[0] + pxptXPos * position[3], position[1] + pxptYPos * position[3], position[2], 1);
-  vec4_exports.transformMat4(projected, projected, renderMatrix);
-  const { size } = controller.viewport;
-  const x = projected[0] / projected[3] * size[0] * 0.5 + size[0] * 0.5;
-  const y = projected[1] / projected[3] * size[1] * 0.5 + size[1] * 0.5;
-  return vec2_exports.set(vec2_exports.create(), x, y);
-}
 var onHoverOnEventFactory2 = (controller) => {
   return (event, detail) => {
     const point = controller.viewport.graph.getPointByID(detail.id);
-    const pxPoint = worldToPixel3(controller, point, 1, 1);
+    const pxPoint = mod_exports13.coordinate.Coordinate.worldPointToRelativePixelCoordinate(controller, point, {
+      x: mod_exports13.coordinate.PixelCoordXPosition.RIGHT,
+      y: mod_exports13.coordinate.PixelCoordYPosition.TOP
+    });
     const tooltipEl = document.querySelector(".tooltiptext");
     tooltipEl.style.left = `${pxPoint[0] / WINDOW_DEVICE_PIXEL_RATIO3}px`;
     tooltipEl.style.bottom = `${pxPoint[1] / WINDOW_DEVICE_PIXEL_RATIO3}px`;
@@ -21262,13 +21263,13 @@ async function tooltips(container) {
     { name: "Awesomeness", nodes, edges }
   ];
   const controller = new GraferController(canvas, { layers });
-  controller.on(mod_exports12.picking.PickingManager.events.hoverOn, onHoverOnEventFactory2(controller));
-  controller.on(mod_exports12.picking.PickingManager.events.hoverOff, onHoverOffEvent);
+  controller.on(mod_exports13.picking.PickingManager.events.hoverOn, onHoverOnEventFactory2(controller));
+  controller.on(mod_exports13.picking.PickingManager.events.hoverOff, onHoverOffEvent);
 }
 
 // examples/src/aske/mod.ts
-var mod_exports19 = {};
-__export(mod_exports19, {
+var mod_exports20 = {};
+__export(mod_exports20, {
   bundledEdgesLoader: () => bundledEdgesLoader,
   knowledgeViewLoader: () => knowledgeViewLoader
 });
@@ -21532,7 +21533,7 @@ async function loadGraph(container, info) {
       "#81a1c1"
     ];
     const controller = new GraferController(canvas, { points: points2, colors: colors2, layers });
-    new mod_exports12.DebugMenu(controller.viewport);
+    new mod_exports13.DebugMenu(controller.viewport);
   }
 }
 async function bundledEdgesLoader(container) {
@@ -22012,7 +22013,7 @@ async function loadGraph2(container, info) {
       }
     }
   }
-  new mod_exports12.DebugMenu(controller.viewport);
+  new mod_exports13.DebugMenu(controller.viewport);
 }
 async function knowledgeViewLoader(container) {
   renderMenu3(container, (result) => {
@@ -22700,13 +22701,13 @@ MouseInteractions = __decorateClass([
 
 // examples/src/mod.ts
 var examples = {
-  basic: mod_exports13,
-  data: mod_exports14,
-  nodes: mod_exports15,
-  edges: mod_exports16,
-  labels: mod_exports17,
-  UX: mod_exports18,
-  aske: mod_exports19,
+  basic: mod_exports14,
+  data: mod_exports15,
+  nodes: mod_exports16,
+  edges: mod_exports17,
+  labels: mod_exports18,
+  UX: mod_exports19,
+  aske: mod_exports20,
   playground
 };
 function getExample(examples2, path) {
