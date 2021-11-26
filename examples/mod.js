@@ -20820,6 +20820,7 @@ async function ringLabel(container) {
 // examples/src/UX/mod.ts
 var mod_exports19 = {};
 __export(mod_exports19, {
+  animation: () => animation,
   embedded: () => embedded,
   overlay: () => overlay,
   picking: () => picking,
@@ -21265,6 +21266,60 @@ async function tooltips(container) {
   const controller = new GraferController(canvas, { layers });
   controller.on(mod_exports13.picking.PickingManager.events.hoverOn, onHoverOnEventFactory2(controller));
   controller.on(mod_exports13.picking.PickingManager.events.hoverOff, onHoverOffEvent);
+}
+
+// examples/src/UX/animation.ts
+function animate(controller, manager, point) {
+  const diameter = point[3] * 2;
+  const scale6 = Math.min(controller.viewport.size[0] / diameter, controller.viewport.size[1] / diameter);
+  const translation = controller.viewport.graph.translation.slice();
+  const endTranslation = [-point[0] * scale6, -point[1] * scale6, translation[2]];
+  const args = [
+    controller.viewport.graph,
+    "translation",
+    2e3,
+    translation,
+    endTranslation,
+    () => controller.render(),
+    mod_exports13.animation.EaseOutCubic
+  ];
+  manager.animate(...args);
+  args[5] = null;
+  args[1] = "scale";
+  args[3] = controller.viewport.graph.scale;
+  args[4] = scale6;
+  manager.animate(...args);
+}
+async function animation(container) {
+  render(html`<canvas class="grafer_container"></canvas><mouse-interactions></mouse-interactions>`, container);
+  const canvas = document.querySelector(".grafer_container");
+  const nodes = {
+    data: [
+      { id: 0, x: -8.6, y: 5 },
+      { id: 1, x: 8.6, y: 5 },
+      { id: 2, x: 0, y: -10 },
+      { id: 3, x: 0, y: 0 }
+    ]
+  };
+  const edges = {
+    data: [
+      { source: "left", target: "right" },
+      { source: "right", target: "bottom" },
+      { source: "bottom", target: "left" },
+      { source: "center", target: "left" },
+      { source: "center", target: "right" },
+      { source: "center", target: "bottom" }
+    ]
+  };
+  const layers = [
+    { name: "Awesomeness", nodes, edges }
+  ];
+  const animationManager = new mod_exports13.animation.AnimationManager();
+  const controller = new GraferController(canvas, { layers });
+  controller.on(mod_exports13.picking.PickingManager.events.click, (event, detail) => {
+    const point = controller.viewport.graph.getPointByID(detail.id);
+    animate(controller, animationManager, point);
+  });
 }
 
 // examples/src/aske/mod.ts
