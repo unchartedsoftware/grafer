@@ -26,7 +26,7 @@ export class Viewport {
     public readonly canvas: HTMLCanvasElement;
     public readonly context: GraferContext;
     public readonly mouseHandler: MouseHandler;
-    public readonly colorRegisrty: ColorRegistry;
+    public readonly colorRegistry: ColorRegistry;
     public rect: DOMRectReadOnly;
 
     public readonly size: vec2;
@@ -101,9 +101,9 @@ export class Viewport {
         resizeObserver.observe(this.canvas);
 
         if (opts.colorRegistryType === ColorRegistryType.mapped) {
-            this.colorRegisrty = new ColorRegistryMapped(this.context, opts.colorRegistryCapacity);
+            this.colorRegistry = new ColorRegistryMapped(this.context, opts.colorRegistryCapacity);
         } else {
-            this.colorRegisrty = new ColorRegistryIndexed(this.context, opts.colorRegistryCapacity);
+            this.colorRegistry = new ColorRegistryIndexed(this.context, opts.colorRegistryCapacity);
         }
     }
 
@@ -150,7 +150,7 @@ export class Viewport {
             uViewportSize: this.size,
             uPixelRatio: this.pixelRatio,
             uClearColor: this._clearColor,
-            uColorPalette: this.colorRegisrty.texture,
+            uColorPalette: this.colorRegistry.texture,
             uRenderMode: this.renderMode,
             uCameraMode: this.camera.mode,
         };

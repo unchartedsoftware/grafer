@@ -258,7 +258,7 @@ export class GraferController extends EventEmitter {
                 labelsMappings.color = (entry: any, i): number => {
                     const value = colorMapping(entry, i);
                     if (typeof value !== 'number') {
-                        return this._viewport.colorRegisrty.registerColor(value);
+                        return this._viewport.colorRegistry.registerColor(value);
                     }
                     return value;
                 };
@@ -307,7 +307,7 @@ export class GraferController extends EventEmitter {
                 edgesMappings.sourceColor = (entry: any, i): number => {
                     const value = sourceColorMapping(entry, i);
                     if (typeof value !== 'number') {
-                        return this._viewport.colorRegisrty.registerColor(value);
+                        return this._viewport.colorRegistry.registerColor(value);
                     }
                     return value;
                 };
@@ -316,7 +316,7 @@ export class GraferController extends EventEmitter {
                 edgesMappings.targetColor = (entry: any, i): number => {
                     const value = targetColorMapping(entry, i);
                     if (typeof value !== 'number') {
-                        return this._viewport.colorRegisrty.registerColor(value);
+                        return this._viewport.colorRegistry.registerColor(value);
                     }
                     return value;
                 };
@@ -357,7 +357,7 @@ export class GraferController extends EventEmitter {
                 nodesMappings.color = (entry: any, i): number => {
                     const value = colorMapping(entry, i);
                     if (typeof value !== 'number') {
-                        return this._viewport.colorRegisrty.registerColor(value);
+                        return this._viewport.colorRegistry.registerColor(value);
                     }
                     return value;
                 };
@@ -388,13 +388,13 @@ export class GraferController extends EventEmitter {
     private loadColors(data: GraferControllerData): void {
         if (data.colors) {
             const colors = data.colors;
-            const colorRegisrty = this._viewport.colorRegisrty;
+            const colorRegistry = this._viewport.colorRegistry;
             for (let i = 0, n = colors.length; i < n; ++i) {
-                colorRegisrty.registerColor(colors[i]);
+                colorRegistry.registerColor(colors[i]);
             }
         } else {
             // add at least one color in case the data does not have colors either
-            this._viewport.colorRegisrty.registerColor('#d8dee9');
+            this._viewport.colorRegistry.registerColor('#d8dee9');
         }
     }
 }
