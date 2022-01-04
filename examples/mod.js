@@ -15840,9 +15840,9 @@ var Viewport = class {
     });
     resizeObserver.observe(this.canvas);
     if (opts.colorRegistryType === ColorRegistryType.mapped) {
-      this.colorRegisrty = new ColorRegistryMapped(this.context, opts.colorRegistryCapacity);
+      this.colorRegistry = new ColorRegistryMapped(this.context, opts.colorRegistryCapacity);
     } else {
-      this.colorRegisrty = new ColorRegistryIndexed(this.context, opts.colorRegistryCapacity);
+      this.colorRegistry = new ColorRegistryIndexed(this.context, opts.colorRegistryCapacity);
     }
   }
   get clearColor() {
@@ -15894,7 +15894,7 @@ var Viewport = class {
       uViewportSize: this.size,
       uPixelRatio: this.pixelRatio,
       uClearColor: this._clearColor,
-      uColorPalette: this.colorRegisrty.texture,
+      uColorPalette: this.colorRegistry.texture,
       uRenderMode: this.renderMode,
       uCameraMode: this.camera.mode
     };
@@ -19190,7 +19190,7 @@ var GraferController = class extends EventEmitter {
         labelsMappings.color = (entry, i) => {
           const value = colorMapping(entry, i);
           if (typeof value !== "number") {
-            return this._viewport.colorRegisrty.registerColor(value);
+            return this._viewport.colorRegistry.registerColor(value);
           }
           return value;
         };
@@ -19233,7 +19233,7 @@ var GraferController = class extends EventEmitter {
         edgesMappings.sourceColor = (entry, i) => {
           const value = sourceColorMapping(entry, i);
           if (typeof value !== "number") {
-            return this._viewport.colorRegisrty.registerColor(value);
+            return this._viewport.colorRegistry.registerColor(value);
           }
           return value;
         };
@@ -19241,7 +19241,7 @@ var GraferController = class extends EventEmitter {
         edgesMappings.targetColor = (entry, i) => {
           const value = targetColorMapping(entry, i);
           if (typeof value !== "number") {
-            return this._viewport.colorRegisrty.registerColor(value);
+            return this._viewport.colorRegistry.registerColor(value);
           }
           return value;
         };
@@ -19273,7 +19273,7 @@ var GraferController = class extends EventEmitter {
         nodesMappings.color = (entry, i) => {
           const value = colorMapping(entry, i);
           if (typeof value !== "number") {
-            return this._viewport.colorRegisrty.registerColor(value);
+            return this._viewport.colorRegistry.registerColor(value);
           }
           return value;
         };
@@ -19301,12 +19301,12 @@ var GraferController = class extends EventEmitter {
   loadColors(data) {
     if (data.colors) {
       const colors2 = data.colors;
-      const colorRegisrty = this._viewport.colorRegisrty;
+      const colorRegistry = this._viewport.colorRegistry;
       for (let i = 0, n = colors2.length; i < n; ++i) {
-        colorRegisrty.registerColor(colors2[i]);
+        colorRegistry.registerColor(colors2[i]);
       }
     } else {
-      this._viewport.colorRegisrty.registerColor("#d8dee9");
+      this._viewport.colorRegistry.registerColor("#d8dee9");
     }
   }
 };
@@ -19818,6 +19818,7 @@ async function nodeID(container) {
 var mod_exports15 = {};
 __export(mod_exports15, {
   addPoints: () => addPoints,
+  colorRegistryIndexed: () => colorRegistryIndexed,
   colors: () => colors,
   mappings: () => mappings,
   points: () => points,
@@ -19920,6 +19921,62 @@ async function addPoints(container) {
   const controller = new GraferController(canvas, { points: points2, layers });
   addNewPoints(controller);
   setInterval(() => addNewPoints(controller), 5e3);
+}
+
+// examples/src/data/colorRegistryIndexed.ts
+function getRandomColor() {
+  const letters = "0123456789ABCDEF";
+  let color = "#";
+  for (let i = 0; i < 6; i++) {
+    color += letters[Math.floor(Math.random() * 16)];
+  }
+  return color;
+}
+async function colorRegistryIndexed(container) {
+  const points2 = {
+    data: [
+      { id: "tl", x: -100, y: -100, radius: 4 },
+      { id: "tr", x: 100, y: -100, radius: 4 },
+      { id: "bl", x: -100, y: 100, radius: 4 },
+      { id: "br", x: 100, y: 100, radius: 4 }
+    ]
+  };
+  const nodes = {
+    data: [
+      { point: "tl", color: 1 },
+      { point: "tr", color: 0 },
+      { point: "bl", color: 0 },
+      { point: "br", color: 1 }
+    ]
+  };
+  const edges = {
+    data: [
+      { source: "tl", target: "tr", sourceColor: 0, targetColor: 1 },
+      { source: "tr", target: "br", sourceColor: 0, targetColor: 1 },
+      { source: "br", target: "bl", sourceColor: 0, targetColor: 1 },
+      { source: "bl", target: "tl", sourceColor: 0, targetColor: 1 }
+    ]
+  };
+  const layers = [
+    { nodes, edges }
+  ];
+  const colors2 = [
+    "green",
+    "red"
+  ];
+  render(html`<canvas class="grafer_container"></canvas><mouse-interactions></mouse-interactions>`, container);
+  const canvas = document.querySelector(".grafer_container");
+  const controllerOptions = {
+    viewport: {
+      colorRegistryType: mod_exports3.colors.ColorRegistryType.indexed
+    }
+  };
+  const controller = new GraferController(canvas, { points: points2, colors: colors2, layers }, controllerOptions);
+  setInterval(() => {
+    controller.viewport.colorRegistry.updateColor(0, getRandomColor());
+    controller.viewport.colorRegistry.updateColor(1, getRandomColor());
+    controller.render();
+  }, 1e3);
 }
 
 // examples/src/data/separateNodesEdges.ts
