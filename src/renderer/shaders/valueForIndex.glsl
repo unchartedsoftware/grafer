@@ -1,3 +1,5 @@
+precision lowp usampler2D;
+
 vec4 valueForIndex(sampler2D tex, int index) {
     int texWidth = textureSize(tex, 0).x;
     int col = index % texWidth;
