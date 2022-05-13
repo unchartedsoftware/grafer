@@ -95,14 +95,22 @@ export class LabelAtlas {
 
                 const labelInfo: LabelRenderInfo = {
                     index: labels.length,
-                    length: entry.label.length,
+                    length: 0,
                     width: 0,
                     height: 0,
                 };
                 this.labelMap.set(entry.id, labelInfo);
 
                 for (let i = 0, n = entry.label.length; i < n; ++i) {
-                    const char = entry.label.charAt(i);
+                    let char;
+                    // check if next char has surrogate and handle accordingly
+                    const charCode = entry.label.charCodeAt(i);
+                    if(charCode >= 55296 && charCode <= 56319) {
+                        char = entry.label.charAt(i++) + entry.label.charAt(i);
+                    } else {
+                        char = entry.label.charAt(i);
+                    }
+
                     const charKey = `${char}-${renderSize}`;
                     if (!this.characterMap.has(charKey)) {
                         // const image = this.renderCharTexture(char, renderSize, ctx, canvas);
@@ -115,6 +123,7 @@ export class LabelAtlas {
                     const box = boxMap.get(charKey);
                     labelInfo.width += (box.image.width - kImageMargin * 2) * renderScale;
                     labelInfo.height = Math.max(labelInfo.height, (box.image.height - kImageMargin * 2) * renderScale);
+                    labelInfo.length++;
 
                     labels.push(charKey);
                 }
