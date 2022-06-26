@@ -30,6 +30,7 @@ export const kLabelMappings: DataMappings<LabelData> = {
     padding: (entry: LabelData) => 'padding' in entry ? entry.padding : [8, 5],
 };
 
+// generates vec4 containing char xy coordinates in texture, char width, and char height
 export const kCharBoxDataMappings: DataMappings<{ box: [number, number, number, number] }> = {
     box: (entry: any) => [ entry.x + kImageMargin, entry.y + kImageMargin, entry.w - kImageMargin * 2, entry.h - kImageMargin * 2 ],
 };
@@ -42,9 +43,13 @@ export const kLabelDataTypes: GLDataTypes<DataMappings<{ char: number }>> = {
     char: PicoGL.UNSIGNED_SHORT,
 };
 
+export const kOffsetDataTypes: GLDataTypes<DataMappings<{ offset: number }>> = {
+    offset: PicoGL.UNSIGNED_SHORT,
+};
+
 export class LabelAtlas {
     protected readonly fontSizeStep: number = 25;
-    protected readonly spaceSizeMap: Map<number, number> = new Map();
+    protected readonly spaceSizeMap: Map<string, number> = new Map();
 
     public readonly labelPixelRatio: number;
     public readonly characterMap: Map<string, number>;
@@ -63,6 +68,11 @@ export class LabelAtlas {
     private _charactersTexture: Texture;
     public get charactersTexture(): Texture {
         return this._charactersTexture;
+    }
+
+    private _offsetsTexture: Texture;
+    public get offsetsTexture(): Texture {
+        return this._offsetsTexture;
     }
 
     constructor(context: GraferContext, data: unknown[], mappings: Partial<DataMappings<LabelData>>, font: string, bold: boolean = false) {
@@ -87,6 +97,7 @@ export class LabelAtlas {
         const boxMap = new Map<string, any>();
         const boxes = [];
         const labels = [];
+        const offsets = [];
 
         for (const [, entry] of dataIterator(data, mappings)) {
             if (typeof entry.label === 'string') {
@@ -95,17 +106,25 @@ export class LabelAtlas {
 
                 const labelInfo: LabelRenderInfo = {
                     index: labels.length,
-                    length: entry.label.length,
+                    length: 0,
                     width: 0,
                     height: 0,
                 };
                 this.labelMap.set(entry.id, labelInfo);
 
                 for (let i = 0, n = entry.label.length; i < n; ++i) {
-                    const char = entry.label.charAt(i);
+                    let char;
+                    // check if next char has surrogate and handle accordingly
+                    const charCode = entry.label.charCodeAt(i);
+                    if(charCode >= 55296 && charCode <= 56319) {
+                        char = entry.label.charAt(i++) + entry.label.charAt(i);
+                    } else {
+                        char = entry.label.charAt(i);
+                    }
+
                     const charKey = `${char}-${renderSize}`;
                     if (!this.characterMap.has(charKey)) {
-                        // const image = this.renderCharTexture(char, renderSize, ctx, canvas);
+                        // const image = this.renderCharTexture(char, renderSize, ctx, canvas, font, bold);
                         const image = this.computeDistanceField(this.renderCharTexture(char, renderSize, ctx, canvas, font, bold), renderSize);
                         const box = { id: charKey, w: image.width, h: image.height, image };
                         boxMap.set(charKey, box);
@@ -113,23 +132,33 @@ export class LabelAtlas {
                         this.characterMap.set(charKey, 0);
                     }
                     const box = boxMap.get(charKey);
+                    offsets.push(labelInfo.width);
                     labelInfo.width += (box.image.width - kImageMargin * 2) * renderScale;
                     labelInfo.height = Math.max(labelInfo.height, (box.image.height - kImageMargin * 2) * renderScale);
+                    labelInfo.length++;
 
                     labels.push(charKey);
                 }
             }
         }
 
+        // layout image for packing into texture map
         const pack = potpack(boxes);
+        // create blank image data object
         const finalImage = ctx.createImageData(pack.w, pack.h);
 
+        // create buffer containing char coords and dimensions
         const boxesBuffer = packData(boxes, kCharBoxDataMappings, kCharBoxDataTypes, true, ((i) => {
+            // transfer char images from individual char image into texture image data object
             const box = boxes[i];
             this.characterMap.set(box.id, i);
             this.blitImageData(box.image, finalImage, box.x, finalImage.height - box.y - box.h);
         }));
 
+        // create texture from boxesBuffer
+        this._boxesTexture = this.createTextureForBuffer(context, new Uint16Array(boxesBuffer), boxes.length, PicoGL.RGBA16UI);
+
+        // set character texture class variable
         this._charactersTexture = context.createTexture2D(finalImage as unknown as HTMLImageElement, {
             flipY: true,
             // premultiplyAlpha: true,
@@ -137,14 +166,21 @@ export class LabelAtlas {
             // minFilter: PicoGL.NEAREST,
         });
 
-        this._boxesTexture = this.createTextureForBuffer(context, new Uint16Array(boxesBuffer), boxes.length, PicoGL.RGBA16UI);
-
         const labelDataMappings: DataMappings<{ char: number }> = {
             char: (entry: any) => this.characterMap.get(entry),
         };
 
+        // create buffer mapping character label array to character map indices
         const labelBuffer = packData(labels, labelDataMappings, kLabelDataTypes, true);
         this._labelsTexture = this.createTextureForBuffer(context, new Uint16Array(labelBuffer), labels.length, PicoGL.R16UI);
+
+        const offsetDataMappings: DataMappings<{ offset: number }> = {
+            offset: (offset: any) => offset,
+        };
+
+        // create buffer specifying offset from string start of each character in string
+        const offsetBuffer = packData(offsets, offsetDataMappings, kOffsetDataTypes, true);
+        this._offsetsTexture = this.createTextureForBuffer(context, new Uint16Array(offsetBuffer), offsets.length, PicoGL.R16UI);
 
         // this.testFeedback(context);
     }
@@ -163,7 +199,7 @@ export class LabelAtlas {
         const pixelRatio = this.labelPixelRatio;
         const fontString = `${bold ? 'bold ' : ''}${size * pixelRatio}px ${font}`;
 
-        if (!this.spaceSizeMap.has(size)) {
+        if (!this.spaceSizeMap.has(size + char)) {
             context.font = fontString;
             context.imageSmoothingEnabled = false;
 
@@ -171,15 +207,15 @@ export class LabelAtlas {
             context.textAlign = 'center';
             context.textBaseline = 'middle';
 
-            const spaceMetrics = context.measureText(' ');
-            this.spaceSizeMap.set(size,  Math.abs(spaceMetrics.actualBoundingBoxLeft) + Math.abs(spaceMetrics.actualBoundingBoxRight));
+            const spaceMetrics = context.measureText(char);
+            this.spaceSizeMap.set(String(size) + char,  Math.abs(spaceMetrics.actualBoundingBoxLeft) + Math.abs(spaceMetrics.actualBoundingBoxRight));
         }
-
-        const textWidth = this.spaceSizeMap.get(size);
+        const textWidth = this.spaceSizeMap.get(size + char);
         const textHeight = size * pixelRatio;
         const textPadding = Math.min(textWidth, textHeight) * 0.15;
+        const minTextPadding = 2;
 
-        canvas.width = textWidth + textPadding + kImageMargin * 2;
+        canvas.width = Math.ceil(textWidth + Math.max(textPadding, minTextPadding) + kImageMargin * 2);
         canvas.height = size * pixelRatio + textPadding + kImageMargin * 2;
 
         // context.fillStyle = `rgb(255,0,0)`;

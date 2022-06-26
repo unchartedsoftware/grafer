@@ -162,6 +162,7 @@ export class PointLabel extends Nodes<LabelNodeData, GLLabelNodeTypes> {
 
         this.localUniforms.uBackground = false;
         this.localUniforms.uLabelIndices = this.labelAtlas.labelsTexture;
+        this.localUniforms.uLabelOffsets = this.labelAtlas.offsetsTexture;
         this.localUniforms.uCharBoxes = this.labelAtlas.boxesTexture;
         this.localUniforms.uCharTexture = this.labelAtlas.charactersTexture;
         this.localUniforms.uVisibilityThreshold = 15;

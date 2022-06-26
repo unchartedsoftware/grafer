@@ -7,6 +7,7 @@ precision lowp usampler2D;
 #pragma glslify: import(../../../renderer/shaders/RenderMode.glsl)
 
 uniform usampler2D uLabelIndices;
+uniform usampler2D uLabelOffsets;
 uniform usampler2D uCharBoxes;
 uniform sampler2D uCharTexture;
 uniform float uPixelRatio;
@@ -31,14 +32,37 @@ void main() {
     if (vPixelCoords.x < padding || vPixelCoords.y < padding || vPixelCoords.x > fLabelInfo[2] + padding || vPixelCoords.y > fLabelInfo[3] + padding) {
         finalColor = fBackgroundColor;
     } else {
-        vec2 uvMultiplier = (vPixelCoords - padding) / fLabelInfo.ba;
-        float u = fLabelInfo[0] + fLabelInfo[1] * uvMultiplier.x;
-        float v = uvMultiplier.y;
+        vec2 labelUV = (vPixelCoords - padding);
 
-        float stringIndex = floor(u);
-        int charIndex = int(uivalueForIndex(uLabelIndices, int(stringIndex)));
+        // make prediction of which char is likely to be rendered assuming all chars are equal width
+        int predictedChar = int(fLabelInfo[0] + fLabelInfo[1] * (labelUV.x / fLabelInfo[2]));
+        // get character start/end positions for prediction
+        float predictedXStart = float(uivalueForIndex(uLabelOffsets, predictedChar));
+        float predictedXEnd = float(uivalueForIndex(uLabelOffsets, predictedChar + 1));
+        predictedXEnd = predictedXEnd > 0. ? predictedXEnd : fLabelInfo[2];
+        // test and correct prediction against pre-computed char positions
+        while (labelUV.x < predictedXStart) {
+            predictedChar--;
+            predictedXEnd = predictedXStart;
+            predictedXStart = float(uivalueForIndex(uLabelOffsets, predictedChar));
+        }
+        while (labelUV.x > predictedXEnd) {
+            predictedChar++;
+            predictedXStart = predictedXEnd;
+            predictedXEnd = float(uivalueForIndex(uLabelOffsets, predictedChar + 1));
+            predictedXEnd = predictedXEnd > 0. ? predictedXEnd : fLabelInfo[2];
+        }
+
+        // float u = fLabelInfo[0] + fLabelInfo[1] * (labelUV.x / fLabelInfo.b);
+        float v = labelUV.y / fLabelInfo.a;
+
+        // int stringIndex = int(floor(u));
+        int stringIndex = predictedChar;
+        int charIndex = int(uivalueForIndex(uLabelIndices, stringIndex));
+        // coordinate and dimensions of character to be drawn in char map
         vec4 charBox = vec4(uvalueForIndex(uCharBoxes, charIndex));
-        float charMult = u - stringIndex;
+        // float charMult = u - float(stringIndex);
+        float charMult = (labelUV.x - predictedXStart) / charBox[2];
 
         vec4 charBoxUV = charBox / vec4(fCharTextureSize, fCharTextureSize);
 
