@@ -15,6 +15,11 @@ export class DebugMenu {
 
         const layers = viewport.graph.layers;
         this.pane = new Tweakpane({ title: 'Debug Menu', expanded: false });
+
+        // hack in support for pane scroll
+        this.pane.element.style.maxHeight = 'calc(100vh - 8px)';
+        this.pane.element.style.overflowY = 'auto';
+
         for (let i = 0, n = layers.length; i < n; ++i) {
             const layer = layers[i];
             const layerFolder = this.pane.addFolder({ title: layer.name, expanded: false });
