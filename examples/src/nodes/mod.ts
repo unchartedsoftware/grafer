@@ -6,3 +6,4 @@ export * from './octagon';
 export * from './star';
 export * from './cross';
 export * from './plus';
+export * from './box';

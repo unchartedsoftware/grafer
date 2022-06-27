@@ -15,6 +15,7 @@ import {Octagon} from './octagon/Octagon';
 import {Star} from './star/Star';
 import {Cross} from './cross/Cross';
 import {Plus} from './plus/Plus';
+import {Box} from './box/Box';
 
 const types = {
     Circle,
@@ -25,6 +26,7 @@ const types = {
     Star,
     Cross,
     Plus,
+    Box,
 };
 
 export {types};
