@@ -62,7 +62,7 @@ export class TextureAtlas {
         return this._atlasTexture;
     }
 
-    protected exportTextures(keyList: string[]): Promise<void> {
+    public exportTextures(keyList?: string[]): Promise<void> {
         if(!this.dirty) {
             return;
         }
