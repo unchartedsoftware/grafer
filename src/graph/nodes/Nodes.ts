@@ -8,6 +8,7 @@ export interface BasicNodeData {
     id?: number | string;
     point: number | string;
     color?: GraferInputColor;
+    texture?: number;
     radius?: number;
 }
 
@@ -15,6 +16,7 @@ export const kBasicNodeMappings: DataMappings<BasicNodeData> = {
     id: (entry: any, i) => 'id' in entry ? entry.id : i,
     point: (entry: any, i) => 'point' in entry ? entry.point : i,
     color: (entry: any) => 'color' in entry ? entry.color : 0, // first registered color
+    texture: (entry: any) => 'texture' in entry ? entry.texture : 0, // first registered texture
     radius: null, // inherit the radius from the vertex data
 };
 

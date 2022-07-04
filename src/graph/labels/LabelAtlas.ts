@@ -29,7 +29,7 @@ export class LabelAtlas extends TextureAtlas {
     public readonly labelMap: Map<number | string, LabelRenderInfo>;
 
     constructor(context: GraferContext, data: unknown[], mappings: Partial<DataMappings<LabelData>>, font: string, bold: boolean = false) {
-        super();
+        super(context);
         this.labelMap = new Map();
 
         if (data.length) {
@@ -80,7 +80,7 @@ export class LabelAtlas extends TextureAtlas {
             }
         }
 
-        this.exportTextures(context, labels);
+        this.exportTextures(labels);
         // this.testFeedback(context);
     }
 

@@ -29,9 +29,23 @@ export const kLabelDataTypes: GLDataTypes<DataMappings<{ texture: number }>> = {
 };
 
 export class TextureAtlas {
+    private dirty = false;
+    private context: GraferContext;
     public readonly labelPixelRatio: number = window.devicePixelRatio;
     public readonly textureKeyMap: Map<string, number> = new Map();
     public readonly boxes = [];
+
+    constructor(context: GraferContext) {
+        this.context = context;
+        this._boxesTexture = context.createTexture2D(1, 1);
+        this._indicesTexture = context.createTexture2D(1, 1);
+        this._atlasTexture = context.createTexture2D(1, 1);
+    }
+
+    private _numTextures: number = 0;
+    public get numTextures(): number {
+        return this._numTextures;
+    }
 
     private _boxesTexture: Texture;
     public get boxesTexture(): Texture {
@@ -48,7 +62,12 @@ export class TextureAtlas {
         return this._atlasTexture;
     }
 
-    protected async exportTextures(context: GraferContext, keyList: string[]): Promise<void> {
+    protected exportTextures(keyList: string[]): Promise<void> {
+        if(!this.dirty) {
+            return;
+        }
+        this.dirty = false;
+
         const canvas = document.createElement('canvas');
         canvas.setAttribute('style', 'font-smooth: never;-webkit-font-smoothing : none;');
 
@@ -62,8 +81,8 @@ export class TextureAtlas {
             this.textureKeyMap.set(box.id, i);
             TextureAtlas.blitImageData(box.image, finalImage, box.x, finalImage.height - box.y - box.h);
         }));
-        this._boxesTexture = this.createTextureForBuffer(context, new Uint16Array(boxesBuffer), this.boxes.length, PicoGL.RGBA16UI);
-        this._atlasTexture = context.createTexture2D(finalImage as unknown as HTMLImageElement, {
+        this._boxesTexture = this.createTextureForBuffer(this.context, new Uint16Array(boxesBuffer), this.boxes.length, PicoGL.RGBA16UI);
+        this._atlasTexture = this.context.createTexture2D(finalImage as unknown as HTMLImageElement, {
             flipY: true,
             // premultiplyAlpha: true,
             // magFilter: PicoGL.NEAREST,
@@ -74,16 +93,19 @@ export class TextureAtlas {
             texture: (entry: any) => this.textureKeyMap.get(entry),
         };
 
-        const labelBuffer = packData(keyList, labelDataMappings, kLabelDataTypes, true);
-        this._indicesTexture = this.createTextureForBuffer(context, new Uint16Array(labelBuffer), keyList.length, PicoGL.R16UI);
-
+        if(keyList) {
+            const labelBuffer = packData(keyList, labelDataMappings, kLabelDataTypes, true);
+            this._indicesTexture = this.createTextureForBuffer(this.context, new Uint16Array(labelBuffer), keyList.length, PicoGL.R16UI);
+        }
         // this.testFeedback(context);
     }
 
     protected addTexture(charKey: string, box: BoxObject): void {
         // const image = this.renderCharTexture(char, renderSize, ctx, canvas);
+        this.dirty = true;
         this.boxes.push(box);
         this.textureKeyMap.set(charKey, 0);
+        this._numTextures++;
     }
 
     protected createTextureForBuffer(context: GraferContext, data: ArrayBufferView, dataLength:number, format: GLenum): Texture {

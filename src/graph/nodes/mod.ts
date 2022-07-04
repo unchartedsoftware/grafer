@@ -16,6 +16,7 @@ import {Star} from './star/Star';
 import {Cross} from './cross/Cross';
 import {Plus} from './plus/Plus';
 import {Box} from './box/Box';
+import {Custom} from './custom/Custom';
 
 const types = {
     Circle,
@@ -27,6 +28,7 @@ const types = {
     Cross,
     Plus,
     Box,
+    Custom,
 };
 
 export {types};

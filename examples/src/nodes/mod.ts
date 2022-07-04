@@ -7,3 +7,4 @@ export * from './star';
 export * from './cross';
 export * from './plus';
 export * from './box';
+export * from './custom';
