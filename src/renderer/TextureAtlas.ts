@@ -13,6 +13,8 @@ export interface BoxObject {
     id: string,
     w: number,
     h: number,
+    x?: number,
+    y?: number,
     image: ImageData
 }
 
