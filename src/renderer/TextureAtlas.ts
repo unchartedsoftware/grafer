@@ -34,6 +34,7 @@ export class TextureAtlas {
     public readonly labelPixelRatio: number = window.devicePixelRatio;
     public readonly textureKeyMap: Map<string, number> = new Map();
     private readonly boxes: Map<string, BoxObject> = new Map();
+    private boxesKeys: {[key: string]: number} = {};
 
     constructor(context: GraferContext) {
         this.context = context;
@@ -75,6 +76,9 @@ export class TextureAtlas {
 
         const boxes = Array.from(this.boxes.values());
         const pack = potpack(boxes);
+        if(!keyList) {
+            boxes.sort((a, b) => this.boxesKeys[a.id] - this.boxesKeys[b.id]);
+        }
         const finalImage = ctx.createImageData(pack.w, pack.h);
 
         const boxesBuffer = packData(boxes, kCharBoxDataMappings, kCharBoxDataTypes, true, ((i) => {
@@ -105,6 +109,10 @@ export class TextureAtlas {
         // const image = this.renderCharTexture(char, renderSize, ctx, canvas);
         this.dirty = true;
         this.boxes.set(charKey, box);
+        this.boxesKeys = Array.from(this.boxes.keys()).reduce((acc, val, index) => {
+            acc[val] = index;
+            return acc;
+        }, {});
         this.textureKeyMap.set(charKey, 0);
         this._numTextures = this.boxes.size;
     }
