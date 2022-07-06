@@ -13,6 +13,8 @@ export interface BoxObject {
     id: string,
     w: number,
     h: number,
+    x?: number,
+    y?: number,
     image: ImageData
 }
 
@@ -33,7 +35,8 @@ export class TextureAtlas {
     private context: GraferContext;
     public readonly labelPixelRatio: number = window.devicePixelRatio;
     public readonly textureKeyMap: Map<string, number> = new Map();
-    public readonly boxes = [];
+    private readonly boxes: Map<string, BoxObject> = new Map();
+    private boxesKeys: {[key: string]: number} = {};
 
     constructor(context: GraferContext) {
         this.context = context;
@@ -62,7 +65,7 @@ export class TextureAtlas {
         return this._atlasTexture;
     }
 
-    protected exportTextures(keyList: string[]): Promise<void> {
+    public exportTextures(keyList?: string[]): Promise<void> {
         if(!this.dirty) {
             return;
         }
@@ -73,15 +76,19 @@ export class TextureAtlas {
 
         const ctx = canvas.getContext('2d');
 
-        const pack = potpack(this.boxes);
+        const boxes = Array.from(this.boxes.values());
+        const pack = potpack(boxes);
+        if(!keyList) {
+            boxes.sort((a, b) => this.boxesKeys[a.id] - this.boxesKeys[b.id]);
+        }
         const finalImage = ctx.createImageData(pack.w, pack.h);
 
-        const boxesBuffer = packData(this.boxes, kCharBoxDataMappings, kCharBoxDataTypes, true, ((i) => {
-            const box = this.boxes[i];
+        const boxesBuffer = packData(boxes, kCharBoxDataMappings, kCharBoxDataTypes, true, ((i) => {
+            const box = boxes[i];
             this.textureKeyMap.set(box.id, i);
             TextureAtlas.blitImageData(box.image, finalImage, box.x, finalImage.height - box.y - box.h);
         }));
-        this._boxesTexture = this.createTextureForBuffer(this.context, new Uint16Array(boxesBuffer), this.boxes.length, PicoGL.RGBA16UI);
+        this._boxesTexture = this.createTextureForBuffer(this.context, new Uint16Array(boxesBuffer), boxes.length, PicoGL.RGBA16UI);
         this._atlasTexture = this.context.createTexture2D(finalImage as unknown as HTMLImageElement, {
             flipY: true,
             // premultiplyAlpha: true,
@@ -103,9 +110,13 @@ export class TextureAtlas {
     protected addTexture(charKey: string, box: BoxObject): void {
         // const image = this.renderCharTexture(char, renderSize, ctx, canvas);
         this.dirty = true;
-        this.boxes.push(box);
+        this.boxes.set(charKey, box);
+        this.boxesKeys = Array.from(this.boxes.keys()).reduce((acc, val, index) => {
+            acc[val] = index;
+            return acc;
+        }, {});
         this.textureKeyMap.set(charKey, 0);
-        this._numTextures++;
+        this._numTextures = this.boxes.size;
     }
 
     protected createTextureForBuffer(context: GraferContext, data: ArrayBufferView, dataLength:number, format: GLenum): Texture {

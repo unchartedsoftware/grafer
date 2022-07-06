@@ -11,13 +11,15 @@ export class TextureRegistry extends TextureAtlas {
         this.ctx = this.canvas.getContext('2d');
     }
 
-    public async registerTexture(src: string): Promise<void> {
+    public registerTexture(src: string): Promise<void> {
         const charKey = src;
         if (!this.textureKeyMap.has(charKey)) {
-            // const image = this.renderCharTexture(char, renderSize, ctx, canvas);
-            const image = await this.renderTexture(src);
-            const box = { id: charKey, w: image.width, h: image.height, image };
-            this.addTexture(charKey, box);
+            // add placeholder image to registry
+            this.addTexture(charKey, {id: charKey, w: 1, h: 1, image: new ImageData(1, 1)});
+
+            // replace placeholder image with real image
+            return this.renderTexture(src).then(image =>
+                this.addTexture(charKey, { id: charKey, w: image.width, h: image.height, image }));
         }
     }
 

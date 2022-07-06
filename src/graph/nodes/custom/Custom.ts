@@ -1,7 +1,7 @@
 import dataVS from './Custom.data.vs.glsl';
 import nodeVS from './Custom.vs.glsl';
 import nodeFS from './Custom.fs.glsl';
-import pickingFS from './Custom.picking.fs.glsl';
+import pickingFS from '../box/Box.picking.fs.glsl';
 import {Circle} from '../circle/Circle';
 import {GLDataTypes, RenderableShaders} from '../../../renderer/Renderable';
 import {DataShader, DataMappings} from '../../../data/DataTools';
