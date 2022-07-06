@@ -33,6 +33,8 @@ export interface RenderUniforms {
     uPixelRatio: number;
     uClearColor: vec4;
     uColorPalette: Texture;
+    uTexBoxes: Texture;
+    uTexAtlas: Texture;
     uRenderMode: RenderMode;
     uCameraMode: CameraMode;
 }

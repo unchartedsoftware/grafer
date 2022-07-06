@@ -48,6 +48,7 @@ interface GraferLayerDataBase {
 export type GraferLayerData = GraferLayerDataBase & ({ nodes: GraferNodesData } | { edges: GraferEdgesData } | { labels: GraferLabelsData });
 
 export interface GraferControllerData {
+    textures?: string[];
     colors?: GraferInputColor[];
     points?: GraferPointsData;
     layers?: GraferLayerData[];
@@ -55,10 +56,12 @@ export interface GraferControllerData {
 
 export interface GraferControllerOptions {
     viewport?: ViewportOptions,
+    loadTexturesAsync?: boolean,
 }
 
 const kDefaultOptions: GraferControllerOptions = {
     viewport: null,
+    loadTexturesAsync: false,
 };
 
 export class GraferController extends EventEmitter {
@@ -66,6 +69,7 @@ export class GraferController extends EventEmitter {
     public get viewport(): Viewport {
         return this._viewport;
     }
+    private _loadTexturesAsync: boolean;
     public get context(): GraferContext {
         return this.viewport.context;
     }
@@ -80,6 +84,7 @@ export class GraferController extends EventEmitter {
         const opts = Object.assign({}, kDefaultOptions, options);
 
         this._viewport = new Viewport(canvas, opts.viewport);
+        this._loadTexturesAsync = Boolean(opts.loadTexturesAsync);
         this._generateIdPrev = 0;
 
         if (this._viewport.camera.mode === CameraMode['2D']) {
@@ -114,9 +119,10 @@ export class GraferController extends EventEmitter {
         return this._generateIdPrev++;
     }
 
-    private loadData(data: GraferControllerData): void {
+    private async loadData(data: GraferControllerData): Promise<void> {
         const pointsRadiusMapping = { radius: (entry: any): number => 'radius' in entry ? entry.radius : 1.0 };
 
+        const texturesPromise = this.loadTextures(data);
         this.loadColors(data);
         this.loadPoints(data, pointsRadiusMapping);
         this.loadLayers(data, pointsRadiusMapping);
@@ -138,6 +144,8 @@ export class GraferController extends EventEmitter {
                 this._viewport.camera.farPlane = Math.max(bbDiagonal * 2, 1000);
             }
 
+            // wait for textures to finish loading if required
+            await texturesPromise;
             this._viewport.render();
         }
     }
@@ -396,5 +404,28 @@ export class GraferController extends EventEmitter {
             // add at least one color in case the data does not have colors either
             this._viewport.colorRegistry.registerColor('#d8dee9');
         }
+    }
+
+    private loadTextures(data: GraferControllerData): Promise<any[]> {
+        if (data.textures) {
+            const textures = data.textures;
+            const textureRegistry = this._viewport.textureRegistry;
+
+            if (this._loadTexturesAsync) {
+                for(let i = 0, n = textures.length; i < n; ++i) {
+                    textureRegistry.registerTexture(textures[i])
+                        .then(() => this._viewport.render());
+                }
+            } else {
+                const promiseList = [];
+                for(let i = 0, n = textures.length; i < n; ++i) {
+                    promiseList.push(textureRegistry.registerTexture(textures[i]));
+                }
+
+                return Promise.all(promiseList);
+            }
+        }
+
+        return Promise.resolve([]);
     }
 }
