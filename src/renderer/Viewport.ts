@@ -9,6 +9,7 @@ import {ColorRegistry, ColorRegistryType} from './colors/ColorRegistry';
 import {ColorRegistryIndexed} from './colors/ColorRegistryIndexed';
 import RectObserver from './RectObserver';
 import {ColorRegistryMapped} from './colors/ColorRegistryMapped';
+import {TextureRegistry} from './textures/TextureRegistry';
 
 export interface ViewportOptions {
     colorRegistryType?: ColorRegistryType;
@@ -27,6 +28,7 @@ export class Viewport {
     public readonly context: GraferContext;
     public readonly mouseHandler: MouseHandler;
     public readonly colorRegistry: ColorRegistry;
+    public readonly textureRegistry: TextureRegistry;
     public rect: DOMRectReadOnly;
 
     public readonly size: vec2;
@@ -105,6 +107,8 @@ export class Viewport {
         } else {
             this.colorRegistry = new ColorRegistryIndexed(this.context, opts.colorRegistryCapacity);
         }
+
+        this.textureRegistry = new TextureRegistry(this.context);
     }
 
     public resetContextFlags(): void {
@@ -143,6 +147,7 @@ export class Viewport {
     }
 
     private _render(): void {
+        this.textureRegistry.exportTextures();
         const uniforms: RenderUniforms = {
             uViewMatrix: this.camera.viewMatrix,
             uSceneMatrix: this.graph.matrix,
@@ -151,6 +156,8 @@ export class Viewport {
             uPixelRatio: this.pixelRatio,
             uClearColor: this._clearColor,
             uColorPalette: this.colorRegistry.texture,
+            uTexBoxes: this.textureRegistry.boxesTexture,
+            uTexAtlas: this.textureRegistry.atlasTexture,
             uRenderMode: this.renderMode,
             uCameraMode: this.camera.mode,
         };

@@ -161,10 +161,10 @@ export class PointLabel extends Nodes<LabelNodeData, GLLabelNodeTypes> {
         });
 
         this.localUniforms.uBackground = false;
-        this.localUniforms.uLabelIndices = this.labelAtlas.labelsTexture;
-        this.localUniforms.uLabelOffsets = this.labelAtlas.offsetsTexture;
+        this.localUniforms.uLabelIndices = this.labelAtlas.indicesTexture;
         this.localUniforms.uCharBoxes = this.labelAtlas.boxesTexture;
-        this.localUniforms.uCharTexture = this.labelAtlas.charactersTexture;
+        this.localUniforms.uCharTexture = this.labelAtlas.atlasTexture;
+        this.localUniforms.uLabelOffsets = this.labelAtlas.offsetsTexture;
         this.localUniforms.uVisibilityThreshold = 15;
         this.localUniforms.uLabelPlacement = [0, 0];
         this.localUniforms.uPadding = 4.0;

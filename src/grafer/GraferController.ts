@@ -48,6 +48,7 @@ interface GraferLayerDataBase {
 export type GraferLayerData = GraferLayerDataBase & ({ nodes: GraferNodesData } | { edges: GraferEdgesData } | { labels: GraferLabelsData });
 
 export interface GraferControllerData {
+    textures?: string[];
     colors?: GraferInputColor[];
     points?: GraferPointsData;
     layers?: GraferLayerData[];
@@ -114,10 +115,12 @@ export class GraferController extends EventEmitter {
         return this._generateIdPrev++;
     }
 
-    private loadData(data: GraferControllerData): void {
+    private async loadData(data: GraferControllerData): Promise<void> {
         const pointsRadiusMapping = { radius: (entry: any): number => 'radius' in entry ? entry.radius : 1.0 };
 
         this.loadColors(data);
+        // TODO: handle missing textures gracefully so graph can be loaded before all textures have loaded
+        await this.loadTextures(data);
         this.loadPoints(data, pointsRadiusMapping);
         this.loadLayers(data, pointsRadiusMapping);
 
@@ -395,6 +398,20 @@ export class GraferController extends EventEmitter {
         } else {
             // add at least one color in case the data does not have colors either
             this._viewport.colorRegistry.registerColor('#d8dee9');
+        }
+    }
+
+    private loadTextures(data: GraferControllerData): Promise<any[]> {
+        if (data.textures) {
+            const textures = data.textures;
+            const textureRegistry = this._viewport.textureRegistry;
+            const promiseList = [];
+            for(let i = 0, n = textures.length; i < n; ++i) {
+                promiseList.push(textureRegistry.registerTexture(textures[i]));
+            }
+            return Promise.all(promiseList);
+        } else {
+            return Promise.resolve([]);
         }
     }
 }
