@@ -13,9 +13,11 @@ uniform sampler2D uCharTexture;
 uniform float uPixelRatio;
 uniform uint uRenderMode;
 uniform float uPadding;
+uniform float uHalo;
 
 flat in vec4 fBackgroundColor;
 flat in vec4 fTextColor;
+flat in vec4 fHaloColor;
 flat in vec4 fLabelInfo;
 flat in float fPixelLength;
 flat in vec2 fCharTextureSize;
@@ -69,10 +71,20 @@ void main() {
         vec2 uv = vec2(charBoxUV[0] + charBoxUV[2] * charMult, charBoxUV[1] + charBoxUV[3] * v);
         vec4 texPixel = texture(uCharTexture, uv);
 
-        float smoothing = 7.0 / fLabelInfo[3];
+        float edgeThreshold = 0.49;
+        float haloThreshold = 0.18; // sets max halo threshold
+        float smoothing = 2.0 / fLabelInfo[3];
         float distance = texPixel.a;
-        float textEdge = smoothstep(0.5 - smoothing, 0.5 + smoothing, distance);
-        finalColor = mix(fBackgroundColor, fTextColor, textEdge);
+
+        finalColor = fBackgroundColor;
+        if (distance > edgeThreshold - smoothing) { // text fill
+            float textEdge = smoothstep(edgeThreshold - smoothing, edgeThreshold + smoothing, distance);
+            finalColor = mix(fHaloColor, fTextColor, textEdge);
+        }
+        else if (distance > edgeThreshold - haloThreshold * uHalo - smoothing) { // outline
+            float haloEdge = smoothstep(edgeThreshold - haloThreshold * uHalo - smoothing, edgeThreshold - haloThreshold * uHalo + smoothing, distance);
+            finalColor = mix(fBackgroundColor, fHaloColor, haloEdge);
+        }
     }
 
     float threshold = uRenderMode == MODE_HIGH_PASS_1 ? 0.75 : 0.5;

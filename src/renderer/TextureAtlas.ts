@@ -162,7 +162,7 @@ export class TextureAtlas {
         this.edt(gridOuter, imageData.width, imageData.height, f, v, z);
         this.edt(gridInner, imageData.width, imageData.height, f, v, z);
 
-        const radius = fontSize / 8;
+        const radius = fontSize;
         const data = imageData.data;
         for (let i = 0; i < dataLength; ++i) {
             const d = Math.sqrt(gridOuter[i]) - Math.sqrt(gridInner[i]);

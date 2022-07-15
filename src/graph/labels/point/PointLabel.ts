@@ -111,6 +111,13 @@ export class PointLabel extends Nodes<LabelNodeData, GLLabelNodeTypes> {
         this.localUniforms.uPadding = value;
     }
 
+    public get halo(): number {
+        return this.localUniforms.uHalo as number;
+    }
+    public set halo(value: number) {
+        this.localUniforms.uHalo = value;
+    }
+
     constructor(
         context: GraferContext,
         points: GraphPoints,

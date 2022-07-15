@@ -31,6 +31,7 @@ export const kOffsetDataTypes: GLDataTypes<DataMappings<{ offset: number }>> = {
 };
 
 export class LabelAtlas extends TextureAtlas {
+    protected readonly letterSpacing = 5;
     protected readonly fontSizeStep: number = 25;
     protected readonly spaceSizeMap: Map<string, number> = new Map();
     public readonly labelMap: Map<number | string, LabelRenderInfo>;
@@ -86,7 +87,7 @@ export class LabelAtlas extends TextureAtlas {
                         // const image = this.renderCharTexture(char, renderSize, ctx, canvas);
                         const image = TextureAtlas.computeDistanceField(
                             this.renderCharTexture(char, renderSize, ctx, canvas, font, bold),
-                            renderSize
+                            renderSize * this.labelPixelRatio
                         );
                         const box = { id: charKey, w: image.width, h: image.height, image };
                         boxMap.set(charKey, box);
@@ -133,10 +134,9 @@ export class LabelAtlas extends TextureAtlas {
         const textWidth = this.spaceSizeMap.get(size + char);
         const textHeight = size * pixelRatio;
         const textPadding = Math.min(textWidth, textHeight) * 0.15;
-        const minTextPadding = 2;
 
-        canvas.width = Math.ceil(textWidth + Math.max(textPadding, minTextPadding) + kImageMargin * 2);
-        canvas.height = size * pixelRatio + textPadding + kImageMargin * 2;
+        canvas.width = Math.ceil(textWidth + textPadding + this.letterSpacing * 2 + kImageMargin * 2);
+        canvas.height = size * pixelRatio + textPadding + this.letterSpacing * 2 + kImageMargin * 2;
 
         // context.fillStyle = `rgb(255,0,0)`;
         // context.fillRect(0, 0, canvas.width, canvas.height);
