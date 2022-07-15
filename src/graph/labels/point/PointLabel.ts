@@ -115,7 +115,7 @@ export class PointLabel extends Nodes<LabelNodeData, GLLabelNodeTypes> {
         return this.localUniforms.uHalo as number;
     }
     public set halo(value: number) {
-        this.localUniforms.uHalo = value;
+        this.localUniforms.uHalo = Math.min(1, Math.max(0, value));
     }
 
     constructor(

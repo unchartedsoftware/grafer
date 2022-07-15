@@ -79,7 +79,6 @@ void main() {
         fBackgroundColor = vec4(color.rgb, 0.0);
         fTextColor = vec4(color.rgb, 1.0);
     }
-    // 0.866 ~ sqrt(3.) / 2.
     fHaloColor = mix(vec4(1.), vec4(0., 0., 0., 1.), float(length(fTextColor.rgb) > 0.866));
 
     // send the normalized length of a single pixel to the fragment shader

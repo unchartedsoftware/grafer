@@ -5,6 +5,7 @@ precision lowp usampler2D;
 #pragma glslify: import(../../../renderer/shaders/valueForIndex.glsl)
 #pragma glslify: import(../../../renderer/shaders/outputColor.glsl)
 #pragma glslify: import(../../../renderer/shaders/RenderMode.glsl)
+#pragma glslify: import(../shaders/renderChar.glsl)
 
 uniform usampler2D uLabelIndices;
 uniform usampler2D uLabelOffsets;
@@ -71,20 +72,7 @@ void main() {
         vec2 uv = vec2(charBoxUV[0] + charBoxUV[2] * charMult, charBoxUV[1] + charBoxUV[3] * v);
         vec4 texPixel = texture(uCharTexture, uv);
 
-        float edgeThreshold = 0.49;
-        float haloThreshold = 0.18; // sets max halo threshold
-        float smoothing = 2.0 / fLabelInfo[3];
-        float distance = texPixel.a;
-
-        finalColor = fBackgroundColor;
-        if (distance > edgeThreshold - smoothing) { // text fill
-            float textEdge = smoothstep(edgeThreshold - smoothing, edgeThreshold + smoothing, distance);
-            finalColor = mix(fHaloColor, fTextColor, textEdge);
-        }
-        else if (distance > edgeThreshold - haloThreshold * uHalo - smoothing) { // outline
-            float haloEdge = smoothstep(edgeThreshold - haloThreshold * uHalo - smoothing, edgeThreshold - haloThreshold * uHalo + smoothing, distance);
-            finalColor = mix(fBackgroundColor, fHaloColor, haloEdge);
-        }
+        finalColor = renderChar(fLabelInfo[3], texPixel, fBackgroundColor, fHaloColor, fTextColor, uHalo);
     }
 
     float threshold = uRenderMode == MODE_HIGH_PASS_1 ? 0.75 : 0.5;
