@@ -125,6 +125,8 @@ export class PointLabel extends Nodes<LabelNodeData, GLLabelNodeTypes> {
         mappings: Partial<DataMappings<LabelNodeData>>,
         pickingManager: PickingManager,
         font?: string,
+        bold?: boolean,
+        charSpacing?: number,
         labelAtlas?: LabelAtlas
     );
     constructor(...args: any[]) {
