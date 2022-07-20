@@ -139,12 +139,13 @@ export class PointLabel extends Nodes<LabelNodeData, GLLabelNodeTypes> {
         pickingManager: PickingManager,
         font: string = 'monospace',
         bold: boolean = false,
+        charSpacing: number = 0,
         labelAtlas?: LabelAtlas
     ): void {
         if (labelAtlas) {
             this.labelAtlas = labelAtlas;
         } else {
-            this.labelAtlas = new LabelAtlas(context, data, mappings as Partial<DataMappings<LabelData>>, font, bold);
+            this.labelAtlas = new LabelAtlas(context, data, mappings as Partial<DataMappings<LabelData>>, font, bold, charSpacing);
         }
 
         super.initialize(context, points, data, mappings, pickingManager);

@@ -41,16 +41,16 @@ export class LabelAtlas extends TextureAtlas {
         return this._offsetsTexture;
     }
 
-    constructor(context: GraferContext, data: unknown[], mappings: Partial<DataMappings<LabelData>>, font: string, bold: boolean = false) {
+    constructor(context: GraferContext, data: unknown[], mappings: Partial<DataMappings<LabelData>>, font: string, bold: boolean = false, charSpacing: number = 0) {
         super(context);
         this.labelMap = new Map();
 
         if (data.length) {
-            this.processData(context, data, Object.assign({}, kLabelMappings, mappings), font, bold);
+            this.processData(context, data, Object.assign({}, kLabelMappings, mappings), font, bold, charSpacing);
         }
     }
 
-    protected async processData(context: GraferContext, data: unknown[], mappings: DataMappings<LabelData>, font: string, bold: boolean): Promise<void> {
+    protected async processData(context: GraferContext, data: unknown[], mappings: DataMappings<LabelData>, font: string, bold: boolean, charSpacing: number): Promise<void> {
         const canvas = document.createElement('canvas');
         canvas.setAttribute('style', 'font-smooth: never;-webkit-font-smoothing : none;');
 
@@ -58,6 +58,7 @@ export class LabelAtlas extends TextureAtlas {
         const boxMap = new Map<string, any>();
         const labels = [];
         const offsets = [];
+        const charNegMargin = (1 - charSpacing) * this.letterSpacing;
 
         for (const [, entry] of dataIterator(data, mappings)) {
             if (typeof entry.label === 'string') {
@@ -95,8 +96,9 @@ export class LabelAtlas extends TextureAtlas {
                     }
                     const box = boxMap.get(charKey);
                     offsets.push(labelInfo.width);
-                    labelInfo.width += (box.image.width - kImageMargin * 2) * renderScale;
-                    labelInfo.height = Math.max(labelInfo.height, (box.image.height - kImageMargin * 2) * renderScale);
+                    const margin = kImageMargin * 2 + charNegMargin * 2;
+                    labelInfo.width += (box.w - margin) * renderScale;
+                    labelInfo.height = Math.max(labelInfo.height, (box.h - margin) * renderScale);
                     labelInfo.length++;
 
                     labels.push(charKey);
@@ -104,7 +106,7 @@ export class LabelAtlas extends TextureAtlas {
             }
         }
 
-        this.exportTextures(labels);
+        this.exportTextures(labels, charNegMargin, charNegMargin);
         const offsetDataMappings: DataMappings<{ offset: number }> = {
             offset: (offset: any) => offset,
         };
