@@ -1,5 +1,6 @@
 import PicoGL, {Texture} from 'picogl';
 
+import {applyArabicShaping, processBidirectionalText} from './rtlText.js';
 import {packData, dataIterator, DataMappings} from '../../data/DataTools';
 import {GraferContext} from '../../renderer/GraferContext';
 import {TextureAtlas, kImageMargin} from '../../../src/renderer/TextureAtlas';
@@ -50,6 +51,13 @@ export class LabelAtlas extends TextureAtlas {
         }
     }
 
+    protected processRtlText(str: string): string {
+        return processBidirectionalText(
+            applyArabicShaping(str),
+            []
+        ).join(' ');
+    }
+
     protected async processData(context: GraferContext, data: unknown[], mappings: DataMappings<LabelData>, font: string, bold: boolean, charSpacing: number): Promise<void> {
         const canvas = document.createElement('canvas');
         canvas.setAttribute('style', 'font-smooth: never;-webkit-font-smoothing : none;');
@@ -72,15 +80,15 @@ export class LabelAtlas extends TextureAtlas {
                     height: 0,
                 };
                 this.labelMap.set(entry.id, labelInfo);
-
-                for (let i = 0, n = entry.label.length; i < n; ++i) {
+                const labelString = this.processRtlText(entry.label);
+                for (let i = 0, n = labelString.length; i < n; ++i) {
                     let char;
                     // check if next char has surrogate and handle accordingly
-                    const charCode = entry.label.charCodeAt(i);
+                    const charCode = labelString.charCodeAt(i);
                     if(charCode >= 55296 && charCode <= 56319) {
-                        char = entry.label.charAt(i++) + entry.label.charAt(i);
+                        char = labelString.charAt(i++) + labelString.charAt(i);
                     } else {
-                        char = entry.label.charAt(i);
+                        char = labelString.charAt(i);
                     }
 
                     const charKey = `${char}-${renderSize}`;
