@@ -83,10 +83,13 @@ export class LabelAtlas extends TextureAtlas {
                 const labelString = this.processRtlText(entry.label);
                 for (let i = 0, n = labelString.length; i < n; ++i) {
                     let char;
-                    // check if next char has surrogate and handle accordingly
                     const charCode = labelString.charCodeAt(i);
                     if(charCode >= 55296 && charCode <= 56319) {
+                        // check if next char has surrogate and handle accordingly
                         char = labelString.charAt(i++) + labelString.charAt(i);
+                    } else if(charCode >= 65136 && charCode <= 65151) {
+                        // check for and filter out arabic diacritics
+                        continue;
                     } else {
                         char = labelString.charAt(i);
                     }
