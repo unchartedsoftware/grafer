@@ -80,10 +80,17 @@ export class LabelAtlas extends TextureAtlas {
                     height: 0,
                 };
                 this.labelMap.set(entry.id, labelInfo);
-                const labelString = this.processRtlText(entry.label);
+                let rtlProcessed = false;
+                let labelString = entry.label;
                 for (let i = 0, n = labelString.length; i < n; ++i) {
                     let char;
                     const charCode = labelString.charCodeAt(i);
+                    if(charCode >= 1425 && !rtlProcessed) {
+                        // if charcode contains unusual chars, process label string for RTL text
+                        labelString = this.processRtlText(entry.label);
+                        rtlProcessed = true;
+                    }
+
                     if(charCode >= 55296 && charCode <= 56319) {
                         // check if next char has surrogate and handle accordingly
                         char = labelString.charAt(i++) + labelString.charAt(i);
