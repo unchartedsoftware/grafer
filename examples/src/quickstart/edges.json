@@ -1,0 +1,542 @@
+[
+    {
+        "name": "IAD_to_SEA",
+        "departure_airport": "IAD",
+        "arrival_airport": "SEA",
+        "num_flights": 758
+    },
+    {
+        "name": "IAD_to_ORD",
+        "departure_airport": "IAD",
+        "arrival_airport": "ORD",
+        "num_flights": 2036
+    },
+    {
+        "name": "IAD_to_TUP",
+        "departure_airport": "IAD",
+        "arrival_airport": "TUP",
+        "num_flights": 0
+    },
+    {
+        "name": "IAD_to_SFO",
+        "departure_airport": "IAD",
+        "arrival_airport": "SFO",
+        "num_flights": 1458
+    },
+    {
+        "name": "IAD_to_IAH",
+        "departure_airport": "IAD",
+        "arrival_airport": "IAH",
+        "num_flights": 781
+    },
+    {
+        "name": "IAD_to_MIA",
+        "departure_airport": "IAD",
+        "arrival_airport": "MIA",
+        "num_flights": 1265
+    },
+    {
+        "name": "IAD_to_GJT",
+        "departure_airport": "IAD",
+        "arrival_airport": "GJT",
+        "num_flights": 6
+    },
+    {
+        "name": "IAD_to_PWM",
+        "departure_airport": "IAD",
+        "arrival_airport": "PWM",
+        "num_flights": 341
+    },
+    {
+        "name": "IAD_to_TUS",
+        "departure_airport": "IAD",
+        "arrival_airport": "TUS",
+        "num_flights": 47
+    },
+    {
+        "name": "SEA_to_IAD",
+        "departure_airport": "SEA",
+        "arrival_airport": "IAD",
+        "num_flights": 758
+    },
+    {
+        "name": "SEA_to_ORD",
+        "departure_airport": "SEA",
+        "arrival_airport": "ORD",
+        "num_flights": 2044
+    },
+    {
+        "name": "SEA_to_TUP",
+        "departure_airport": "SEA",
+        "arrival_airport": "TUP",
+        "num_flights": 0
+    },
+    {
+        "name": "SEA_to_SFO",
+        "departure_airport": "SEA",
+        "arrival_airport": "SFO",
+        "num_flights": 2712
+    },
+    {
+        "name": "SEA_to_IAH",
+        "departure_airport": "SEA",
+        "arrival_airport": "IAH",
+        "num_flights": 801
+    },
+    {
+        "name": "SEA_to_MIA",
+        "departure_airport": "SEA",
+        "arrival_airport": "MIA",
+        "num_flights": 314
+    },
+    {
+        "name": "SEA_to_GJT",
+        "departure_airport": "SEA",
+        "arrival_airport": "GJT",
+        "num_flights": 12
+    },
+    {
+        "name": "SEA_to_PWM",
+        "departure_airport": "SEA",
+        "arrival_airport": "PWM",
+        "num_flights": 1
+    },
+    {
+        "name": "SEA_to_TUS",
+        "departure_airport": "SEA",
+        "arrival_airport": "TUS",
+        "num_flights": 284
+    },
+    {
+        "name": "ORD_to_IAD",
+        "departure_airport": "ORD",
+        "arrival_airport": "IAD",
+        "num_flights": 2159
+    },
+    {
+        "name": "ORD_to_SEA",
+        "departure_airport": "ORD",
+        "arrival_airport": "SEA",
+        "num_flights": 2090
+    },
+    {
+        "name": "ORD_to_TUP",
+        "departure_airport": "ORD",
+        "arrival_airport": "TUP",
+        "num_flights": 1
+    },
+    {
+        "name": "ORD_to_SFO",
+        "departure_airport": "ORD",
+        "arrival_airport": "SFO",
+        "num_flights": 3152
+    },
+    {
+        "name": "ORD_to_IAH",
+        "departure_airport": "ORD",
+        "arrival_airport": "IAH",
+        "num_flights": 3101
+    },
+    {
+        "name": "ORD_to_MIA",
+        "departure_airport": "ORD",
+        "arrival_airport": "MIA",
+        "num_flights": 2364
+    },
+    {
+        "name": "ORD_to_GJT",
+        "departure_airport": "ORD",
+        "arrival_airport": "GJT",
+        "num_flights": 36
+    },
+    {
+        "name": "ORD_to_PWM",
+        "departure_airport": "ORD",
+        "arrival_airport": "PWM",
+        "num_flights": 622
+    },
+    {
+        "name": "ORD_to_TUS",
+        "departure_airport": "ORD",
+        "arrival_airport": "TUS",
+        "num_flights": 419
+    },
+    {
+        "name": "TUP_to_IAD",
+        "departure_airport": "TUP",
+        "arrival_airport": "IAD",
+        "num_flights": 0
+    },
+    {
+        "name": "TUP_to_SEA",
+        "departure_airport": "TUP",
+        "arrival_airport": "SEA",
+        "num_flights": 0
+    },
+    {
+        "name": "TUP_to_ORD",
+        "departure_airport": "TUP",
+        "arrival_airport": "ORD",
+        "num_flights": 0
+    },
+    {
+        "name": "TUP_to_SFO",
+        "departure_airport": "TUP",
+        "arrival_airport": "SFO",
+        "num_flights": 0
+    },
+    {
+        "name": "TUP_to_IAH",
+        "departure_airport": "TUP",
+        "arrival_airport": "IAH",
+        "num_flights": 0
+    },
+    {
+        "name": "TUP_to_MIA",
+        "departure_airport": "TUP",
+        "arrival_airport": "MIA",
+        "num_flights": 3
+    },
+    {
+        "name": "TUP_to_GJT",
+        "departure_airport": "TUP",
+        "arrival_airport": "GJT",
+        "num_flights": 0
+    },
+    {
+        "name": "TUP_to_PWM",
+        "departure_airport": "TUP",
+        "arrival_airport": "PWM",
+        "num_flights": 0
+    },
+    {
+        "name": "TUP_to_TUS",
+        "departure_airport": "TUP",
+        "arrival_airport": "TUS",
+        "num_flights": 0
+    },
+    {
+        "name": "SFO_to_IAD",
+        "departure_airport": "SFO",
+        "arrival_airport": "IAD",
+        "num_flights": 1487
+    },
+    {
+        "name": "SFO_to_SEA",
+        "departure_airport": "SFO",
+        "arrival_airport": "SEA",
+        "num_flights": 2657
+    },
+    {
+        "name": "SFO_to_ORD",
+        "departure_airport": "SFO",
+        "arrival_airport": "ORD",
+        "num_flights": 2994
+    },
+    {
+        "name": "SFO_to_TUP",
+        "departure_airport": "SFO",
+        "arrival_airport": "TUP",
+        "num_flights": 0
+    },
+    {
+        "name": "SFO_to_IAH",
+        "departure_airport": "SFO",
+        "arrival_airport": "IAH",
+        "num_flights": 1505
+    },
+    {
+        "name": "SFO_to_MIA",
+        "departure_airport": "SFO",
+        "arrival_airport": "MIA",
+        "num_flights": 757
+    },
+    {
+        "name": "SFO_to_GJT",
+        "departure_airport": "SFO",
+        "arrival_airport": "GJT",
+        "num_flights": 22
+    },
+    {
+        "name": "SFO_to_PWM",
+        "departure_airport": "SFO",
+        "arrival_airport": "PWM",
+        "num_flights": 0
+    },
+    {
+        "name": "SFO_to_TUS",
+        "departure_airport": "SFO",
+        "arrival_airport": "TUS",
+        "num_flights": 119
+    },
+    {
+        "name": "IAH_to_IAD",
+        "departure_airport": "IAH",
+        "arrival_airport": "IAD",
+        "num_flights": 849
+    },
+    {
+        "name": "IAH_to_SEA",
+        "departure_airport": "IAH",
+        "arrival_airport": "SEA",
+        "num_flights": 793
+    },
+    {
+        "name": "IAH_to_ORD",
+        "departure_airport": "IAH",
+        "arrival_airport": "ORD",
+        "num_flights": 2975
+    },
+    {
+        "name": "IAH_to_TUP",
+        "departure_airport": "IAH",
+        "arrival_airport": "TUP",
+        "num_flights": 0
+    },
+    {
+        "name": "IAH_to_SFO",
+        "departure_airport": "IAH",
+        "arrival_airport": "SFO",
+        "num_flights": 1574
+    },
+    {
+        "name": "IAH_to_MIA",
+        "departure_airport": "IAH",
+        "arrival_airport": "MIA",
+        "num_flights": 1524
+    },
+    {
+        "name": "IAH_to_GJT",
+        "departure_airport": "IAH",
+        "arrival_airport": "GJT",
+        "num_flights": 31
+    },
+    {
+        "name": "IAH_to_PWM",
+        "departure_airport": "IAH",
+        "arrival_airport": "PWM",
+        "num_flights": 4
+    },
+    {
+        "name": "IAH_to_TUS",
+        "departure_airport": "IAH",
+        "arrival_airport": "TUS",
+        "num_flights": 780
+    },
+    {
+        "name": "MIA_to_IAD",
+        "departure_airport": "MIA",
+        "arrival_airport": "IAD",
+        "num_flights": 1412
+    },
+    {
+        "name": "MIA_to_SEA",
+        "departure_airport": "MIA",
+        "arrival_airport": "SEA",
+        "num_flights": 366
+    },
+    {
+        "name": "MIA_to_ORD",
+        "departure_airport": "MIA",
+        "arrival_airport": "ORD",
+        "num_flights": 2308
+    },
+    {
+        "name": "MIA_to_TUP",
+        "departure_airport": "MIA",
+        "arrival_airport": "TUP",
+        "num_flights": 2
+    },
+    {
+        "name": "MIA_to_SFO",
+        "departure_airport": "MIA",
+        "arrival_airport": "SFO",
+        "num_flights": 797
+    },
+    {
+        "name": "MIA_to_IAH",
+        "departure_airport": "MIA",
+        "arrival_airport": "IAH",
+        "num_flights": 1643
+    },
+    {
+        "name": "MIA_to_GJT",
+        "departure_airport": "MIA",
+        "arrival_airport": "GJT",
+        "num_flights": 1
+    },
+    {
+        "name": "MIA_to_PWM",
+        "departure_airport": "MIA",
+        "arrival_airport": "PWM",
+        "num_flights": 2
+    },
+    {
+        "name": "MIA_to_TUS",
+        "departure_airport": "MIA",
+        "arrival_airport": "TUS",
+        "num_flights": 25
+    },
+    {
+        "name": "GJT_to_IAD",
+        "departure_airport": "GJT",
+        "arrival_airport": "IAD",
+        "num_flights": 1
+    },
+    {
+        "name": "GJT_to_SEA",
+        "departure_airport": "GJT",
+        "arrival_airport": "SEA",
+        "num_flights": 2
+    },
+    {
+        "name": "GJT_to_ORD",
+        "departure_airport": "GJT",
+        "arrival_airport": "ORD",
+        "num_flights": 8
+    },
+    {
+        "name": "GJT_to_TUP",
+        "departure_airport": "GJT",
+        "arrival_airport": "TUP",
+        "num_flights": 0
+    },
+    {
+        "name": "GJT_to_SFO",
+        "departure_airport": "GJT",
+        "arrival_airport": "SFO",
+        "num_flights": 13
+    },
+    {
+        "name": "GJT_to_IAH",
+        "departure_airport": "GJT",
+        "arrival_airport": "IAH",
+        "num_flights": 6
+    },
+    {
+        "name": "GJT_to_MIA",
+        "departure_airport": "GJT",
+        "arrival_airport": "MIA",
+        "num_flights": 0
+    },
+    {
+        "name": "GJT_to_PWM",
+        "departure_airport": "GJT",
+        "arrival_airport": "PWM",
+        "num_flights": 0
+    },
+    {
+        "name": "GJT_to_TUS",
+        "departure_airport": "GJT",
+        "arrival_airport": "TUS",
+        "num_flights": 4
+    },
+    {
+        "name": "PWM_to_IAD",
+        "departure_airport": "PWM",
+        "arrival_airport": "IAD",
+        "num_flights": 356
+    },
+    {
+        "name": "PWM_to_SEA",
+        "departure_airport": "PWM",
+        "arrival_airport": "SEA",
+        "num_flights": 0
+    },
+    {
+        "name": "PWM_to_ORD",
+        "departure_airport": "PWM",
+        "arrival_airport": "ORD",
+        "num_flights": 628
+    },
+    {
+        "name": "PWM_to_TUP",
+        "departure_airport": "PWM",
+        "arrival_airport": "TUP",
+        "num_flights": 0
+    },
+    {
+        "name": "PWM_to_SFO",
+        "departure_airport": "PWM",
+        "arrival_airport": "SFO",
+        "num_flights": 0
+    },
+    {
+        "name": "PWM_to_IAH",
+        "departure_airport": "PWM",
+        "arrival_airport": "IAH",
+        "num_flights": 2
+    },
+    {
+        "name": "PWM_to_MIA",
+        "departure_airport": "PWM",
+        "arrival_airport": "MIA",
+        "num_flights": 1
+    },
+    {
+        "name": "PWM_to_GJT",
+        "departure_airport": "PWM",
+        "arrival_airport": "GJT",
+        "num_flights": 0
+    },
+    {
+        "name": "PWM_to_TUS",
+        "departure_airport": "PWM",
+        "arrival_airport": "TUS",
+        "num_flights": 0
+    },
+    {
+        "name": "TUS_to_IAD",
+        "departure_airport": "TUS",
+        "arrival_airport": "IAD",
+        "num_flights": 42
+    },
+    {
+        "name": "TUS_to_SEA",
+        "departure_airport": "TUS",
+        "arrival_airport": "SEA",
+        "num_flights": 273
+    },
+    {
+        "name": "TUS_to_ORD",
+        "departure_airport": "TUS",
+        "arrival_airport": "ORD",
+        "num_flights": 396
+    },
+    {
+        "name": "TUS_to_TUP",
+        "departure_airport": "TUS",
+        "arrival_airport": "TUP",
+        "num_flights": 0
+    },
+    {
+        "name": "TUS_to_SFO",
+        "departure_airport": "TUS",
+        "arrival_airport": "SFO",
+        "num_flights": 123
+    },
+    {
+        "name": "TUS_to_IAH",
+        "departure_airport": "TUS",
+        "arrival_airport": "IAH",
+        "num_flights": 760
+    },
+    {
+        "name": "TUS_to_MIA",
+        "departure_airport": "TUS",
+        "arrival_airport": "MIA",
+        "num_flights": 17
+    },
+    {
+        "name": "TUS_to_GJT",
+        "departure_airport": "TUS",
+        "arrival_airport": "GJT",
+        "num_flights": 12
+    },
+    {
+        "name": "TUS_to_PWM",
+        "departure_airport": "TUS",
+        "arrival_airport": "PWM",
+        "num_flights": 0
+    }
+]

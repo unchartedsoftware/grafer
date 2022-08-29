@@ -1,0 +1,82 @@
+[
+    {
+        "name": "IAD",
+        "x": 56.96899837777778,
+        "y": -26.475494338172208,
+        "departing_flights": 48132,
+        "arriving_flights": 48053,
+        "total_flights": 96185
+    },
+    {
+        "name": "SEA",
+        "x": 32.05055660671667,
+        "y": -19.97793911240299,
+        "departing_flights": 53180,
+        "arriving_flights": 53105,
+        "total_flights": 106285
+    },
+    {
+        "name": "ORD",
+        "x": 51.16399976666667,
+        "y": -24.259402860653402,
+        "departing_flights": 158496,
+        "arriving_flights": 160054,
+        "total_flights": 318550
+    },
+    {
+        "name": "TUP",
+        "x": 50.68339029947917,
+        "y": -29.71375283992582,
+        "departing_flights": 259,
+        "arriving_flights": 307,
+        "total_flights": 566
+    },
+    {
+        "name": "SFO",
+        "x": 32.01388888888889,
+        "y": -27.413648060422037,
+        "departing_flights": 57206,
+        "arriving_flights": 57187,
+        "total_flights": 114393
+    },
+    {
+        "name": "IAH",
+        "x": 47.03255547417533,
+        "y": -32.52504912115283,
+        "departing_flights": 81249,
+        "arriving_flights": 83960,
+        "total_flights": 165209
+    },
+    {
+        "name": "MIA",
+        "x": 55.39410909016928,
+        "y": -35.16037906090966,
+        "departing_flights": 48737,
+        "arriving_flights": 47563,
+        "total_flights": 96300
+    },
+    {
+        "name": "GJT",
+        "x": 39.707221985,
+        "y": -26.348260450417,
+        "departing_flights": 1385,
+        "arriving_flights": 1854,
+        "total_flights": 3239
+    },
+    {
+        "name": "PWM",
+        "x": 60.93927595555556,
+        "y": -22.996379028850374,
+        "departing_flights": 7836,
+        "arriving_flights": 7468,
+        "total_flights": 15304
+    },
+    {
+        "name": "TUS",
+        "x": 38.36611005995,
+        "y": -31.14256423772302,
+        "departing_flights": 11249,
+        "arriving_flights": 10922,
+        "total_flights": 22171
+    }
+]
