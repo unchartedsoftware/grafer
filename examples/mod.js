@@ -5,7 +5,12 @@ var __getOwnPropNames = Object.getOwnPropertyNames;
 var __getProtoOf = Object.getPrototypeOf;
 var __hasOwnProp = Object.prototype.hasOwnProperty;
 var __markAsModule = (target) => __defProp(target, "__esModule", { value: true });
-var __commonJS = (cb, mod) => function __require() {
+var __require = (x) => {
+  if (typeof require !== "undefined")
+    return require(x);
+  throw new Error('Dynamic require of "' + x + '" is not supported');
+};
+var __commonJS = (cb, mod) => function __require2() {
   return mod || (0, cb[Object.keys(cb)[0]])((mod = { exports: {} }).exports, mod), mod.exports;
 };
 var __export = (target, all) => {
@@ -15,22 +20,22 @@ var __export = (target, all) => {
 };
 var __reExport = (target, module, desc) => {
   if (module && typeof module === "object" || typeof module === "function") {
-    for (let key of __getOwnPropNames(module))
-      if (!__hasOwnProp.call(target, key) && key !== "default")
-        __defProp(target, key, { get: () => module[key], enumerable: !(desc = __getOwnPropDesc(module, key)) || desc.enumerable });
+    for (let key2 of __getOwnPropNames(module))
+      if (!__hasOwnProp.call(target, key2) && key2 !== "default")
+        __defProp(target, key2, { get: () => module[key2], enumerable: !(desc = __getOwnPropDesc(module, key2)) || desc.enumerable });
   }
   return target;
 };
 var __toModule = (module) => {
   return __reExport(__markAsModule(__defProp(module != null ? __create(__getProtoOf(module)) : {}, "default", module && module.__esModule && "default" in module ? { get: () => module.default, enumerable: true } : { value: module, enumerable: true })), module);
 };
-var __decorateClass = (decorators, target, key, kind) => {
-  var result = kind > 1 ? void 0 : kind ? __getOwnPropDesc(target, key) : target;
+var __decorateClass = (decorators, target, key2, kind) => {
+  var result = kind > 1 ? void 0 : kind ? __getOwnPropDesc(target, key2) : target;
   for (var i = decorators.length - 1, decorator; i >= 0; i--)
     if (decorator = decorators[i])
-      result = (kind ? decorator(target, key, result) : decorator(result)) || result;
+      result = (kind ? decorator(target, key2, result) : decorator(result)) || result;
   if (kind && result)
-    __defProp(target, key, result);
+    __defProp(target, key2, result);
   return result;
 };
 
@@ -1183,26 +1188,26 @@ var require_tweakpane = __commonJS({
           defaultLineCount: 3
         }
       };
-      function fillBuffer(buffer, bufferSize) {
-        while (buffer.length < bufferSize) {
-          buffer.push(void 0);
+      function fillBuffer(buffer2, bufferSize) {
+        while (buffer2.length < bufferSize) {
+          buffer2.push(void 0);
         }
       }
       function initializeBuffer(initialValue, bufferSize) {
-        var buffer = [initialValue];
-        fillBuffer(buffer, bufferSize);
-        return new Value(buffer);
+        var buffer2 = [initialValue];
+        fillBuffer(buffer2, bufferSize);
+        return new Value(buffer2);
       }
-      function createTrimmedBuffer(buffer) {
-        var index = buffer.indexOf(void 0);
-        return forceCast(index < 0 ? buffer : buffer.slice(0, index));
+      function createTrimmedBuffer(buffer2) {
+        var index = buffer2.indexOf(void 0);
+        return forceCast(index < 0 ? buffer2 : buffer2.slice(0, index));
       }
-      function createPushedBuffer(buffer, newValue) {
-        var newBuffer = __spreadArrays(createTrimmedBuffer(buffer), [newValue]);
-        if (newBuffer.length > buffer.length) {
-          newBuffer.splice(0, newBuffer.length - buffer.length);
+      function createPushedBuffer(buffer2, newValue) {
+        var newBuffer = __spreadArrays(createTrimmedBuffer(buffer2), [newValue]);
+        if (newBuffer.length > buffer2.length) {
+          newBuffer.splice(0, newBuffer.length - buffer2.length);
         } else {
-          fillBuffer(newBuffer, buffer.length);
+          fillBuffer(newBuffer, buffer2.length);
         }
         return newBuffer;
       }
@@ -1225,9 +1230,9 @@ var require_tweakpane = __commonJS({
           if (targetValue === void 0) {
             return;
           }
-          var buffer = this.value.rawValue;
+          var buffer2 = this.value.rawValue;
           var newValue = this.reader_(targetValue);
-          this.value.rawValue = createPushedBuffer(buffer, newValue);
+          this.value.rawValue = createPushedBuffer(buffer2, newValue);
           this.emitter.emit("update", {
             rawValue: newValue,
             sender: this
@@ -1354,10 +1359,10 @@ var require_tweakpane = __commonJS({
         return SeparatorApi2;
       }();
       var BindingTarget = function() {
-        function BindingTarget2(obj, key, opt_id) {
+        function BindingTarget2(obj, key2, opt_id) {
           this.obj_ = obj;
-          this.key_ = key;
-          this.presetKey_ = opt_id !== null && opt_id !== void 0 ? opt_id : key;
+          this.key_ = key2;
+          this.presetKey_ = opt_id !== null && opt_id !== void 0 ? opt_id : key2;
         }
         BindingTarget2.isBindable = function(obj) {
           if (obj === null) {
@@ -1400,11 +1405,11 @@ var require_tweakpane = __commonJS({
         };
         return BindingTarget2;
       }();
-      function createBindingTarget(obj, key, opt_id) {
+      function createBindingTarget(obj, key2, opt_id) {
         if (!BindingTarget.isBindable(obj)) {
           throw TpError.notBindable();
         }
-        return new BindingTarget(obj, key, opt_id);
+        return new BindingTarget(obj, key2, opt_id);
       }
       var FolderApi = function() {
         function FolderApi2(folderController) {
@@ -1433,15 +1438,15 @@ var require_tweakpane = __commonJS({
         FolderApi2.prototype.dispose = function() {
           this.controller.blade.dispose();
         };
-        FolderApi2.prototype.addInput = function(object, key, opt_params) {
+        FolderApi2.prototype.addInput = function(object, key2, opt_params) {
           var params = opt_params || {};
-          var bc = createInputBindingController(this.controller.document, createBindingTarget(object, key, params.presetKey), params);
+          var bc = createInputBindingController(this.controller.document, createBindingTarget(object, key2, params.presetKey), params);
           this.controller.bladeRack.add(bc, params.index);
           return new InputBindingApi(forceCast(bc));
         };
-        FolderApi2.prototype.addMonitor = function(object, key, opt_params) {
+        FolderApi2.prototype.addMonitor = function(object, key2, opt_params) {
           var params = opt_params || {};
-          var bc = createMonitorBindingController(this.controller.document, createBindingTarget(object, key), params);
+          var bc = createMonitorBindingController(this.controller.document, createBindingTarget(object, key2), params);
           this.controller.bladeRack.add(bc, params.index);
           return new MonitorBindingApi(forceCast(bc));
         };
@@ -1533,15 +1538,15 @@ var require_tweakpane = __commonJS({
         RootApi2.prototype.dispose = function() {
           this.controller.blade.dispose();
         };
-        RootApi2.prototype.addInput = function(object, key, opt_params) {
+        RootApi2.prototype.addInput = function(object, key2, opt_params) {
           var params = opt_params || {};
-          var bc = createInputBindingController(this.controller.document, createBindingTarget(object, key, params.presetKey), params);
+          var bc = createInputBindingController(this.controller.document, createBindingTarget(object, key2, params.presetKey), params);
           this.controller.bladeRack.add(bc, params.index);
           return new InputBindingApi(forceCast(bc));
         };
-        RootApi2.prototype.addMonitor = function(object, key, opt_params) {
+        RootApi2.prototype.addMonitor = function(object, key2, opt_params) {
           var params = opt_params || {};
-          var bc = createMonitorBindingController(this.controller.document, createBindingTarget(object, key), params);
+          var bc = createMonitorBindingController(this.controller.document, createBindingTarget(object, key2), params);
           this.controller.bladeRack.add(bc, params.index);
           return new MonitorBindingApi(forceCast(bc));
         };
@@ -2317,11 +2322,11 @@ var require_tweakpane = __commonJS({
           ];
         }
       };
-      function isRgbColorComponent(obj, key) {
+      function isRgbColorComponent(obj, key2) {
         if (typeof obj !== "object" || isEmpty(obj)) {
           return false;
         }
-        return key in obj && typeof obj[key] === "number";
+        return key2 in obj && typeof obj[key2] === "number";
       }
       var Color = function() {
         function Color2(comps, mode) {
@@ -6657,12 +6662,12 @@ var require_chroma = __commonJS({
             } else {
               throw new Error("unsupported value for Color.set");
             }
-            var out = new Color_1(src, mode);
+            var out2 = new Color_1(src, mode);
             if (mutate) {
-              this._rgb = out._rgb;
+              this._rgb = out2._rgb;
               return this;
             }
-            return out;
+            return out2;
           }
           throw new Error("unknown channel " + channel + " in mode " + mode);
         } else {
@@ -7054,8 +7059,8 @@ var require_chroma = __commonJS({
                     i3++;
                   }
                   var f2 = (t - tBreaks[i3]) / (tBreaks[i3 + 1] - tBreaks[i3]);
-                  var out = tOut[i3] + f2 * (tOut[i3 + 1] - tOut[i3]);
-                  return out;
+                  var out2 = tOut[i3] + f2 * (tOut[i3 + 1] - tOut[i3]);
+                  return out2;
                 };
               }
             }
@@ -7139,9 +7144,9 @@ var require_chroma = __commonJS({
             return _padding;
           }
         };
-        f.colors = function(numColors, out) {
+        f.colors = function(numColors, out2) {
           if (arguments.length < 2) {
-            out = "hex";
+            out2 = "hex";
           }
           var result = [];
           if (arguments.length === 0) {
@@ -7168,9 +7173,9 @@ var require_chroma = __commonJS({
               return f(v);
             });
           }
-          if (chroma_1[out]) {
+          if (chroma_1[out2]) {
             result = result.map(function(c) {
-              return c[out]();
+              return c[out2]();
             });
           }
           return result;
@@ -7282,11 +7287,11 @@ var require_chroma = __commonJS({
       };
       var each = function(f) {
         return function(c0, c1) {
-          var out = [];
-          out[0] = f(c0[0], c1[0]);
-          out[1] = f(c0[1], c1[1]);
-          out[2] = f(c0[2], c1[2]);
-          return out;
+          var out2 = [];
+          out2[0] = f(c0[0], c1[0]);
+          out2[1] = f(c0[1], c1[1]);
+          out2[2] = f(c0[2], c1[2]);
+          return out2;
         };
       };
       var normal = function(a) {
@@ -7431,9 +7436,9 @@ var require_chroma = __commonJS({
       var pow$7 = Math.pow;
       var floor$3 = Math.floor;
       var abs = Math.abs;
-      var analyze = function(data, key2) {
-        if (key2 === void 0)
-          key2 = null;
+      var analyze = function(data, key3) {
+        if (key3 === void 0)
+          key3 = null;
         var r = {
           min: Number.MAX_VALUE,
           max: Number.MAX_VALUE * -1,
@@ -7445,8 +7450,8 @@ var require_chroma = __commonJS({
           data = Object.values(data);
         }
         data.forEach(function(val) {
-          if (key2 && type(val) === "object") {
-            val = val[key2];
+          if (key3 && type(val) === "object") {
+            val = val[key3];
           }
           if (val !== void 0 && val !== null && !isNaN(val)) {
             r.values.push(val);
@@ -7728,8 +7733,8 @@ var require_chroma = __commonJS({
         Pastel1: ["#fbb4ae", "#b3cde3", "#ccebc5", "#decbe4", "#fed9a6", "#ffffcc", "#e5d8bd", "#fddaec", "#f2f2f2"]
       };
       for (var i$1 = 0, list$1 = Object.keys(colorbrewer); i$1 < list$1.length; i$1 += 1) {
-        var key = list$1[i$1];
-        colorbrewer[key.toLowerCase()] = colorbrewer[key];
+        var key2 = list$1[i$1];
+        colorbrewer[key2.toLowerCase()] = colorbrewer[key2];
       }
       var colorbrewer_1 = colorbrewer;
       chroma_1.average = average;
@@ -8408,11 +8413,11 @@ function templateFactory(result) {
   if (template !== void 0) {
     return template;
   }
-  const key = result.strings.join(marker);
-  template = templateCache.keyString.get(key);
+  const key2 = result.strings.join(marker);
+  template = templateCache.keyString.get(key2);
   if (template === void 0) {
     template = new Template(result, result.getTemplateElement());
-    templateCache.keyString.set(key, template);
+    templateCache.keyString.set(key2, template);
   }
   templateCache.stringsArray.set(result.strings, template);
   return template;
@@ -8567,12 +8572,12 @@ var LocalDataFileNode = class extends LocalDataFile {
     }
     return result.buffer;
   }
-  loadDataIntoBuffer(buffer, offset, start, end) {
+  loadDataIntoBuffer(buffer2, offset, start, end) {
     return new Promise((resolve, reject) => {
       const length5 = end - start;
-      gFS.read(this.handle, buffer, offset, length5, start, (err, bytesRead) => {
-        if (err) {
-          reject(err);
+      gFS.read(this.handle, buffer2, offset, length5, start, (err2, bytesRead) => {
+        if (err2) {
+          reject(err2);
         } else {
           resolve(bytesRead);
         }
@@ -8617,14 +8622,14 @@ var LocalDataFileDeno = class extends LocalDataFile {
     }
     return result.buffer;
   }
-  async loadDataIntoBuffer(buffer, offset, start, end) {
+  async loadDataIntoBuffer(buffer2, offset, start, end) {
     const cursorPosition = await this.file.seek(start, Deno.SeekMode.Start);
     if (cursorPosition !== start) {
       throw "ERROR: Cannot seek to the desired position";
     }
     const result = new Uint8Array(end - start);
     const bytesRead = await this.file.read(result);
-    buffer.set(result, offset);
+    buffer2.set(result, offset);
     return bytesRead;
   }
 };
@@ -9028,19 +9033,19 @@ if (!Math.hypot)
 
 // node_modules/gl-matrix/esm/mat3.js
 function create() {
-  var out = new ARRAY_TYPE(9);
+  var out2 = new ARRAY_TYPE(9);
   if (ARRAY_TYPE != Float32Array) {
-    out[1] = 0;
-    out[2] = 0;
-    out[3] = 0;
-    out[5] = 0;
-    out[6] = 0;
-    out[7] = 0;
+    out2[1] = 0;
+    out2[2] = 0;
+    out2[3] = 0;
+    out2[5] = 0;
+    out2[6] = 0;
+    out2[7] = 0;
   }
-  out[0] = 1;
-  out[4] = 1;
-  out[8] = 1;
-  return out;
+  out2[0] = 1;
+  out2[4] = 1;
+  out2[8] = 1;
+  return out2;
 }
 
 // node_modules/gl-matrix/esm/mat4.js
@@ -9095,162 +9100,162 @@ __export(mat4_exports, {
   transpose: () => transpose
 });
 function create2() {
-  var out = new ARRAY_TYPE(16);
+  var out2 = new ARRAY_TYPE(16);
   if (ARRAY_TYPE != Float32Array) {
-    out[1] = 0;
-    out[2] = 0;
-    out[3] = 0;
-    out[4] = 0;
-    out[6] = 0;
-    out[7] = 0;
-    out[8] = 0;
-    out[9] = 0;
-    out[11] = 0;
-    out[12] = 0;
-    out[13] = 0;
-    out[14] = 0;
+    out2[1] = 0;
+    out2[2] = 0;
+    out2[3] = 0;
+    out2[4] = 0;
+    out2[6] = 0;
+    out2[7] = 0;
+    out2[8] = 0;
+    out2[9] = 0;
+    out2[11] = 0;
+    out2[12] = 0;
+    out2[13] = 0;
+    out2[14] = 0;
   }
-  out[0] = 1;
-  out[5] = 1;
-  out[10] = 1;
-  out[15] = 1;
-  return out;
+  out2[0] = 1;
+  out2[5] = 1;
+  out2[10] = 1;
+  out2[15] = 1;
+  return out2;
 }
 function clone(a) {
-  var out = new ARRAY_TYPE(16);
-  out[0] = a[0];
-  out[1] = a[1];
-  out[2] = a[2];
-  out[3] = a[3];
-  out[4] = a[4];
-  out[5] = a[5];
-  out[6] = a[6];
-  out[7] = a[7];
-  out[8] = a[8];
-  out[9] = a[9];
-  out[10] = a[10];
-  out[11] = a[11];
-  out[12] = a[12];
-  out[13] = a[13];
-  out[14] = a[14];
-  out[15] = a[15];
-  return out;
+  var out2 = new ARRAY_TYPE(16);
+  out2[0] = a[0];
+  out2[1] = a[1];
+  out2[2] = a[2];
+  out2[3] = a[3];
+  out2[4] = a[4];
+  out2[5] = a[5];
+  out2[6] = a[6];
+  out2[7] = a[7];
+  out2[8] = a[8];
+  out2[9] = a[9];
+  out2[10] = a[10];
+  out2[11] = a[11];
+  out2[12] = a[12];
+  out2[13] = a[13];
+  out2[14] = a[14];
+  out2[15] = a[15];
+  return out2;
 }
-function copy(out, a) {
-  out[0] = a[0];
-  out[1] = a[1];
-  out[2] = a[2];
-  out[3] = a[3];
-  out[4] = a[4];
-  out[5] = a[5];
-  out[6] = a[6];
-  out[7] = a[7];
-  out[8] = a[8];
-  out[9] = a[9];
-  out[10] = a[10];
-  out[11] = a[11];
-  out[12] = a[12];
-  out[13] = a[13];
-  out[14] = a[14];
-  out[15] = a[15];
-  return out;
+function copy(out2, a) {
+  out2[0] = a[0];
+  out2[1] = a[1];
+  out2[2] = a[2];
+  out2[3] = a[3];
+  out2[4] = a[4];
+  out2[5] = a[5];
+  out2[6] = a[6];
+  out2[7] = a[7];
+  out2[8] = a[8];
+  out2[9] = a[9];
+  out2[10] = a[10];
+  out2[11] = a[11];
+  out2[12] = a[12];
+  out2[13] = a[13];
+  out2[14] = a[14];
+  out2[15] = a[15];
+  return out2;
 }
 function fromValues(m00, m01, m02, m03, m10, m11, m12, m13, m20, m21, m22, m23, m30, m31, m32, m33) {
-  var out = new ARRAY_TYPE(16);
-  out[0] = m00;
-  out[1] = m01;
-  out[2] = m02;
-  out[3] = m03;
-  out[4] = m10;
-  out[5] = m11;
-  out[6] = m12;
-  out[7] = m13;
-  out[8] = m20;
-  out[9] = m21;
-  out[10] = m22;
-  out[11] = m23;
-  out[12] = m30;
-  out[13] = m31;
-  out[14] = m32;
-  out[15] = m33;
-  return out;
+  var out2 = new ARRAY_TYPE(16);
+  out2[0] = m00;
+  out2[1] = m01;
+  out2[2] = m02;
+  out2[3] = m03;
+  out2[4] = m10;
+  out2[5] = m11;
+  out2[6] = m12;
+  out2[7] = m13;
+  out2[8] = m20;
+  out2[9] = m21;
+  out2[10] = m22;
+  out2[11] = m23;
+  out2[12] = m30;
+  out2[13] = m31;
+  out2[14] = m32;
+  out2[15] = m33;
+  return out2;
 }
-function set(out, m00, m01, m02, m03, m10, m11, m12, m13, m20, m21, m22, m23, m30, m31, m32, m33) {
-  out[0] = m00;
-  out[1] = m01;
-  out[2] = m02;
-  out[3] = m03;
-  out[4] = m10;
-  out[5] = m11;
-  out[6] = m12;
-  out[7] = m13;
-  out[8] = m20;
-  out[9] = m21;
-  out[10] = m22;
-  out[11] = m23;
-  out[12] = m30;
-  out[13] = m31;
-  out[14] = m32;
-  out[15] = m33;
-  return out;
+function set(out2, m00, m01, m02, m03, m10, m11, m12, m13, m20, m21, m22, m23, m30, m31, m32, m33) {
+  out2[0] = m00;
+  out2[1] = m01;
+  out2[2] = m02;
+  out2[3] = m03;
+  out2[4] = m10;
+  out2[5] = m11;
+  out2[6] = m12;
+  out2[7] = m13;
+  out2[8] = m20;
+  out2[9] = m21;
+  out2[10] = m22;
+  out2[11] = m23;
+  out2[12] = m30;
+  out2[13] = m31;
+  out2[14] = m32;
+  out2[15] = m33;
+  return out2;
 }
-function identity(out) {
-  out[0] = 1;
-  out[1] = 0;
-  out[2] = 0;
-  out[3] = 0;
-  out[4] = 0;
-  out[5] = 1;
-  out[6] = 0;
-  out[7] = 0;
-  out[8] = 0;
-  out[9] = 0;
-  out[10] = 1;
-  out[11] = 0;
-  out[12] = 0;
-  out[13] = 0;
-  out[14] = 0;
-  out[15] = 1;
-  return out;
+function identity(out2) {
+  out2[0] = 1;
+  out2[1] = 0;
+  out2[2] = 0;
+  out2[3] = 0;
+  out2[4] = 0;
+  out2[5] = 1;
+  out2[6] = 0;
+  out2[7] = 0;
+  out2[8] = 0;
+  out2[9] = 0;
+  out2[10] = 1;
+  out2[11] = 0;
+  out2[12] = 0;
+  out2[13] = 0;
+  out2[14] = 0;
+  out2[15] = 1;
+  return out2;
 }
-function transpose(out, a) {
-  if (out === a) {
+function transpose(out2, a) {
+  if (out2 === a) {
     var a01 = a[1], a02 = a[2], a03 = a[3];
     var a12 = a[6], a13 = a[7];
     var a23 = a[11];
-    out[1] = a[4];
-    out[2] = a[8];
-    out[3] = a[12];
-    out[4] = a01;
-    out[6] = a[9];
-    out[7] = a[13];
-    out[8] = a02;
-    out[9] = a12;
-    out[11] = a[14];
-    out[12] = a03;
-    out[13] = a13;
-    out[14] = a23;
+    out2[1] = a[4];
+    out2[2] = a[8];
+    out2[3] = a[12];
+    out2[4] = a01;
+    out2[6] = a[9];
+    out2[7] = a[13];
+    out2[8] = a02;
+    out2[9] = a12;
+    out2[11] = a[14];
+    out2[12] = a03;
+    out2[13] = a13;
+    out2[14] = a23;
   } else {
-    out[0] = a[0];
-    out[1] = a[4];
-    out[2] = a[8];
-    out[3] = a[12];
-    out[4] = a[1];
-    out[5] = a[5];
-    out[6] = a[9];
-    out[7] = a[13];
-    out[8] = a[2];
-    out[9] = a[6];
-    out[10] = a[10];
-    out[11] = a[14];
-    out[12] = a[3];
-    out[13] = a[7];
-    out[14] = a[11];
-    out[15] = a[15];
+    out2[0] = a[0];
+    out2[1] = a[4];
+    out2[2] = a[8];
+    out2[3] = a[12];
+    out2[4] = a[1];
+    out2[5] = a[5];
+    out2[6] = a[9];
+    out2[7] = a[13];
+    out2[8] = a[2];
+    out2[9] = a[6];
+    out2[10] = a[10];
+    out2[11] = a[14];
+    out2[12] = a[3];
+    out2[13] = a[7];
+    out2[14] = a[11];
+    out2[15] = a[15];
   }
-  return out;
+  return out2;
 }
-function invert(out, a) {
+function invert(out2, a) {
   var a00 = a[0], a01 = a[1], a02 = a[2], a03 = a[3];
   var a10 = a[4], a11 = a[5], a12 = a[6], a13 = a[7];
   var a20 = a[8], a21 = a[9], a22 = a[10], a23 = a[11];
@@ -9272,46 +9277,46 @@ function invert(out, a) {
     return null;
   }
   det = 1 / det;
-  out[0] = (a11 * b11 - a12 * b10 + a13 * b09) * det;
-  out[1] = (a02 * b10 - a01 * b11 - a03 * b09) * det;
-  out[2] = (a31 * b05 - a32 * b04 + a33 * b03) * det;
-  out[3] = (a22 * b04 - a21 * b05 - a23 * b03) * det;
-  out[4] = (a12 * b08 - a10 * b11 - a13 * b07) * det;
-  out[5] = (a00 * b11 - a02 * b08 + a03 * b07) * det;
-  out[6] = (a32 * b02 - a30 * b05 - a33 * b01) * det;
-  out[7] = (a20 * b05 - a22 * b02 + a23 * b01) * det;
-  out[8] = (a10 * b10 - a11 * b08 + a13 * b06) * det;
-  out[9] = (a01 * b08 - a00 * b10 - a03 * b06) * det;
-  out[10] = (a30 * b04 - a31 * b02 + a33 * b00) * det;
-  out[11] = (a21 * b02 - a20 * b04 - a23 * b00) * det;
-  out[12] = (a11 * b07 - a10 * b09 - a12 * b06) * det;
-  out[13] = (a00 * b09 - a01 * b07 + a02 * b06) * det;
-  out[14] = (a31 * b01 - a30 * b03 - a32 * b00) * det;
-  out[15] = (a20 * b03 - a21 * b01 + a22 * b00) * det;
-  return out;
+  out2[0] = (a11 * b11 - a12 * b10 + a13 * b09) * det;
+  out2[1] = (a02 * b10 - a01 * b11 - a03 * b09) * det;
+  out2[2] = (a31 * b05 - a32 * b04 + a33 * b03) * det;
+  out2[3] = (a22 * b04 - a21 * b05 - a23 * b03) * det;
+  out2[4] = (a12 * b08 - a10 * b11 - a13 * b07) * det;
+  out2[5] = (a00 * b11 - a02 * b08 + a03 * b07) * det;
+  out2[6] = (a32 * b02 - a30 * b05 - a33 * b01) * det;
+  out2[7] = (a20 * b05 - a22 * b02 + a23 * b01) * det;
+  out2[8] = (a10 * b10 - a11 * b08 + a13 * b06) * det;
+  out2[9] = (a01 * b08 - a00 * b10 - a03 * b06) * det;
+  out2[10] = (a30 * b04 - a31 * b02 + a33 * b00) * det;
+  out2[11] = (a21 * b02 - a20 * b04 - a23 * b00) * det;
+  out2[12] = (a11 * b07 - a10 * b09 - a12 * b06) * det;
+  out2[13] = (a00 * b09 - a01 * b07 + a02 * b06) * det;
+  out2[14] = (a31 * b01 - a30 * b03 - a32 * b00) * det;
+  out2[15] = (a20 * b03 - a21 * b01 + a22 * b00) * det;
+  return out2;
 }
-function adjoint(out, a) {
+function adjoint(out2, a) {
   var a00 = a[0], a01 = a[1], a02 = a[2], a03 = a[3];
   var a10 = a[4], a11 = a[5], a12 = a[6], a13 = a[7];
   var a20 = a[8], a21 = a[9], a22 = a[10], a23 = a[11];
   var a30 = a[12], a31 = a[13], a32 = a[14], a33 = a[15];
-  out[0] = a11 * (a22 * a33 - a23 * a32) - a21 * (a12 * a33 - a13 * a32) + a31 * (a12 * a23 - a13 * a22);
-  out[1] = -(a01 * (a22 * a33 - a23 * a32) - a21 * (a02 * a33 - a03 * a32) + a31 * (a02 * a23 - a03 * a22));
-  out[2] = a01 * (a12 * a33 - a13 * a32) - a11 * (a02 * a33 - a03 * a32) + a31 * (a02 * a13 - a03 * a12);
-  out[3] = -(a01 * (a12 * a23 - a13 * a22) - a11 * (a02 * a23 - a03 * a22) + a21 * (a02 * a13 - a03 * a12));
-  out[4] = -(a10 * (a22 * a33 - a23 * a32) - a20 * (a12 * a33 - a13 * a32) + a30 * (a12 * a23 - a13 * a22));
-  out[5] = a00 * (a22 * a33 - a23 * a32) - a20 * (a02 * a33 - a03 * a32) + a30 * (a02 * a23 - a03 * a22);
-  out[6] = -(a00 * (a12 * a33 - a13 * a32) - a10 * (a02 * a33 - a03 * a32) + a30 * (a02 * a13 - a03 * a12));
-  out[7] = a00 * (a12 * a23 - a13 * a22) - a10 * (a02 * a23 - a03 * a22) + a20 * (a02 * a13 - a03 * a12);
-  out[8] = a10 * (a21 * a33 - a23 * a31) - a20 * (a11 * a33 - a13 * a31) + a30 * (a11 * a23 - a13 * a21);
-  out[9] = -(a00 * (a21 * a33 - a23 * a31) - a20 * (a01 * a33 - a03 * a31) + a30 * (a01 * a23 - a03 * a21));
-  out[10] = a00 * (a11 * a33 - a13 * a31) - a10 * (a01 * a33 - a03 * a31) + a30 * (a01 * a13 - a03 * a11);
-  out[11] = -(a00 * (a11 * a23 - a13 * a21) - a10 * (a01 * a23 - a03 * a21) + a20 * (a01 * a13 - a03 * a11));
-  out[12] = -(a10 * (a21 * a32 - a22 * a31) - a20 * (a11 * a32 - a12 * a31) + a30 * (a11 * a22 - a12 * a21));
-  out[13] = a00 * (a21 * a32 - a22 * a31) - a20 * (a01 * a32 - a02 * a31) + a30 * (a01 * a22 - a02 * a21);
-  out[14] = -(a00 * (a11 * a32 - a12 * a31) - a10 * (a01 * a32 - a02 * a31) + a30 * (a01 * a12 - a02 * a11));
-  out[15] = a00 * (a11 * a22 - a12 * a21) - a10 * (a01 * a22 - a02 * a21) + a20 * (a01 * a12 - a02 * a11);
-  return out;
+  out2[0] = a11 * (a22 * a33 - a23 * a32) - a21 * (a12 * a33 - a13 * a32) + a31 * (a12 * a23 - a13 * a22);
+  out2[1] = -(a01 * (a22 * a33 - a23 * a32) - a21 * (a02 * a33 - a03 * a32) + a31 * (a02 * a23 - a03 * a22));
+  out2[2] = a01 * (a12 * a33 - a13 * a32) - a11 * (a02 * a33 - a03 * a32) + a31 * (a02 * a13 - a03 * a12);
+  out2[3] = -(a01 * (a12 * a23 - a13 * a22) - a11 * (a02 * a23 - a03 * a22) + a21 * (a02 * a13 - a03 * a12));
+  out2[4] = -(a10 * (a22 * a33 - a23 * a32) - a20 * (a12 * a33 - a13 * a32) + a30 * (a12 * a23 - a13 * a22));
+  out2[5] = a00 * (a22 * a33 - a23 * a32) - a20 * (a02 * a33 - a03 * a32) + a30 * (a02 * a23 - a03 * a22);
+  out2[6] = -(a00 * (a12 * a33 - a13 * a32) - a10 * (a02 * a33 - a03 * a32) + a30 * (a02 * a13 - a03 * a12));
+  out2[7] = a00 * (a12 * a23 - a13 * a22) - a10 * (a02 * a23 - a03 * a22) + a20 * (a02 * a13 - a03 * a12);
+  out2[8] = a10 * (a21 * a33 - a23 * a31) - a20 * (a11 * a33 - a13 * a31) + a30 * (a11 * a23 - a13 * a21);
+  out2[9] = -(a00 * (a21 * a33 - a23 * a31) - a20 * (a01 * a33 - a03 * a31) + a30 * (a01 * a23 - a03 * a21));
+  out2[10] = a00 * (a11 * a33 - a13 * a31) - a10 * (a01 * a33 - a03 * a31) + a30 * (a01 * a13 - a03 * a11);
+  out2[11] = -(a00 * (a11 * a23 - a13 * a21) - a10 * (a01 * a23 - a03 * a21) + a20 * (a01 * a13 - a03 * a11));
+  out2[12] = -(a10 * (a21 * a32 - a22 * a31) - a20 * (a11 * a32 - a12 * a31) + a30 * (a11 * a22 - a12 * a21));
+  out2[13] = a00 * (a21 * a32 - a22 * a31) - a20 * (a01 * a32 - a02 * a31) + a30 * (a01 * a22 - a02 * a21);
+  out2[14] = -(a00 * (a11 * a32 - a12 * a31) - a10 * (a01 * a32 - a02 * a31) + a30 * (a01 * a12 - a02 * a11));
+  out2[15] = a00 * (a11 * a22 - a12 * a21) - a10 * (a01 * a22 - a02 * a21) + a20 * (a01 * a12 - a02 * a11);
+  return out2;
 }
 function determinant(a) {
   var a00 = a[0], a01 = a[1], a02 = a[2], a03 = a[3];
@@ -9332,52 +9337,52 @@ function determinant(a) {
   var b11 = a22 * a33 - a23 * a32;
   return b00 * b11 - b01 * b10 + b02 * b09 + b03 * b08 - b04 * b07 + b05 * b06;
 }
-function multiply(out, a, b) {
+function multiply(out2, a, b) {
   var a00 = a[0], a01 = a[1], a02 = a[2], a03 = a[3];
   var a10 = a[4], a11 = a[5], a12 = a[6], a13 = a[7];
   var a20 = a[8], a21 = a[9], a22 = a[10], a23 = a[11];
   var a30 = a[12], a31 = a[13], a32 = a[14], a33 = a[15];
   var b0 = b[0], b1 = b[1], b2 = b[2], b3 = b[3];
-  out[0] = b0 * a00 + b1 * a10 + b2 * a20 + b3 * a30;
-  out[1] = b0 * a01 + b1 * a11 + b2 * a21 + b3 * a31;
-  out[2] = b0 * a02 + b1 * a12 + b2 * a22 + b3 * a32;
-  out[3] = b0 * a03 + b1 * a13 + b2 * a23 + b3 * a33;
+  out2[0] = b0 * a00 + b1 * a10 + b2 * a20 + b3 * a30;
+  out2[1] = b0 * a01 + b1 * a11 + b2 * a21 + b3 * a31;
+  out2[2] = b0 * a02 + b1 * a12 + b2 * a22 + b3 * a32;
+  out2[3] = b0 * a03 + b1 * a13 + b2 * a23 + b3 * a33;
   b0 = b[4];
   b1 = b[5];
   b2 = b[6];
   b3 = b[7];
-  out[4] = b0 * a00 + b1 * a10 + b2 * a20 + b3 * a30;
-  out[5] = b0 * a01 + b1 * a11 + b2 * a21 + b3 * a31;
-  out[6] = b0 * a02 + b1 * a12 + b2 * a22 + b3 * a32;
-  out[7] = b0 * a03 + b1 * a13 + b2 * a23 + b3 * a33;
+  out2[4] = b0 * a00 + b1 * a10 + b2 * a20 + b3 * a30;
+  out2[5] = b0 * a01 + b1 * a11 + b2 * a21 + b3 * a31;
+  out2[6] = b0 * a02 + b1 * a12 + b2 * a22 + b3 * a32;
+  out2[7] = b0 * a03 + b1 * a13 + b2 * a23 + b3 * a33;
   b0 = b[8];
   b1 = b[9];
   b2 = b[10];
   b3 = b[11];
-  out[8] = b0 * a00 + b1 * a10 + b2 * a20 + b3 * a30;
-  out[9] = b0 * a01 + b1 * a11 + b2 * a21 + b3 * a31;
-  out[10] = b0 * a02 + b1 * a12 + b2 * a22 + b3 * a32;
-  out[11] = b0 * a03 + b1 * a13 + b2 * a23 + b3 * a33;
+  out2[8] = b0 * a00 + b1 * a10 + b2 * a20 + b3 * a30;
+  out2[9] = b0 * a01 + b1 * a11 + b2 * a21 + b3 * a31;
+  out2[10] = b0 * a02 + b1 * a12 + b2 * a22 + b3 * a32;
+  out2[11] = b0 * a03 + b1 * a13 + b2 * a23 + b3 * a33;
   b0 = b[12];
   b1 = b[13];
   b2 = b[14];
   b3 = b[15];
-  out[12] = b0 * a00 + b1 * a10 + b2 * a20 + b3 * a30;
-  out[13] = b0 * a01 + b1 * a11 + b2 * a21 + b3 * a31;
-  out[14] = b0 * a02 + b1 * a12 + b2 * a22 + b3 * a32;
-  out[15] = b0 * a03 + b1 * a13 + b2 * a23 + b3 * a33;
-  return out;
+  out2[12] = b0 * a00 + b1 * a10 + b2 * a20 + b3 * a30;
+  out2[13] = b0 * a01 + b1 * a11 + b2 * a21 + b3 * a31;
+  out2[14] = b0 * a02 + b1 * a12 + b2 * a22 + b3 * a32;
+  out2[15] = b0 * a03 + b1 * a13 + b2 * a23 + b3 * a33;
+  return out2;
 }
-function translate(out, a, v) {
+function translate(out2, a, v) {
   var x = v[0], y = v[1], z = v[2];
   var a00, a01, a02, a03;
   var a10, a11, a12, a13;
   var a20, a21, a22, a23;
-  if (a === out) {
-    out[12] = a[0] * x + a[4] * y + a[8] * z + a[12];
-    out[13] = a[1] * x + a[5] * y + a[9] * z + a[13];
-    out[14] = a[2] * x + a[6] * y + a[10] * z + a[14];
-    out[15] = a[3] * x + a[7] * y + a[11] * z + a[15];
+  if (a === out2) {
+    out2[12] = a[0] * x + a[4] * y + a[8] * z + a[12];
+    out2[13] = a[1] * x + a[5] * y + a[9] * z + a[13];
+    out2[14] = a[2] * x + a[6] * y + a[10] * z + a[14];
+    out2[15] = a[3] * x + a[7] * y + a[11] * z + a[15];
   } else {
     a00 = a[0];
     a01 = a[1];
@@ -9391,46 +9396,46 @@ function translate(out, a, v) {
     a21 = a[9];
     a22 = a[10];
     a23 = a[11];
-    out[0] = a00;
-    out[1] = a01;
-    out[2] = a02;
-    out[3] = a03;
-    out[4] = a10;
-    out[5] = a11;
-    out[6] = a12;
-    out[7] = a13;
-    out[8] = a20;
-    out[9] = a21;
-    out[10] = a22;
-    out[11] = a23;
-    out[12] = a00 * x + a10 * y + a20 * z + a[12];
-    out[13] = a01 * x + a11 * y + a21 * z + a[13];
-    out[14] = a02 * x + a12 * y + a22 * z + a[14];
-    out[15] = a03 * x + a13 * y + a23 * z + a[15];
+    out2[0] = a00;
+    out2[1] = a01;
+    out2[2] = a02;
+    out2[3] = a03;
+    out2[4] = a10;
+    out2[5] = a11;
+    out2[6] = a12;
+    out2[7] = a13;
+    out2[8] = a20;
+    out2[9] = a21;
+    out2[10] = a22;
+    out2[11] = a23;
+    out2[12] = a00 * x + a10 * y + a20 * z + a[12];
+    out2[13] = a01 * x + a11 * y + a21 * z + a[13];
+    out2[14] = a02 * x + a12 * y + a22 * z + a[14];
+    out2[15] = a03 * x + a13 * y + a23 * z + a[15];
   }
-  return out;
+  return out2;
 }
-function scale(out, a, v) {
+function scale(out2, a, v) {
   var x = v[0], y = v[1], z = v[2];
-  out[0] = a[0] * x;
-  out[1] = a[1] * x;
-  out[2] = a[2] * x;
-  out[3] = a[3] * x;
-  out[4] = a[4] * y;
-  out[5] = a[5] * y;
-  out[6] = a[6] * y;
-  out[7] = a[7] * y;
-  out[8] = a[8] * z;
-  out[9] = a[9] * z;
-  out[10] = a[10] * z;
-  out[11] = a[11] * z;
-  out[12] = a[12];
-  out[13] = a[13];
-  out[14] = a[14];
-  out[15] = a[15];
-  return out;
+  out2[0] = a[0] * x;
+  out2[1] = a[1] * x;
+  out2[2] = a[2] * x;
+  out2[3] = a[3] * x;
+  out2[4] = a[4] * y;
+  out2[5] = a[5] * y;
+  out2[6] = a[6] * y;
+  out2[7] = a[7] * y;
+  out2[8] = a[8] * z;
+  out2[9] = a[9] * z;
+  out2[10] = a[10] * z;
+  out2[11] = a[11] * z;
+  out2[12] = a[12];
+  out2[13] = a[13];
+  out2[14] = a[14];
+  out2[15] = a[15];
+  return out2;
 }
-function rotate(out, a, rad, axis) {
+function rotate(out2, a, rad, axis) {
   var x = axis[0], y = axis[1], z = axis[2];
   var len5 = Math.hypot(x, y, z);
   var s, c, t;
@@ -9471,27 +9476,27 @@ function rotate(out, a, rad, axis) {
   b20 = x * z * t + y * s;
   b21 = y * z * t - x * s;
   b22 = z * z * t + c;
-  out[0] = a00 * b00 + a10 * b01 + a20 * b02;
-  out[1] = a01 * b00 + a11 * b01 + a21 * b02;
-  out[2] = a02 * b00 + a12 * b01 + a22 * b02;
-  out[3] = a03 * b00 + a13 * b01 + a23 * b02;
-  out[4] = a00 * b10 + a10 * b11 + a20 * b12;
-  out[5] = a01 * b10 + a11 * b11 + a21 * b12;
-  out[6] = a02 * b10 + a12 * b11 + a22 * b12;
-  out[7] = a03 * b10 + a13 * b11 + a23 * b12;
-  out[8] = a00 * b20 + a10 * b21 + a20 * b22;
-  out[9] = a01 * b20 + a11 * b21 + a21 * b22;
-  out[10] = a02 * b20 + a12 * b21 + a22 * b22;
-  out[11] = a03 * b20 + a13 * b21 + a23 * b22;
-  if (a !== out) {
-    out[12] = a[12];
-    out[13] = a[13];
-    out[14] = a[14];
-    out[15] = a[15];
+  out2[0] = a00 * b00 + a10 * b01 + a20 * b02;
+  out2[1] = a01 * b00 + a11 * b01 + a21 * b02;
+  out2[2] = a02 * b00 + a12 * b01 + a22 * b02;
+  out2[3] = a03 * b00 + a13 * b01 + a23 * b02;
+  out2[4] = a00 * b10 + a10 * b11 + a20 * b12;
+  out2[5] = a01 * b10 + a11 * b11 + a21 * b12;
+  out2[6] = a02 * b10 + a12 * b11 + a22 * b12;
+  out2[7] = a03 * b10 + a13 * b11 + a23 * b12;
+  out2[8] = a00 * b20 + a10 * b21 + a20 * b22;
+  out2[9] = a01 * b20 + a11 * b21 + a21 * b22;
+  out2[10] = a02 * b20 + a12 * b21 + a22 * b22;
+  out2[11] = a03 * b20 + a13 * b21 + a23 * b22;
+  if (a !== out2) {
+    out2[12] = a[12];
+    out2[13] = a[13];
+    out2[14] = a[14];
+    out2[15] = a[15];
   }
-  return out;
+  return out2;
 }
-function rotateX(out, a, rad) {
+function rotateX(out2, a, rad) {
   var s = Math.sin(rad);
   var c = Math.cos(rad);
   var a10 = a[4];
@@ -9502,27 +9507,27 @@ function rotateX(out, a, rad) {
   var a21 = a[9];
   var a22 = a[10];
   var a23 = a[11];
-  if (a !== out) {
-    out[0] = a[0];
-    out[1] = a[1];
-    out[2] = a[2];
-    out[3] = a[3];
-    out[12] = a[12];
-    out[13] = a[13];
-    out[14] = a[14];
-    out[15] = a[15];
+  if (a !== out2) {
+    out2[0] = a[0];
+    out2[1] = a[1];
+    out2[2] = a[2];
+    out2[3] = a[3];
+    out2[12] = a[12];
+    out2[13] = a[13];
+    out2[14] = a[14];
+    out2[15] = a[15];
   }
-  out[4] = a10 * c + a20 * s;
-  out[5] = a11 * c + a21 * s;
-  out[6] = a12 * c + a22 * s;
-  out[7] = a13 * c + a23 * s;
-  out[8] = a20 * c - a10 * s;
-  out[9] = a21 * c - a11 * s;
-  out[10] = a22 * c - a12 * s;
-  out[11] = a23 * c - a13 * s;
-  return out;
+  out2[4] = a10 * c + a20 * s;
+  out2[5] = a11 * c + a21 * s;
+  out2[6] = a12 * c + a22 * s;
+  out2[7] = a13 * c + a23 * s;
+  out2[8] = a20 * c - a10 * s;
+  out2[9] = a21 * c - a11 * s;
+  out2[10] = a22 * c - a12 * s;
+  out2[11] = a23 * c - a13 * s;
+  return out2;
 }
-function rotateY(out, a, rad) {
+function rotateY(out2, a, rad) {
   var s = Math.sin(rad);
   var c = Math.cos(rad);
   var a00 = a[0];
@@ -9533,27 +9538,27 @@ function rotateY(out, a, rad) {
   var a21 = a[9];
   var a22 = a[10];
   var a23 = a[11];
-  if (a !== out) {
-    out[4] = a[4];
-    out[5] = a[5];
-    out[6] = a[6];
-    out[7] = a[7];
-    out[12] = a[12];
-    out[13] = a[13];
-    out[14] = a[14];
-    out[15] = a[15];
+  if (a !== out2) {
+    out2[4] = a[4];
+    out2[5] = a[5];
+    out2[6] = a[6];
+    out2[7] = a[7];
+    out2[12] = a[12];
+    out2[13] = a[13];
+    out2[14] = a[14];
+    out2[15] = a[15];
   }
-  out[0] = a00 * c - a20 * s;
-  out[1] = a01 * c - a21 * s;
-  out[2] = a02 * c - a22 * s;
-  out[3] = a03 * c - a23 * s;
-  out[8] = a00 * s + a20 * c;
-  out[9] = a01 * s + a21 * c;
-  out[10] = a02 * s + a22 * c;
-  out[11] = a03 * s + a23 * c;
-  return out;
+  out2[0] = a00 * c - a20 * s;
+  out2[1] = a01 * c - a21 * s;
+  out2[2] = a02 * c - a22 * s;
+  out2[3] = a03 * c - a23 * s;
+  out2[8] = a00 * s + a20 * c;
+  out2[9] = a01 * s + a21 * c;
+  out2[10] = a02 * s + a22 * c;
+  out2[11] = a03 * s + a23 * c;
+  return out2;
 }
-function rotateZ(out, a, rad) {
+function rotateZ(out2, a, rad) {
   var s = Math.sin(rad);
   var c = Math.cos(rad);
   var a00 = a[0];
@@ -9564,65 +9569,65 @@ function rotateZ(out, a, rad) {
   var a11 = a[5];
   var a12 = a[6];
   var a13 = a[7];
-  if (a !== out) {
-    out[8] = a[8];
-    out[9] = a[9];
-    out[10] = a[10];
-    out[11] = a[11];
-    out[12] = a[12];
-    out[13] = a[13];
-    out[14] = a[14];
-    out[15] = a[15];
+  if (a !== out2) {
+    out2[8] = a[8];
+    out2[9] = a[9];
+    out2[10] = a[10];
+    out2[11] = a[11];
+    out2[12] = a[12];
+    out2[13] = a[13];
+    out2[14] = a[14];
+    out2[15] = a[15];
   }
-  out[0] = a00 * c + a10 * s;
-  out[1] = a01 * c + a11 * s;
-  out[2] = a02 * c + a12 * s;
-  out[3] = a03 * c + a13 * s;
-  out[4] = a10 * c - a00 * s;
-  out[5] = a11 * c - a01 * s;
-  out[6] = a12 * c - a02 * s;
-  out[7] = a13 * c - a03 * s;
-  return out;
+  out2[0] = a00 * c + a10 * s;
+  out2[1] = a01 * c + a11 * s;
+  out2[2] = a02 * c + a12 * s;
+  out2[3] = a03 * c + a13 * s;
+  out2[4] = a10 * c - a00 * s;
+  out2[5] = a11 * c - a01 * s;
+  out2[6] = a12 * c - a02 * s;
+  out2[7] = a13 * c - a03 * s;
+  return out2;
 }
-function fromTranslation(out, v) {
-  out[0] = 1;
-  out[1] = 0;
-  out[2] = 0;
-  out[3] = 0;
-  out[4] = 0;
-  out[5] = 1;
-  out[6] = 0;
-  out[7] = 0;
-  out[8] = 0;
-  out[9] = 0;
-  out[10] = 1;
-  out[11] = 0;
-  out[12] = v[0];
-  out[13] = v[1];
-  out[14] = v[2];
-  out[15] = 1;
-  return out;
+function fromTranslation(out2, v) {
+  out2[0] = 1;
+  out2[1] = 0;
+  out2[2] = 0;
+  out2[3] = 0;
+  out2[4] = 0;
+  out2[5] = 1;
+  out2[6] = 0;
+  out2[7] = 0;
+  out2[8] = 0;
+  out2[9] = 0;
+  out2[10] = 1;
+  out2[11] = 0;
+  out2[12] = v[0];
+  out2[13] = v[1];
+  out2[14] = v[2];
+  out2[15] = 1;
+  return out2;
 }
-function fromScaling(out, v) {
-  out[0] = v[0];
-  out[1] = 0;
-  out[2] = 0;
-  out[3] = 0;
-  out[4] = 0;
-  out[5] = v[1];
-  out[6] = 0;
-  out[7] = 0;
-  out[8] = 0;
-  out[9] = 0;
-  out[10] = v[2];
-  out[11] = 0;
-  out[12] = 0;
-  out[13] = 0;
-  out[14] = 0;
-  out[15] = 1;
-  return out;
+function fromScaling(out2, v) {
+  out2[0] = v[0];
+  out2[1] = 0;
+  out2[2] = 0;
+  out2[3] = 0;
+  out2[4] = 0;
+  out2[5] = v[1];
+  out2[6] = 0;
+  out2[7] = 0;
+  out2[8] = 0;
+  out2[9] = 0;
+  out2[10] = v[2];
+  out2[11] = 0;
+  out2[12] = 0;
+  out2[13] = 0;
+  out2[14] = 0;
+  out2[15] = 1;
+  return out2;
 }
-function fromRotation(out, rad, axis) {
+function fromRotation(out2, rad, axis) {
   var x = axis[0], y = axis[1], z = axis[2];
   var len5 = Math.hypot(x, y, z);
   var s, c, t;
@@ -9636,88 +9641,88 @@ function fromRotation(out, rad, axis) {
   s = Math.sin(rad);
   c = Math.cos(rad);
   t = 1 - c;
-  out[0] = x * x * t + c;
-  out[1] = y * x * t + z * s;
-  out[2] = z * x * t - y * s;
-  out[3] = 0;
-  out[4] = x * y * t - z * s;
-  out[5] = y * y * t + c;
-  out[6] = z * y * t + x * s;
-  out[7] = 0;
-  out[8] = x * z * t + y * s;
-  out[9] = y * z * t - x * s;
-  out[10] = z * z * t + c;
-  out[11] = 0;
-  out[12] = 0;
-  out[13] = 0;
-  out[14] = 0;
-  out[15] = 1;
-  return out;
+  out2[0] = x * x * t + c;
+  out2[1] = y * x * t + z * s;
+  out2[2] = z * x * t - y * s;
+  out2[3] = 0;
+  out2[4] = x * y * t - z * s;
+  out2[5] = y * y * t + c;
+  out2[6] = z * y * t + x * s;
+  out2[7] = 0;
+  out2[8] = x * z * t + y * s;
+  out2[9] = y * z * t - x * s;
+  out2[10] = z * z * t + c;
+  out2[11] = 0;
+  out2[12] = 0;
+  out2[13] = 0;
+  out2[14] = 0;
+  out2[15] = 1;
+  return out2;
 }
-function fromXRotation(out, rad) {
+function fromXRotation(out2, rad) {
   var s = Math.sin(rad);
   var c = Math.cos(rad);
-  out[0] = 1;
-  out[1] = 0;
-  out[2] = 0;
-  out[3] = 0;
-  out[4] = 0;
-  out[5] = c;
-  out[6] = s;
-  out[7] = 0;
-  out[8] = 0;
-  out[9] = -s;
-  out[10] = c;
-  out[11] = 0;
-  out[12] = 0;
-  out[13] = 0;
-  out[14] = 0;
-  out[15] = 1;
-  return out;
+  out2[0] = 1;
+  out2[1] = 0;
+  out2[2] = 0;
+  out2[3] = 0;
+  out2[4] = 0;
+  out2[5] = c;
+  out2[6] = s;
+  out2[7] = 0;
+  out2[8] = 0;
+  out2[9] = -s;
+  out2[10] = c;
+  out2[11] = 0;
+  out2[12] = 0;
+  out2[13] = 0;
+  out2[14] = 0;
+  out2[15] = 1;
+  return out2;
 }
-function fromYRotation(out, rad) {
+function fromYRotation(out2, rad) {
   var s = Math.sin(rad);
   var c = Math.cos(rad);
-  out[0] = c;
-  out[1] = 0;
-  out[2] = -s;
-  out[3] = 0;
-  out[4] = 0;
-  out[5] = 1;
-  out[6] = 0;
-  out[7] = 0;
-  out[8] = s;
-  out[9] = 0;
-  out[10] = c;
-  out[11] = 0;
-  out[12] = 0;
-  out[13] = 0;
-  out[14] = 0;
-  out[15] = 1;
-  return out;
+  out2[0] = c;
+  out2[1] = 0;
+  out2[2] = -s;
+  out2[3] = 0;
+  out2[4] = 0;
+  out2[5] = 1;
+  out2[6] = 0;
+  out2[7] = 0;
+  out2[8] = s;
+  out2[9] = 0;
+  out2[10] = c;
+  out2[11] = 0;
+  out2[12] = 0;
+  out2[13] = 0;
+  out2[14] = 0;
+  out2[15] = 1;
+  return out2;
 }
-function fromZRotation(out, rad) {
+function fromZRotation(out2, rad) {
   var s = Math.sin(rad);
   var c = Math.cos(rad);
-  out[0] = c;
-  out[1] = s;
-  out[2] = 0;
-  out[3] = 0;
-  out[4] = -s;
-  out[5] = c;
-  out[6] = 0;
-  out[7] = 0;
-  out[8] = 0;
-  out[9] = 0;
-  out[10] = 1;
-  out[11] = 0;
-  out[12] = 0;
-  out[13] = 0;
-  out[14] = 0;
-  out[15] = 1;
-  return out;
+  out2[0] = c;
+  out2[1] = s;
+  out2[2] = 0;
+  out2[3] = 0;
+  out2[4] = -s;
+  out2[5] = c;
+  out2[6] = 0;
+  out2[7] = 0;
+  out2[8] = 0;
+  out2[9] = 0;
+  out2[10] = 1;
+  out2[11] = 0;
+  out2[12] = 0;
+  out2[13] = 0;
+  out2[14] = 0;
+  out2[15] = 1;
+  return out2;
 }
-function fromRotationTranslation(out, q, v) {
+function fromRotationTranslation(out2, q, v) {
   var x = q[0], y = q[1], z = q[2], w = q[3];
   var x2 = x + x;
   var y2 = y + y;
@@ -9731,25 +9736,25 @@ function fromRotationTranslation(out, q, v) {
   var wx = w * x2;
   var wy = w * y2;
   var wz = w * z2;
-  out[0] = 1 - (yy + zz);
-  out[1] = xy + wz;
-  out[2] = xz - wy;
-  out[3] = 0;
-  out[4] = xy - wz;
-  out[5] = 1 - (xx + zz);
-  out[6] = yz + wx;
-  out[7] = 0;
-  out[8] = xz + wy;
-  out[9] = yz - wx;
-  out[10] = 1 - (xx + yy);
-  out[11] = 0;
-  out[12] = v[0];
-  out[13] = v[1];
-  out[14] = v[2];
-  out[15] = 1;
-  return out;
+  out2[0] = 1 - (yy + zz);
+  out2[1] = xy + wz;
+  out2[2] = xz - wy;
+  out2[3] = 0;
+  out2[4] = xy - wz;
+  out2[5] = 1 - (xx + zz);
+  out2[6] = yz + wx;
+  out2[7] = 0;
+  out2[8] = xz + wy;
+  out2[9] = yz - wx;
+  out2[10] = 1 - (xx + yy);
+  out2[11] = 0;
+  out2[12] = v[0];
+  out2[13] = v[1];
+  out2[14] = v[2];
+  out2[15] = 1;
+  return out2;
 }
-function fromQuat2(out, a) {
+function fromQuat2(out2, a) {
   var translation = new ARRAY_TYPE(3);
   var bx = -a[0], by = -a[1], bz = -a[2], bw = a[3], ax = a[4], ay = a[5], az = a[6], aw = a[7];
   var magnitude = bx * bx + by * by + bz * bz + bw * bw;
@@ -9762,16 +9767,16 @@ function fromQuat2(out, a) {
     translation[1] = (ay * bw + aw * by + az * bx - ax * bz) * 2;
     translation[2] = (az * bw + aw * bz + ax * by - ay * bx) * 2;
   }
-  fromRotationTranslation(out, a, translation);
-  return out;
+  fromRotationTranslation(out2, a, translation);
+  return out2;
 }
-function getTranslation(out, mat) {
-  out[0] = mat[12];
-  out[1] = mat[13];
-  out[2] = mat[14];
-  return out;
+function getTranslation(out2, mat) {
+  out2[0] = mat[12];
+  out2[1] = mat[13];
+  out2[2] = mat[14];
+  return out2;
 }
-function getScaling(out, mat) {
+function getScaling(out2, mat) {
   var m11 = mat[0];
   var m12 = mat[1];
   var m13 = mat[2];
@@ -9781,12 +9786,12 @@ function getScaling(out, mat) {
   var m31 = mat[8];
   var m32 = mat[9];
   var m33 = mat[10];
-  out[0] = Math.hypot(m11, m12, m13);
-  out[1] = Math.hypot(m21, m22, m23);
-  out[2] = Math.hypot(m31, m32, m33);
-  return out;
+  out2[0] = Math.hypot(m11, m12, m13);
+  out2[1] = Math.hypot(m21, m22, m23);
+  out2[2] = Math.hypot(m31, m32, m33);
+  return out2;
 }
-function getRotation(out, mat) {
+function getRotation(out2, mat) {
   var scaling = new ARRAY_TYPE(3);
   getScaling(scaling, mat);
   var is1 = 1 / scaling[0];
@@ -9805,32 +9810,32 @@ function getRotation(out, mat) {
   var S = 0;
   if (trace > 0) {
     S = Math.sqrt(trace + 1) * 2;
-    out[3] = 0.25 * S;
-    out[0] = (sm23 - sm32) / S;
-    out[1] = (sm31 - sm13) / S;
-    out[2] = (sm12 - sm21) / S;
+    out2[3] = 0.25 * S;
+    out2[0] = (sm23 - sm32) / S;
+    out2[1] = (sm31 - sm13) / S;
+    out2[2] = (sm12 - sm21) / S;
   } else if (sm11 > sm22 && sm11 > sm33) {
     S = Math.sqrt(1 + sm11 - sm22 - sm33) * 2;
-    out[3] = (sm23 - sm32) / S;
-    out[0] = 0.25 * S;
-    out[1] = (sm12 + sm21) / S;
-    out[2] = (sm31 + sm13) / S;
+    out2[3] = (sm23 - sm32) / S;
+    out2[0] = 0.25 * S;
+    out2[1] = (sm12 + sm21) / S;
+    out2[2] = (sm31 + sm13) / S;
   } else if (sm22 > sm33) {
     S = Math.sqrt(1 + sm22 - sm11 - sm33) * 2;
-    out[3] = (sm31 - sm13) / S;
-    out[0] = (sm12 + sm21) / S;
-    out[1] = 0.25 * S;
-    out[2] = (sm23 + sm32) / S;
+    out2[3] = (sm31 - sm13) / S;
+    out2[0] = (sm12 + sm21) / S;
+    out2[1] = 0.25 * S;
+    out2[2] = (sm23 + sm32) / S;
   } else {
     S = Math.sqrt(1 + sm33 - sm11 - sm22) * 2;
-    out[3] = (sm12 - sm21) / S;
-    out[0] = (sm31 + sm13) / S;
-    out[1] = (sm23 + sm32) / S;
-    out[2] = 0.25 * S;
+    out2[3] = (sm12 - sm21) / S;
+    out2[0] = (sm31 + sm13) / S;
+    out2[1] = (sm23 + sm32) / S;
+    out2[2] = 0.25 * S;
   }
-  return out;
+  return out2;
 }
-function fromRotationTranslationScale(out, q, v, s) {
+function fromRotationTranslationScale(out2, q, v, s) {
   var x = q[0], y = q[1], z = q[2], w = q[3];
   var x2 = x + x;
   var y2 = y + y;
@@ -9847,25 +9852,25 @@ function fromRotationTranslationScale(out, q, v, s) {
   var sx = s[0];
   var sy = s[1];
   var sz = s[2];
-  out[0] = (1 - (yy + zz)) * sx;
-  out[1] = (xy + wz) * sx;
-  out[2] = (xz - wy) * sx;
-  out[3] = 0;
-  out[4] = (xy - wz) * sy;
-  out[5] = (1 - (xx + zz)) * sy;
-  out[6] = (yz + wx) * sy;
-  out[7] = 0;
-  out[8] = (xz + wy) * sz;
-  out[9] = (yz - wx) * sz;
-  out[10] = (1 - (xx + yy)) * sz;
-  out[11] = 0;
-  out[12] = v[0];
-  out[13] = v[1];
-  out[14] = v[2];
-  out[15] = 1;
-  return out;
+  out2[0] = (1 - (yy + zz)) * sx;
+  out2[1] = (xy + wz) * sx;
+  out2[2] = (xz - wy) * sx;
+  out2[3] = 0;
+  out2[4] = (xy - wz) * sy;
+  out2[5] = (1 - (xx + zz)) * sy;
+  out2[6] = (yz + wx) * sy;
+  out2[7] = 0;
+  out2[8] = (xz + wy) * sz;
+  out2[9] = (yz - wx) * sz;
+  out2[10] = (1 - (xx + yy)) * sz;
+  out2[11] = 0;
+  out2[12] = v[0];
+  out2[13] = v[1];
+  out2[14] = v[2];
+  out2[15] = 1;
+  return out2;
 }
-function fromRotationTranslationScaleOrigin(out, q, v, s, o) {
+function fromRotationTranslationScaleOrigin(out2, q, v, s, o) {
   var x = q[0], y = q[1], z = q[2], w = q[3];
   var x2 = x + x;
   var y2 = y + y;
@@ -9887,32 +9892,32 @@ function fromRotationTranslationScaleOrigin(out, q, v, s, o) {
   var oz = o[2];
   var out0 = (1 - (yy + zz)) * sx;
   var out1 = (xy + wz) * sx;
-  var out2 = (xz - wy) * sx;
+  var out22 = (xz - wy) * sx;
   var out4 = (xy - wz) * sy;
   var out5 = (1 - (xx + zz)) * sy;
   var out6 = (yz + wx) * sy;
   var out8 = (xz + wy) * sz;
   var out9 = (yz - wx) * sz;
   var out10 = (1 - (xx + yy)) * sz;
-  out[0] = out0;
-  out[1] = out1;
-  out[2] = out2;
-  out[3] = 0;
-  out[4] = out4;
-  out[5] = out5;
-  out[6] = out6;
-  out[7] = 0;
-  out[8] = out8;
-  out[9] = out9;
-  out[10] = out10;
-  out[11] = 0;
-  out[12] = v[0] + ox - (out0 * ox + out4 * oy + out8 * oz);
-  out[13] = v[1] + oy - (out1 * ox + out5 * oy + out9 * oz);
-  out[14] = v[2] + oz - (out2 * ox + out6 * oy + out10 * oz);
-  out[15] = 1;
-  return out;
+  out2[0] = out0;
+  out2[1] = out1;
+  out2[2] = out22;
+  out2[3] = 0;
+  out2[4] = out4;
+  out2[5] = out5;
+  out2[6] = out6;
+  out2[7] = 0;
+  out2[8] = out8;
+  out2[9] = out9;
+  out2[10] = out10;
+  out2[11] = 0;
+  out2[12] = v[0] + ox - (out0 * ox + out4 * oy + out8 * oz);
+  out2[13] = v[1] + oy - (out1 * ox + out5 * oy + out9 * oz);
+  out2[14] = v[2] + oz - (out22 * ox + out6 * oy + out10 * oz);
+  out2[15] = 1;
+  return out2;
 }
-function fromQuat(out, q) {
+function fromQuat(out2, q) {
   var x = q[0], y = q[1], z = q[2], w = q[3];
   var x2 = x + x;
   var y2 = y + y;
@@ -9926,120 +9931,120 @@ function fromQuat(out, q) {
   var wx = w * x2;
   var wy = w * y2;
   var wz = w * z2;
-  out[0] = 1 - yy - zz;
-  out[1] = yx + wz;
-  out[2] = zx - wy;
-  out[3] = 0;
-  out[4] = yx - wz;
-  out[5] = 1 - xx - zz;
-  out[6] = zy + wx;
-  out[7] = 0;
-  out[8] = zx + wy;
-  out[9] = zy - wx;
-  out[10] = 1 - xx - yy;
-  out[11] = 0;
-  out[12] = 0;
-  out[13] = 0;
-  out[14] = 0;
-  out[15] = 1;
-  return out;
+  out2[0] = 1 - yy - zz;
+  out2[1] = yx + wz;
+  out2[2] = zx - wy;
+  out2[3] = 0;
+  out2[4] = yx - wz;
+  out2[5] = 1 - xx - zz;
+  out2[6] = zy + wx;
+  out2[7] = 0;
+  out2[8] = zx + wy;
+  out2[9] = zy - wx;
+  out2[10] = 1 - xx - yy;
+  out2[11] = 0;
+  out2[12] = 0;
+  out2[13] = 0;
+  out2[14] = 0;
+  out2[15] = 1;
+  return out2;
 }
-function frustum(out, left, right, bottom, top, near, far) {
+function frustum(out2, left, right, bottom, top, near, far) {
   var rl = 1 / (right - left);
   var tb = 1 / (top - bottom);
   var nf = 1 / (near - far);
-  out[0] = near * 2 * rl;
-  out[1] = 0;
-  out[2] = 0;
-  out[3] = 0;
-  out[4] = 0;
-  out[5] = near * 2 * tb;
-  out[6] = 0;
-  out[7] = 0;
-  out[8] = (right + left) * rl;
-  out[9] = (top + bottom) * tb;
-  out[10] = (far + near) * nf;
-  out[11] = -1;
-  out[12] = 0;
-  out[13] = 0;
-  out[14] = far * near * 2 * nf;
-  out[15] = 0;
-  return out;
+  out2[0] = near * 2 * rl;
+  out2[1] = 0;
+  out2[2] = 0;
+  out2[3] = 0;
+  out2[4] = 0;
+  out2[5] = near * 2 * tb;
+  out2[6] = 0;
+  out2[7] = 0;
+  out2[8] = (right + left) * rl;
+  out2[9] = (top + bottom) * tb;
+  out2[10] = (far + near) * nf;
+  out2[11] = -1;
+  out2[12] = 0;
+  out2[13] = 0;
+  out2[14] = far * near * 2 * nf;
+  out2[15] = 0;
+  return out2;
 }
-function perspective(out, fovy, aspect, near, far) {
+function perspective(out2, fovy, aspect, near, far) {
   var f = 1 / Math.tan(fovy / 2), nf;
-  out[0] = f / aspect;
-  out[1] = 0;
-  out[2] = 0;
-  out[3] = 0;
-  out[4] = 0;
-  out[5] = f;
-  out[6] = 0;
-  out[7] = 0;
-  out[8] = 0;
-  out[9] = 0;
-  out[11] = -1;
-  out[12] = 0;
-  out[13] = 0;
-  out[15] = 0;
+  out2[0] = f / aspect;
+  out2[1] = 0;
+  out2[2] = 0;
+  out2[3] = 0;
+  out2[4] = 0;
+  out2[5] = f;
+  out2[6] = 0;
+  out2[7] = 0;
+  out2[8] = 0;
+  out2[9] = 0;
+  out2[11] = -1;
+  out2[12] = 0;
+  out2[13] = 0;
+  out2[15] = 0;
   if (far != null && far !== Infinity) {
     nf = 1 / (near - far);
-    out[10] = (far + near) * nf;
-    out[14] = 2 * far * near * nf;
+    out2[10] = (far + near) * nf;
+    out2[14] = 2 * far * near * nf;
   } else {
-    out[10] = -1;
-    out[14] = -2 * near;
+    out2[10] = -1;
+    out2[14] = -2 * near;
   }
-  return out;
+  return out2;
 }
-function perspectiveFromFieldOfView(out, fov, near, far) {
+function perspectiveFromFieldOfView(out2, fov, near, far) {
   var upTan = Math.tan(fov.upDegrees * Math.PI / 180);
   var downTan = Math.tan(fov.downDegrees * Math.PI / 180);
   var leftTan = Math.tan(fov.leftDegrees * Math.PI / 180);
   var rightTan = Math.tan(fov.rightDegrees * Math.PI / 180);
   var xScale = 2 / (leftTan + rightTan);
   var yScale = 2 / (upTan + downTan);
-  out[0] = xScale;
-  out[1] = 0;
-  out[2] = 0;
-  out[3] = 0;
-  out[4] = 0;
-  out[5] = yScale;
-  out[6] = 0;
-  out[7] = 0;
-  out[8] = -((leftTan - rightTan) * xScale * 0.5);
-  out[9] = (upTan - downTan) * yScale * 0.5;
-  out[10] = far / (near - far);
-  out[11] = -1;
-  out[12] = 0;
-  out[13] = 0;
-  out[14] = far * near / (near - far);
-  out[15] = 0;
-  return out;
+  out2[0] = xScale;
+  out2[1] = 0;
+  out2[2] = 0;
+  out2[3] = 0;
+  out2[4] = 0;
+  out2[5] = yScale;
+  out2[6] = 0;
+  out2[7] = 0;
+  out2[8] = -((leftTan - rightTan) * xScale * 0.5);
+  out2[9] = (upTan - downTan) * yScale * 0.5;
+  out2[10] = far / (near - far);
+  out2[11] = -1;
+  out2[12] = 0;
+  out2[13] = 0;
+  out2[14] = far * near / (near - far);
+  out2[15] = 0;
+  return out2;
 }
-function ortho(out, left, right, bottom, top, near, far) {
+function ortho(out2, left, right, bottom, top, near, far) {
   var lr = 1 / (left - right);
   var bt = 1 / (bottom - top);
   var nf = 1 / (near - far);
-  out[0] = -2 * lr;
-  out[1] = 0;
-  out[2] = 0;
-  out[3] = 0;
-  out[4] = 0;
-  out[5] = -2 * bt;
-  out[6] = 0;
-  out[7] = 0;
-  out[8] = 0;
-  out[9] = 0;
-  out[10] = 2 * nf;
-  out[11] = 0;
-  out[12] = (left + right) * lr;
-  out[13] = (top + bottom) * bt;
-  out[14] = (far + near) * nf;
-  out[15] = 1;
-  return out;
+  out2[0] = -2 * lr;
+  out2[1] = 0;
+  out2[2] = 0;
+  out2[3] = 0;
+  out2[4] = 0;
+  out2[5] = -2 * bt;
+  out2[6] = 0;
+  out2[7] = 0;
+  out2[8] = 0;
+  out2[9] = 0;
+  out2[10] = 2 * nf;
+  out2[11] = 0;
+  out2[12] = (left + right) * lr;
+  out2[13] = (top + bottom) * bt;
+  out2[14] = (far + near) * nf;
+  out2[15] = 1;
+  return out2;
 }
-function lookAt(out, eye, center, up) {
+function lookAt(out2, eye, center, up) {
   var x0, x1, x2, y0, y1, y2, z0, z1, z2, len5;
   var eyex = eye[0];
   var eyey = eye[1];
@@ -10051,7 +10056,7 @@ function lookAt(out, eye, center, up) {
   var centery = center[1];
   var centerz = center[2];
   if (Math.abs(eyex - centerx) < EPSILON && Math.abs(eyey - centery) < EPSILON && Math.abs(eyez - centerz) < EPSILON) {
-    return identity(out);
+    return identity(out2);
   }
   z0 = eyex - centerx;
   z1 = eyey - centery;
@@ -10088,25 +10093,25 @@ function lookAt(out, eye, center, up) {
     y1 *= len5;
     y2 *= len5;
   }
-  out[0] = x0;
-  out[1] = y0;
-  out[2] = z0;
-  out[3] = 0;
-  out[4] = x1;
-  out[5] = y1;
-  out[6] = z1;
-  out[7] = 0;
-  out[8] = x2;
-  out[9] = y2;
-  out[10] = z2;
-  out[11] = 0;
-  out[12] = -(x0 * eyex + x1 * eyey + x2 * eyez);
-  out[13] = -(y0 * eyex + y1 * eyey + y2 * eyez);
-  out[14] = -(z0 * eyex + z1 * eyey + z2 * eyez);
-  out[15] = 1;
-  return out;
+  out2[0] = x0;
+  out2[1] = y0;
+  out2[2] = z0;
+  out2[3] = 0;
+  out2[4] = x1;
+  out2[5] = y1;
+  out2[6] = z1;
+  out2[7] = 0;
+  out2[8] = x2;
+  out2[9] = y2;
+  out2[10] = z2;
+  out2[11] = 0;
+  out2[12] = -(x0 * eyex + x1 * eyey + x2 * eyez);
+  out2[13] = -(y0 * eyex + y1 * eyey + y2 * eyez);
+  out2[14] = -(z0 * eyex + z1 * eyey + z2 * eyez);
+  out2[15] = 1;
+  return out2;
 }
-function targetTo(out, eye, target, up) {
+function targetTo(out2, eye, target, up) {
   var eyex = eye[0], eyey = eye[1], eyez = eye[2], upx = up[0], upy = up[1], upz = up[2];
   var z0 = eyex - target[0], z1 = eyey - target[1], z2 = eyez - target[2];
   var len5 = z0 * z0 + z1 * z1 + z2 * z2;
@@ -10124,23 +10129,23 @@ function targetTo(out, eye, target, up) {
     x1 *= len5;
     x2 *= len5;
   }
-  out[0] = x0;
-  out[1] = x1;
-  out[2] = x2;
-  out[3] = 0;
-  out[4] = z1 * x2 - z2 * x1;
-  out[5] = z2 * x0 - z0 * x2;
-  out[6] = z0 * x1 - z1 * x0;
-  out[7] = 0;
-  out[8] = z0;
-  out[9] = z1;
-  out[10] = z2;
-  out[11] = 0;
-  out[12] = eyex;
-  out[13] = eyey;
-  out[14] = eyez;
-  out[15] = 1;
-  return out;
+  out2[0] = x0;
+  out2[1] = x1;
+  out2[2] = x2;
+  out2[3] = 0;
+  out2[4] = z1 * x2 - z2 * x1;
+  out2[5] = z2 * x0 - z0 * x2;
+  out2[6] = z0 * x1 - z1 * x0;
+  out2[7] = 0;
+  out2[8] = z0;
+  out2[9] = z1;
+  out2[10] = z2;
+  out2[11] = 0;
+  out2[12] = eyex;
+  out2[13] = eyey;
+  out2[14] = eyez;
+  out2[15] = 1;
+  return out2;
 }
 function str(a) {
   return "mat4(" + a[0] + ", " + a[1] + ", " + a[2] + ", " + a[3] + ", " + a[4] + ", " + a[5] + ", " + a[6] + ", " + a[7] + ", " + a[8] + ", " + a[9] + ", " + a[10] + ", " + a[11] + ", " + a[12] + ", " + a[13] + ", " + a[14] + ", " + a[15] + ")";
@@ -10148,81 +10153,81 @@ function str(a) {
 function frob(a) {
   return Math.hypot(a[0], a[1], a[2], a[3], a[4], a[5], a[6], a[7], a[8], a[9], a[10], a[11], a[12], a[13], a[14], a[15]);
 }
-function add(out, a, b) {
-  out[0] = a[0] + b[0];
-  out[1] = a[1] + b[1];
-  out[2] = a[2] + b[2];
-  out[3] = a[3] + b[3];
-  out[4] = a[4] + b[4];
-  out[5] = a[5] + b[5];
-  out[6] = a[6] + b[6];
-  out[7] = a[7] + b[7];
-  out[8] = a[8] + b[8];
-  out[9] = a[9] + b[9];
-  out[10] = a[10] + b[10];
-  out[11] = a[11] + b[11];
-  out[12] = a[12] + b[12];
-  out[13] = a[13] + b[13];
-  out[14] = a[14] + b[14];
-  out[15] = a[15] + b[15];
-  return out;
+function add(out2, a, b) {
+  out2[0] = a[0] + b[0];
+  out2[1] = a[1] + b[1];
+  out2[2] = a[2] + b[2];
+  out2[3] = a[3] + b[3];
+  out2[4] = a[4] + b[4];
+  out2[5] = a[5] + b[5];
+  out2[6] = a[6] + b[6];
+  out2[7] = a[7] + b[7];
+  out2[8] = a[8] + b[8];
+  out2[9] = a[9] + b[9];
+  out2[10] = a[10] + b[10];
+  out2[11] = a[11] + b[11];
+  out2[12] = a[12] + b[12];
+  out2[13] = a[13] + b[13];
+  out2[14] = a[14] + b[14];
+  out2[15] = a[15] + b[15];
+  return out2;
 }
-function subtract(out, a, b) {
-  out[0] = a[0] - b[0];
-  out[1] = a[1] - b[1];
-  out[2] = a[2] - b[2];
-  out[3] = a[3] - b[3];
-  out[4] = a[4] - b[4];
-  out[5] = a[5] - b[5];
-  out[6] = a[6] - b[6];
-  out[7] = a[7] - b[7];
-  out[8] = a[8] - b[8];
-  out[9] = a[9] - b[9];
-  out[10] = a[10] - b[10];
-  out[11] = a[11] - b[11];
-  out[12] = a[12] - b[12];
-  out[13] = a[13] - b[13];
-  out[14] = a[14] - b[14];
-  out[15] = a[15] - b[15];
-  return out;
+function subtract(out2, a, b) {
+  out2[0] = a[0] - b[0];
+  out2[1] = a[1] - b[1];
+  out2[2] = a[2] - b[2];
+  out2[3] = a[3] - b[3];
+  out2[4] = a[4] - b[4];
+  out2[5] = a[5] - b[5];
+  out2[6] = a[6] - b[6];
+  out2[7] = a[7] - b[7];
+  out2[8] = a[8] - b[8];
+  out2[9] = a[9] - b[9];
+  out2[10] = a[10] - b[10];
+  out2[11] = a[11] - b[11];
+  out2[12] = a[12] - b[12];
+  out2[13] = a[13] - b[13];
+  out2[14] = a[14] - b[14];
+  out2[15] = a[15] - b[15];
+  return out2;
 }
-function multiplyScalar(out, a, b) {
-  out[0] = a[0] * b;
-  out[1] = a[1] * b;
-  out[2] = a[2] * b;
-  out[3] = a[3] * b;
-  out[4] = a[4] * b;
-  out[5] = a[5] * b;
-  out[6] = a[6] * b;
-  out[7] = a[7] * b;
-  out[8] = a[8] * b;
-  out[9] = a[9] * b;
-  out[10] = a[10] * b;
-  out[11] = a[11] * b;
-  out[12] = a[12] * b;
-  out[13] = a[13] * b;
-  out[14] = a[14] * b;
-  out[15] = a[15] * b;
-  return out;
+function multiplyScalar(out2, a, b) {
+  out2[0] = a[0] * b;
+  out2[1] = a[1] * b;
+  out2[2] = a[2] * b;
+  out2[3] = a[3] * b;
+  out2[4] = a[4] * b;
+  out2[5] = a[5] * b;
+  out2[6] = a[6] * b;
+  out2[7] = a[7] * b;
+  out2[8] = a[8] * b;
+  out2[9] = a[9] * b;
+  out2[10] = a[10] * b;
+  out2[11] = a[11] * b;
+  out2[12] = a[12] * b;
+  out2[13] = a[13] * b;
+  out2[14] = a[14] * b;
+  out2[15] = a[15] * b;
+  return out2;
 }
-function multiplyScalarAndAdd(out, a, b, scale6) {
-  out[0] = a[0] + b[0] * scale6;
-  out[1] = a[1] + b[1] * scale6;
-  out[2] = a[2] + b[2] * scale6;
-  out[3] = a[3] + b[3] * scale6;
-  out[4] = a[4] + b[4] * scale6;
-  out[5] = a[5] + b[5] * scale6;
-  out[6] = a[6] + b[6] * scale6;
-  out[7] = a[7] + b[7] * scale6;
-  out[8] = a[8] + b[8] * scale6;
-  out[9] = a[9] + b[9] * scale6;
-  out[10] = a[10] + b[10] * scale6;
-  out[11] = a[11] + b[11] * scale6;
-  out[12] = a[12] + b[12] * scale6;
-  out[13] = a[13] + b[13] * scale6;
-  out[14] = a[14] + b[14] * scale6;
-  out[15] = a[15] + b[15] * scale6;
-  return out;
+function multiplyScalarAndAdd(out2, a, b, scale6) {
+  out2[0] = a[0] + b[0] * scale6;
+  out2[1] = a[1] + b[1] * scale6;
+  out2[2] = a[2] + b[2] * scale6;
+  out2[3] = a[3] + b[3] * scale6;
+  out2[4] = a[4] + b[4] * scale6;
+  out2[5] = a[5] + b[5] * scale6;
+  out2[6] = a[6] + b[6] * scale6;
+  out2[7] = a[7] + b[7] * scale6;
+  out2[8] = a[8] + b[8] * scale6;
+  out2[9] = a[9] + b[9] * scale6;
+  out2[10] = a[10] + b[10] * scale6;
+  out2[11] = a[11] + b[11] * scale6;
+  out2[12] = a[12] + b[12] * scale6;
+  out2[13] = a[13] + b[13] * scale6;
+  out2[14] = a[14] + b[14] * scale6;
+  out2[15] = a[15] + b[15] * scale6;
+  return out2;
 }
 function exactEquals(a, b) {
   return a[0] === b[0] && a[1] === b[1] && a[2] === b[2] && a[3] === b[3] && a[4] === b[4] && a[5] === b[5] && a[6] === b[6] && a[7] === b[7] && a[8] === b[8] && a[9] === b[9] && a[10] === b[10] && a[11] === b[11] && a[12] === b[12] && a[13] === b[13] && a[14] === b[14] && a[15] === b[15];
@@ -10338,20 +10343,20 @@ __export(vec3_exports, {
   zero: () => zero
 });
 function create3() {
-  var out = new ARRAY_TYPE(3);
+  var out2 = new ARRAY_TYPE(3);
   if (ARRAY_TYPE != Float32Array) {
-    out[0] = 0;
-    out[1] = 0;
-    out[2] = 0;
+    out2[0] = 0;
+    out2[1] = 0;
+    out2[2] = 0;
   }
-  return out;
+  return out2;
 }
 function clone2(a) {
-  var out = new ARRAY_TYPE(3);
-  out[0] = a[0];
-  out[1] = a[1];
-  out[2] = a[2];
-  return out;
+  var out2 = new ARRAY_TYPE(3);
+  out2[0] = a[0];
+  out2[1] = a[1];
+  out2[2] = a[2];
+  return out2;
 }
 function length(a) {
   var x = a[0];
@@ -10360,89 +10365,89 @@ function length(a) {
   return Math.hypot(x, y, z);
 }
 function fromValues2(x, y, z) {
-  var out = new ARRAY_TYPE(3);
-  out[0] = x;
-  out[1] = y;
-  out[2] = z;
-  return out;
+  var out2 = new ARRAY_TYPE(3);
+  out2[0] = x;
+  out2[1] = y;
+  out2[2] = z;
+  return out2;
 }
-function copy2(out, a) {
-  out[0] = a[0];
-  out[1] = a[1];
-  out[2] = a[2];
-  return out;
+function copy2(out2, a) {
+  out2[0] = a[0];
+  out2[1] = a[1];
+  out2[2] = a[2];
+  return out2;
 }
-function set2(out, x, y, z) {
-  out[0] = x;
-  out[1] = y;
-  out[2] = z;
-  return out;
+function set2(out2, x, y, z) {
+  out2[0] = x;
+  out2[1] = y;
+  out2[2] = z;
+  return out2;
 }
-function add2(out, a, b) {
-  out[0] = a[0] + b[0];
-  out[1] = a[1] + b[1];
-  out[2] = a[2] + b[2];
-  return out;
+function add2(out2, a, b) {
+  out2[0] = a[0] + b[0];
+  out2[1] = a[1] + b[1];
+  out2[2] = a[2] + b[2];
+  return out2;
 }
-function subtract2(out, a, b) {
-  out[0] = a[0] - b[0];
-  out[1] = a[1] - b[1];
-  out[2] = a[2] - b[2];
-  return out;
+function subtract2(out2, a, b) {
+  out2[0] = a[0] - b[0];
+  out2[1] = a[1] - b[1];
+  out2[2] = a[2] - b[2];
+  return out2;
 }
-function multiply2(out, a, b) {
-  out[0] = a[0] * b[0];
-  out[1] = a[1] * b[1];
-  out[2] = a[2] * b[2];
-  return out;
+function multiply2(out2, a, b) {
+  out2[0] = a[0] * b[0];
+  out2[1] = a[1] * b[1];
+  out2[2] = a[2] * b[2];
+  return out2;
 }
-function divide(out, a, b) {
-  out[0] = a[0] / b[0];
-  out[1] = a[1] / b[1];
-  out[2] = a[2] / b[2];
-  return out;
+function divide(out2, a, b) {
+  out2[0] = a[0] / b[0];
+  out2[1] = a[1] / b[1];
+  out2[2] = a[2] / b[2];
+  return out2;
 }
-function ceil(out, a) {
-  out[0] = Math.ceil(a[0]);
-  out[1] = Math.ceil(a[1]);
-  out[2] = Math.ceil(a[2]);
-  return out;
+function ceil(out2, a) {
+  out2[0] = Math.ceil(a[0]);
+  out2[1] = Math.ceil(a[1]);
+  out2[2] = Math.ceil(a[2]);
+  return out2;
 }
-function floor(out, a) {
-  out[0] = Math.floor(a[0]);
-  out[1] = Math.floor(a[1]);
-  out[2] = Math.floor(a[2]);
-  return out;
+function floor(out2, a) {
+  out2[0] = Math.floor(a[0]);
+  out2[1] = Math.floor(a[1]);
+  out2[2] = Math.floor(a[2]);
+  return out2;
 }
-function min(out, a, b) {
-  out[0] = Math.min(a[0], b[0]);
-  out[1] = Math.min(a[1], b[1]);
-  out[2] = Math.min(a[2], b[2]);
-  return out;
+function min(out2, a, b) {
+  out2[0] = Math.min(a[0], b[0]);
+  out2[1] = Math.min(a[1], b[1]);
+  out2[2] = Math.min(a[2], b[2]);
+  return out2;
 }
-function max(out, a, b) {
-  out[0] = Math.max(a[0], b[0]);
-  out[1] = Math.max(a[1], b[1]);
-  out[2] = Math.max(a[2], b[2]);
-  return out;
+function max(out2, a, b) {
+  out2[0] = Math.max(a[0], b[0]);
+  out2[1] = Math.max(a[1], b[1]);
+  out2[2] = Math.max(a[2], b[2]);
+  return out2;
 }
-function round(out, a) {
-  out[0] = Math.round(a[0]);
-  out[1] = Math.round(a[1]);
-  out[2] = Math.round(a[2]);
-  return out;
+function round(out2, a) {
+  out2[0] = Math.round(a[0]);
+  out2[1] = Math.round(a[1]);
+  out2[2] = Math.round(a[2]);
+  return out2;
 }
-function scale2(out, a, b) {
-  out[0] = a[0] * b;
-  out[1] = a[1] * b;
-  out[2] = a[2] * b;
-  return out;
+function scale2(out2, a, b) {
+  out2[0] = a[0] * b;
+  out2[1] = a[1] * b;
+  out2[2] = a[2] * b;
+  return out2;
 }
-function scaleAndAdd(out, a, b, scale6) {
-  out[0] = a[0] + b[0] * scale6;
-  out[1] = a[1] + b[1] * scale6;
-  out[2] = a[2] + b[2] * scale6;
-  return out;
+function scaleAndAdd(out2, a, b, scale6) {
+  out2[0] = a[0] + b[0] * scale6;
+  out2[1] = a[1] + b[1] * scale6;
+  out2[2] = a[2] + b[2] * scale6;
+  return out2;
 }
 function distance(a, b) {
   var x = b[0] - a[0];
@@ -10462,19 +10467,19 @@ function squaredLength(a) {
   var z = a[2];
   return x * x + y * y + z * z;
 }
-function negate(out, a) {
-  out[0] = -a[0];
-  out[1] = -a[1];
-  out[2] = -a[2];
-  return out;
+function negate(out2, a) {
+  out2[0] = -a[0];
+  out2[1] = -a[1];
+  out2[2] = -a[2];
+  return out2;
 }
-function inverse(out, a) {
-  out[0] = 1 / a[0];
-  out[1] = 1 / a[1];
-  out[2] = 1 / a[2];
-  return out;
+function inverse(out2, a) {
+  out2[0] = 1 / a[0];
+  out2[1] = 1 / a[1];
+  out2[2] = 1 / a[2];
+  return out2;
 }
-function normalize(out, a) {
+function normalize(out2, a) {
   var x = a[0];
   var y = a[1];
   var z = a[2];
@@ -10482,43 +10487,43 @@ function normalize(out, a) {
   if (len5 > 0) {
     len5 = 1 / Math.sqrt(len5);
   }
-  out[0] = a[0] * len5;
-  out[1] = a[1] * len5;
-  out[2] = a[2] * len5;
-  return out;
+  out2[0] = a[0] * len5;
+  out2[1] = a[1] * len5;
+  out2[2] = a[2] * len5;
+  return out2;
 }
 function dot(a, b) {
   return a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
 }
-function cross(out, a, b) {
+function cross(out2, a, b) {
   var ax = a[0], ay = a[1], az = a[2];
   var bx = b[0], by = b[1], bz = b[2];
-  out[0] = ay * bz - az * by;
-  out[1] = az * bx - ax * bz;
-  out[2] = ax * by - ay * bx;
-  return out;
+  out2[0] = ay * bz - az * by;
+  out2[1] = az * bx - ax * bz;
+  out2[2] = ax * by - ay * bx;
+  return out2;
 }
-function lerp(out, a, b, t) {
+function lerp(out2, a, b, t) {
   var ax = a[0];
   var ay = a[1];
   var az = a[2];
-  out[0] = ax + t * (b[0] - ax);
-  out[1] = ay + t * (b[1] - ay);
-  out[2] = az + t * (b[2] - az);
-  return out;
+  out2[0] = ax + t * (b[0] - ax);
+  out2[1] = ay + t * (b[1] - ay);
+  out2[2] = az + t * (b[2] - az);
+  return out2;
 }
-function hermite(out, a, b, c, d, t) {
+function hermite(out2, a, b, c, d, t) {
   var factorTimes2 = t * t;
   var factor1 = factorTimes2 * (2 * t - 3) + 1;
   var factor2 = factorTimes2 * (t - 2) + t;
   var factor3 = factorTimes2 * (t - 1);
   var factor4 = factorTimes2 * (3 - 2 * t);
-  out[0] = a[0] * factor1 + b[0] * factor2 + c[0] * factor3 + d[0] * factor4;
-  out[1] = a[1] * factor1 + b[1] * factor2 + c[1] * factor3 + d[1] * factor4;
-  out[2] = a[2] * factor1 + b[2] * factor2 + c[2] * factor3 + d[2] * factor4;
-  return out;
+  out2[0] = a[0] * factor1 + b[0] * factor2 + c[0] * factor3 + d[0] * factor4;
+  out2[1] = a[1] * factor1 + b[1] * factor2 + c[1] * factor3 + d[1] * factor4;
+  out2[2] = a[2] * factor1 + b[2] * factor2 + c[2] * factor3 + d[2] * factor4;
+  return out2;
 }
-function bezier(out, a, b, c, d, t) {
+function bezier(out2, a, b, c, d, t) {
   var inverseFactor = 1 - t;
   var inverseFactorTimesTwo = inverseFactor * inverseFactor;
   var factorTimes2 = t * t;
@@ -10526,38 +10531,38 @@ function bezier(out, a, b, c, d, t) {
   var factor2 = 3 * t * inverseFactorTimesTwo;
   var factor3 = 3 * factorTimes2 * inverseFactor;
   var factor4 = factorTimes2 * t;
-  out[0] = a[0] * factor1 + b[0] * factor2 + c[0] * factor3 + d[0] * factor4;
-  out[1] = a[1] * factor1 + b[1] * factor2 + c[1] * factor3 + d[1] * factor4;
-  out[2] = a[2] * factor1 + b[2] * factor2 + c[2] * factor3 + d[2] * factor4;
-  return out;
+  out2[0] = a[0] * factor1 + b[0] * factor2 + c[0] * factor3 + d[0] * factor4;
+  out2[1] = a[1] * factor1 + b[1] * factor2 + c[1] * factor3 + d[1] * factor4;
+  out2[2] = a[2] * factor1 + b[2] * factor2 + c[2] * factor3 + d[2] * factor4;
+  return out2;
 }
-function random(out, scale6) {
+function random(out2, scale6) {
   scale6 = scale6 || 1;
   var r = RANDOM() * 2 * Math.PI;
   var z = RANDOM() * 2 - 1;
   var zScale = Math.sqrt(1 - z * z) * scale6;
-  out[0] = Math.cos(r) * zScale;
-  out[1] = Math.sin(r) * zScale;
-  out[2] = z * scale6;
-  return out;
+  out2[0] = Math.cos(r) * zScale;
+  out2[1] = Math.sin(r) * zScale;
+  out2[2] = z * scale6;
+  return out2;
 }
-function transformMat4(out, a, m) {
+function transformMat4(out2, a, m) {
   var x = a[0], y = a[1], z = a[2];
   var w = m[3] * x + m[7] * y + m[11] * z + m[15];
   w = w || 1;
-  out[0] = (m[0] * x + m[4] * y + m[8] * z + m[12]) / w;
-  out[1] = (m[1] * x + m[5] * y + m[9] * z + m[13]) / w;
-  out[2] = (m[2] * x + m[6] * y + m[10] * z + m[14]) / w;
-  return out;
+  out2[0] = (m[0] * x + m[4] * y + m[8] * z + m[12]) / w;
+  out2[1] = (m[1] * x + m[5] * y + m[9] * z + m[13]) / w;
+  out2[2] = (m[2] * x + m[6] * y + m[10] * z + m[14]) / w;
+  return out2;
 }
-function transformMat3(out, a, m) {
+function transformMat3(out2, a, m) {
   var x = a[0], y = a[1], z = a[2];
-  out[0] = x * m[0] + y * m[3] + z * m[6];
-  out[1] = x * m[1] + y * m[4] + z * m[7];
-  out[2] = x * m[2] + y * m[5] + z * m[8];
-  return out;
+  out2[0] = x * m[0] + y * m[3] + z * m[6];
+  out2[1] = x * m[1] + y * m[4] + z * m[7];
+  out2[2] = x * m[2] + y * m[5] + z * m[8];
+  return out2;
 }
-function transformQuat(out, a, q) {
+function transformQuat(out2, a, q) {
   var qx = q[0], qy = q[1], qz = q[2], qw = q[3];
   var x = a[0], y = a[1], z = a[2];
   var uvx = qy * z - qz * y, uvy = qz * x - qx * z, uvz = qx * y - qy * x;
@@ -10569,12 +10574,12 @@ function transformQuat(out, a, q) {
   uuvx *= 2;
   uuvy *= 2;
   uuvz *= 2;
-  out[0] = x + uvx + uuvx;
-  out[1] = y + uvy + uuvy;
-  out[2] = z + uvz + uuvz;
-  return out;
+  out2[0] = x + uvx + uuvx;
+  out2[1] = y + uvy + uuvy;
+  out2[2] = z + uvz + uuvz;
+  return out2;
 }
-function rotateX2(out, a, b, rad) {
+function rotateX2(out2, a, b, rad) {
   var p = [], r = [];
   p[0] = a[0] - b[0];
   p[1] = a[1] - b[1];
@@ -10582,12 +10587,12 @@ function rotateX2(out, a, b, rad) {
   r[0] = p[0];
   r[1] = p[1] * Math.cos(rad) - p[2] * Math.sin(rad);
   r[2] = p[1] * Math.sin(rad) + p[2] * Math.cos(rad);
-  out[0] = r[0] + b[0];
-  out[1] = r[1] + b[1];
-  out[2] = r[2] + b[2];
-  return out;
+  out2[0] = r[0] + b[0];
+  out2[1] = r[1] + b[1];
+  out2[2] = r[2] + b[2];
+  return out2;
 }
-function rotateY2(out, a, b, rad) {
+function rotateY2(out2, a, b, rad) {
   var p = [], r = [];
   p[0] = a[0] - b[0];
   p[1] = a[1] - b[1];
@@ -10595,12 +10600,12 @@ function rotateY2(out, a, b, rad) {
   r[0] = p[2] * Math.sin(rad) + p[0] * Math.cos(rad);
   r[1] = p[1];
   r[2] = p[2] * Math.cos(rad) - p[0] * Math.sin(rad);
-  out[0] = r[0] + b[0];
-  out[1] = r[1] + b[1];
-  out[2] = r[2] + b[2];
-  return out;
+  out2[0] = r[0] + b[0];
+  out2[1] = r[1] + b[1];
+  out2[2] = r[2] + b[2];
+  return out2;
 }
-function rotateZ2(out, a, b, rad) {
+function rotateZ2(out2, a, b, rad) {
   var p = [], r = [];
   p[0] = a[0] - b[0];
   p[1] = a[1] - b[1];
@@ -10608,20 +10613,20 @@ function rotateZ2(out, a, b, rad) {
   r[0] = p[0] * Math.cos(rad) - p[1] * Math.sin(rad);
   r[1] = p[0] * Math.sin(rad) + p[1] * Math.cos(rad);
   r[2] = p[2];
-  out[0] = r[0] + b[0];
-  out[1] = r[1] + b[1];
-  out[2] = r[2] + b[2];
-  return out;
+  out2[0] = r[0] + b[0];
+  out2[1] = r[1] + b[1];
+  out2[2] = r[2] + b[2];
+  return out2;
 }
 function angle(a, b) {
   var ax = a[0], ay = a[1], az = a[2], bx = b[0], by = b[1], bz = b[2], mag1 = Math.sqrt(ax * ax + ay * ay + az * az), mag2 = Math.sqrt(bx * bx + by * by + bz * bz), mag = mag1 * mag2, cosine = mag && dot(a, b) / mag;
   return Math.acos(Math.min(Math.max(cosine, -1), 1));
 }
-function zero(out) {
-  out[0] = 0;
-  out[1] = 0;
-  out[2] = 0;
-  return out;
+function zero(out2) {
+  out2[0] = 0;
+  out2[1] = 0;
+  out2[2] = 0;
+  return out2;
 }
 function str2(a) {
   return "vec3(" + a[0] + ", " + a[1] + ", " + a[2] + ")";
@@ -10715,121 +10720,121 @@ __export(vec4_exports, {
   zero: () => zero2
 });
 function create4() {
-  var out = new ARRAY_TYPE(4);
+  var out2 = new ARRAY_TYPE(4);
   if (ARRAY_TYPE != Float32Array) {
-    out[0] = 0;
-    out[1] = 0;
-    out[2] = 0;
-    out[3] = 0;
+    out2[0] = 0;
+    out2[1] = 0;
+    out2[2] = 0;
+    out2[3] = 0;
   }
-  return out;
+  return out2;
 }
 function clone3(a) {
-  var out = new ARRAY_TYPE(4);
-  out[0] = a[0];
-  out[1] = a[1];
-  out[2] = a[2];
-  out[3] = a[3];
-  return out;
+  var out2 = new ARRAY_TYPE(4);
+  out2[0] = a[0];
+  out2[1] = a[1];
+  out2[2] = a[2];
+  out2[3] = a[3];
+  return out2;
 }
 function fromValues3(x, y, z, w) {
-  var out = new ARRAY_TYPE(4);
-  out[0] = x;
-  out[1] = y;
-  out[2] = z;
-  out[3] = w;
-  return out;
+  var out2 = new ARRAY_TYPE(4);
+  out2[0] = x;
+  out2[1] = y;
+  out2[2] = z;
+  out2[3] = w;
+  return out2;
 }
-function copy3(out, a) {
-  out[0] = a[0];
-  out[1] = a[1];
-  out[2] = a[2];
-  out[3] = a[3];
-  return out;
+function copy3(out2, a) {
+  out2[0] = a[0];
+  out2[1] = a[1];
+  out2[2] = a[2];
+  out2[3] = a[3];
+  return out2;
 }
-function set3(out, x, y, z, w) {
-  out[0] = x;
-  out[1] = y;
-  out[2] = z;
-  out[3] = w;
-  return out;
+function set3(out2, x, y, z, w) {
+  out2[0] = x;
+  out2[1] = y;
+  out2[2] = z;
+  out2[3] = w;
+  return out2;
 }
-function add3(out, a, b) {
-  out[0] = a[0] + b[0];
-  out[1] = a[1] + b[1];
-  out[2] = a[2] + b[2];
-  out[3] = a[3] + b[3];
-  return out;
+function add3(out2, a, b) {
+  out2[0] = a[0] + b[0];
+  out2[1] = a[1] + b[1];
+  out2[2] = a[2] + b[2];
+  out2[3] = a[3] + b[3];
+  return out2;
 }
-function subtract3(out, a, b) {
-  out[0] = a[0] - b[0];
-  out[1] = a[1] - b[1];
-  out[2] = a[2] - b[2];
-  out[3] = a[3] - b[3];
-  return out;
+function subtract3(out2, a, b) {
+  out2[0] = a[0] - b[0];
+  out2[1] = a[1] - b[1];
+  out2[2] = a[2] - b[2];
+  out2[3] = a[3] - b[3];
+  return out2;
 }
-function multiply3(out, a, b) {
-  out[0] = a[0] * b[0];
-  out[1] = a[1] * b[1];
-  out[2] = a[2] * b[2];
-  out[3] = a[3] * b[3];
-  return out;
+function multiply3(out2, a, b) {
+  out2[0] = a[0] * b[0];
+  out2[1] = a[1] * b[1];
+  out2[2] = a[2] * b[2];
+  out2[3] = a[3] * b[3];
+  return out2;
 }
-function divide2(out, a, b) {
-  out[0] = a[0] / b[0];
-  out[1] = a[1] / b[1];
-  out[2] = a[2] / b[2];
-  out[3] = a[3] / b[3];
-  return out;
+function divide2(out2, a, b) {
+  out2[0] = a[0] / b[0];
+  out2[1] = a[1] / b[1];
+  out2[2] = a[2] / b[2];
+  out2[3] = a[3] / b[3];
+  return out2;
 }
-function ceil2(out, a) {
-  out[0] = Math.ceil(a[0]);
-  out[1] = Math.ceil(a[1]);
-  out[2] = Math.ceil(a[2]);
-  out[3] = Math.ceil(a[3]);
-  return out;
+function ceil2(out2, a) {
+  out2[0] = Math.ceil(a[0]);
+  out2[1] = Math.ceil(a[1]);
+  out2[2] = Math.ceil(a[2]);
+  out2[3] = Math.ceil(a[3]);
+  return out2;
 }
-function floor2(out, a) {
-  out[0] = Math.floor(a[0]);
-  out[1] = Math.floor(a[1]);
-  out[2] = Math.floor(a[2]);
-  out[3] = Math.floor(a[3]);
-  return out;
+function floor2(out2, a) {
+  out2[0] = Math.floor(a[0]);
+  out2[1] = Math.floor(a[1]);
+  out2[2] = Math.floor(a[2]);
+  out2[3] = Math.floor(a[3]);
+  return out2;
 }
-function min2(out, a, b) {
-  out[0] = Math.min(a[0], b[0]);
-  out[1] = Math.min(a[1], b[1]);
-  out[2] = Math.min(a[2], b[2]);
-  out[3] = Math.min(a[3], b[3]);
-  return out;
+function min2(out2, a, b) {
+  out2[0] = Math.min(a[0], b[0]);
+  out2[1] = Math.min(a[1], b[1]);
+  out2[2] = Math.min(a[2], b[2]);
+  out2[3] = Math.min(a[3], b[3]);
+  return out2;
 }
-function max2(out, a, b) {
-  out[0] = Math.max(a[0], b[0]);
-  out[1] = Math.max(a[1], b[1]);
-  out[2] = Math.max(a[2], b[2]);
-  out[3] = Math.max(a[3], b[3]);
-  return out;
+function max2(out2, a, b) {
+  out2[0] = Math.max(a[0], b[0]);
+  out2[1] = Math.max(a[1], b[1]);
+  out2[2] = Math.max(a[2], b[2]);
+  out2[3] = Math.max(a[3], b[3]);
+  return out2;
 }
-function round2(out, a) {
-  out[0] = Math.round(a[0]);
-  out[1] = Math.round(a[1]);
-  out[2] = Math.round(a[2]);
-  out[3] = Math.round(a[3]);
-  return out;
+function round2(out2, a) {
+  out2[0] = Math.round(a[0]);
+  out2[1] = Math.round(a[1]);
+  out2[2] = Math.round(a[2]);
+  out2[3] = Math.round(a[3]);
+  return out2;
 }
-function scale3(out, a, b) {
-  out[0] = a[0] * b;
-  out[1] = a[1] * b;
-  out[2] = a[2] * b;
-  out[3] = a[3] * b;
-  return out;
+function scale3(out2, a, b) {
+  out2[0] = a[0] * b;
+  out2[1] = a[1] * b;
+  out2[2] = a[2] * b;
+  out2[3] = a[3] * b;
+  return out2;
 }
-function scaleAndAdd2(out, a, b, scale6) {
-  out[0] = a[0] + b[0] * scale6;
-  out[1] = a[1] + b[1] * scale6;
-  out[2] = a[2] + b[2] * scale6;
-  out[3] = a[3] + b[3] * scale6;
-  return out;
+function scaleAndAdd2(out2, a, b, scale6) {
+  out2[0] = a[0] + b[0] * scale6;
+  out2[1] = a[1] + b[1] * scale6;
+  out2[2] = a[2] + b[2] * scale6;
+  out2[3] = a[3] + b[3] * scale6;
+  return out2;
 }
 function distance2(a, b) {
   var x = b[0] - a[0];
@@ -10859,21 +10864,21 @@ function squaredLength2(a) {
   var w = a[3];
   return x * x + y * y + z * z + w * w;
 }
-function negate2(out, a) {
-  out[0] = -a[0];
-  out[1] = -a[1];
-  out[2] = -a[2];
-  out[3] = -a[3];
-  return out;
+function negate2(out2, a) {
+  out2[0] = -a[0];
+  out2[1] = -a[1];
+  out2[2] = -a[2];
+  out2[3] = -a[3];
+  return out2;
 }
-function inverse2(out, a) {
-  out[0] = 1 / a[0];
-  out[1] = 1 / a[1];
-  out[2] = 1 / a[2];
-  out[3] = 1 / a[3];
-  return out;
+function inverse2(out2, a) {
+  out2[0] = 1 / a[0];
+  out2[1] = 1 / a[1];
+  out2[2] = 1 / a[2];
+  out2[3] = 1 / a[3];
+  return out2;
 }
-function normalize2(out, a) {
+function normalize2(out2, a) {
   var x = a[0];
   var y = a[1];
   var z = a[2];
@@ -10882,39 +10887,39 @@ function normalize2(out, a) {
   if (len5 > 0) {
     len5 = 1 / Math.sqrt(len5);
   }
-  out[0] = x * len5;
-  out[1] = y * len5;
-  out[2] = z * len5;
-  out[3] = w * len5;
-  return out;
+  out2[0] = x * len5;
+  out2[1] = y * len5;
+  out2[2] = z * len5;
+  out2[3] = w * len5;
+  return out2;
 }
 function dot2(a, b) {
   return a[0] * b[0] + a[1] * b[1] + a[2] * b[2] + a[3] * b[3];
 }
-function cross2(out, u, v, w) {
+function cross2(out2, u, v, w) {
   var A = v[0] * w[1] - v[1] * w[0], B = v[0] * w[2] - v[2] * w[0], C = v[0] * w[3] - v[3] * w[0], D = v[1] * w[2] - v[2] * w[1], E = v[1] * w[3] - v[3] * w[1], F = v[2] * w[3] - v[3] * w[2];
   var G = u[0];
   var H = u[1];
   var I = u[2];
   var J = u[3];
-  out[0] = H * F - I * E + J * D;
-  out[1] = -(G * F) + I * C - J * B;
-  out[2] = G * E - H * C + J * A;
-  out[3] = -(G * D) + H * B - I * A;
-  return out;
+  out2[0] = H * F - I * E + J * D;
+  out2[1] = -(G * F) + I * C - J * B;
+  out2[2] = G * E - H * C + J * A;
+  out2[3] = -(G * D) + H * B - I * A;
+  return out2;
 }
-function lerp2(out, a, b, t) {
+function lerp2(out2, a, b, t) {
   var ax = a[0];
   var ay = a[1];
   var az = a[2];
   var aw = a[3];
-  out[0] = ax + t * (b[0] - ax);
-  out[1] = ay + t * (b[1] - ay);
-  out[2] = az + t * (b[2] - az);
-  out[3] = aw + t * (b[3] - aw);
-  return out;
+  out2[0] = ax + t * (b[0] - ax);
+  out2[1] = ay + t * (b[1] - ay);
+  out2[2] = az + t * (b[2] - az);
+  out2[3] = aw + t * (b[3] - aw);
+  return out2;
 }
-function random2(out, scale6) {
+function random2(out2, scale6) {
   scale6 = scale6 || 1;
   var v1, v2, v3, v4;
   var s1, s2;
@@ -10929,39 +10934,39 @@ function random2(out, scale6) {
     s2 = v3 * v3 + v4 * v4;
   } while (s2 >= 1);
   var d = Math.sqrt((1 - s1) / s2);
-  out[0] = scale6 * v1;
-  out[1] = scale6 * v2;
-  out[2] = scale6 * v3 * d;
-  out[3] = scale6 * v4 * d;
-  return out;
+  out2[0] = scale6 * v1;
+  out2[1] = scale6 * v2;
+  out2[2] = scale6 * v3 * d;
+  out2[3] = scale6 * v4 * d;
+  return out2;
 }
-function transformMat42(out, a, m) {
+function transformMat42(out2, a, m) {
   var x = a[0], y = a[1], z = a[2], w = a[3];
-  out[0] = m[0] * x + m[4] * y + m[8] * z + m[12] * w;
-  out[1] = m[1] * x + m[5] * y + m[9] * z + m[13] * w;
-  out[2] = m[2] * x + m[6] * y + m[10] * z + m[14] * w;
-  out[3] = m[3] * x + m[7] * y + m[11] * z + m[15] * w;
-  return out;
+  out2[0] = m[0] * x + m[4] * y + m[8] * z + m[12] * w;
+  out2[1] = m[1] * x + m[5] * y + m[9] * z + m[13] * w;
+  out2[2] = m[2] * x + m[6] * y + m[10] * z + m[14] * w;
+  out2[3] = m[3] * x + m[7] * y + m[11] * z + m[15] * w;
+  return out2;
 }
-function transformQuat2(out, a, q) {
+function transformQuat2(out2, a, q) {
   var x = a[0], y = a[1], z = a[2];
   var qx = q[0], qy = q[1], qz = q[2], qw = q[3];
   var ix = qw * x + qy * z - qz * y;
   var iy = qw * y + qz * x - qx * z;
   var iz = qw * z + qx * y - qy * x;
   var iw = -qx * x - qy * y - qz * z;
-  out[0] = ix * qw + iw * -qx + iy * -qz - iz * -qy;
-  out[1] = iy * qw + iw * -qy + iz * -qx - ix * -qz;
-  out[2] = iz * qw + iw * -qz + ix * -qy - iy * -qx;
-  out[3] = a[3];
-  return out;
+  out2[0] = ix * qw + iw * -qx + iy * -qz - iz * -qy;
+  out2[1] = iy * qw + iw * -qy + iz * -qx - ix * -qz;
+  out2[2] = iz * qw + iw * -qz + ix * -qy - iy * -qx;
+  out2[3] = a[3];
+  return out2;
 }
-function zero2(out) {
-  out[0] = 0;
-  out[1] = 0;
-  out[2] = 0;
-  out[3] = 0;
-  return out;
+function zero2(out2) {
+  out2[0] = 0;
+  out2[1] = 0;
+  out2[2] = 0;
+  out2[3] = 0;
+  return out2;
 }
 function str3(a) {
   return "vec4(" + a[0] + ", " + a[1] + ", " + a[2] + ", " + a[3] + ")";
@@ -11013,30 +11018,30 @@ var forEach2 = function() {
 
 // node_modules/gl-matrix/esm/quat.js
 function create5() {
-  var out = new ARRAY_TYPE(4);
+  var out2 = new ARRAY_TYPE(4);
   if (ARRAY_TYPE != Float32Array) {
-    out[0] = 0;
-    out[1] = 0;
-    out[2] = 0;
+    out2[0] = 0;
+    out2[1] = 0;
+    out2[2] = 0;
   }
-  out[3] = 1;
-  return out;
+  out2[3] = 1;
+  return out2;
 }
-function identity2(out) {
-  out[0] = 0;
-  out[1] = 0;
-  out[2] = 0;
-  out[3] = 1;
-  return out;
+function identity2(out2) {
+  out2[0] = 0;
+  out2[1] = 0;
+  out2[2] = 0;
+  out2[3] = 1;
+  return out2;
 }
-function setAxisAngle(out, axis, rad) {
+function setAxisAngle(out2, axis, rad) {
   rad = rad * 0.5;
   var s = Math.sin(rad);
-  out[0] = s * axis[0];
-  out[1] = s * axis[1];
-  out[2] = s * axis[2];
-  out[3] = Math.cos(rad);
-  return out;
+  out2[0] = s * axis[0];
+  out2[1] = s * axis[1];
+  out2[2] = s * axis[2];
+  out2[3] = Math.cos(rad);
+  return out2;
 }
 function getAxisAngle(out_axis, q) {
   var rad = Math.acos(q[3]) * 2;
@@ -11056,81 +11061,81 @@ function getAngle(a, b) {
   var dotproduct = dot3(a, b);
   return Math.acos(2 * dotproduct * dotproduct - 1);
 }
-function multiply4(out, a, b) {
+function multiply4(out2, a, b) {
   var ax = a[0], ay = a[1], az = a[2], aw = a[3];
   var bx = b[0], by = b[1], bz = b[2], bw = b[3];
-  out[0] = ax * bw + aw * bx + ay * bz - az * by;
-  out[1] = ay * bw + aw * by + az * bx - ax * bz;
-  out[2] = az * bw + aw * bz + ax * by - ay * bx;
-  out[3] = aw * bw - ax * bx - ay * by - az * bz;
-  return out;
+  out2[0] = ax * bw + aw * bx + ay * bz - az * by;
+  out2[1] = ay * bw + aw * by + az * bx - ax * bz;
+  out2[2] = az * bw + aw * bz + ax * by - ay * bx;
+  out2[3] = aw * bw - ax * bx - ay * by - az * bz;
+  return out2;
 }
-function rotateX3(out, a, rad) {
+function rotateX3(out2, a, rad) {
   rad *= 0.5;
   var ax = a[0], ay = a[1], az = a[2], aw = a[3];
   var bx = Math.sin(rad), bw = Math.cos(rad);
-  out[0] = ax * bw + aw * bx;
-  out[1] = ay * bw + az * bx;
-  out[2] = az * bw - ay * bx;
-  out[3] = aw * bw - ax * bx;
-  return out;
+  out2[0] = ax * bw + aw * bx;
+  out2[1] = ay * bw + az * bx;
+  out2[2] = az * bw - ay * bx;
+  out2[3] = aw * bw - ax * bx;
+  return out2;
 }
-function rotateY3(out, a, rad) {
+function rotateY3(out2, a, rad) {
   rad *= 0.5;
   var ax = a[0], ay = a[1], az = a[2], aw = a[3];
   var by = Math.sin(rad), bw = Math.cos(rad);
-  out[0] = ax * bw - az * by;
-  out[1] = ay * bw + aw * by;
-  out[2] = az * bw + ax * by;
-  out[3] = aw * bw - ay * by;
-  return out;
+  out2[0] = ax * bw - az * by;
+  out2[1] = ay * bw + aw * by;
+  out2[2] = az * bw + ax * by;
+  out2[3] = aw * bw - ay * by;
+  return out2;
 }
-function rotateZ3(out, a, rad) {
+function rotateZ3(out2, a, rad) {
   rad *= 0.5;
   var ax = a[0], ay = a[1], az = a[2], aw = a[3];
   var bz = Math.sin(rad), bw = Math.cos(rad);
-  out[0] = ax * bw + ay * bz;
-  out[1] = ay * bw - ax * bz;
-  out[2] = az * bw + aw * bz;
-  out[3] = aw * bw - az * bz;
-  return out;
+  out2[0] = ax * bw + ay * bz;
+  out2[1] = ay * bw - ax * bz;
+  out2[2] = az * bw + aw * bz;
+  out2[3] = aw * bw - az * bz;
+  return out2;
 }
-function calculateW(out, a) {
+function calculateW(out2, a) {
   var x = a[0], y = a[1], z = a[2];
-  out[0] = x;
-  out[1] = y;
-  out[2] = z;
-  out[3] = Math.sqrt(Math.abs(1 - x * x - y * y - z * z));
-  return out;
+  out2[0] = x;
+  out2[1] = y;
+  out2[2] = z;
+  out2[3] = Math.sqrt(Math.abs(1 - x * x - y * y - z * z));
+  return out2;
 }
-function exp(out, a) {
+function exp(out2, a) {
   var x = a[0], y = a[1], z = a[2], w = a[3];
   var r = Math.sqrt(x * x + y * y + z * z);
   var et = Math.exp(w);
   var s = r > 0 ? et * Math.sin(r) / r : 0;
-  out[0] = x * s;
-  out[1] = y * s;
-  out[2] = z * s;
-  out[3] = et * Math.cos(r);
-  return out;
+  out2[0] = x * s;
+  out2[1] = y * s;
+  out2[2] = z * s;
+  out2[3] = et * Math.cos(r);
+  return out2;
 }
-function ln(out, a) {
+function ln(out2, a) {
   var x = a[0], y = a[1], z = a[2], w = a[3];
   var r = Math.sqrt(x * x + y * y + z * z);
   var t = r > 0 ? Math.atan2(r, w) / r : 0;
-  out[0] = x * t;
-  out[1] = y * t;
-  out[2] = z * t;
-  out[3] = 0.5 * Math.log(x * x + y * y + z * z + w * w);
-  return out;
+  out2[0] = x * t;
+  out2[1] = y * t;
+  out2[2] = z * t;
+  out2[3] = 0.5 * Math.log(x * x + y * y + z * z + w * w);
+  return out2;
 }
-function pow(out, a, b) {
-  ln(out, a);
-  scale4(out, out, b);
-  exp(out, out);
-  return out;
+function pow(out2, a, b) {
+  ln(out2, a);
+  scale4(out2, out2, b);
+  exp(out2, out2);
+  return out2;
 }
-function slerp(out, a, b, t) {
+function slerp(out2, a, b, t) {
   var ax = a[0], ay = a[1], az = a[2], aw = a[3];
   var bx = b[0], by = b[1], bz = b[2], bw = b[3];
   var omega, cosom, sinom, scale0, scale1;
@@ -11151,51 +11156,51 @@ function slerp(out, a, b, t) {
     scale0 = 1 - t;
     scale1 = t;
   }
-  out[0] = scale0 * ax + scale1 * bx;
-  out[1] = scale0 * ay + scale1 * by;
-  out[2] = scale0 * az + scale1 * bz;
-  out[3] = scale0 * aw + scale1 * bw;
-  return out;
+  out2[0] = scale0 * ax + scale1 * bx;
+  out2[1] = scale0 * ay + scale1 * by;
+  out2[2] = scale0 * az + scale1 * bz;
+  out2[3] = scale0 * aw + scale1 * bw;
+  return out2;
 }
-function random3(out) {
+function random3(out2) {
   var u1 = RANDOM();
   var u2 = RANDOM();
   var u3 = RANDOM();
   var sqrt1MinusU1 = Math.sqrt(1 - u1);
   var sqrtU1 = Math.sqrt(u1);
-  out[0] = sqrt1MinusU1 * Math.sin(2 * Math.PI * u2);
-  out[1] = sqrt1MinusU1 * Math.cos(2 * Math.PI * u2);
-  out[2] = sqrtU1 * Math.sin(2 * Math.PI * u3);
-  out[3] = sqrtU1 * Math.cos(2 * Math.PI * u3);
-  return out;
+  out2[0] = sqrt1MinusU1 * Math.sin(2 * Math.PI * u2);
+  out2[1] = sqrt1MinusU1 * Math.cos(2 * Math.PI * u2);
+  out2[2] = sqrtU1 * Math.sin(2 * Math.PI * u3);
+  out2[3] = sqrtU1 * Math.cos(2 * Math.PI * u3);
+  return out2;
 }
-function invert2(out, a) {
+function invert2(out2, a) {
   var a0 = a[0], a1 = a[1], a2 = a[2], a3 = a[3];
   var dot5 = a0 * a0 + a1 * a1 + a2 * a2 + a3 * a3;
   var invDot = dot5 ? 1 / dot5 : 0;
-  out[0] = -a0 * invDot;
-  out[1] = -a1 * invDot;
-  out[2] = -a2 * invDot;
-  out[3] = a3 * invDot;
-  return out;
+  out2[0] = -a0 * invDot;
+  out2[1] = -a1 * invDot;
+  out2[2] = -a2 * invDot;
+  out2[3] = a3 * invDot;
+  return out2;
 }
-function conjugate(out, a) {
-  out[0] = -a[0];
-  out[1] = -a[1];
-  out[2] = -a[2];
-  out[3] = a[3];
-  return out;
+function conjugate(out2, a) {
+  out2[0] = -a[0];
+  out2[1] = -a[1];
+  out2[2] = -a[2];
+  out2[3] = a[3];
+  return out2;
 }
-function fromMat3(out, m) {
+function fromMat3(out2, m) {
   var fTrace = m[0] + m[4] + m[8];
   var fRoot;
   if (fTrace > 0) {
     fRoot = Math.sqrt(fTrace + 1);
-    out[3] = 0.5 * fRoot;
+    out2[3] = 0.5 * fRoot;
     fRoot = 0.5 / fRoot;
-    out[0] = (m[5] - m[7]) * fRoot;
-    out[1] = (m[6] - m[2]) * fRoot;
-    out[2] = (m[1] - m[3]) * fRoot;
+    out2[0] = (m[5] - m[7]) * fRoot;
+    out2[1] = (m[6] - m[2]) * fRoot;
+    out2[2] = (m[1] - m[3]) * fRoot;
   } else {
     var i = 0;
     if (m[4] > m[0])
@@ -11205,15 +11210,15 @@ function fromMat3(out, m) {
     var j = (i + 1) % 3;
     var k = (i + 2) % 3;
     fRoot = Math.sqrt(m[i * 3 + i] - m[j * 3 + j] - m[k * 3 + k] + 1);
-    out[i] = 0.5 * fRoot;
+    out2[i] = 0.5 * fRoot;
     fRoot = 0.5 / fRoot;
-    out[3] = (m[j * 3 + k] - m[k * 3 + j]) * fRoot;
-    out[j] = (m[j * 3 + i] + m[i * 3 + j]) * fRoot;
-    out[k] = (m[k * 3 + i] + m[i * 3 + k]) * fRoot;
+    out2[3] = (m[j * 3 + k] - m[k * 3 + j]) * fRoot;
+    out2[j] = (m[j * 3 + i] + m[i * 3 + j]) * fRoot;
+    out2[k] = (m[k * 3 + i] + m[i * 3 + k]) * fRoot;
   }
-  return out;
+  return out2;
 }
-function fromEuler(out, x, y, z) {
+function fromEuler(out2, x, y, z) {
   var halfToRad = 0.5 * Math.PI / 180;
   x *= halfToRad;
   y *= halfToRad;
@@ -11224,11 +11229,11 @@ function fromEuler(out, x, y, z) {
   var cy = Math.cos(y);
   var sz = Math.sin(z);
   var cz = Math.cos(z);
-  out[0] = sx * cy * cz - cx * sy * sz;
-  out[1] = cx * sy * cz + sx * cy * sz;
-  out[2] = cx * cy * sz - sx * sy * cz;
-  out[3] = cx * cy * cz + sx * sy * sz;
-  return out;
+  out2[0] = sx * cy * cz - cx * sy * sz;
+  out2[1] = cx * sy * cz + sx * cy * sz;
+  out2[2] = cx * cy * sz - sx * sy * cz;
+  out2[3] = cx * cy * cz + sx * sy * sz;
+  return out2;
 }
 function str4(a) {
   return "quat(" + a[0] + ", " + a[1] + ", " + a[2] + ", " + a[3] + ")";
@@ -11253,44 +11258,44 @@ var rotationTo = function() {
   var tmpvec3 = create3();
   var xUnitVec3 = fromValues2(1, 0, 0);
   var yUnitVec3 = fromValues2(0, 1, 0);
-  return function(out, a, b) {
+  return function(out2, a, b) {
     var dot5 = dot(a, b);
     if (dot5 < -0.999999) {
       cross(tmpvec3, xUnitVec3, a);
       if (len(tmpvec3) < 1e-6)
         cross(tmpvec3, yUnitVec3, a);
       normalize(tmpvec3, tmpvec3);
-      setAxisAngle(out, tmpvec3, Math.PI);
-      return out;
+      setAxisAngle(out2, tmpvec3, Math.PI);
+      return out2;
     } else if (dot5 > 0.999999) {
-      out[0] = 0;
-      out[1] = 0;
-      out[2] = 0;
-      out[3] = 1;
-      return out;
+      out2[0] = 0;
+      out2[1] = 0;
+      out2[2] = 0;
+      out2[3] = 1;
+      return out2;
     } else {
       cross(tmpvec3, a, b);
-      out[0] = tmpvec3[0];
-      out[1] = tmpvec3[1];
-      out[2] = tmpvec3[2];
-      out[3] = 1 + dot5;
-      return normalize3(out, out);
+      out2[0] = tmpvec3[0];
+      out2[1] = tmpvec3[1];
+      out2[2] = tmpvec3[2];
+      out2[3] = 1 + dot5;
+      return normalize3(out2, out2);
     }
   };
 }();
 var sqlerp = function() {
   var temp1 = create5();
   var temp2 = create5();
-  return function(out, a, b, c, d, t) {
+  return function(out2, a, b, c, d, t) {
     slerp(temp1, a, d, t);
     slerp(temp2, b, c, t);
-    slerp(out, temp1, temp2, 2 * t * (1 - t));
-    return out;
+    slerp(out2, temp1, temp2, 2 * t * (1 - t));
+    return out2;
   };
 }();
 var setAxes = function() {
   var matr = create();
-  return function(out, view, right, up) {
+  return function(out2, view, right, up) {
     matr[0] = right[0];
     matr[3] = right[1];
     matr[6] = right[2];
@@ -11300,7 +11305,7 @@ var setAxes = function() {
     matr[2] = -view[0];
     matr[5] = -view[1];
     matr[8] = -view[2];
-    return normalize3(out, fromMat3(out, matr));
+    return normalize3(out2, fromMat3(out2, matr));
   };
 }();
 
@@ -11354,89 +11359,89 @@ __export(vec2_exports, {
   zero: () => zero3
 });
 function create6() {
-  var out = new ARRAY_TYPE(2);
+  var out2 = new ARRAY_TYPE(2);
   if (ARRAY_TYPE != Float32Array) {
-    out[0] = 0;
-    out[1] = 0;
+    out2[0] = 0;
+    out2[1] = 0;
   }
-  return out;
+  return out2;
 }
 function clone5(a) {
-  var out = new ARRAY_TYPE(2);
-  out[0] = a[0];
-  out[1] = a[1];
-  return out;
+  var out2 = new ARRAY_TYPE(2);
+  out2[0] = a[0];
+  out2[1] = a[1];
+  return out2;
 }
 function fromValues5(x, y) {
-  var out = new ARRAY_TYPE(2);
-  out[0] = x;
-  out[1] = y;
-  return out;
+  var out2 = new ARRAY_TYPE(2);
+  out2[0] = x;
+  out2[1] = y;
+  return out2;
 }
-function copy5(out, a) {
-  out[0] = a[0];
-  out[1] = a[1];
-  return out;
+function copy5(out2, a) {
+  out2[0] = a[0];
+  out2[1] = a[1];
+  return out2;
 }
-function set5(out, x, y) {
-  out[0] = x;
-  out[1] = y;
-  return out;
+function set5(out2, x, y) {
+  out2[0] = x;
+  out2[1] = y;
+  return out2;
 }
-function add5(out, a, b) {
-  out[0] = a[0] + b[0];
-  out[1] = a[1] + b[1];
-  return out;
+function add5(out2, a, b) {
+  out2[0] = a[0] + b[0];
+  out2[1] = a[1] + b[1];
+  return out2;
 }
-function subtract4(out, a, b) {
-  out[0] = a[0] - b[0];
-  out[1] = a[1] - b[1];
-  return out;
+function subtract4(out2, a, b) {
+  out2[0] = a[0] - b[0];
+  out2[1] = a[1] - b[1];
+  return out2;
 }
-function multiply5(out, a, b) {
-  out[0] = a[0] * b[0];
-  out[1] = a[1] * b[1];
-  return out;
+function multiply5(out2, a, b) {
+  out2[0] = a[0] * b[0];
+  out2[1] = a[1] * b[1];
+  return out2;
 }
-function divide3(out, a, b) {
-  out[0] = a[0] / b[0];
-  out[1] = a[1] / b[1];
-  return out;
+function divide3(out2, a, b) {
+  out2[0] = a[0] / b[0];
+  out2[1] = a[1] / b[1];
+  return out2;
 }
-function ceil3(out, a) {
-  out[0] = Math.ceil(a[0]);
-  out[1] = Math.ceil(a[1]);
-  return out;
+function ceil3(out2, a) {
+  out2[0] = Math.ceil(a[0]);
+  out2[1] = Math.ceil(a[1]);
+  return out2;
 }
-function floor3(out, a) {
-  out[0] = Math.floor(a[0]);
-  out[1] = Math.floor(a[1]);
-  return out;
+function floor3(out2, a) {
+  out2[0] = Math.floor(a[0]);
+  out2[1] = Math.floor(a[1]);
+  return out2;
 }
-function min3(out, a, b) {
-  out[0] = Math.min(a[0], b[0]);
-  out[1] = Math.min(a[1], b[1]);
-  return out;
+function min3(out2, a, b) {
+  out2[0] = Math.min(a[0], b[0]);
+  out2[1] = Math.min(a[1], b[1]);
+  return out2;
 }
-function max3(out, a, b) {
-  out[0] = Math.max(a[0], b[0]);
-  out[1] = Math.max(a[1], b[1]);
-  return out;
+function max3(out2, a, b) {
+  out2[0] = Math.max(a[0], b[0]);
+  out2[1] = Math.max(a[1], b[1]);
+  return out2;
 }
-function round3(out, a) {
-  out[0] = Math.round(a[0]);
-  out[1] = Math.round(a[1]);
-  return out;
+function round3(out2, a) {
+  out2[0] = Math.round(a[0]);
+  out2[1] = Math.round(a[1]);
+  return out2;
 }
-function scale5(out, a, b) {
-  out[0] = a[0] * b;
-  out[1] = a[1] * b;
-  return out;
+function scale5(out2, a, b) {
+  out2[0] = a[0] * b;
+  out2[1] = a[1] * b;
+  return out2;
 }
-function scaleAndAdd3(out, a, b, scale6) {
-  out[0] = a[0] + b[0] * scale6;
-  out[1] = a[1] + b[1] * scale6;
-  return out;
+function scaleAndAdd3(out2, a, b, scale6) {
+  out2[0] = a[0] + b[0] * scale6;
+  out2[1] = a[1] + b[1] * scale6;
+  return out2;
 }
 function distance3(a, b) {
   var x = b[0] - a[0], y = b[1] - a[1];
@@ -11454,87 +11459,87 @@ function squaredLength4(a) {
   var x = a[0], y = a[1];
   return x * x + y * y;
 }
-function negate3(out, a) {
-  out[0] = -a[0];
-  out[1] = -a[1];
-  return out;
+function negate3(out2, a) {
+  out2[0] = -a[0];
+  out2[1] = -a[1];
+  return out2;
 }
-function inverse3(out, a) {
-  out[0] = 1 / a[0];
-  out[1] = 1 / a[1];
-  return out;
+function inverse3(out2, a) {
+  out2[0] = 1 / a[0];
+  out2[1] = 1 / a[1];
+  return out2;
 }
-function normalize4(out, a) {
+function normalize4(out2, a) {
   var x = a[0], y = a[1];
   var len5 = x * x + y * y;
   if (len5 > 0) {
     len5 = 1 / Math.sqrt(len5);
   }
-  out[0] = a[0] * len5;
-  out[1] = a[1] * len5;
-  return out;
+  out2[0] = a[0] * len5;
+  out2[1] = a[1] * len5;
+  return out2;
 }
 function dot4(a, b) {
   return a[0] * b[0] + a[1] * b[1];
 }
-function cross3(out, a, b) {
+function cross3(out2, a, b) {
   var z = a[0] * b[1] - a[1] * b[0];
-  out[0] = out[1] = 0;
-  out[2] = z;
-  return out;
+  out2[0] = out2[1] = 0;
+  out2[2] = z;
+  return out2;
 }
-function lerp4(out, a, b, t) {
+function lerp4(out2, a, b, t) {
   var ax = a[0], ay = a[1];
-  out[0] = ax + t * (b[0] - ax);
-  out[1] = ay + t * (b[1] - ay);
-  return out;
+  out2[0] = ax + t * (b[0] - ax);
+  out2[1] = ay + t * (b[1] - ay);
+  return out2;
 }
-function random4(out, scale6) {
+function random4(out2, scale6) {
   scale6 = scale6 || 1;
   var r = RANDOM() * 2 * Math.PI;
-  out[0] = Math.cos(r) * scale6;
-  out[1] = Math.sin(r) * scale6;
-  return out;
+  out2[0] = Math.cos(r) * scale6;
+  out2[1] = Math.sin(r) * scale6;
+  return out2;
 }
-function transformMat2(out, a, m) {
+function transformMat2(out2, a, m) {
   var x = a[0], y = a[1];
-  out[0] = m[0] * x + m[2] * y;
-  out[1] = m[1] * x + m[3] * y;
-  return out;
+  out2[0] = m[0] * x + m[2] * y;
+  out2[1] = m[1] * x + m[3] * y;
+  return out2;
 }
-function transformMat2d(out, a, m) {
+function transformMat2d(out2, a, m) {
   var x = a[0], y = a[1];
-  out[0] = m[0] * x + m[2] * y + m[4];
-  out[1] = m[1] * x + m[3] * y + m[5];
-  return out;
+  out2[0] = m[0] * x + m[2] * y + m[4];
+  out2[1] = m[1] * x + m[3] * y + m[5];
+  return out2;
 }
-function transformMat32(out, a, m) {
+function transformMat32(out2, a, m) {
   var x = a[0], y = a[1];
-  out[0] = m[0] * x + m[3] * y + m[6];
-  out[1] = m[1] * x + m[4] * y + m[7];
-  return out;
+  out2[0] = m[0] * x + m[3] * y + m[6];
+  out2[1] = m[1] * x + m[4] * y + m[7];
+  return out2;
 }
-function transformMat43(out, a, m) {
+function transformMat43(out2, a, m) {
   var x = a[0];
   var y = a[1];
-  out[0] = m[0] * x + m[4] * y + m[12];
-  out[1] = m[1] * x + m[5] * y + m[13];
-  return out;
+  out2[0] = m[0] * x + m[4] * y + m[12];
+  out2[1] = m[1] * x + m[5] * y + m[13];
+  return out2;
 }
-function rotate2(out, a, b, rad) {
+function rotate2(out2, a, b, rad) {
   var p0 = a[0] - b[0], p1 = a[1] - b[1], sinC = Math.sin(rad), cosC = Math.cos(rad);
-  out[0] = p0 * cosC - p1 * sinC + b[0];
-  out[1] = p0 * sinC + p1 * cosC + b[1];
-  return out;
+  out2[0] = p0 * cosC - p1 * sinC + b[0];
+  out2[1] = p0 * sinC + p1 * cosC + b[1];
+  return out2;
 }
 function angle2(a, b) {
   var x1 = a[0], y1 = a[1], x2 = b[0], y2 = b[1], mag = Math.sqrt(x1 * x1 + y1 * y1) * Math.sqrt(x2 * x2 + y2 * y2), cosine = mag && (x1 * x2 + y1 * y2) / mag;
   return Math.acos(Math.min(Math.max(cosine, -1), 1));
 }
-function zero3(out) {
-  out[0] = 0;
-  out[1] = 0;
-  return out;
+function zero3(out2) {
+  out2[0] = 0;
+  out2[1] = 0;
+  return out2;
 }
 function str5(a) {
   return "vec2(" + a[0] + ", " + a[1] + ")";
@@ -11592,10 +11597,10 @@ function setGraferLoaderDomain(value, domain = createGraferLoaderDomain()) {
   domain.max = Math.max(domain.max, value);
   return domain;
 }
-function mergeGraferLoaderDomain(a, b, out = a) {
-  out.min = Math.min(a.min, b.min);
-  out.max = Math.max(a.max, b.max);
-  return out;
+function mergeGraferLoaderDomain(a, b, out2 = a) {
+  out2.min = Math.min(a.min, b.min);
+  out2.max = Math.max(a.max, b.max);
+  return out2;
 }
 function normalizeNodeLayers(layers, reCenter = false, reSize = false) {
   const center = createGraferLoaderVec3();
@@ -12793,9 +12798,9 @@ var DrawCall = class {
     this.textures[unit] = texture;
     return this;
   }
-  uniformBlock(name, buffer) {
+  uniformBlock(name, buffer2) {
     let base = this.currentProgram.uniformBlocks[name];
-    this.uniformBuffers[base] = buffer;
+    this.uniformBuffers[base] = buffer2;
     return this;
   }
   drawRanges(...counts) {
@@ -13870,9 +13875,9 @@ var TransformFeedback = class {
     this.transformFeedback = this.gl.createTransformFeedback();
     return this;
   }
-  feedbackBuffer(index, buffer) {
+  feedbackBuffer(index, buffer2) {
     this.gl.bindTransformFeedback(GL.TRANSFORM_FEEDBACK, this.transformFeedback);
-    this.gl.bindBufferBase(GL.TRANSFORM_FEEDBACK_BUFFER, index, buffer.buffer);
+    this.gl.bindBufferBase(GL.TRANSFORM_FEEDBACK_BUFFER, index, buffer2.buffer);
     this.gl.bindTransformFeedback(GL.TRANSFORM_FEEDBACK, null);
     this.gl.bindBufferBase(GL.TRANSFORM_FEEDBACK_BUFFER, index, null);
     return this;
@@ -14856,11 +14861,11 @@ function glDataTypesInfo(types4) {
   };
 }
 function setDrawCallUniforms(drawCall, uniforms) {
-  for (const [key, value] of Object.entries(uniforms)) {
+  for (const [key2, value] of Object.entries(uniforms)) {
     if (value.texture) {
-      drawCall.texture(key, value);
+      drawCall.texture(key2, value);
     } else {
-      drawCall.uniform(key, value);
+      drawCall.uniform(key2, value);
     }
   }
 }
@@ -14890,9 +14895,9 @@ function* dataIterator(data, mappings2) {
   const keys = Reflect.ownKeys(mappings2);
   for (let i = 0, n = data.length; i < n; ++i) {
     const entry = {};
-    for (const key of keys) {
-      if (mappings2[key] !== null) {
-        entry[key] = mappings2[key](data[i], i);
+    for (const key2 of keys) {
+      if (mappings2[key2] !== null) {
+        entry[key2] = mappings2[key2](data[i], i);
       }
     }
     yield [i, entry];
@@ -14941,19 +14946,19 @@ function flattenEntry(entry, types4, typesInfo, mappings2, view, offset) {
   const flatMappings = {};
   let flattenLength = 0;
   for (let i = 0, n = typesInfo.keys.length; i < n; ++i) {
-    const key = typesInfo.keys[i];
-    if (entry[kDataEntryNeedsFlatten].has(key)) {
-      flatMappings[key] = (_a2 = mappings2[key][kDataMappingFlatten]) != null ? _a2 : (entry2, i2) => entry2[key][i2];
-      flattenLength = entry[key].length;
+    const key2 = typesInfo.keys[i];
+    if (entry[kDataEntryNeedsFlatten].has(key2)) {
+      flatMappings[key2] = (_a2 = mappings2[key2][kDataMappingFlatten]) != null ? _a2 : (entry2, i2) => entry2[key2][i2];
+      flattenLength = entry[key2].length;
     } else {
-      flatMappings[key] = (_b = mappings2[key][kDataMappingFlatten]) != null ? _b : (entry2) => entry2[key];
+      flatMappings[key2] = (_b = mappings2[key2][kDataMappingFlatten]) != null ? _b : (entry2) => entry2[key2];
     }
   }
   let flatOffset = 0;
   for (let i = 0; i < flattenLength; ++i) {
     for (let ii = 0, n = typesInfo.keys.length; ii < n; ++ii) {
-      const key = typesInfo.keys[ii];
-      flatOffset += writeValueToDataView(view, flatMappings[key](entry, i, flattenLength), types4[key], offset + flatOffset);
+      const key2 = typesInfo.keys[ii];
+      flatOffset += writeValueToDataView(view, flatMappings[key2](entry, i, flattenLength), types4[key2], offset + flatOffset);
     }
   }
   return flatOffset;
@@ -14983,8 +14988,8 @@ function packData(data, mappings2, types4, potLength, cb) {
     }
   }
   dataLength = potLength ? Math.pow(2, Math.ceil(Math.log2(dataLength))) : dataLength;
-  const buffer = new ArrayBuffer(typesInfo.stride * dataLength);
-  const view = new DataView(buffer);
+  const buffer2 = new ArrayBuffer(typesInfo.stride * dataLength);
+  const view = new DataView(buffer2);
   let offset = 0;
   for (let i = 0, n = entries.length; i < n; ++i) {
     const entry = entries[i];
@@ -14999,7 +15004,7 @@ function packData(data, mappings2, types4, potLength, cb) {
       }
     }
   }
-  return buffer;
+  return buffer2;
 }
 function printDataGL(context, vbo, count, types4) {
   const gl = context.gl;
@@ -15549,13 +15554,13 @@ var MouseHandler = class extends EventEmitter.mixin(UXModule) {
     }
     const buttonKeys = Object.keys(state.buttons);
     for (let i = 0, n = buttonKeys.length; i < n; ++i) {
-      const key = buttonKeys[i];
-      const pressed = state.valid && state.buttons[key];
-      if (this.state.buttons[key] !== pressed) {
-        this.state.buttons[key] = pressed;
+      const key2 = buttonKeys[i];
+      const pressed = state.valid && state.buttons[key2];
+      if (this.state.buttons[key2] !== pressed) {
+        this.state.buttons[key2] = pressed;
         events.push({
           event: pressed ? kEvents.down : kEvents.up,
-          args: [kButton2Index[key], key, pressed]
+          args: [kButton2Index[key2], key2, pressed]
         });
       }
     }
@@ -15767,16 +15772,16 @@ var ColorRegistryMapped = class extends ColorRegistry {
       if (this.colorMap.size > this.capacity) {
         this.resizeTexture(this.colorMap.size);
       }
-      const buffer = new Uint8Array(this.capacity * 4);
+      const buffer2 = new Uint8Array(this.capacity * 4);
       let offset = 0;
       for (const color of this.colorMap.keys()) {
         const rgba = import_chroma_js2.default.hex(color).rgba();
-        buffer[offset++] = rgba[0];
-        buffer[offset++] = rgba[1];
-        buffer[offset++] = rgba[2];
-        buffer[offset++] = Math.round(rgba[3] * 255);
+        buffer2[offset++] = rgba[0];
+        buffer2[offset++] = rgba[1];
+        buffer2[offset++] = rgba[2];
+        buffer2[offset++] = Math.round(rgba[3] * 255);
       }
-      this._texture.data(buffer);
+      this._texture.data(buffer2);
     }
     this.dirty = false;
   }
@@ -15879,7 +15884,7 @@ var TextureAtlas = class {
   get atlasTexture() {
     return this._atlasTexture;
   }
-  exportTextures(keyList) {
+  exportTextures(keyList, bufferX = 0, bufferY = 0) {
     if (!this.dirty) {
       return;
     }
@@ -15893,11 +15898,15 @@ var TextureAtlas = class {
       boxes.sort((a, b) => this.boxesKeys[a.id] - this.boxesKeys[b.id]);
     }
     const finalImage = ctx.createImageData(pack.w, pack.h);
-    const boxesBuffer = packData(boxes, kCharBoxDataMappings, kCharBoxDataTypes, true, (i) => {
-      const box2 = boxes[i];
+    boxes.forEach((box2, i) => {
       this.textureKeyMap.set(box2.id, i);
       TextureAtlas.blitImageData(box2.image, finalImage, box2.x, finalImage.height - box2.y - box2.h);
+      box2.x = box2.x + bufferX;
+      box2.y = box2.y + bufferY;
+      box2.w = box2.w - bufferX * 2;
+      box2.h = box2.h - bufferY * 2;
     });
+    const boxesBuffer = packData(boxes, kCharBoxDataMappings, kCharBoxDataTypes, true);
     this._boxesTexture = this.createTextureForBuffer(this.context, new Uint16Array(boxesBuffer), boxes.length, picogl_default.RGBA16UI);
     this._atlasTexture = this.context.createTexture2D(finalImage, {
       flipY: true
@@ -15954,7 +15963,7 @@ var TextureAtlas = class {
     }
     this.edt(gridOuter, imageData.width, imageData.height, f, v, z);
     this.edt(gridInner, imageData.width, imageData.height, f, v, z);
-    const radius = fontSize / 8;
+    const radius = fontSize;
     const data = imageData.data;
     for (let i = 0; i < dataLength; ++i) {
       const d = Math.sqrt(gridOuter[i]) - Math.sqrt(gridInner[i]);
@@ -16207,8 +16216,8 @@ var OffscreenBuffer = class {
     context.readFramebuffer(this.frameBuffer);
     context.blitFramebuffer(mask);
   }
-  readPixel(x, y, buffer) {
-    this.context.defaultDrawFramebuffer().readFramebuffer(this.frameBuffer).readPixel(x, y, buffer);
+  readPixel(x, y, buffer2) {
+    this.context.defaultDrawFramebuffer().readFramebuffer(this.frameBuffer).readPixel(x, y, buffer2);
   }
 };
 
@@ -16642,27 +16651,27 @@ var PickingManager = class extends EventEmitter.mixin(UXModule) {
       }
     }
   }
-  mapPickingColorIDs(out, idStart, range) {
+  mapPickingColorIDs(out2, idStart, range) {
     for (let i = 0, n = range.end - range.start; i < n; ++i) {
-      out.set(range.start + i, idStart + i);
+      out2.set(range.start + i, idStart + i);
     }
   }
-  pickingColorsForIndices(out, offset, range) {
+  pickingColorsForIndices(out2, offset, range) {
     for (let i = range.start; i < range.end; ++i) {
       const color = this.pickingColorForNumber(i);
-      out[offset++] = color[0];
-      out[offset++] = color[1];
-      out[offset++] = color[2];
-      out[offset++] = color[3];
+      out2[offset++] = color[0];
+      out2[offset++] = color[1];
+      out2[offset++] = color[2];
+      out2[offset++] = color[3];
     }
     return offset;
   }
   pickingColorForNumber(num) {
     const pickingNumber = num << 1 | 1;
-    const buffer = new ArrayBuffer(4);
-    const view = new DataView(buffer);
+    const buffer2 = new ArrayBuffer(4);
+    const view = new DataView(buffer2);
     view.setUint32(0, pickingNumber);
-    return new Uint8Array(buffer);
+    return new Uint8Array(buffer2);
   }
 };
 
@@ -17642,17 +17651,17 @@ var ClusterBundle = class extends Edges {
       return null;
     }
     const cb1 = (i, entry) => {
-      const key = `${entry.sourceCluster}=>${entry.targetCluster}`;
-      let count = this.hyperEdgeStats.get(key);
+      const key2 = `${entry.sourceCluster}=>${entry.targetCluster}`;
+      let count = this.hyperEdgeStats.get(key2);
       if (count === null || count === void 0) {
         count = 0;
       }
-      this.hyperEdgeStats.set(key, count + 1);
+      this.hyperEdgeStats.set(key2, count + 1);
       entry.hyperEdgeStats[0] = count;
     };
     const cb2 = (i, entry) => {
-      const key = `${entry.sourceCluster}=>${entry.targetCluster}`;
-      entry.hyperEdgeStats[1] = this.hyperEdgeStats.get(key);
+      const key2 = `${entry.sourceCluster}=>${entry.targetCluster}`;
+      entry.hyperEdgeStats[1] = this.hyperEdgeStats.get(key2);
     };
     return [
       cb1,
@@ -17684,11 +17693,12 @@ __export(mod_exports6, {
   kLabelMappings: () => kLabelMappings,
   kLabelNodeDataTypes: () => kLabelNodeDataTypes,
   kLabelNodeMappings: () => kLabelNodeMappings,
+  kOffsetDataTypes: () => kOffsetDataTypes,
   types: () => types3
 });
 
 // src/graph/labels/point/PointLabel.fs.glsl
-var PointLabel_fs_default = "#version 300 es\nprecision highp float;\nprecision lowp usampler2D;\n\nprecision lowp usampler2D;\n#define GLSLIFY 1\n\nvec4 valueForIndex(sampler2D tex, int index) {\n    int texWidth = textureSize(tex, 0).x;\n    int col = index % texWidth;\n    int row = index / texWidth;\n    return texelFetch(tex, ivec2(col, row), 0);\n}\n\nuvec4 uvalueForIndex(usampler2D tex, int index) {\n    int texWidth = textureSize(tex, 0).x;\n    int col = index % texWidth;\n    int row = index / texWidth;\n    return texelFetch(tex, ivec2(col, row), 0);\n}\n\nuint uivalueForIndex(usampler2D tex, int index) {\n    int texWidth = textureSize(tex, 0).x;\n    int col = index % texWidth;\n    int row = index / texWidth;\n    return texelFetch(tex, ivec2(col, row), 0)[0];\n}\n\n// from https://en.wikipedia.org/wiki/SRGB#The_reverse_transformation\nfloat luminance_x(float x) {\n    return x <= 0.04045 ? x / 12.92 : pow((x + 0.055) / 1.055, 2.4);\n}\nfloat color_l(float l) {\n    return min(1.0, max(0.0, l <= 0.0031308 ? l * 12.92 : pow(l * 1.055, 1.0 / 2.4) - 0.055));\n}\n\n// from https://en.wikipedia.org/wiki/Relative_luminance\nfloat rgb2luminance(vec3 color) {\n    // relative luminance\n    // see http://www.w3.org/TR/2008/REC-WCAG20-20081211/#relativeluminancedef\n    float r = luminance_x(color.r);\n    float g = luminance_x(color.g);\n    float b = luminance_x(color.b);\n    return 0.2126 * r + 0.7152 * g + 0.0722 * b;\n}\n\nvec3 setLuminance(vec3 color, float luminance) {\n    float r = luminance_x(color.r) * 0.2126;\n    float g = luminance_x(color.g) * 0.7152;\n    float b = luminance_x(color.b) * 0.0722;\n    float colorLuminance = r + g + b;\n\n    float tr = luminance * (r / colorLuminance);\n    float tg = luminance * (g / colorLuminance);\n    float tb = luminance * (b / colorLuminance);\n\n    float rr = color_l(tr / 0.2126);\n    float rg = color_l(tg / 0.7152);\n    float rb = color_l(tb / 0.0722);\n\n    return vec3(rr, rg, rb );\n}\n\n// https://www.w3.org/TR/WCAG20/#contrast-ratiodef\n// (L1 + 0.05) / (L2 + 0.05), where\n// - L1 is the relative luminance of the lighter of the colors, and\n// - L2 is the relative luminance of the darker of the colors.\nfloat findDarker(float luminance, float contrast) {\n    return (contrast * luminance) + (0.05 * contrast) - 0.05;\n}\nfloat findLighter(float luminance, float contrast) {\n    return (luminance + 0.05 - (0.05 * contrast)) / contrast;\n}\n\nvec3 contrastingColor(vec3 color, float contrast) {\n    float luminance = rgb2luminance(color);\n    float darker = findDarker(luminance, contrast);\n    float lighter = findLighter(luminance, contrast);\n\n    float targetLuminance;\n    if (darker < 0.0 || darker > 1.0) {\n        targetLuminance = lighter;\n    } else if (lighter < 0.0 || lighter > 1.0) {\n        targetLuminance = darker;\n    } else {\n        targetLuminance = abs(luminance - lighter) < abs(darker - luminance) ? lighter : darker;\n    }\n\n    return setLuminance(color, targetLuminance);\n}\n\nvec3 desaturateColor(vec3 color, float amount) {\n    float l = rgb2luminance(color);\n    vec3 gray = vec3(l, l, l);\n    return mix(color, gray, amount);\n}\n\nuniform vec4 uClearColor;\nuniform float uDesaturate;\nuniform float uBrightness;\nuniform float uFade;\nuniform float uAlpha;\n\nvec4 outputColor(vec4 color) {\n    // desaturate => fade => alpha\n    vec3 ret = mix(color.rgb, vec3(uBrightness + 1.0 / 2.0), abs(uBrightness));\n    ret = vec3(desaturateColor(ret, uDesaturate));\n    ret = mix(ret, uClearColor.rgb, uFade);\n    return vec4(ret, color.a * uAlpha);\n}\n\n#define MODE_DRAFT 0u\n#define MODE_MEDIUM 1u\n#define MODE_HIGH 2u\n#define MODE_HIGH_PASS_1 3u\n#define MODE_HIGH_PASS_2 4u\n#define MODE_PICKING 5u\n\nuniform usampler2D uLabelIndices;\nuniform usampler2D uCharBoxes;\nuniform sampler2D uCharTexture;\nuniform float uPixelRatio;\nuniform uint uRenderMode;\nuniform float uPadding;\n\nflat in vec4 fBackgroundColor;\nflat in vec4 fTextColor;\nflat in vec4 fLabelInfo;\nflat in float fPixelLength;\nflat in vec2 fCharTextureSize;\nin vec2 vFromCenter;\nin vec2 vStringCoords;\nin vec2 vPixelCoords;\n\nout vec4 fragColor;\n\nvoid main() {\n    float padding = uPadding * uPixelRatio;\n    vec4 finalColor;\n\n    if (vPixelCoords.x < padding || vPixelCoords.y < padding || vPixelCoords.x > fLabelInfo[2] + padding || vPixelCoords.y > fLabelInfo[3] + padding) {\n        finalColor = fBackgroundColor;\n    } else {\n        vec2 uvMultiplier = (vPixelCoords - padding) / fLabelInfo.ba;\n        float u = fLabelInfo[0] + fLabelInfo[1] * uvMultiplier.x;\n        float v = uvMultiplier.y;\n\n        float stringIndex = floor(u);\n        int charIndex = int(uivalueForIndex(uLabelIndices, int(stringIndex)));\n        vec4 charBox = vec4(uvalueForIndex(uCharBoxes, charIndex));\n        float charMult = u - stringIndex;\n\n        vec4 charBoxUV = charBox / vec4(fCharTextureSize, fCharTextureSize);\n\n        vec2 uv = vec2(charBoxUV[0] + charBoxUV[2] * charMult, charBoxUV[1] + charBoxUV[3] * v);\n        vec4 texPixel = texture(uCharTexture, uv);\n\n        float smoothing = 7.0 / fLabelInfo[3];\n        float distance = texPixel.a;\n        float textEdge = smoothstep(0.5 - smoothing, 0.5 + smoothing, distance);\n        finalColor = mix(fBackgroundColor, fTextColor, textEdge);\n    }\n\n    float threshold = uRenderMode == MODE_HIGH_PASS_1 ? 0.75 : 0.5;\n\n    if (uRenderMode != MODE_HIGH_PASS_2) {\n        if (finalColor.a < threshold) {\n            discard;\n        }\n        fragColor = outputColor(vec4(finalColor.rgb, 1.0));\n    } else {\n        if (finalColor.a == 1.0) {\n            discard;\n        }\n        fragColor = outputColor(finalColor);\n    }\n\n//    if ((uRenderMode != MODE_HIGH_PASS_2 && texPixel.a < threshold) || (uRenderMode == MODE_HIGH_PASS_2 && texPixel.a == 1.0)) {\n//        discard;\n//    }\n//    float alpha = uRenderMode == MODE_HIGH_PASS_2 ? texPixel.a : 1.0;\n//    fragColor = vec4(texPixel.rgb * fColor.rgb, alpha);\n}\n";
+var PointLabel_fs_default = "#version 300 es\nprecision highp float;\nprecision lowp usampler2D;\n\nprecision lowp usampler2D;\n#define GLSLIFY 1\n\nvec4 valueForIndex(sampler2D tex, int index) {\n    int texWidth = textureSize(tex, 0).x;\n    int col = index % texWidth;\n    int row = index / texWidth;\n    return texelFetch(tex, ivec2(col, row), 0);\n}\n\nuvec4 uvalueForIndex(usampler2D tex, int index) {\n    int texWidth = textureSize(tex, 0).x;\n    int col = index % texWidth;\n    int row = index / texWidth;\n    return texelFetch(tex, ivec2(col, row), 0);\n}\n\nuint uivalueForIndex(usampler2D tex, int index) {\n    int texWidth = textureSize(tex, 0).x;\n    int col = index % texWidth;\n    int row = index / texWidth;\n    return texelFetch(tex, ivec2(col, row), 0)[0];\n}\n\n// from https://en.wikipedia.org/wiki/SRGB#The_reverse_transformation\nfloat luminance_x(float x) {\n    return x <= 0.04045 ? x / 12.92 : pow((x + 0.055) / 1.055, 2.4);\n}\nfloat color_l(float l) {\n    return min(1.0, max(0.0, l <= 0.0031308 ? l * 12.92 : pow(l * 1.055, 1.0 / 2.4) - 0.055));\n}\n\n// from https://en.wikipedia.org/wiki/Relative_luminance\nfloat rgb2luminance(vec3 color) {\n    // relative luminance\n    // see http://www.w3.org/TR/2008/REC-WCAG20-20081211/#relativeluminancedef\n    float r = luminance_x(color.r);\n    float g = luminance_x(color.g);\n    float b = luminance_x(color.b);\n    return 0.2126 * r + 0.7152 * g + 0.0722 * b;\n}\n\nvec3 setLuminance(vec3 color, float luminance) {\n    float r = luminance_x(color.r) * 0.2126;\n    float g = luminance_x(color.g) * 0.7152;\n    float b = luminance_x(color.b) * 0.0722;\n    float colorLuminance = r + g + b;\n\n    float tr = luminance * (r / colorLuminance);\n    float tg = luminance * (g / colorLuminance);\n    float tb = luminance * (b / colorLuminance);\n\n    float rr = color_l(tr / 0.2126);\n    float rg = color_l(tg / 0.7152);\n    float rb = color_l(tb / 0.0722);\n\n    return vec3(rr, rg, rb );\n}\n\n// https://www.w3.org/TR/WCAG20/#contrast-ratiodef\n// (L1 + 0.05) / (L2 + 0.05), where\n// - L1 is the relative luminance of the lighter of the colors, and\n// - L2 is the relative luminance of the darker of the colors.\nfloat findDarker(float luminance, float contrast) {\n    return (contrast * luminance) + (0.05 * contrast) - 0.05;\n}\nfloat findLighter(float luminance, float contrast) {\n    return (luminance + 0.05 - (0.05 * contrast)) / contrast;\n}\n\nvec3 contrastingColor(vec3 color, float contrast) {\n    float luminance = rgb2luminance(color);\n    float darker = findDarker(luminance, contrast);\n    float lighter = findLighter(luminance, contrast);\n\n    float targetLuminance;\n    if (darker < 0.0 || darker > 1.0) {\n        targetLuminance = lighter;\n    } else if (lighter < 0.0 || lighter > 1.0) {\n        targetLuminance = darker;\n    } else {\n        targetLuminance = abs(luminance - lighter) < abs(darker - luminance) ? lighter : darker;\n    }\n\n    return setLuminance(color, targetLuminance);\n}\n\nvec3 desaturateColor(vec3 color, float amount) {\n    float l = rgb2luminance(color);\n    vec3 gray = vec3(l, l, l);\n    return mix(color, gray, amount);\n}\n\nuniform vec4 uClearColor;\nuniform float uDesaturate;\nuniform float uBrightness;\nuniform float uFade;\nuniform float uAlpha;\n\nvec4 outputColor(vec4 color) {\n    // desaturate => fade => alpha\n    vec3 ret = mix(color.rgb, vec3(uBrightness + 1.0 / 2.0), abs(uBrightness));\n    ret = vec3(desaturateColor(ret, uDesaturate));\n    ret = mix(ret, uClearColor.rgb, uFade);\n    return vec4(ret, color.a * uAlpha);\n}\n\n#define MODE_DRAFT 0u\n#define MODE_MEDIUM 1u\n#define MODE_HIGH 2u\n#define MODE_HIGH_PASS_1 3u\n#define MODE_HIGH_PASS_2 4u\n#define MODE_PICKING 5u\n\nvec4 renderChar(float charWidth, vec4 texPixel, vec4 backgroundColor, vec4 haloColor, vec4 textColor, float halo) {\n    float edgeThreshold = 0.49;\n    float haloThreshold = 0.18; // sets max halo threshold\n    float smoothing = 1.0 / charWidth;\n    float distance = texPixel.a;\n\n    vec4 finalColor = backgroundColor;\n    if (distance > edgeThreshold - smoothing) { // text fill\n        float textEdge = smoothstep(edgeThreshold - smoothing, edgeThreshold + smoothing, distance);\n        vec4 textEdgeBlendColor = mix(haloColor, backgroundColor, float(halo == 0.));\n        finalColor = mix(textEdgeBlendColor, textColor, textEdge);\n    }\n    else if (distance > edgeThreshold - haloThreshold * halo - smoothing) { // outline\n        float haloEdge = smoothstep(edgeThreshold - haloThreshold * halo - smoothing, edgeThreshold - haloThreshold * halo + smoothing, distance);\n        finalColor = mix(backgroundColor, haloColor, haloEdge);\n    }\n\n    return finalColor;\n}\n\nuniform usampler2D uLabelIndices;\nuniform usampler2D uLabelOffsets;\nuniform usampler2D uCharBoxes;\nuniform sampler2D uCharTexture;\nuniform float uPixelRatio;\nuniform uint uRenderMode;\nuniform float uPadding;\nuniform float uHalo;\n\nflat in vec4 fBackgroundColor;\nflat in vec4 fTextColor;\nflat in vec4 fHaloColor;\nflat in vec4 fLabelInfo;\nflat in float fPixelLength;\nflat in vec2 fCharTextureSize;\nin vec2 vFromCenter;\nin vec2 vStringCoords;\nin vec2 vPixelCoords;\n\nout vec4 fragColor;\n\nvoid main() {\n    float padding = uPadding * uPixelRatio;\n    vec4 finalColor;\n\n    if (vPixelCoords.x < padding || vPixelCoords.y < padding || vPixelCoords.x > fLabelInfo[2] + padding || vPixelCoords.y > fLabelInfo[3] + padding) {\n        finalColor = fBackgroundColor;\n    } else {\n        vec2 labelUV = (vPixelCoords - padding);\n\n        // make prediction of which char is likely to be rendered assuming all chars are equal width\n        int predictedChar = int(fLabelInfo[0] + fLabelInfo[1] * (labelUV.x / fLabelInfo[2]));\n        // get character start/end positions for prediction\n        float predictedXStart = float(uivalueForIndex(uLabelOffsets, predictedChar));\n        float predictedXEnd = float(uivalueForIndex(uLabelOffsets, predictedChar + 1));\n        predictedXEnd = predictedXEnd > 0. ? predictedXEnd : fLabelInfo[2];\n        // test and correct prediction against pre-computed char positions\n        while (labelUV.x < predictedXStart) {\n            predictedChar--;\n            predictedXEnd = predictedXStart;\n            predictedXStart = float(uivalueForIndex(uLabelOffsets, predictedChar));\n        }\n        while (labelUV.x > predictedXEnd) {\n            predictedChar++;\n            predictedXStart = predictedXEnd;\n            predictedXEnd = float(uivalueForIndex(uLabelOffsets, predictedChar + 1));\n            predictedXEnd = predictedXEnd > 0. ? predictedXEnd : fLabelInfo[2];\n        }\n\n        // float u = fLabelInfo[0] + fLabelInfo[1] * (labelUV.x / fLabelInfo.b);\n        float v = labelUV.y / fLabelInfo.a;\n\n        // int stringIndex = int(floor(u));\n        int stringIndex = predictedChar;\n        int charIndex = int(uivalueForIndex(uLabelIndices, stringIndex));\n        // coordinate and dimensions of character to be drawn in char map\n        vec4 charBox = vec4(uvalueForIndex(uCharBoxes, charIndex));\n        // float charMult = u - float(stringIndex);\n        float charMult = (labelUV.x - predictedXStart) / charBox[2];\n\n        vec4 charBoxUV = charBox / vec4(fCharTextureSize, fCharTextureSize);\n\n        vec2 uv = vec2(charBoxUV[0] + charBoxUV[2] * charMult, charBoxUV[1] + charBoxUV[3] * v);\n        vec4 texPixel = texture(uCharTexture, uv);\n\n        finalColor = renderChar(fLabelInfo[3], texPixel, fBackgroundColor, fHaloColor, fTextColor, uHalo);\n    }\n\n    float threshold = uRenderMode == MODE_HIGH_PASS_1 ? 0.75 : 0.5;\n\n    if (uRenderMode != MODE_HIGH_PASS_2) {\n        if (finalColor.a < threshold) {\n            discard;\n        }\n        fragColor = outputColor(vec4(finalColor.rgb, 1.0));\n    } else {\n        if (finalColor.a == 1.0) {\n            discard;\n        }\n        fragColor = outputColor(finalColor);\n    }\n\n//    if ((uRenderMode != MODE_HIGH_PASS_2 && texPixel.a < threshold) || (uRenderMode == MODE_HIGH_PASS_2 && texPixel.a == 1.0)) {\n//        discard;\n//    }\n//    float alpha = uRenderMode == MODE_HIGH_PASS_2 ? texPixel.a : 1.0;\n//    fragColor = vec4(texPixel.rgb * fColor.rgb, alpha);\n}\n";
 
 // src/graph/labels/point/PointLabel.vs.glsl
 var PointLabel_vs_default = `#version 300 es
@@ -17720,6 +17730,7 @@ uniform float uPadding;
 
 flat out vec4 fBackgroundColor;
 flat out vec4 fTextColor;
+flat out vec4 fHaloColor;
 flat out vec4 fLabelInfo;
 flat out float fPixelLength;
 flat out vec2 fCharTextureSize;
@@ -17860,6 +17871,7 @@ void main() {
         fBackgroundColor = vec4(color.rgb, 0.0);
         fTextColor = vec4(color.rgb, 1.0);
     }
+    fHaloColor = mix(vec4(1.), vec4(0., 0., 0., 1.), float(length(fTextColor.rgb) > 0.866));
 
     // send the normalized length of a single pixel to the fragment shader
     fPixelLength = 1.0 / max(1.0, pixelRadius);
@@ -17913,6 +17925,8992 @@ void main() {
 // src/graph/labels/point/PointLabel.data.vs.glsl
 var PointLabel_data_vs_default = "#version 300 es\n#define GLSLIFY 1\n\nlayout(location=0) in uint aPositionIndex;\nlayout(location=1) in uint aColor;\nlayout(location=2) in uvec4 aLabel;\n\nuniform sampler2D uGraphPoints;\n\nflat out uint fPoint;\nflat out uint fColor;\nflat out uvec4 fLabel;\n\nvoid main() {\n    fPoint = aPositionIndex;\n    fColor = aColor;\n    fLabel = aLabel;\n}\n";
 
+// src/graph/labels/rtlText.js
+var Module = {
+  TOTAL_MEMORY: 8 * 1024 * 1024,
+  TOTAL_STACK: 2 * 1024 * 1024,
+  preRun: [],
+  postRun: [],
+  print: function(text) {
+    console.log(text);
+  },
+  printErr: function(text) {
+    text = Array.prototype.slice.call(arguments).join(" ");
+    if (text.indexOf("pre-main prep time") >= 0) {
+      return;
+    }
+    console.error(text);
+  }
+};
+var Module = typeof Module !== "undefined" ? Module : {};
+var moduleOverrides = {};
+var key;
+for (key in Module) {
+  if (Module.hasOwnProperty(key)) {
+    moduleOverrides[key] = Module[key];
+  }
+}
+Module["arguments"] = [];
+Module["thisProgram"] = "./this.program";
+Module["quit"] = function(status, toThrow) {
+  throw toThrow;
+};
+Module["preRun"] = [];
+Module["postRun"] = [];
+var ENVIRONMENT_IS_WEB = false;
+var ENVIRONMENT_IS_WORKER = false;
+var ENVIRONMENT_IS_NODE = false;
+var ENVIRONMENT_IS_SHELL = false;
+ENVIRONMENT_IS_WEB = typeof window === "object";
+ENVIRONMENT_IS_WORKER = typeof importScripts === "function";
+ENVIRONMENT_IS_NODE = typeof process === "object" && typeof __require === "function" && !ENVIRONMENT_IS_WEB && !ENVIRONMENT_IS_WORKER;
+ENVIRONMENT_IS_SHELL = !ENVIRONMENT_IS_WEB && !ENVIRONMENT_IS_NODE && !ENVIRONMENT_IS_WORKER;
+var scriptDirectory = "";
+function locateFile(path) {
+  if (Module["locateFile"]) {
+    return Module["locateFile"](path, scriptDirectory);
+  } else {
+    return scriptDirectory + path;
+  }
+}
+if (ENVIRONMENT_IS_WEB || ENVIRONMENT_IS_WORKER) {
+  if (ENVIRONMENT_IS_WORKER) {
+    scriptDirectory = self.location.href;
+  } else if (document.currentScript) {
+    scriptDirectory = document.currentScript.src;
+  }
+  if (scriptDirectory.indexOf("blob:") !== 0) {
+    scriptDirectory = scriptDirectory.substr(0, scriptDirectory.lastIndexOf("/") + 1);
+  } else {
+    scriptDirectory = "";
+  }
+  Module["read"] = function shell_read(url) {
+    try {
+      var xhr = new XMLHttpRequest();
+      xhr.open("GET", url, false);
+      xhr.send(null);
+      return xhr.responseText;
+    } catch (err2) {
+      var data = tryParseAsDataURI(url);
+      if (data) {
+        return intArrayToString(data);
+      }
+      throw err2;
+    }
+  };
+  if (ENVIRONMENT_IS_WORKER) {
+    Module["readBinary"] = function readBinary(url) {
+      try {
+        var xhr = new XMLHttpRequest();
+        xhr.open("GET", url, false);
+        xhr.responseType = "arraybuffer";
+        xhr.send(null);
+        return new Uint8Array(xhr.response);
+      } catch (err2) {
+        var data = tryParseAsDataURI(url);
+        if (data) {
+          return data;
+        }
+        throw err2;
+      }
+    };
+  }
+  Module["readAsync"] = function readAsync(url, onload, onerror) {
+    var xhr = new XMLHttpRequest();
+    xhr.open("GET", url, true);
+    xhr.responseType = "arraybuffer";
+    xhr.onload = function xhr_onload() {
+      if (xhr.status == 200 || xhr.status == 0 && xhr.response) {
+        onload(xhr.response);
+        return;
+      }
+      var data = tryParseAsDataURI(url);
+      if (data) {
+        onload(data.buffer);
+        return;
+      }
+      onerror();
+    };
+    xhr.onerror = onerror;
+    xhr.send(null);
+  };
+  Module["setWindowTitle"] = function(title) {
+    document.title = title;
+  };
+} else {
+}
+var out = Module["print"] || (typeof console !== "undefined" ? console.log.bind(console) : typeof print !== "undefined" ? print : null);
+var err = Module["printErr"] || (typeof printErr !== "undefined" ? printErr : typeof console !== "undefined" && console.warn.bind(console) || out);
+for (key in moduleOverrides) {
+  if (moduleOverrides.hasOwnProperty(key)) {
+    Module[key] = moduleOverrides[key];
+  }
+}
+moduleOverrides = void 0;
+function dynamicAlloc(size) {
+  var ret = HEAP32[DYNAMICTOP_PTR >> 2];
+  var end = ret + size + 15 & -16;
+  if (end <= _emscripten_get_heap_size()) {
+    HEAP32[DYNAMICTOP_PTR >> 2] = end;
+  } else {
+    var success = _emscripten_resize_heap(end);
+    if (!success)
+      return 0;
+  }
+  return ret;
+}
+var functionPointers = new Array(0);
+var tempRet0 = 0;
+var setTempRet0 = function(value) {
+  tempRet0 = value;
+};
+var getTempRet0 = function() {
+  return tempRet0;
+};
+var GLOBAL_BASE = 8;
+var ABORT = false;
+var EXITSTATUS = 0;
+function getCFunc(ident) {
+  var func = Module["_" + ident];
+  return func;
+}
+function ccall(ident, returnType, argTypes, args, opts) {
+  var toC = {
+    "string": function(str6) {
+      var ret2 = 0;
+      if (str6 !== null && str6 !== void 0 && str6 !== 0) {
+        var len5 = (str6.length << 2) + 1;
+        ret2 = stackAlloc(len5);
+        stringToUTF8(str6, ret2, len5);
+      }
+      return ret2;
+    },
+    "array": function(arr) {
+      var ret2 = stackAlloc(arr.length);
+      writeArrayToMemory(arr, ret2);
+      return ret2;
+    }
+  };
+  function convertReturnValue(ret2) {
+    if (returnType === "string")
+      return UTF8ToString(ret2);
+    if (returnType === "boolean")
+      return Boolean(ret2);
+    return ret2;
+  }
+  var func = getCFunc(ident);
+  var cArgs = [];
+  var stack = 0;
+  if (args) {
+    for (var i = 0; i < args.length; i++) {
+      var converter = toC[argTypes[i]];
+      if (converter) {
+        if (stack === 0)
+          stack = stackSave();
+        cArgs[i] = converter(args[i]);
+      } else {
+        cArgs[i] = args[i];
+      }
+    }
+  }
+  var ret = func.apply(null, cArgs);
+  ret = convertReturnValue(ret);
+  if (stack !== 0)
+    stackRestore(stack);
+  return ret;
+}
+function getMemory(size) {
+  if (!runtimeInitialized)
+    return dynamicAlloc(size);
+  return _malloc(size);
+}
+var UTF8Decoder = typeof TextDecoder !== "undefined" ? new TextDecoder("utf8") : void 0;
+function UTF8ArrayToString(u8Array, idx, maxBytesToRead) {
+  var endIdx = idx + maxBytesToRead;
+  var endPtr = idx;
+  while (u8Array[endPtr] && !(endPtr >= endIdx))
+    ++endPtr;
+  if (endPtr - idx > 16 && u8Array.subarray && UTF8Decoder) {
+    return UTF8Decoder.decode(u8Array.subarray(idx, endPtr));
+  } else {
+    var str6 = "";
+    while (idx < endPtr) {
+      var u0 = u8Array[idx++];
+      if (!(u0 & 128)) {
+        str6 += String.fromCharCode(u0);
+        continue;
+      }
+      var u1 = u8Array[idx++] & 63;
+      if ((u0 & 224) == 192) {
+        str6 += String.fromCharCode((u0 & 31) << 6 | u1);
+        continue;
+      }
+      var u2 = u8Array[idx++] & 63;
+      if ((u0 & 240) == 224) {
+        u0 = (u0 & 15) << 12 | u1 << 6 | u2;
+      } else {
+        u0 = (u0 & 7) << 18 | u1 << 12 | u2 << 6 | u8Array[idx++] & 63;
+      }
+      if (u0 < 65536) {
+        str6 += String.fromCharCode(u0);
+      } else {
+        var ch = u0 - 65536;
+        str6 += String.fromCharCode(55296 | ch >> 10, 56320 | ch & 1023);
+      }
+    }
+  }
+  return str6;
+}
+function UTF8ToString(ptr, maxBytesToRead) {
+  return ptr ? UTF8ArrayToString(HEAPU8, ptr, maxBytesToRead) : "";
+}
+function stringToUTF8Array(str6, outU8Array, outIdx, maxBytesToWrite) {
+  if (!(maxBytesToWrite > 0))
+    return 0;
+  var startIdx = outIdx;
+  var endIdx = outIdx + maxBytesToWrite - 1;
+  for (var i = 0; i < str6.length; ++i) {
+    var u = str6.charCodeAt(i);
+    if (u >= 55296 && u <= 57343) {
+      var u1 = str6.charCodeAt(++i);
+      u = 65536 + ((u & 1023) << 10) | u1 & 1023;
+    }
+    if (u <= 127) {
+      if (outIdx >= endIdx)
+        break;
+      outU8Array[outIdx++] = u;
+    } else if (u <= 2047) {
+      if (outIdx + 1 >= endIdx)
+        break;
+      outU8Array[outIdx++] = 192 | u >> 6;
+      outU8Array[outIdx++] = 128 | u & 63;
+    } else if (u <= 65535) {
+      if (outIdx + 2 >= endIdx)
+        break;
+      outU8Array[outIdx++] = 224 | u >> 12;
+      outU8Array[outIdx++] = 128 | u >> 6 & 63;
+      outU8Array[outIdx++] = 128 | u & 63;
+    } else {
+      if (outIdx + 3 >= endIdx)
+        break;
+      outU8Array[outIdx++] = 240 | u >> 18;
+      outU8Array[outIdx++] = 128 | u >> 12 & 63;
+      outU8Array[outIdx++] = 128 | u >> 6 & 63;
+      outU8Array[outIdx++] = 128 | u & 63;
+    }
+  }
+  outU8Array[outIdx] = 0;
+  return outIdx - startIdx;
+}
+function stringToUTF8(str6, outPtr, maxBytesToWrite) {
+  return stringToUTF8Array(str6, HEAPU8, outPtr, maxBytesToWrite);
+}
+var UTF16Decoder = typeof TextDecoder !== "undefined" ? new TextDecoder("utf-16le") : void 0;
+function UTF16ToString(ptr) {
+  var endPtr = ptr;
+  var idx = endPtr >> 1;
+  while (HEAP16[idx])
+    ++idx;
+  endPtr = idx << 1;
+  if (endPtr - ptr > 32 && UTF16Decoder) {
+    return UTF16Decoder.decode(HEAPU8.subarray(ptr, endPtr));
+  } else {
+    var i = 0;
+    var str6 = "";
+    while (1) {
+      var codeUnit = HEAP16[ptr + i * 2 >> 1];
+      if (codeUnit == 0)
+        return str6;
+      ++i;
+      str6 += String.fromCharCode(codeUnit);
+    }
+  }
+}
+function stringToUTF16(str6, outPtr, maxBytesToWrite) {
+  if (maxBytesToWrite === void 0) {
+    maxBytesToWrite = 2147483647;
+  }
+  if (maxBytesToWrite < 2)
+    return 0;
+  maxBytesToWrite -= 2;
+  var startPtr = outPtr;
+  var numCharsToWrite = maxBytesToWrite < str6.length * 2 ? maxBytesToWrite / 2 : str6.length;
+  for (var i = 0; i < numCharsToWrite; ++i) {
+    var codeUnit = str6.charCodeAt(i);
+    HEAP16[outPtr >> 1] = codeUnit;
+    outPtr += 2;
+  }
+  HEAP16[outPtr >> 1] = 0;
+  return outPtr - startPtr;
+}
+function writeArrayToMemory(array, buffer2) {
+  HEAP8.set(array, buffer2);
+}
+function writeAsciiToMemory(str6, buffer2, dontAddNull) {
+  for (var i = 0; i < str6.length; ++i) {
+    HEAP8[buffer2++ >> 0] = str6.charCodeAt(i);
+  }
+  if (!dontAddNull)
+    HEAP8[buffer2 >> 0] = 0;
+}
+function alignUp(x, multiple) {
+  if (x % multiple > 0) {
+    x += multiple - x % multiple;
+  }
+  return x;
+}
+var buffer;
+var HEAP8;
+var HEAPU8;
+var HEAP16;
+var HEAPU16;
+var HEAP32;
+var HEAPU32;
+var HEAPF32;
+var HEAPF64;
+function updateGlobalBufferViews() {
+  Module["HEAP8"] = HEAP8 = new Int8Array(buffer);
+  Module["HEAP16"] = HEAP16 = new Int16Array(buffer);
+  Module["HEAP32"] = HEAP32 = new Int32Array(buffer);
+  Module["HEAPU8"] = HEAPU8 = new Uint8Array(buffer);
+  Module["HEAPU16"] = HEAPU16 = new Uint16Array(buffer);
+  Module["HEAPU32"] = HEAPU32 = new Uint32Array(buffer);
+  Module["HEAPF32"] = HEAPF32 = new Float32Array(buffer);
+  Module["HEAPF64"] = HEAPF64 = new Float64Array(buffer);
+}
+var DYNAMIC_BASE = 5314e3;
+var DYNAMICTOP_PTR = 71088;
+var TOTAL_STACK = 5242880;
+var INITIAL_TOTAL_MEMORY = Module["TOTAL_MEMORY"] || 16777216;
+if (INITIAL_TOTAL_MEMORY < TOTAL_STACK)
+  err("TOTAL_MEMORY should be larger than TOTAL_STACK, was " + INITIAL_TOTAL_MEMORY + "! (TOTAL_STACK=" + TOTAL_STACK + ")");
+if (Module["buffer"]) {
+  buffer = Module["buffer"];
+} else {
+  {
+    buffer = new ArrayBuffer(INITIAL_TOTAL_MEMORY);
+  }
+}
+updateGlobalBufferViews();
+HEAP32[DYNAMICTOP_PTR >> 2] = DYNAMIC_BASE;
+function callRuntimeCallbacks(callbacks) {
+  while (callbacks.length > 0) {
+    var callback = callbacks.shift();
+    if (typeof callback == "function") {
+      callback();
+      continue;
+    }
+    var func = callback.func;
+    if (typeof func === "number") {
+      if (callback.arg === void 0) {
+        Module["dynCall_v"](func);
+      } else {
+        Module["dynCall_vi"](func, callback.arg);
+      }
+    } else {
+      func(callback.arg === void 0 ? null : callback.arg);
+    }
+  }
+}
+var __ATPRERUN__ = [];
+var __ATINIT__ = [];
+var __ATMAIN__ = [];
+var __ATPOSTRUN__ = [];
+var runtimeInitialized = false;
+function preRun() {
+  if (Module["preRun"]) {
+    if (typeof Module["preRun"] == "function")
+      Module["preRun"] = [Module["preRun"]];
+    while (Module["preRun"].length) {
+      addOnPreRun(Module["preRun"].shift());
+    }
+  }
+  callRuntimeCallbacks(__ATPRERUN__);
+}
+function ensureInitRuntime() {
+  if (runtimeInitialized)
+    return;
+  runtimeInitialized = true;
+  callRuntimeCallbacks(__ATINIT__);
+}
+function preMain() {
+  callRuntimeCallbacks(__ATMAIN__);
+}
+function postRun() {
+  if (Module["postRun"]) {
+    if (typeof Module["postRun"] == "function")
+      Module["postRun"] = [Module["postRun"]];
+    while (Module["postRun"].length) {
+      addOnPostRun(Module["postRun"].shift());
+    }
+  }
+  callRuntimeCallbacks(__ATPOSTRUN__);
+}
+function addOnPreRun(cb) {
+  __ATPRERUN__.unshift(cb);
+}
+function addOnPostRun(cb) {
+  __ATPOSTRUN__.unshift(cb);
+}
+var runDependencies = 0;
+var runDependencyWatcher = null;
+var dependenciesFulfilled = null;
+function addRunDependency(id) {
+  runDependencies++;
+  if (Module["monitorRunDependencies"]) {
+    Module["monitorRunDependencies"](runDependencies);
+  }
+}
+function removeRunDependency(id) {
+  runDependencies--;
+  if (Module["monitorRunDependencies"]) {
+    Module["monitorRunDependencies"](runDependencies);
+  }
+  if (runDependencies == 0) {
+    if (runDependencyWatcher !== null) {
+      clearInterval(runDependencyWatcher);
+      runDependencyWatcher = null;
+    }
+    if (dependenciesFulfilled) {
+      var callback = dependenciesFulfilled;
+      dependenciesFulfilled = null;
+      callback();
+    }
+  }
+}
+Module["preloadedImages"] = {};
+Module["preloadedAudios"] = {};
+var memoryInitializer = null;
+var dataURIPrefix = "data:application/octet-stream;base64,";
+function isDataURI(filename) {
+  return String.prototype.startsWith ? filename.startsWith(dataURIPrefix) : filename.indexOf(dataURIPrefix) === 0;
+}
+__ATINIT__.push({
+  func: function() {
+    ___emscripten_environ_constructor();
+  }
+});
+memoryInitializer = "data:application/octet-stream;base64,AAAAAAAAAAAAAQIHCAMJBgUEBAoKDAoKCgsKBAQEBA0OAAAAAAAAAAECBAUHDxEHCQcABwMSFQQBIiQlJy8xJyknAQEjMjUAIQIkJScvMScpJwICIzI1ASEiJiYoMDEoKCgDAwMyNQEhIgQlJy8xSgtKBAQjEhUCISIkBScvMScpTAUFIzI1AyEiBgYoMDEoKE0GBiMSFQMhIiQlBy8xB04HBwcjMjUEISImJggwMQgICAgIIzI1BCEiBCUHLzEHCQcJCSMSFQRhYgRlh29xh46HCodjEhUCISIEJScvMScLJwsLIxIVAmFiZAWHb3GHjocMh2NydQNhYgYGiHBxiIiIDYhjEhUDISKEJQcvMQcOBw4OI5KVBCEiJCUnDzEnKScPJyMyNQUhIiYmKBAxKCgoECgjMjUFISIkJScvEScpJxEnIzI1BiEiEiUnLzFTFFMSEiMSFQBhYhJlh29xh46HE4djEhUAISISJScvMScUJxQUIxIVACEiFSUnLzFWF1YVFSMSFQNhYhVlh29xh46HFodjEhUDISIVJScvMScXJxcXIxIVAwACEREAAAAAAEIBAQAAAAAAAgQEExMAAQAiNDQDAwAAAAIEBBMTAAIAAAAAAAAAAAEAAgIAAAAAAQABAhMTAAEBAAICAAAAASEwBgQDAzAAITAGBAUFMAMhMAYEBQUwAiEwBgQDAzABAAAAAAAAAAAAYgEBAAAAAABiAQEAMAAEAGJUVBMwAAMwQlRUAzAwAzBCBAQTMDAEAAAAAAAAAAATAAEBAAAAACMAAQECQAABIwABAQJAAAADAAM2FEAAAVNABTYEQEAAU0AFNgRAQAFTQAYGBEBAAwAAAAAAAAAAAAEAAgAAAAAAAQMDFBQAAQABAAIVFQACAAEDAxQUAAIAITMzBAQAAAAhADIFBQAAAGMAAQAAAAAAYwABEjAABCBjIAECMCADAGNVVhQwAAMwQ1VWBDAwAzBDBVYUMDAEMENVBhQwMAQAAAAAAAAAAAABAAAAAAAAAAEAABQUAAEAAQAAFRUAAgABAAAUFAACIAEgIAQEIAEgASAgBQUgAQEAAQEAAAAAAQABARQUAAEBAAEBAAAAAQEAAQEFBQABIQAhIQQEAAABAAEBBQUAAAADEREAAAAAIAMBAQIgIAIgAwEBAiAgAQADBQUUAAABIAMFBQQgIAEAAwUFFAAAAgIAAQEAAAAAAgABAQAAAAECABQUEwAAASIABAQDAAAAIgAEBAMAAAEAAAAAAAAAAAEAAgIAAAAAAQABAxQUAAEBAAICAAAAAQEAAQMFBQABIQAhAwQEAAABAAEDBQUAAHEGcQZ7BnsGewZ7Bn4GfgZ+Bn4GAAAAAAAAAAB6BnoGegZ6BgAAAAAAAAAAeQZ5BnkGeQYAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIYGhgaGBoYGAAAAAAAAAACNBo0GjAaMBo4GjgaIBogGmAaYBpEGkQapBqkGqQapBq8GrwavBq8GAAAAAAAAAAAAAAAAAAAAALoGuga7BrsGuwa7BsAGwAbBBsEGwQbBBr4Gvga+Br4G0gbSBtMG0wYAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMcGxwbGBsYGyAbIBgAAywbLBsUGxQbJBskG0AbQBtAG0AYAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAzAbMBswGzAZLBksGTAZMBk0GTQZOBk4GTwZPBlAGUAZRBlEGUgZSBiEGIgYiBiMGIwYkBiQGJQYlBiYGJgYmBiYGJwYnBigGKAYoBigGKQYpBioGKgYqBioGKwYrBisGKwYsBiwGLAYsBi0GLQYtBi0GLgYuBi4GLgYvBi8GMAYwBjEGMQYyBjIGMwYzBjMGMwY0BjQGNAY0BjUGNQY1BjUGNgY2BjYGNgY3BjcGNwY3BjgGOAY4BjgGOQY5BjkGOQY6BjoGOgY6BkEGQQZBBkEGQgZCBkIGQgZDBkMGQwZDBkQGRAZEBkQGRQZFBkUGRQZGBkYGRgZGBkcGRwZHBkcGSAZIBkkGSQZKBkoGSgZKBlwGXAZdBl0GXgZeBl8GXwYAAAAAAAAAAAAAAAAAAAABAAMAAQABAAACAgAAAQIAAQECAAEBAwAAAAAAAAAAAAEAAwABAAMAAAECAAABAgABAQIAAQEDIREhEwEVIRcDGSEdAx8BIwMlAykDLQMxAzUBOQE7AT0BPwNBA0UDSQNNA1EDVQNZA10AAAAAAAAAAAAAAwADYQNlA2kTbQNxA3UDeQF9AX8DgQQBhAGEAYQBhAGEAUQDBAEEBwQIBAgEAQAAAAAAAAAAAAABhQGHAYkBiwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAYJACEAIQAAACEAAQABAAMACxYLDgsCAwADAAsGAwADAAMAAwADAAMAAwALKgMACTgBAAEAAQAJNAkyCTYBAAEACTwBAAEAAQABAAEAAQAJOgEAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMACz4DAAMAAwADAAMAC0IDAAMAAwADAAMAAwADAAMAAwADAAlOC1ADAAMAC1oDAAlUC1YBAAEAAQAJkAmJCYcJiwmSAQAJjgusAQADAAMAC5QDAAleCWAAAAAAAAAAAAAAAAAAAQAAAAAAAQIDAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQIDAAAAAAAAAAAAAAAAAAEAAAABAgMAAQIDAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAECAwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEBAQEBAAAAAAAAAAAAAAAAAADAwMAAwADAwMDAwMDAwMDAAABAAEAAQABAAECAwABAAECAwABAAECAwABAgMAAQIDAAECAwABAgMAAQABAAEAAQABAgMAAQIDAAECAwABAgMAAQIDAAECAwABAgMAAQIDAAECAwABAgMAAQIDAAECAwABAgMAAQIDAAECAwABAAEAAQIDAAEAAQABAAEAAABdBGUEbQR1BI0ElQSdBKUErQS1BLsEwwTLBNME2wTjBOkE8QT5BAEFBAUMBRQFHAUkBSwFKAUwBTgFQAVFBU0FVQVdBWEFaQVxBXkFgQWJBYUFjQWSBZoFoAWoBbAFuAXABcgF0AXYBd0F5QXoBfAF+AUABgYGDgYNBhUGHQYlBjUGLQY9BkUGfQRVBl0GTQZtBm8GdwZlBocGjQaVBn8GpQarBrMGnQbDBskG0Qa7BuEG5wbvBtkG/wYHBw8H9wYfByUHLQcXBz0HQwdLBzUHWwdgB2gHUwd4B38HhwdwBwkGjweXB30EnwenB68HfQS3B78HxwfMB9QH2wfjB30EyAXrB/MH+wcDCFUFEwgLCMgFyAXIBcgFyAXIBcgFyAXIBcgFGwjIBSMIJwgvCMgFNQjIBTsIQwhLCFUFVQVTCFsIyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFYAhoCMgFyAVwCHgIgAiICJAIyAWYCKAIqAi4CMgFwAjCCMoIsAjIBc0I4QjVCN0I6QjIBfEI9wj/CAcJyAUXCR8JJwkPCX0EfQQ3CToJQgkvCVIJSgnIBVkJyAVoCWEJcAl4CXwJhAmMCf0ElAmXCZ0JpAmXCSQFrAmtBK0ErQStBLQJrQStBK0ExAnMCdQJ3AnkCegJ8Am8CQgKEAr4CQAKGAogCigKMApICjgKQApQClgKZwpsCl8KdAp0CnQKdAp0CnQKdAp0CnwKhAr/CIcKjwqWCpsKowr/CKoKqQq6Cr0K/wj/CLIK/wj/CP8I/wj/CMwK1ArECv8I/wj/CNkK/wj/CP8I/wj/CP8I/wjfCucK/wjvCvYK/wj/CP8I/wj/CP8I/wj/CHQKdAp0CnQK/gp0CgULDAt0CnQKdAp0CnQKdAp0CnQK/wgUCxsLHwslC/8IKwukClUFOwszC0MLrQStBK0ESwv9BFMLyAVZC2kLYQthCyQFcQt5C4ELfQSJC/8I/wiQC/8I/wj/CP8I/wj/CJgLnguuC6YLCQbIBbYLWwjIBb4LxgvKC8gFyAXPC9cL/wjfC6QK5wvtC/8I5wv1C/8IpAr/CP8I/wj/CP8I/wj/CP8I/QvIBcgFyAUFDMgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFCwzIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAUQDMgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXNCP8I/wgYDMgFGwzIBSMMKQwxDDkMPgzIBcgFQgzIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAVJDMgFUAxWDMgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAVeDMgFyAXIBWYMyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBWgMyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAVvDMgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFdgzIBcgFyAV9DIUMyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFigzIBcgFkgzIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFlgzIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAWZDMgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAWcDMgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFogzIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFqgzIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBa8MyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAW0DMgFyAXIBbkMyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcEMyAzMDMgFyAXIBdMMyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBdkM6QzIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgF4Qz/CPEMcAnIBcgFyAXIBcgFyAXIBcgF9gz+DK0EDg0GDcgFyAUWDR4NLg2tBDMNOw1BDX0EJg1JDVENyAVZDWkNbA1hDXQNHQZ8DYMNwQhtBpMNiw2bDcgFow2rDbMNyAW7DcMNyw3TDdsN3w3nDf0E/QTIBe8NyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAX3DQMO+w19BH0EfQR9BH0EfQR9BH0EfQR9BH0EfQR9BH0EfQR9BH0EfQR9BH0EfQR9BH0EfQR9BH0EfQR9BH0EfQR9BH0ECw4LDgsOCw4LDgsOCw4LDgsOCw4LDgsOCw4LDgsOCw4LDgsOCw4LDgsOCw4LDgsOCw4LDgsOCw4LDgsOCw4LDhMOEw4TDhMOEw4TDhMOEw4TDhMOEw4TDhMOEw4TDhMOEw4TDhMOEw4TDhMOEw4TDhMOEw4TDhMOEw4TDhMOEw4TDhMOEw4TDhMOEw4TDhMOEw4TDhMOEw4TDhMOEw4TDhMOEw4TDhMOEw4TDhMOEw4TDhMOEw4TDhMOEw4TDhMOEw4TDhMOEw4TDhMOEw4TDhMOEw4TDhMOEw4TDhMOEw4TDhMOEw4TDhMOEw4TDhMOEw4TDhMOEw4TDhMOEw4TDhMOEw4TDhMOEw4TDhMOEw4TDhMOEw4TDhMOEw4TDhMOEw4TDhMOEw4TDhMOEw4TDhMOEw4TDhMOEw4TDhMOEw4TDhMOEw4TDhMOEw4TDhMOEw4TDhMOEw4TDhMOEw4TDhMOEw4TDhMOEw4TDhMOEw4TDhMOEw4TDhMOEw4TDhMOEw4TDhMOEw4TDhMOEw4TDhMOEw4TDhMOEw4TDhMOEw4TDhMOEw4TDhMOEw4TDhMOEw4TDhMOEw4TDhMOEw4TDhMOEw4TDhMOEw4TDhMOEw7IBcgFyAUbDsgF1AwiDicOyAXIBcgFLw7IBcgFzAh9BEUONQ49DsgFyAVNDlUOyAXIBcgFyAXIBcgFyAXIBcgFyAVaDmIOyAVmDsgFbA5wDngOgA6HDo8OyAXIBcgFlQ6tDm0EtQ69DsIO4QidDqUOCw4LDgsOCw4LDgsOCw4LDgsOCw4LDgsOCw4LDgsOCw4LDgsOCw4LDgsOCw4LDgsOCw4LDgsOCw4LDgsOCw4LDvQR9BE0EnQStBLsEiwTbBOkE+QTEBRQFJAUoBTgFBQVVBWEFcQVBBYUFkgWgBbAFgAXQBd0F6AX4BcYGDQYdBiACsAKAAtAC4ALQArAC0AK4gtACkAKQApACiIM2wHbAWIMogxACkAKQApACuIMAg1ACkAKQg2CDcINAg5CDoIOwg75DtsB2wEdD1EP2wF5D9sB2wHbAdsBpg/bAdsB2wHbAdsB2wHbAboP2wHyDzIQ2wE9ENsB2wHbAXMQQAqzEEAKQApACkAKQApACkAKQApACkAKQApACkAKQApACkAKQApACkAKQApACkAKQApACkAKQApACkAKQApACkAKQApACkAKQApACkAKQApACkAKQApACkAKQApACkAKQApACkAKQApACkAKQApACkAKQApACkAKQApACkAKQApACkAKQApACkAKQApACkAKQApACkAKQApACkAKQApACkAKQApACkAKQApACkAKQApACkAKQApACkAKQApACkAKQApACkAKQApACkAKQApACkAKQApACkAKQApACkAKQApACkAKQApACkAKQApACkAKQApACkAKQApACkAKQApACkAKQApACkAKQApACkAKQApACkAKQApACkAKQApACkAKQApACkAKQApACkAKQApACkAKQApACkAKQApACkAKQApACkAKQApACkAKQApACkAKQApACkAKQApACkAKQApACkAKQApACkAKQApACkAKQApACkAKQApACkAKQApACkAKQApACkAKQApACkAKQApACkAKQApACkAKQApACkAKQApACkAKQApACkAKQApACkAKQApACkAKQApACkAKQApACkAKQApACkAKQApACkAKQApACkAKQApACkAKQApACkAKQApACkAKQApACkAKQApACkAKQApACkAKQApACkAKQApACkAKQApACkAKQApACkAKQApACkAKQApACkAKQApACkAKQApACkAKQApACkAKQApACkAKQApACkAKQApACkAKQApACkAKQApACkAKQApACkAKQApACkAKQApACkAKQApACkAKQApACkAKQApACkAKQApACkAKQApACkAKQApACkAKQApACkAKQApACkAKQApACkAKQApACkAKQApACkAKQApACkAKQApACkAKQApACkAKQApACkAKQApACkAKQApACkAK8xBACkAKQApACkAKQApACkAKQApACkAKQApACkAKQApACkAKQApACkAKQApACkAKQApACkAKQApACkAKQApACgAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHMxEABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABzMRfQR9BH0EfQR9BH0EfQR9BH0EfQR9BH0EfQR9BH0EfQR9BH0EfQR9BH0EfQR9BH0EfQR9BH0EfQR9BH0EfQR9BH0EfQR9BH0EfQR9BH0EfQR9BH0EfQR9BH0EfQR9BH0EfQR9BH0EfQR9BH0EfQR9BH0EfQR9BH0EfQR9BH0EfQTKDtEO2Q59BMgFyAXIBdcL6Q7hDgAP8Q74DggPhQsQD30EfQR9BH0EwQjIBRgPIA/IBSgPMA80DzwPyAVED30EVQVfBUwPyAVQD1gPaA9gD8gFcA/IBXcPfQR9BH0EfQTIBcgFyAXIBcgFyAXIBcgFyAVpC80IbA59BH0EfQR9BIcPfw+KD5IP4QiaD30Eog+qD7IPfQR9BMgFwg/KD7oP2g/hD9IP6Q/xD30EARD5D8gFBBAMEBQQHBAkEH0EfQTIBcgFLBB9BFUFNBD9BDwQyAVEEH0EfQR9BH0EfQR9BH0EfQR9BEwQfQR9BH0EfQRUEFwQYxB9BH0EfQR9BH0EcxD+BXsQaxBSCYMQixCREKkQmRChEK0QUgm9ELUQxRDVEM0QfQR9BNwQ5BAgBuwQ/BACEQoR9BB9BH0EfQR9BMgFEhEaEX0EyAUiESoRfQR9BH0EfQR9BMgFMhE6EX0EyAVCEUoRUhHIBWIRWhF9BDsIahF9BH0EfQR9BH0EfQTIBXIRfQR9BH0EVQX9BHoRfQR9BH0EfQR9BH0EfQR9BJIRghGKEcgFohGaEcgFwgh9BH0EfQR9BH0EfQR9BH0EuBG9EaoRshHNEcURfQR9BNwR4BHUEfAR6BFaEX0EfQR9BH0EfQR9BH0EfQR9BPQRfQR9BH0EfQR9BH0EfQR9BMgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFzAh9BH0EfQQEEgwSFBL8EcgFyAXIBcgFyAXIBRwSfQR9BH0EfQR9BH0EfQR9BH0EfQR9BH0EfQR9BH0EfQR9BH0EfQR9BH0EyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFJBJ9BH0EfQR9BH0EfQR9BH0EfQR9BH0EfQR9BH0EfQR9BH0EfQR9BH0EfQR9BH0EfQR9BH0EfQR9BH0EfQR9BH0EyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFJhJ9BH0EfQR9BH0EfQR9BH0EfQR9BH0EfQR9BMgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXCCOEILhJ9BH0EYg42EsgFPhJGEk4S2Qx9BH0EfQR9BH0EfQR9BH0EfQR9BH0EfQR9BH0EfQR9BH0EfQR9BH0EfQRVBf0EVhJ9BH0EfQTIBcgFXhJjEmsSfQR9BHMSyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFexLIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFgxJ9BH0EfQR9BH0EfQR9BH0EfQR9BH0EfQR9BH0EfQR9BH0EfQR9BH0EfQR9BH0EfQR9BH0EfQR9BH0EfQR9BH0EfQR9BH0EfQR9BH0EfQR9BMgFyAXIBcgFyAXIBcgFyAXhCH0EfQRiDsgFyAXIBcgFyAXIBcgFyAXIBcgFyAX7DX0EfQR9BH0EfQR9BH0EfQR9BH0EfQR9BH0EfQR9BH0EfQR9BH0EfQR9BH0EfQR9BH0EfQR9BH0EfQR9BH0EfQR9BH0EfQR9BH0EfQR9BH0EyAXIBcgFixKQEpgSfQR9BH0EfQR9BH0EfQR9BH0EfQR9BH0EfQR9BH0EfQR9BH0EfQR9BH0EfQR9BH0EfQR9BP8I/wj/CP8I/wj/CP8ImAv/CKAS/winEq8StRL/CLsS/wj/CMMSfQR9BH0EfQTLEv8I/wimCtMSfQR9BH0EfQTjEuoS7xL1Ev0SBRMNE+cSFRMdEyUTKhP8EuMS6hLmEvUSMhPkEjUT5xI9E0UTTRNUE0ATSBNQE1cTQxNfE9sS/wj/CP8I/wj/CP8I/wj/CP8I/wj/CP8I/wj/CP8I/wgkBW8TJAV2E30TZxN9BH0EfQR9BH0EfQR9BH0EfQR9BH0EfQR9BH0EfQR9BH0EfQR9BH0EfQR9BH0EfQR9BH0EfQR9BH0EfQR9BH0EfQR9BH0EfQR9BH0EfQR9BH0EfQSEE4wTfQR9BH0EfQR9BH0EfQR9BH0EfQR9BH0EfQR9BH0EfQR9BH0EfQR9BH0EfQR9BH0EfQR9BH0EfQR9BH0EfQR9BH0EfQR9BH0EfQR9BH0EfQR9BH0EfQR9BH0EfQR9BH0EfQR9BH0EfQR9BH0EfQR9BH0EfQR9BH0EfQR9BMgFyAXIBcgFyAXIBZQTfQRVBaQTnBN9BH0EfQR9BH0EfQR9BH0EfQR9BH0EfQR9BH0EfQR9BH0EfQR9BH0EfQR9BH0EfQSsE7wTtBN9BH0EfQR9BH0EfQR9BH0EfQR9BMwT1BPcE+QT7BP0E30ExBN9BH0EfQR9BH0EfQR9BH0E/wj8E/8I/wiQCwEUBRSYCw0U/wj/CPwT/wi6En0EFRQdFCEUKRQxFH0EfQR9BH0E/wj/CP8I/wj/CP8I/wg5FP8I/wj/CP8I/wj/CP8I/wj/CP8I/wj/CP8I/wj/CP8I/wj/CP8I/wj/CP8IQRRJFP8I/wj/CJAL/wj/CFEUfQT8E/8IWRT/CGEUmgt9BH0E/BOkCv8IZRT/CG0UHRT/CH0EfQR9BJoLfQR9BH0EfQR9BH0EfQR9BH0EfQR9BH0EfQR9BH0EfQR9BH0EfQR9BH0EfQR9BH0EfQR9BH0EfQR9BH0EfQR9BH0EfQR9BH0EfQR9BH0EfQR9BH0EfQR9BHUUyAXIBXwUyAXIBcgFhBTIBYwUyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFegzIBcgFlBTIBcgFyAXIBcgFyAXIBcgFyAXIBZwUpBTIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAW5DMgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAWrFMgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBbIUyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFuRTIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAVpC30EyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFvRTIBcgFyAXIBcgFyAVQD8gFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBX8SyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXIBcgFyAXCFH0EfQR9BH0EfQR9BH0EfQR9BH0EfQR9BH0EfQR9BH0EfQR9BH0EfQR9BH0EfQR9BH0EfQR9BH0EfQR9BH0EfQTIBcgFyAXIBcoUyAXIBcgFyAXIBcgFyAXIBcgFyAXIBVAPfQR9BH0EfQR9BH0EfQR9BH0EfQR9BH0EfQR9BH0EfQR9BH0EfQR9BH0EfQR9BH0EfQR9BH0EfQR9BH0EfQR9BH0EfQR9BH0EfQR9BH0EfQR9BH0EfQR9BH0EfQR9BNoU0hTSFNIUfQR9BH0EfQQkBSQFJAUkBSQFJAUkBeIUfQR9BH0EfQR9BH0EfQR9BH0EfQR9BH0EfQR9BH0EfQR9BH0EfQR9BH0EfQR9BH0EfQR9BH0EfQR9BH0EfQR9BH0EfQR9BH0EfQR9BH0EfQR9BH0EfQR9BH0EfQR9BH0EEw4TDhMOEw4TDhMOEw4TDhMOEw4TDhMOEw4TDhMOEw4TDhMOEw4TDhMOEw4TDhMOEw4TDhMOEw4TDhMOEw4TDhMOEw4TDhMOEw4TDhMOEw4TDhMOEw4TDhMOEw4TDhMOEw4TDhMOEw4TDhMOEw4TDhMOEw4TDhMOEw4TDhMO6hRcBA8ADwAPAA8ADwAPAA8ADwAPAA8ADwAPAA8ADwAPAA8ADwAPAA8ADwAPAA8ADwAPAA8ADwAPAA8ADwAPAA8ADwAMABcAFwAXABkAFwAXABcAFAAVABcAGAAXABMAFwAXAEkAiQDJAAkBSQGJAckBCQJJAokCFwAXABgAGAAYABcAFwABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAFAAXABUAGgAWABoAAgACAAIAAgACAAIAAgACAAIAAgACAAIAAgACAAIAAgACAAIAAgACAAIAAgACAAIAAgACABQAGAAVABgADwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8ADwAPAA8ADwAPAA8ADwAPAA8ADwAPAA8ADwAPAA8ADwAPAA8ADwAPAA8ADwAPAA8ADwAPAA8ADwAPAA8ADwAMABcAGQAZABkAGQAbABcAGgAbAAUAHAAYABAAGwAaABsAGABLA4sDGgACABcAFwAaAAsDBQAdAMs0SzTLPBcAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABABgAAQABAAEAAQABAAEAAQACAAIAAgACAAIAAgACAAIAAgACAAIAAgACAAIAAgACAAIAAgACAAIAAgACAAIAAgAYAAIAAgACAAIAAgACAAIAAgABAAIAAQACAAEAAgABAAIAAQACAAEAAgABAAIAAQACAAEAAgABAAIAAQACAAEAAgABAAIAAQACAAEAAgABAAIAAQACAAEAAgABAAIAAQACAAEAAgABAAIAAQACAAEAAgABAAIAAQACAAEAAgABAAIAAgABAAIAAQACAAEAAgABAAIAAgABAAIAAQACAAEAAgABAAIAAQACAAEAAgABAAIAAQACAAEAAgABAAIAAQACAAEAAgABAAIAAQACAAEAAgABAAIAAQACAAEAAgABAAIAAQACAAEAAgABAAIAAQACAAEAAQACAAEAAgABAAIAAgACAAEAAQACAAEAAgABAAEAAgABAAEAAQACAAIAAQABAAEAAQACAAEAAQACAAEAAQABAAIAAgACAAEAAQACAAEAAQACAAEAAgABAAIAAQABAAIAAQACAAIAAQACAAEAAQACAAEAAQABAAIAAQACAAEAAQACAAIABQABAAIAAgACAAUABQAFAAUAAQADAAIAAQADAAIAAQADAAIAAQACAAEAAgABAAIAAQACAAEAAgABAAIAAQACAAEAAgACAAEAAgABAAIAAQACAAEAAgABAAIAAQACAAEAAgABAAIAAQACAAIAAQADAAIAAQACAAEAAQABAAIAAQACAAEAAgABAAIAAQACAAEAAgABAAIAAQACAAEAAgABAAIAAQACAAEAAgABAAIAAQACAAEAAgABAAIAAQACAAEAAgABAAIAAQACAAEAAgABAAIAAQACAAEAAgABAAIAAQACAAIAAgACAAIAAgACAAEAAQACAAEAAQACAAIAAQACAAEAAQABAAEAAgABAAIAAQACAAEAAgABAAIAAgACAAIAAgACAAIAAgACAAIAAgACAAIAAgACAAIAAgACAAIAAgACAAIAAgACAAIAAgACAAIAAgACAAIAAgACAAIAAgACAAIAAgACAAIAAgACAAIAAgACAAIAAgACAAIABQACAAIAAgACAAIAAgACAAIAAgACAAIAAgACAAIAAgACAAIAAgACAAIAAgACAAIAAgACAAIAAgAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAaABoAGgAaAAQABAAEAAQABAAEAAQABAAEAAQABAAEABoAGgAaABoAGgAaABoAGgAaABoAGgAaABoAGgAEAAQABAAEAAQAGgAaABoAGgAaABoAGgAEABoABAAaABoAGgAaABoAGgAaABoAGgAaABoAGgAaABoAGgAaABoABgAGAAYABgAGAAYABgAGAAYABgAGAAYABgAGAAYABgAGAAYABgAGAAYABgAGAAYABgAGAAYABgAGAAYABgAGAAYABgAGAAYABgAGAAYABgAGAAYABgAGAAYABgAGAAYABgAGAAYABgAGAAYABgAGAAYABgAGAAYABgAGAAYABgABAAIAAQACAAQAGgABAAIAAAAAAAQAAgACAAIAFwABAAAAAAAAAAAAGgAaAAEAFwABAAEAAQAAAAEAAAABAAEAAgABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAAABAAEAAQABAAEAAQABAAEAAQACAAIAAgACAAIAAgACAAIAAgACAAIAAgACAAIAAgACAAIAAgACAAIAAgACAAIAAQACAAIAAQABAAEAAgACAAIAAQACAAEAAgABAAIAAQACAAEAAgABAAIAAQACAAEAAgABAAIAAQACAAEAAgABAAIAAgACAAIAAgABAAIAGAABAAIAAQABAAIAAgABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQACAAIAAgACAAIAAgACAAIAAgACAAIAAgACAAIAAgACAAIAAgACAAIAAgACAAIAAgACAAIAAgACAAIAAgACAAIAAQACAAEAAgABAAIAAQACAAEAAgABAAIAAQACAAEAAgABAAIAAQACAAEAAgABAAIAAQACAAEAAgABAAIAAQACAAEAAgAbAAYABgAGAAYABgAHAAcAAQACAAEAAgABAAIAAQACAAEAAgABAAIAAQACAAEAAgABAAIAAQACAAEAAgABAAIAAQACAAEAAgABAAIAAQACAAEAAgABAAIAAQACAAEAAgABAAIAAQACAAEAAgABAAIAAQACAAEAAgABAAIAAQABAAIAAQACAAEAAgABAAIAAQACAAEAAgABAAIAAgABAAIAAQACAAEAAgABAAIAAQACAAEAAgABAAIAAQACAAEAAgABAAIAAQACAAEAAgABAAIAAQACAAEAAgABAAIAAQACAAEAAgABAAIAAQACAAEAAgABAAIAAQACAAEAAgAAAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQAAAAAABAAXABcAFwAXABcAFwACAAIAAgACAAIAAgACAAIAAgACAAIAAgACAAIAAgACAAIAAgACAAIAAgACAAIAAgACAAIAAgACAAIAAgACAAIAAgAXABMAAAAAABsAGwAZAAAABgAGAAYABgAGAAYABgAGAAYABgAGAAYABgAGAAYABgAGAAYABgAGAAYABgAGAAYABgAGAAYABgAGAAYABgAGAAYABgAGAAYABgAGAAYABgAGAAYABgAGAAYAEwAGABcABgAGABcABgAGABcABgAAAAAAAAAAAAAAAAAAAAAABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUAAAAAAAAAAAAFAAUABQAFABcAFwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAQABAAEAAQABAAGAAYABgAFwAXABkAFwAXABsAGwAGAAYABgAGAAYABgAGAAYABgAGAAYAFwAQAAAAFwAXAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAEAAUABQAFAAUABQAFAAUABQAFAAUABgAGAAYABgAGAAYABgAGAAYABgAGAAYABgAGAAYABgAGAAYABgAGAAYASQCJAMkACQFJAYkByQEJAkkCiQIXABcAFwAXAAUABQAGAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUAFwAFAAYABgAGAAYABgAGAAYAEAAbAAYABgAGAAYABgAGAAQABAAGAAYAGwAGAAYABgAGAAUABQBJAIkAyQAJAUkBiQHJAQkCSQKJAgUABQAFABsAGwAFABcAFwAXABcAFwAXABcAFwAXABcAFwAXABcAFwAAABAABQAGAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAYABgAGAAYABgAGAAYABgAGAAYABgAGAAYABgAGAAYABgAGAAYAAAAAAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAGAAYABgAGAAYABgAGAAYABgAGAAYABQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAASQCJAMkACQFJAYkByQEJAkkCiQIFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAGAAYABgAGAAYABgAGAAYABgAEAAQAGwAXABcAFwAEAAAAAAAGABkAGQAGAAYABgAGAAQABgAGAAYABAAGAAYABgAGAAYAAAAAABcAFwAXABcAFwAXABcAFwAXABcAFwAXABcAFwAXAAAABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAGAAYABgAGAAQABgAGAAYABgAGAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABgAGAAYAAAAAABcAAAAFAAUABQAFAAUABQAFAAUABQAFAAUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABgAGABAABgAGAAYABgAGAAYABgAGAAYABgAGAAYABgAGAAYABgAGAAYABgAGAAYABgAGAAYABgAGAAYABgAGAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAAABQAFAAUABQAFAAUABQAFAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAYABgAGAAYABgAGAAYABgAGAAYABgAGAAYABQAFAAYABgAXABcASQCJAMkACQFJAYkByQEJAkkCiQIXAAQABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAYABgAGAAgABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABgAIAAYABQAIAAgACAAGAAYABgAGAAYABgAGAAYACAAIAAgACAAGAAgACAAFAAYABgAGAAYABgAGAAYABQAFAAUABQAFAAUABQAFAAUABQAGAAYAAAAAAEkAiQDJAAkBSQGJAckBCQJJAokCBQAFABkAGQDLN8s1yz/LNMs8SwkbABkABQAXAAYAAAAFAAYACAAIAAAABQAFAAUABQAFAAUABQAFAAAAAAAFAAUAAAAAAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAAAAUABQAFAAUABQAFAAUAAAAFAAAAAAAAAAUABQAFAAUAAAAAAAYABQAIAAgACAAGAAYABgAGAAAAAAAIAAgAAAAAAAgACAAGAAUAAAAAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAFAAUAAAAFAAAAAAAAAAAAAAAAAEkAiQDJAAkBSQGJAckBCQJJAokCBgAGAAUABQAFAAYAFwAAAAAAAAAAAAAAAAAAAAAAAAAAAAYABgAIAAAABQAFAAUABQAFAAUAAAAAAAAAAAAFAAUAAAAAAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAAAAUABQAFAAUABQAFAAUAAAAFAAUAAAAFAAUAAAAFAAUAAAAAAAYAAAAIAAgACAAGAAYAAAAAAAAAAAAGAAYAAAAAAAYABgAGAAAAAAAAAAYAAAAAAAAAAAAAAAAAAAAFAAUABQAFAAAABQAAAAUABQAGAAYAAAAAAEkAiQDJAAkBSQGJAckBCQJJAokCFwAZAAAAAAAAAAAAAAAAAAAABQAGAAYABgAGAAYABgAAAAYABgAIAAAABQAFAAUABQAFAAUABQAFAAUAAAAFAAUABQAAAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAAAAUABQAFAAUABQAFAAUAAAAFAAUAAAAFAAUABQAFAAUAAAAAAAYABQAIAAgACAAGAAYABgAGAAYAAAAGAAYACAAAAAgACAAGAAAAAAAFAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAUABQAGAAYAAAAAAEkAiQDJAAkBSQGJAckBCQJJAokCGwAFAMs0SzTLPMs3yzXLPwAAAAAAAAAAAAAAAAAAAAAAAAYACAAIAAAABQAFAAUABQAFAAUABQAFAAAAAAAFAAUAAAAAAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAAAAUABQAFAAUABQAFAAUAAAAFAAUAAAAFAAUABQAFAAUAAAAAAAYABQAIAAYACAAGAAYABgAGAAAAAAAIAAgAAAAAAAgACAAGAAAAAAAAAAAAAAAAAAAAAAAGAAgAAAAAAAAAAAAFAAUAAAAFAAAAAAAAAAAAAAAAAEkAiQDJAAkBSQGJAckBCQJJAokCywdLHkt4GwAbABsAGwAbABsAGQAbAAAAAAAAAAAAAAAAAAAABgAFAAAABQAFAAUABQAFAAUAAAAAAAAABQAFAAUAAAAFAAUABQAFAAAAAAAAAAUABQAAAAUAAAAFAAUAAAAAAAAABQAFAAAAAAAAAAUABQAFAAAAAAAAAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAAAAAAAAAAACAAIAAYACAAIAAAAAAAAAAgACAAIAAAACAAIAAgABgAAAAAABQAAAAAAAAAAAAAAAAAIAAAAAAAAAAAAAAAAAAAAAAAFAAUABgAGAAAAAABJAIkAyQAJAUkBiQHJAQkCSQKJAgAAAAAAAAAAAAAAAAAAAABLBYsFywULBosFywULBhsABgAIAAgACAAGAAUABQAFAAUABQAFAAUABQAAAAUABQAFAAAABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUAAAAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAAAAAAAAAUABgAGAAYACAAIAAgACAAAAAYABgAGAAAABgAGAAYABgAAAAAAAAAAAAAAAAAAAAYABgAAAAUABQAFAAAAAAAAAAAAAAAFAAUABgAGAAAAAABJAIkAyQAJAUkBiQHJAQkCSQKJAgAABQAFAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABQAGAAgACAAXAAUABQAFAAUABQAFAAUABQAAAAUABQAFAAAABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUAAAAFAAUABQAFAAUABQAFAAUABQAFAAAABQAFAAUABQAFAAAAAAAGAAUACAAGAAgACAAIAAgACAAAAAYACAAIAAAACAAIAAYABgAAAAAAAAAAAAAAAAAAAAgACAAAAAAAAAAAAAAAAAAAAAUAAAAFAAUABgAGAAAAAABJAIkAyQAJAUkBiQHJAQkCSQKJAssHSx5LeMs0SzTLPMs3yzXLPxsABQAFAAUABQAFAAUABgAGAAgACAAAAAUABQAFAAUABQAFAAUABQAAAAUABQAFAAAABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAYABgAFAAgACAAIAAYABgAGAAYAAAAIAAgACAAAAAgACAAIAAYABQAbAAAAAAAAAAAABQAFAAUACAALzAvKS8sLyUs2S8kLNQUAAAAAAAAAAAAAAAAASQCJAMkACQFJAYkByQEJAkkCiQIAAAAACAAIABcAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIAAgAAAAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAAAAAAAAAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUAAAAFAAUABQAFAAUABQAFAAUABQAAAAUAAAAAAAUABQAFAAUABQAFAAUAAAAAAAAABgAAAAAAAAAAAAgACAAIAAYABgAGAAAABgAAAAgACAAIAAgACAAIAAgACAAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABgAFAAUABgAGAAYABgAGAAYABgAAAAAAAAAAABkABQAFAAUABQAFAAUABAAGAAYABgAGAAYABgAGAAYAFwBJAIkAyQAJAUkBiQHJAQkCSQKJAhcAFwAAAAAAAAAAAAAABQAFAAAABQAAAAAABQAFAAAABQAAAAAABQAAAAAAAAAAAAAAAAAFAAUABQAFAAAABQAFAAUABQAFAAUABQAAAAUABQAFAAAABQAAAAUAAAAAAAUABQAAAAUABQAFAAUABgAFAAUABgAGAAYABgAGAAYAAAAGAAYABQAAAAAABQAFAAUABQAFAAAABAAAAAYABgAGAAYABgAGAAAAAABJAIkAyQAJAUkBiQHJAQkCSQKJAgAAAAAFAAUABQAFAAUAGwAbABsAFwAXABcAFwAXABcAFwAXABcAFwAXABcAFwAXABcAGwAXABsAGwAbAAYABgAbABsAGwAbABsAGwBJAIkAyQAJAUkBiQHJAQkCSQKJAks0SzxLREtMS1RLXEtkS2xLdEssGwAGABsABgAbAAYAFAAVABQAFQAIAAgABQAFAAUABQAFAAUABQAFAAAABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUAAAAAAAAAAAAGAAYABgAGAAYABgAGAAYABgAGAAYABgAGAAYACAAGAAYABgAGAAYAFwAGAAYABQAFAAUABQAFAAYABgAGAAYABgAGAAYABgAGAAYABgAAAAYABgAGAAYABgAGAAYABgAGAAYABgAGAAYABgAGAAYABgAGAAYABgAGAAYABgAGAAYABgAGAAYABgAGAAYABgAAABsAGwAbABsAGwAbABsAGwAGABsAGwAbABsAGwAbAAAAGwAbABcAFwAXABcAFwAbABsAGwAbABcAFwAAAAAAAAAAAAAABQAFAAUABQAFAAUABQAFAAUABQAFAAgACAAGAAYABgAGAAgABgAGAAYABgAGAAYACAAGAAYACAAIAAYABgAFAEkAiQDJAAkBSQGJAckBCQJJAokCFwAXABcAFwAXABcABQAFAAUABQAFAAUACAAIAAYABgAFAAUABQAFAAYABgAGAAUACAAIAAgABQAFAAgACAAIAAgACAAIAAgABQAFAAUABgAGAAYABgAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAYACAAIAAYABgAIAAgACAAIAAgACAAGAAUACABJAIkAyQAJAUkBiQHJAQkCSQKJAggACAAIAAYAGwAbAAIAAgACAAIAAgACAAIAAgACAAIAAgACAAIAAgACAAIAAgACAAIAAgACAAIAAgACAAIAAgACABcABAACAAIAAgABAAEAAQABAAEAAQAAAAEAAAAAAAAAAAAAAAEAAAAAAAIAAgACAAIAAgACAAIAAgACAAIAAgACAAIAAgACAAIABQAFAAUABQAFAAUABQAFAAUAAAAFAAUABQAFAAAAAAAFAAUABQAFAAUABQAFAAAABQAAAAUABQAFAAUAAAAAAAUABQAFAAUABQAFAAUABQAFAAAABQAFAAUABQAAAAAABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAAABQAFAAUABQAAAAAABQAFAAUABQAFAAUABQAAAAUAAAAFAAUABQAFAAAAAAAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAAAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAAAAUABQAFAAUAAAAAAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAAAAAAGAAYABgAXABcAFwAXABcAFwAXABcAFwALA0sDiwPLAwsESwSLBMsECwXLB0sKywxLD8sRSxTLFksZyxtLHot4AAAAAAAABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAbABsAGwAbABsAGwAbABsAGwAbAAAAAAAAAAAAAAAAAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAAAAAAIAAgACAAIAAgACAAAAAAATAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAXABcABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAwABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFABQAFQAAAAAAAAAFAAUABQAFAAUABQAFAAUABQAFAAUAFwAXABcAignKCQoKBQAFAAUABQAFAAUABQAFAAAAAAAAAAAAAAAAAAAABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAAAAUABQAFAAUABgAGAAYAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAYABgAGABcAFwAAAAAAAAAAAAAAAAAAAAAAAAAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAGAAYAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAAAAUABQAFAAAABgAGAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAGAAYACAAGAAYABgAGAAYABgAGAAgACAAIAAgACAAIAAgACAAGAAgACAAGAAYABgAGAAYABgAGAAYABgAGAAYAFwAXABcABAAXABcAFwAZAAUABgAAAAAASQCJAMkACQFJAYkByQEJAkkCiQIAAAAAAAAAAAAAAABLBYsFywULBksGiwbLBgsHSweLBwAAAAAAAAAAAAAAAAUABQAFAAUABQAFAAUABQAFAAYABQAAAAAAAAAAAAAABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAXABcAFwAXABcAFwATABcAFwAXABcABgAGAAYAEAAAAEkAiQDJAAkBSQGJAckBCQJJAokCAAAAAAAAAAAAAAAABQAFAAUABAAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUAAAAAAAAAAAAAAAAAAAAFAAUABQAFAAUABgAGAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAAAAAAAAAAAAAAAAAAAAAAAAAAABgAGAAYACAAIAAgACAAGAAYACAAIAAgAAAAAAAAAAAAIAAgABgAIAAgACAAIAAgACAAGAAYABgAAAAAAAAAAABsAAAAAAAAAFwAXAEkAiQDJAAkBSQGJAckBCQJJAokCBQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAAAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAAAAAABQAFAAUABQAFAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAFAAUABQAFAAUABQAFAAUABQAFAAUABQAAAAAAAAAAAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAAAAAAAAAAAAAAAAEkAiQDJAAkBSQGJAckBCQJJAokCCwMAAAAAAAAbABsAGwAbABsAGwAbABsAGwAbABsAGwAbABsAGwAbABsAGwAbABsAGwAbABsAGwAbABsAGwAbABsAGwAbABsAGwAbAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAGAAYACAAIAAYAAAAAABcAFwAXABcAFwAXABcAFwAXAAQAFwAXABcAFwAXABcAAAAAAAYABgAGAAYABgAGAAYABgAGAAYABgAGAAYABgAHAAAABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUACAAGAAgABgAGAAYABgAGAAYABgAAAAYACAAGAAgACAAGAAYABgAGAAYABgAGAAYACAAIAAgACAAIAAgABgAGAAYABgAGAAYABgAGAAYABgAAAAAABgBJAIkAyQAJAUkBiQHJAQkCSQKJAgAAAAAAAAAAAAAAAEkAiQDJAAkBSQGJAckBCQJJAokCAAAAAAAAAAAAAAAAFwAbABsAGwAbABsAGwAbABsAGwAbAAYABgAGAAYABgAGAAYABgAGABsAGwAbABsAGwAbABsAGwAbAAAAAAAAAAYABgAGAAYACAAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAGAAgABgAGAAYABgAGAAgABgAIAAgACAAIAAgABgAIAAgABQAFAAUABQAFAAUABQAAAAAAAAAAAEkAiQDJAAkBSQGJAckBCQJJAokCFwAXABcAFwAXABcABQAIAAYABgAGAAYACAAIAAYABgAIAAYABgAGAAUABQBJAIkAyQAJAUkBiQHJAQkCSQKJAgUABQAFAAUABQAFAAYABgAIAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABgAIAAYABgAIAAgACAAGAAgABgAGAAYACAAIAAAAAAAAAAAAAAAAAAAAAAAXABcAFwAXAEkAiQDJAAkBSQGJAckBCQJJAokCAAAAAAAABQAFAAUASQCJAMkACQFJAYkByQEJAkkCiQIFAAUABQAFAAUABQAIAAgACAAIAAgACAAIAAgABgAGAAYABgAGAAYABgAGAAgACAAGAAYAAAAAAAAAFwAXABcAFwAXAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAQABAAEAAQABAAEABcAFwACAAIAAgACAAIAAgACAAIAAgAAAAAAAAAAAAAAAAAAAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAAAAAABAAEAAQAXABcAFwAXABcAFwAXABcAAAAAAAAAAAAAAAAAAAAAAAYABgAGABcABgAGAAYABgAGAAYABgAGAAYABgAGAAYABgAIAAYABgAGAAYABgAGAAYABQAFAAUABQAGAAUABQAFAAUACAAIAAYABQAFAAgABgAGAAAAAAAAAAAAAAAAAAIAAgACAAIAAgACAAIAAgACAAIAAgACAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAACAAIAAgACAAIAAgACAAIAAgACAAIAAgACAAQAAgACAAIAAgACAAIAAgACAAIAAgACAAIAAgACAAIAAgACAAIAAgACAAIAAgACAAIAAgACAAIAAgACAAIABAAEAAQABAAEAAYABgAGAAYABgAGAAYABgAGAAYABgAGAAYABgAGAAYABgAGAAYABgAGAAYABgAGAAYABgAAAAYABgAGAAYABgABAAIAAQACAAEAAgABAAIAAQACAAEAAgABAAIAAQACAAEAAgABAAIAAQACAAIAAgACAAIAAgACAAIAAgABAAIAAgACAAIAAgACAAIAAgACAAEAAQABAAEAAQAaABoAGgAAAAAAAgACAAIAAAACAAIAAQABAAEAAQADABoAGgAAAAIAAgACAAIAAgACAAIAAgABAAEAAQABAAEAAQABAAEAAgACAAIAAgACAAIAAAAAAAEAAQABAAEAAQABAAAAAAACAAIAAgACAAIAAgACAAIAAQABAAEAAQABAAEAAQABAAIAAgACAAIAAgACAAIAAgABAAEAAQABAAEAAQABAAEAAgACAAIAAgACAAIAAAAAAAEAAQABAAEAAQABAAAAAAACAAIAAgACAAIAAgACAAIAAAABAAAAAQAAAAEAAAABAAIAAgACAAIAAgACAAIAAgABAAEAAQABAAEAAQABAAEAAgACAAIAAgACAAIAAgACAAIAAgACAAIAAgACAAAAAAACAAIAAgACAAIAAgACAAIAAwADAAMAAwADAAMAAwADAAIAAgACAAIAAgACAAIAAgADAAMAAwADAAMAAwADAAMAAgACAAIAAgACAAAAAgACAAEAAQABAAEAAwAaAAIAGgAaABoAAgACAAIAAAACAAIAAQABAAEAAQADABoAGgAaAAIAAgACAAIAAAAAAAIAAgABAAEAAQABAAAAGgAaABoAFgAXABcAFwAYABQAFQAXABcAFwAXABcAFwAXABcAFwAXABcAGAAXABYAFwAXABcAFwAXABcAFwAXABcAFwAMABAAEAAQABAAEAAAABAAEAAQABAAEAAQABAAEAAQABAAywIEAAAAAADLAwsESwSLBMsECwUYABgAGAAUABUABAAMAAwADAAMAAwADAAMAAwADAAMAAwAEAAQABAAEAAQABMAEwATABMAEwATABcAFwAcAB0AFAAcABwAHQAUABwAFwAXABcAFwAXABcAFwAXAA0ADgAQABAAEAAQABAADAAXABcAFwAXABcAFwAXABcAFwAcAB0AFwAXABcAFwAWAMsCCwNLA4sDywMLBEsEiwTLBAsFGAAYABgAFAAVAAAABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAAAAAAAAAZABkAGQAZABkAGQAZABkAGQAZABkAGQAZABkAGQAZABkAGQAZABkAGQAZABkAGQAZABkAGQAZABkAGQAZABkAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAGAAYABgAGAAYABgAGAAYABgAGAAYABgAGAAcABwAHAAcABgAHAAcABwAGAAYABgAGAAYABgAGAAYABgAGAAYABgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAbABsAGwAbAAEAGwABABsAAQAbAAEAAQABAAEAGwACAAEAAQABAAEAAgAFAAUABQAFAAIAGwAbAAIAAgABAAEAGAAYABgAGAAYAAEAAgACAAIAAgAbABgAGwAbAAIAGwCLNQs2SzaLNIs4CzULOQs9C0FLNUtFyzXLPctFy02LBRsAGwABABsAGwAbABsAAQAbABsAAgABAAEAAQACAAIAAQABAAEAAgAbAAEAGwAbABgAAQABAAEAAQABABsAGwCKBcoFCgZKBooGygYKB0oHigfKBwoISgjKEUoeCphKeIoFygUKBkoGigbKBgoHSgeKB8oHCghKCMoRSh4KmEp4SnhKmIp4AQACAMoGyhGKmMp4SwUbABsAAAAAAAAAAAAYABgAGAAYABgAGwAbABsAGwAbABgAGAAbABsAGwAbABsAGwAbABsAGwAbABsAGwAbABsAGwAbABsAGwAbABsAGAAYABgAGAAYABgAGAAYABgAGAAYABgAGAAbABsAGAAbABsAGAAbABsAGwAbABsAGwAbABgAGwAbABsAGwAbABsAGwAbABsAGwAbABsAGwAbABsAGwAbABsAGwAYABgAGwAbABgAGwAYABsAGwAbABsAGwAbABsAGwAbABsAGwAYABgAGAAYABgAGAAYABgAGAAYABgAGAAYABgAGAAYABgAGAAYABgAGAAYABgAGAAYABgAGAAYABgAGAAYABgAGwAbABsAGwAbABsAGwAbABQAFQAUABUAGwAbABsAGwAbABsAGwAbABsAGwAbABsAGwAbABsAGwAbABsAGwAbABgAGAAbABsAGwAbABsAGwAbABQAFQAbABsAGwAbABsAGwAbABsAGwAbABsAGwAbABsAGwAbABsAGwAbABsAGwAbABsAGwAbABsAGwAbABsAGAAbABsAGwAbABsAGwAbABsAGwAbABsAGwAbABsAGwAbABsAGwAbABsAGwAbABsAGwAbABsAGwAbABsAGwAYABgAGAAYABgAGAAYABgAGAAYABgAGAAYABgAGAAYABgAGAAYABgAGAAbABsAGwAbABsAGwAbABsAGwAbABsAGwAbABsAGwAbABsAGwAbABsAGwAbABsAGwAbABsAGwAbABgAGAAYABgAGAAYABsAGwAbABsAGwAbABsAGwAbABsAGwAbABsAGwAbABsAGwAbABsAGwAbABsAGwAbABsAGwAbABsAGwAbABsAGwAbAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAGwAbABsAGwAbABsAGwAbABsAGwDLAgsISwiLCMsICwlLCYsJywkLCksKCwNLA4sDywMLBEsEiwTLBAsFywfLAgsDSwOLA8sDCwRLBIsEywQLBcsHCwhLCIsIywgLCUsJiwnLCQsKSwoLA0sDiwPLAwsESwSLBMsECwXLBwsISwiLCMsICwlLCYsJywkLCksKGwAbABsAGwAbABsAGwAbABsAGwAbABsAGwAbABsAGwAbABsAGwAbABsAGwAbABsAGAAYABgAGAAYABgAGAAYABsAGwAbABsAGwAbABsAGwAbABsAGwAbABsAGwAbABsAGwAbABsAGwAbABsAGwAYABsAGwAbABsAGwAbABsAGwAbABgAGwAbABsAGwAbABsAGwAbABsAGwAbABsAGwAbABsAGwAbABsAGwAbABsAGwAbABsAGwAbABsAGwAbABsAGwAbABsAGAAbABsAGwAbABsAGwAbABsAGwAbABsAGwAbABsAGwAbABQAFQAUABUAFAAVABQAFQAUABUAFAAVABQAFQALA0sDiwPLAwsESwSLBMsECwXLBwsDSwOLA8sDCwRLBIsEywQLBcsHCwNLA4sDywMLBEsEiwTLBAsFywcbABsAGwAbABsAGwAbABsAGwAbABsAGwAYABgAGAAYABgAFAAVABgAGAAYABgAGAAYABgAGAAYABgAGAAYABgAGAAYABgAGAAYABgAGAAYABgAGAAYABgAGAAYABQAFQAUABUAFAAVABQAFQAUABUAGAAYABgAGAAYABgAGAAYABgAGAAYABgAGAAYABgAGAAYABgAGAAUABUAFAAVABQAFQAUABUAFAAVABQAFQAUABUAFAAVABQAFQAUABUAFAAVABgAGAAYABgAGAAYABgAGAAYABgAGAAYABgAGAAYABgAGAAYABgAGAAYABgAGAAYABgAGAAYABQAFQAUABUAGAAYABgAGAAYABgAGAAYABgAGAAYABgAGAAYABgAGAAYABgAGAAYABgAGAAYABgAGAAYABgAGAAUABUAGAAYABsAGwAbABsAGwAbABsAGwAbABsAGwAbABsAGwAbABsAGAAYABgAGAAYABgAGAAYABgAGAAYABgAGAAYABgAGAAYABsAGwAYABgAGAAYABgAGAAbABsAGwAbABsAGwAbABsAGwAbABsAGwAbABsAGwAbABsAGwAbABsAGwAbABsAAAAAABsAGwAbABsAGwAbABsAGwAbABsAGwAbABsAGwAbABsAGwAbABsAGwAbABsAGwAbAAAAAAAbABsAGwAbABsAGwAbABsAGwAAABsAGwAbABsAGwAbABsAGwAbABsAGwAbABsAGwAbABsAGwAbABsAGwAbABsAAgACAAIAAgACAAIAAgACAAIAAgACAAIAAgACAAIAAgACAAIAAgACAAIAAgACAAIAAgACAAIAAgACAAIAAgAAAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAAAAgACAAIAAgACAAIAAgACAAIAAgACAAIAAgACAAIAAgABAAIAAQABAAEAAgACAAEAAgABAAIAAQACAAEAAQABAAEAAgABAAIAAgABAAIAAgACAAIAAgACAAQABAABAAEAAQACAAEAAgACABsAGwAbABsAGwAbAAEAAgABAAIABgAGAAYAAQACAAAAAAAAAAAAAAAXABcAFwAXAEs0FwAXAAIAAgACAAIAAgACAAAAAgAAAAAAAAAAAAAAAgAAAAAABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAAAAAAAAAAAAAAAAAAAAQAFwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABgAFAAUABQAFAAUABQAFAAAABQAFAAUABQAFAAUABQAAAAUABQAFAAUABQAFAAUAAAAFAAUABQAFAAUABQAFAAAABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAAAAAAAAAAAAAAAAAAAAAAAABcAFwAcAB0AHAAdABcAFwAXABwAHQAXABwAHQAXABcAFwAXABcAFwAXABcAFwATABcAFwATABcAHAAdABcAFwAcAB0AFAAVABQAFQAUABUAFAAVABcAFwAXABcAFwAEABcAFwAXABcAFwAXABcAFwAXABcAEwATABcAFwAXABcAEwAXABQAFwAXABcAFwAXABcAFwAXABcAFwAXABcAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABsAGwAbABsAGwAbABsAGwAbABsAGwAbABsAGwAbABsAGwAbABsAGwAbABsAGwAbABsAGwAAABsAGwAbABsAGwAbABsAGwAbABsAGwAbABsAGwAbABsAGwAbABsAGwAbAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABsAGwAbABsAGwAbABsAGwAbABsAGwAbABsAGwAbABsAGwAbABsAGwAbABsAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAGwAbABsAGwAbABsAGwAbABsAGwAbABsAAAAAAAAAAAAbAIoFygUKBkoGigbKBgoHSgeKBwYABgAGAAYACAAIABMABAAEAAQABAAEABsAGwDKB0oKygwEAAUAFwAbABsADAAXABcAFwAbAAQABQBKBRQAFQAUABUAFAAVABQAFQAUABUAGwAbABQAFQAUABUAFAAVABQAFQATABQAFQAVAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAAAAAABgAGABoAGgAEAAQABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAXAAQABAAEAAUAAAAAAAAAAAAAAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAAABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUAAAAbABsAiwXLBQsGSwYbABsAGwAbABsAGwAbABsAGwAbAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAAAAAAAAAAAAAAbABsAGwAbAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUAiwXLBQsGSwaLBssGCwdLB4sHywcbABsAGwAbABsAGwAbABsAGwAbABsAGwAbABsAGwAbABsAGwAbABsAGwAbAMsHSwrLDEsPyxFLFMsWSxkbAIsKywoLC0sLiwvLCwsMSwyLDMsMCw1LDYsNyw0LDhsAGwAbABsAGwAbABsAGwAbABsAGwAbABsAGwAbABsAGwBLDosOyw4LD0sPiw/LDwsQSxCLEMsQCxFLEYsRyxEFAAUABQAFAAUAhQYFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUAxQUFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQCFBgUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQcFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQCFBQUABQAFBwUABQAFAIV4BQAFBgUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUAhQcFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUAxQUFAAUABQAFAAUABQAFAIUGBQBFBgUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQCFecUHBQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUARXgFAAUABQAFAAUABQAFAAUABQYFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQCFBgUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAEUeBQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUAhXkFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUAhXoFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUAxQUFAEUHBQDFBgUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUAxQcFAEV4RQrFDAUABQAFAAUABQAFAEUPBQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUGBQYFBgUGBQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUARQYFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUAhQUFAAUABQAFAAUABQAFAIUFBQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQCFBQUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUAhQdFCgUABQAFAAUABQAFAAUABQAFAAUABQAFAIUFxQUFBgUAxQUFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQDFBwUABQAFAAUABQAFAAUABQAFAAUABQAFAAUARQcFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFBwUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAIUHBQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQBFHgUABQAFAAUABQAFAAUARQYFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAIV4BQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUAxQUFAAUABQAFAMUFBQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQDFBQUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUARXgFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUAxQYFAAUABQAFAAUARR4FAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQDFBgUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUARQUFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAAAAAAAABsAGwAbABsAGwAbABsAGwAbABsAGwAbABsAGwAbABsABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABAAFAAUABQAFAAUABQAFAAUABQAFABsAGwAbABsAGwAbABsAAAAAAAAAAAAAAAAAAAAAAAAABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAEABcAFwAXAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUASQCJAMkACQFJAYkByQEJAkkCiQIFAAUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAgABAAIAAQACAAEAAgABAAIAAQACAAEAAgABAAIAAQACAAEAAgABAAIAAQACAAEAAgABAAIABAAEAAYABgABAAIAAQACAAEAAgABAAIAAQACAAEAAgABAAIABQAGAAcABwAHABcABgAGAAYABgAGAAYABgAGAAYABgAXAAQABQAFAAUABQAFAAUAigXKBQoGSgaKBsoGCgdKB4oHSgUGAAYAFwAXABcAFwAXABcAAAAAAAAAAAAAAAAAAAAAABoAGgAaABoAGgAaABoAGgAaABoAGgAaABoAGgAaABoAGgAaABoAGgAaABoAGgAEAAQABAAEAAQABAAEAAQABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABQAEAAQAAgAFAAUABQAFAAUAGgAaAAEAAgABAAIAAQACAAEAAgABAAIAAQACAAEAAgACAAIAAQACAAEAAgABAAIAAQACAAEAAgABAAIAAQACAAEAAgABAAIABAACAAIAAgACAAIAAgACAAIAAQACAAEAAgABAAEAAgABAAIAAQACAAEAAgABAAIABAAaABoAAQACAAEAAgAFAAEAAgABAAIAAgACAAEAAgABAAIAAQACAAEAAgABAAIAAQACAAEAAQABAAEAAQACAAEAAQABAAEAAQACAAEAAgABAAIAAAAAAAAAAAAAAAAABQAFAAYABQAFAAUABgAFAAUABQAFAAYABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAgACAAGAAYACAAbABsAGwAbAAAAAAAAAAAAyzRLNMs8yzfLNcs/GwAbABkAGwAAAAAAAAAAAAAAAAAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUAFwAXABcAFwAAAAAAAAAAAAAAAAAAAAAACAAIAAgACAAGAAYAAAAAAAAAAAAAAAAAAAAAABcAFwBJAIkAyQAJAUkBiQHJAQkCSQKJAgAAAAAAAAAAAAAAAAgACAAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAIAAgACAAIAAgACAAIAAgACAAIAAgACAAGAAYABgAGAAYABgAGAAYABgAGAAYABgAGAAYABgAGAAYABgAFAAUABQAFAAUABQAXABcAFwAFABcABQAFAAYABQAFAAUABQAFAAUABgAGAAYABgAGAAYABgAGABcAFwAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAYABgAGAAYABgAGAAYABgAGAAYABgAIAAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABcACAAXABcAFwAXABcAFwAXABcAFwAXABcAFwAXAAAABABJAIkAyQAJAUkBiQHJAQkCSQKJAgAAAAAAAAAAFwAXAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABgAIAAgABgAGAAYABgAIAAgABgAIAAgACAAFAAUABQAFAAUABgAEAAUABQAFAAUABQAFAAUABQAFAEkAiQDJAAkBSQGJAckBCQJJAokCBQAFAAUABQAFAAAABQAFAAUABQAFAAUABQAFAAUABgAGAAYABgAGAAYACAAIAAYABgAIAAgABgAGAAAAAAAAAAAAAAAAAAAAAAAAAAUABQAFAAYABQAFAAUABQAFAAUABQAFAAYACAAAAAAASQCJAMkACQFJAYkByQEJAkkCiQIAAAAAFwAXABcAFwAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAQABQAFAAUABQAFAAUAGwAbABsABQAIAAYACAAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAGAAUABgAGAAYABQAFAAYABgAFAAUABQAFAAUABgAGAAUABgAFAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAUABQAEABcAFwAFAAUABQAFAAUABQAFAAUABQAFAAUACAAGAAYACAAIABcAFwAFAAQABAAIAAYAAAAAAAAAAAAAAAAAAAAAAAAAAAAFAAUABQAFAAUABQAAAAAABQAFAAUABQAFAAUAAAAAAAUABQAFAAUABQAFAAAAAAAAAAAAAAAAAAAAAAAAAAUABQAFAAUABQAFAAUAAAAFAAUABQAFAAUABQAFAAAAAgACAAIAAgACAAIAAgACAAIAAgACAAIAAgACAAIAAgACAAIAAgACAAIAAgACAAIAAgACAAIAGgAEAAQABAAEAAIAAgACAAIAAgACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgACAAIAAgACAAIAAgACAAIAAgACAAIAAgACAAIAAgAFAAUABQAIAAgABgAIAAgABgAIAAgAFwAIAAYAAAAAAEkAiQDJAAkBSQGJAckBCQJJAokCAAAAAAAAAAAAAAAABQAFAAUABQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAAAAAAAAAAABQAFAAUABQAFAAUABQAAAAAAAAAAAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFABIAEgASABIAEgASABIAEgASABIAEgASABIAEgASABIAEgASABIAEgASABIAEgASABIAEgASABIAEgASABIAEgARABEAEQARABEAEQARABEAEQARABEAEQARABEAEQARABEAEQARABEAEQARABEAEQARABEAEQARABEAEQARABEABQAFAAUABQAFAAUABQAFAAUABQAFAAUGBQAFAAUABQAFAAUABQDFBwUABQAFAAUAxQUFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUAxQYFAMUGBQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAMUHBQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAAAAAABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFABgABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAAAAUABQAFAAUABQAAAAUAAAAFAAUAAAAFAAUAAAAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUAAgACAAIAAgACAAIAAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAAIAAgACAAIAAAAAAAAAAAAAAAUABgAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFABoAGgAaABoAGgAaABoAGgAaABoAGgAaABoAGgAaABoAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUAFQAUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAAAAAABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAUABQAFAAUABQAFAAUABQAFAAUABQAFABkAGwAAAAAABgAGAAYABgAGAAYABgAGAAYABgAGAAYABgAGAAYABgAXABcAFwAXABcAFwAXABQAFQAXAAAAAAAAAAAAAAAAAAYABgAGAAYABgAGAAYABgAGAAYABgAGAAYABgAGAAYAFwATABMAFgAWABQAFQAUABUAFAAVABQAFQAUABUAFAAVABcAFwAUABUAFwAXABcAFwAWABYAFgAXABcAFwAAABcAFwAXABcAEwAUABUAFAAVABQAFQAXABcAFwAYABMAGAAYABgAAAAXABkAFwAXAAAAAAAAAAAABQAFAAUABQAFAAAABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAAAAAAEAAAAAAABQAFAAUABQAFAAUAAAAAAAUABQAFAAUABQAFAAAAAAAFAAUABQAFAAUABQAAAAAABQAFAAUAAAAAAAAAGQAZABgAGgAbABkAGQAAABsAGAAYABgAGAAbABsAAAAAAAAAAAAAAAAAAAAAAAAAAAAQABAAEAAbABsAAAAAAAAAFwAXABcAGQAXABcAFwAUABUAFwAYABcAEwAXABcASQCJAMkACQFJAYkByQEJAkkCiQIXABcAGAAYABgAFwAaAAIAAgACAAIAAgACAAIAAgACAAIAAgACAAIAAgACAAIAAgACAAIAAgACAAIAAgACAAIAAgAUABgAFQAYABQAFQAXABQAFQAXABcABQAFAAUABQAFAAUABQAFAAUABQAEAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAQABAAFAAUABQAFAAUABQAFAAUABQAFAAUABQAAAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUAAAAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAAABQAFAAAABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUAAAAAAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAAAAAAC7ALuEt4S4BLiEuQS5hLoEuoS7BLuIt4i4CLiIuQi5iLoIuoi7CLuAAAAAAAABsAGwAbABsAGwAbABsAGwAbABcAFwAXAAAAAAAAAAAAiwXLBQsGSwaLBssGCwdLB4sHywdLCssMSw/LEUsUyxZLGcsbSx4LgAuIC5ALmAugC6jKB8oHygfKB8oHygzKEcoRyhHKEUoeCogKmAqYCpgKmAqYSnhKmIoGyhFLNEs0izjLPBsAGwAbABsAGwAbABsAGwAbABsAGwAbABsASwXLNBsAGwAbAAAAGwAbABsAGwAbABsAGwAbABsAGwAbABsAAAAAAAAAAADKNEo0igWKBsoRCphKmIqYigbKB8oRSh4KmEp4SpiKBsoHyhFKHgqYSniKeIqYygeKBYoFigXKBcoFygXKBYoGGwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABsAGwAbABsAGwAbABsAGwAbABsAGwAbABsAGwAbABsAGwAbABsAGwAbABsAGwAbABsAGwAbABsAGwAGAAAAAAAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABgCLBcsFCwZLBosGywYLB0sHiwfLB0sKywxLD8sRSxTLFksZyxtLHguAC4gLkAuYC6ALqAuwC7gAAAAAAAAAAIsFiwbLB8sRAAAAAAAAAAAAAAAAAAAAAAAABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAMobBQAFAAUABQAFAAUABQAFAAq4AAAAAAAAAAAAAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABgAGAAYABgAGAAAAAAAAAAAAAAAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAAABcABQAFAAUABQAAAAAAAAAAAAUABQAFAAUABQAFAAUABQAXAIoFygXKB0oKSh4AAAAAAAAAAAAAAAAAAAAAAAAAAAIAAgACAAIAAgACAAIAAgACAAIAAgACAAIAAgACAAIABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUAAAAAAEkAiQDJAAkBSQGJAckBCQJJAokCAAAAAAAAAAAAAAAAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQACAAIAAgACAAIAAgACAAIAAgACAAIAAgACAAIAAgACAAIAAgACAAIAAgACAAIAAgACAAIAAgACAAAAAAAAAAAAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAAAAAAAAAAAAgACAAIAAgACAAIAAgACAAUABQAFAAUABQAFAAUABQAAAAAAAAAAAAAAAAAAAAAABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAFwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUAAAAFAAUAAAAAAAAABQAAAAAABQAFAAUABQAFAAUABQAAAAAABQAAAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAAAFwCLBcsFCwbLB0sKSx5LeIt4BQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFABsAGwCLBcsFCwZLBosGywdLCgAAAAAAAAAAAAAAAAAAiwXLBQsGSwZLBosGywdLCkseAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAAABQAFAAAAAAAAAAAAAACLBYsGywdLCkseBQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQCLBcsHSwpLHssFCwYAAAAAAAAXAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAAAAAAAAAAAAAAFwBLoEuoS7BLuIt4i4CLiIuQi5iLoIuoi7CLuMt4y4DLiMuQy5jLoMuoy7DLuMs2SzXLNIs0y0ZLNMtOizjLPEtFBQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUAAAAAAAAAAADLXks0BQAFAIsFywULBksGiwbLBgsHSweLB8sHSwrLDEsPyxFLFMsWAAAAAEseC4ALiAuQC5gLoAuoC7ALuEt4S4BLiEuQS5gLA0sDiwPLA8sHSwpLHkt4SzQAAAAAAAAAAAAAAAAAABcAFwAXABcAFwAXABcAFwAXAAAAAAAAAAAAAAAAAAAABQAGAAYABgAAAAYABgAAAAAAAAAAAAAABgAGAAYABgAFAAUABQAFAAAABQAFAAUAAAAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAAAAAAGAAYABgAAAAAAAAAAAAYABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAIsFyxEXAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQCLBcsHSwoFAAUABQAFAAUABgAGAAAAAAAAAAAAiwWLBssHSwpLHhcAFwAXABcAFwAXABcAAAAAAAAAAAAAAAAAAAAAAAAABQAFAAUABQAFAAUABQAFABsABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAAAAAAAAAXABcAFwAXABcAFwAXAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUAAAAAAIsFywULBksGywdLCkseS3gFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAAAAAAAAAAAAACLBcsFCwZLBssHSwpLHkt4BQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUAAAAAAAAAAAAAAAAAAAAXABcAFwAXAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIsFywULBksGywdLCkseAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAFAAUABQAFAAUABQAFAAUABQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIAAgACAAIAAgACAAIAAgACAAIAAgACAAIAAgACAAIAAgACAAIAAAAAAAAAAAAAAAAAAACLBYsGywfLEUseS3gFAAUABQAFAAYABgAGAAYAAAAAAAAAAAAAAAAAAAAAAEkAiQDJAAkBSQGJAckBCQJJAokCAAAAAAAAAAAAAAAACwNLA4sDywMLBEsEiwTLBAsFywdLCssMSw/LEUsUyxZLGcsbSx4LgAuIC5ALmAugC6gLsAu4SzTLNIs0izgAAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQCLBcsFCwZLBosGywdLCssMSx5LNAUAAAAAAAAAAAAAAAAAAAAAAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAYABgAGAAYABgAGAAYABgAGAAYABgCLBcsHSwpLHhcAFwAXABcAFwAAAAAAAAAAAAAAAABLFMsWSxnLG0seS3hJAIkAyQAJAUkBiQHJAQkCSQKJAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAYACAAGAAgABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAYABgAGAAYABgAGAAYAFwAXABcAFwAXABcAFwAAAAAAAAAAAAsDSwOLA8sDCwRLBIsEywQLBcsHSwrLDEsPyxEFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAgACAAIAAYABgAGAAYACAAIAAYABgAXABcAEAAXABcAFwAXAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUAAAAAAAAAAAAAAAAAAABJAIkAyQAJAUkBiQHJAQkCSQKJAgAAAAAAAAAAAAAAAAUABQAFAAUABQAFAAUABgAGAAYABgAGAAgABgAGAAYABgAGAAYABgAGAAAASQCJAMkACQFJAYkByQEJAkkCiQIXABcAFwAXAAUACAAIAAAAAAAAAAAAAAAAAAAAAAAAAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABgAGAAYABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAYAFwAXAAUAAAAAAAAAAAAAAAAAAAAAAAAACAAFAAUABQAFABcAFwAXABcABgAGAAYABgAXAAAAAABJAIkAyQAJAUkBiQHJAQkCSQKJAgUAFwAFABcAFwAXAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUACAAIAAgABgAGAAYABgAGAAYABgAGAAYACAAAAIsFywULBksGiwbLBgsHSweLB8sHSwrLDEsPyxFLFMsWSxnLG0seS3gAAAAAAAAAAAAAAAAAAAAAAAAAAAAABQAFAAUABQAFAAUABQAFAAUABQAFAAUACAAIAAgABgAGAAYACAAIAAYACAAGAAYAFwAXABcAFwAXABcABgAAAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAAABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAAAAUAAAAFAAUABQAFAAAABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUAAAAFAAUABQAFAAUABQAFAAUABQAFABcAAAAAAAAAAAAAAAAABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAIAAgACAAGAAYABgAGAAYABgAGAAYAAAAAAAAAAAAAAEkAiQDJAAkBSQGJAckBCQJJAokCAAAAAAAAAAAAAAAABQAFAAgACAAAAAAABgAGAAYABgAGAAYABgAAAAAAAAAGAAYABgAGAAYAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAYABgAIAAgAAAAFAAUABQAFAAUABQAFAAUAAAAAAAUABQAAAAAABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAAABQAFAAUABQAFAAUABQAAAAUABQAAAAUABQAFAAUABQAAAAYABgAFAAgACAAGAAgACAAIAAgAAAAAAAgACAAAAAAACAAIAAgAAAAAAAUAAAAAAAAAAAAAAAAACAAAAAAAAAAAAAAABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUACAAIAAgABgAGAAYABgAGAAYABgAGAAgACAAGAAYABgAIAAYABQAFAAUABQAXABcAFwAXABcASQCJAMkACQFJAYkByQEJAkkCiQIAABcAAAAXAAYAAAAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAgACAAIAAYABgAGAAYABgAGAAgABgAIAAgACAAIAAYABgAIAAYABgAFAAUAFwAFAAAAAAAAAAAAAAAAAAAAAABJAIkAyQAJAUkBiQHJAQkCSQKJAgAAAAAAAAAAAAAAAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAgACAAIAAYABgAGAAYAAAAAAAgACAAIAAgABgAGAAgABgAGABcAFwAXABcAFwAXABcAFwAXABcAFwAXABcAFwAXABcAFwAXABcAFwAXABcAFwAFAAUABQAFAAYABgAAAAAABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAIAAgACAAGAAYABgAGAAYABgAGAAYACAAIAAYACAAGAAYAFwAXABcABQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAASQCJAMkACQFJAYkByQEJAkkCiQIAAAAAAAAAAAAAAAAXABcAFwAXABcAFwAXABcAFwAXABcAFwAXAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAASQCJAMkACQFJAYkByQEJAkkCiQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAUABQAFAAUABQAFAAUABQAFAAUABQAGAAgABgAIAAgABgAGAAYABgAGAAYACAAGAAAAAAAAAAAAAAAAAAAAAAAIAAgABgAGAAYABgAIAAYABgAGAAYABgAAAAAAAAAAAEkAiQDJAAkBSQGJAckBCQJJAokCywdLChcAFwAXABsABQAFAAUABQAFAAUABQAFAAUABQAFAAUACAAIAAgABgAGAAYABgAGAAYABgAGAAYACAAGAAYAFwAAAAAAAAAAAEkAiQDJAAkBSQGJAckBCQJJAokCywdLCssMSw/LEUsUyxZLGcsbAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAYABgAGAAYABgAGAAgABQAGAAYABgAGABcAFwAXABcAFwAXABcAFwAGAAAAAAAAAAAAAAAAAAAAAAAFAAYABgAGAAYABgAGAAgACAAGAAYABgAFAAUABQAFAAUABgAGAAYABgAGAAYABgAGAAYABgAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAXABcAFwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABQAFAAUABQAAAAAABQAFAAUABQAGAAYABgAGAAYABgAGAAYABgAGAAYABgAGAAgABgAGABcAFwAXAAUAFwAXAAUAFwAXABcAFwAXAAAAAAAAAAAAAAAAAAAAAAAAAAAASQCJAMkACQFJAYkByQEJAkkCiQKLBcsFCwZLBosGywYLB0sHiwfLB0sKywxLD8sRSxTLFksZyxtLHgAAAAAAABcAFwAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAAAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUACAAGAAYABgAGAAYABgAGAAAABgAGAAYABgAGAAYACAAGAAYABgAGAAYABgAGAAYABgAAAAgABgAGAAYABgAGAAYABgAIAAYABgAIAAYABgAAAAAAAAAAAAAAAAAAAAAAAAAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAAAAAAGAAYABgAGAAYABgAGAAYABgAGAAYABgAGAAYABgAGAAUABgAAAAAAAAAAAAAAAAAAAAAASQCJAMkACQFJAYkByQEJAkkCiQIAAAAAAAAAAAAAAAAFAAUABQAFAAUABQAFAAAABQAFAAAABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAGAAYABgAGAAYABgAAAAAAAAAGAAAABgAGAAAABgAFAAUABQAFAAUABQAFAAUABQAFAAgACAAIAAgACAAAAAYABgAAAAgACAAGAAgABgAFAAAAAAAAAAAAAAAAAAAABQAFAAUABQAFAAUAAAAFAAUAAAAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAYABgAIAAgAFwAXAAAAAAAAAAAAAAAAAAAAyjRKNco0yjRKNIo0ijhKD8oRSgaKBsoGCgdKB4oHAAAXABcAFwAXABcAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMoFCgZKBooGygYKB0oHigcKBkoGigbKBgoHSgeKB0oGigbKBgoHSgeKB4oFygUKBkoGigbKBgoHSgeKB4oFygUKBkoGigbKBQoGCgZKBooGygYKB0oHigeKBcoFCgYKBkoGigaKwIrBigXKBQoGCgZKBooGCgYKBkoGSgZKBkoGygYKBwoHCgdKB0oHigeKB4oHigfKBQoGSgaKBsoGigXKBQoGSgZKBooGigbKBQoGigXKBYo0ijhKRYo0ijjKNQUABQAFAAUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEkAiQDJAAkBSQGJAckBCQJJAokCAAAAAAAAAAAXABcAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUAAAAAAAYABgAGAAYABgAXAAAAAAAAAAAAAAAAAAAAAAAAAAAABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAGAAYABgAGAAYABgAGABcAFwAXABcAFwAbABsAGwAbAAQABAAEAAQAFwAbAAAAAAAAAAAAAAAAAAAAAAAAAAAASQCJAMkACQFJAYkByQEJAkkCiQIAAMsHSx6LeAt5i3kLeot6AAAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAAAAAAAAAAAAAABQAFAAUASwWLBcsFCwZLBosGywYLB0sHiwfLBwsISwiLCMsICwlLCYsJywkLCosFywULBhcAFwAXABcAAAAAAAAAAAAAAAUABQAFAAUABQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABQAIAAgACAAIAAgACAAIAAgACAAIAAgACAAIAAgACAAIAAgACAAIAAgACAAIAAgACAAIAAgACAAIAAgACAAIAAgACAAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABgAGAAYABgAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAUABQAFAAUABQAFAAUABQAFAAUABQAAAAAAAAAAAAAABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAAAAAAAAAAAAAAAAAAAAUABQAFAAUABQAFAAUABQAFAAUAAAAAABsABgAGABcAEAAQABAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABsAGwAbABsAGwAbABsAAAAAABsAGwAbABsAGwAbABsAGwAbABsAGwAbABsAGwAbABsAGwAbABsAGwAbABsAGwAbAAgACAAGAAYABgAbABsAGwAIAAgACAAIAAgACAAQABAAEAAQABAAEAAQABAABgAGAAYABgAGAAYABgAGABsAGwAGAAYABgAGAAYABgAGABsAGwAbABsAGwAbABsAGwAbABsAGwAbABsAGwAbABsAGwAbABsAGwAbABsABgAGAAYABgAbABsAGwAbABsAGwAbABsAGwAbABsAGwAbABsAGwAbABsAGwAbAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAbABsABgAGAAYAGwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAASwWLBcsFCwZLBosGywYLB0sHiwfLBwsISwiLCMsICwlLCYsJywkLCgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIsFywULBksGiwbLBgsHSweLB8sHSwrLDEsPyxFLFMsWSxnLG4sFywULBksGiwaLBYsGAAAAAAAAAAAAAAAAAABJAokCSQCJAMkACQFJAYkByQEJAkkCiQJJAIkAyQAJAUkBiQHJAQkCSQKJAkkAiQDJAAkBSQGJAckBCQJJAokCAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAIAAgACAAIAAgACAAIAAgACAAIAAgACAAIAAgACAAIAAgACAAIAAgACAAIAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAIAAgACAAIAAgACAAIAAAACAAIAAgACAAIAAgACAAIAAgACAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQACAAIAAgACAAIAAgACAAIAAgACAAIAAgACAAIAAgACAAIAAgACAAIAAgACAAIAAgACAAIAAQAAAAEAAQAAAAAAAQAAAAAAAQABAAAAAAABAAEAAQABAAAAAQABAAEAAQABAAEAAQABAAIAAgACAAIAAAACAAAAAgACAAIAAgACAAIAAgAAAAIAAgACAAIAAgACAAIAAgACAAIAAgABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAIAAgACAAIAAQABAAAAAQABAAEAAQAAAAAAAQABAAEAAQABAAEAAQABAAAAAQABAAEAAQABAAEAAQAAAAIAAgACAAIAAgACAAIAAgACAAIAAgACAAIAAgACAAIAAgACAAIAAgACAAIAAgACAAIAAgABAAEAAAABAAEAAQABAAAAAQABAAEAAQABAAAAAQAAAAAAAAABAAEAAQABAAEAAQABAAAAAgACAAIAAgACAAIAAgACAAIAAgACAAIAAgACAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAgACAAIAAgACAAIAAgACAAIAAgACAAIAAgACAAIAAgACAAIAAgACAAIAAgACAAIAAgACAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAgACAAIAAgACAAIAAAAAAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAGAACAAIAAgACAAIAAgACAAIAAgACAAIAAgACAAIAAgACAAIAAgACAAIAAgACAAIAAgACABgAAgACAAIAAgACAAIAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQAYAAIAAgACAAIAAgACAAIAAgACAAIAAgACAAIAAgACAAIAAgACAAIAAgACABgAAgACAAIAAgACAAIAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQACAAIAAgAYAAIAAgACAAIAAgACAAEAAgAAAAAASQCJAMkACQFJAYkByQEJAkkCiQJJAIkAyQAJAUkBiQHJAQkCAAAGAAYABgAGAAYABgAGAAYABgAGAAYABgAGAAYABgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAYABgAGAAYABgAGAAYABgAGAAYABgAGAAYABgAGAAYABgAGAAYABgAGAAYABgAbABsAGwAbAAYABgAGAAYABgAGAAYABgAGAAYABgAGAAYABgAbABsAGwAbABsAGwAbABsABgAbABsAGwAbABsAGwAbABsAGwAbAAYAGwAbABcAFwAXABcAFwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAGAAYABgAGAAYABgAGAAYAAAAGAAYABgAGAAYABgAGAAYABgAGAAYABgAGAAYABgAGAAYAAAAAAAYABgAGAAYABgAGAAYAAAAGAAYAAAAGAAYABgAGAAYAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABQAFAAUABQAFAAAAAACLBcsFCwZLBosGywYLB0sHiwcGAAYABgAGAAYABgAGAAAAAAAAAAAAAAAAAAAAAAAAAAIAAgACAAIABgAGAAYABgAGAAYABgAAAAAAAAAAAAAASQCJAMkACQFJAYkByQEJAkkCiQIAAAAAAAAAABcAFwABAAEAAgACAAIAAgACAAIAAgACAAIAAgACAAIAAgACAAIAAgACAAIAAgACAAIAAgACAAIAAgACAAIAAgACAAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIsFywULBksGiwbLBgsHSweLB8sHSwrLDEsPyxFLFMt4S3lLgYsFywULBksGiwbLBgsHSweLBxsAyzRLNMs8GQCLBcsFi3jLeAAAAAAAAAAAAAAAAAAAAAAAAAAAAADLFksZyxtLHguAC4gLkAuYC6ALqAuwC7hLeEuAS4hLkEuYS6BLqEuwS7iLeIuAi4iLkIuYi6CLqIuwi7jLeMuAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAYABgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAUABQAFAAUAAAAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAAAAUABQAAAAUAAAAAAAUAAAAFAAUABQAFAAUABQAFAAUABQAFAAAABQAFAAUABQAAAAUAAAAFAAAAAAAAAAAAAAAAAAUAAAAAAAAAAAAFAAAABQAAAAUAAAAFAAUABQAAAAUABQAAAAUAAAAAAAUAAAAFAAAABQAAAAUAAAAFAAAABQAFAAAABQAAAAAABQAFAAUABQAAAAUABQAFAAUABQAFAAUAAAAFAAUABQAFAAAABQAFAAUABQAAAAUAAAAFAAUABQAFAAUABQAFAAUABQAFAAAABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAAAAAAAAAAAAAAFAAUABQAAAAUABQAFAAUABQAAAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAAAAAAAAAAABsAGwAbABsAGwAbABsAGwAbABsAGwAbAAAAAAAAAAAAGwAbABsAGwAbABsAGwAbABsAGwAbABsAGwAbABsAGwAbABsAGwAAAAAAGwAbABsAGwAbABsAGwAbABsAGwAbABsAGwAbABsAAAAbABsAGwAbABsAGwAbABsAGwAbABsAGwAbABsAGwDLAssCCwNLA4sDywMLBEsEiwTLBAsFSwVLBQAAAAAAABsAGwAbABsAGwAbABsAGwAbABsAGwAbABsAGwAbABsAAAAAAAAAAAAAAAAAGwAbABsAGwAbABsAGwAbABsAGwAbABsAGwAbABsAGwAbABsAGwAbABsAGwAbABsAGwAbABsAGwAbAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAGwAbABsAGwAbABsAGwAbABsAGwAbABsAGwAbABsAGwAbABsAGwAbABsAGwAbABsAGwAbABsAGwAAAAAAAAAAABsAGwAbABsAGwAbABsAGwAbAAAAAAAAAAAAAAAAAAAAGwAbAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAbABsAGwAbABsAGwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAGwAbABsAGwAbABsAGwAbABsAGwAbABsAGwAbABsAGwAbABsAGwAbABsAGwAbABsAGwAbABsAGgAaABoAGgAaABsAGwAbABsAGwAbABsAGwAbABsAGwAbABsAGwAbABsAGwAbABsAGwAbAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAbABsAGwAbABsAGwAbABsAGwAbABsAGwAbAAAAAAAAABsAGwAbABsAGwAbABsAGwAbABsAAAAAAAAAAAAAAAAAGwAbABsAGwAbABsAGwAbABsAGwAbABsAGwAbABsAGwAbABsAGwAbABsAGwAbABsAGwAAAAAAAAAAAAAAAAAAABsAGwAbABsAGwAbABsAGwAAAAAAAAAAAAAAAAAAAAAAGwAbABsAGwAbABsAGwAbABsAGwAAAAAAAAAAAAAAAAAbABsAGwAbABsAGwAbABsAAAAAAAAAAAAAAAAAAAAAABsAGwAbABsAGwAbABsAGwAbABsAGwAbABsAGwAbABsAGwAAAAAAGwAbABsAGwAAAAAAAAAbAAAAGwAbABsAGwAbABsAGwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABsAGwAbABsAGwAbABsAGwAbABsAAAAAAAAAAAAAAAAABQAFBwUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAEUGBQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAEUGBQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUAhQYFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQDFDAUABQAFAAUABQAFAAUABQBFDwUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAEUPBQAFAAUABQAFAAUABQAFAAUABQAFAAUABQDFBgUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUGBQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQYFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQYFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFBgUABQAFAAUABQAFAAUABQAFAAUABQAFAAUARQYFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAIUHBQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAGAAYABgAGAAYABgAGAAYABgAGAAYABgAGAAYABgAGAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEQARABEAEQARABEAEQARABEAEQARABEAEQARABEAEQARABEAEQARABEAEQARABEAEQARABEAEQARABEAAAAAAAAAAAAAAAAAAAAAAAAAAACrACAAuwAAABUiIAQfIuAEICLgAyEioAMiIsADJCLABEMiIAJFIkABTCIgAZgiAASmIkAEqCKABKkiYASrIqAEuCKAA80iAAHyIuAC8yIAA/QiIAP2IkAD9yJgA/oiQAL7ImAC/CKAAv0ioAL+IsAC3CcAApspoACgKcAAoymAALgpYAH1KUAA3iqAAeMqwAHkKqAB5SrgAe4q4AD+K2AAbwN3A38DhwOfA6cDrwO3A48DlwOPA5cDjwOXA48DlwOPA5cDjwOXA70DxQPNA9UD3QPlA+ED6QPxA/kD9AP8A48DlwOPA5cDBAQMBI8DlwOPA5cDjwOXAxIEGgQiBCoEMgQ6BEIESgRQBFgEYARoBHAEeAR+BIYEjgSWBJ4EpgSyBK4EugTCBCQE0gTaBMoE4gTkBOwE9AT8BP0EBQUNBRUF/QQdBSIFFQX9BCoFMgX8BDoFQgX0BEcFjwNPBVMFWwVdBWUFbQX8BHUFfQX0BAYEgQUFBfQEjwOPA4kFjwOPA48FlwWPA48DmwWjBY8DpwWuBY8DtgW+BcUFRgWPA48DzQXVBd0F5QWPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwPtBY8D9QWPA48DjwP9BY8DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DBQaPA48DjwMNBg0GCQUJBY8DEwYbBvUFMQYjBiMGOQZABikGjwOPA48DSAZQBo8DjwOPA1IGWgZiBo8DaQZxBo8DeQaPA48DOQWBBkcFiQYGBJEGjwOYBo8DnQaPA48DjwOPA6MGqwaPA48DjwOPA48DjwPdA7MGjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwO7BsMGxwbfBuUGzwbXBu0G9Qb5BsgFAQcJBxEHjwMZB1oGWgZaBikHMQc5B0EHRgdOB1YHIQdeB2YHjwNsB3MHWgZaBloGWgZzBXkHWgaBB48DjwNXBloGWgZaBloGWgZaBloGWgZaBloGWgZaBloGiQdaBloGWgZaBloGjwdaBloGlwefB48DjwOPA48DjwOPA48DjwNaBloGWgZaBq8Htwe/B6cHzwfXB98H5gftB/UH+QfHB1oGWgZaBgEIBwhaBg0IEAiPA48DjwOPA48DjwOPAxgIjwOPA48DIAiPA48DjwPdAygIMAg1CI8DPQhaBloGXQZaBloGWgZaBloGWgZECEoIWghSCI8DjwNiCP0FjwO2A48DjwOPA48DjwOPA1oGHwjEA48DOQhqCI8Dcgh6CI8DjwOPA48DfgiPA48DUga1A48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwNaBloGjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPAzkIWgZzBY8DjwOPA48DjwOPA48DjwOPA4UIjwOPA4oIXQWPA48DqQVaBlEGjwOPA5IIjwOPA48DmgihCCMGqQiPA48DfwWxCI8DuQjACI8D4gTFCI8D+wSPA80I1Qj9BI8D2Qj8BOEIjwOPA48DjwOPA48DjwPoCI8DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwP8CPAI9AiOBI4EjgSOBI4EjgSOBI4EjgSOBI4EjgSOBI4EBAmOBI4EjgSOBAwJEAkYCSAJJAksCY4EjgSOBDAJOAl/A0AJSAmPA48DjwNQCY8DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwM8DjwOfA68DjwOPA48DjwOPA48DvQONA90D4QPxA/QDzwOPA4QEDwOPA48DkgQiBDIEAgRQBGAEcAR+BE4EngSQAqACsAK/wqgAaABoAGgAaABoAGgAaABoAE3C6ABoAGgAaABoAGgAaABoAGgAXQLoAGgAakL6QspDGkMqQzpDKABoAGgAaABoAGgAaABoAGgAaABoAGgAaABoAGgAaABoAGgAaABoAGgAaABoAGgAaABoAGgAaABoAGgAaABKQ2gAaABoAGgAaABoAGgAaABoAGgAaABoAGgAaABoAGgAaABoAGgAaABoAGgAaABoAGgAaABoAGgAaABoAGgASkNoAGgAaABoAGgAaABoAGgAaABoAGgAaABoAGgAaABoAGgAaABoAGgAaABoAGgAaABoAGgAaABoAGgAaABoAEpDaABoAGgAaABoAGgAaABoAGgAaABoAGgAaABoAGgAaABoAGgAaABoAGgAaABoAGgAaABoAGgAaABoAGgAaABKQ2gAaABoAGgAaABoAGgAaABoAGgAaABoAGgAaABoAGgAaABoAGgAaABoAGgAaABoAGgAaABoAGgAaABoAGgASkNoAGgAaABoAGgAaABoAGgAaABoAGgAaABoAGgAaABoAGgAaABoAGgAaABoAGgAaABoAGgAaABoAGgAaABoAEpDaABoAGgAaABoAGgAaABoAGgAaABoAGgAaABoAGgAaABoAGgAaABoAGgAaABoAGgAaABoAGgAaABoAGgAaABKQ2gAaABoAGgAaABoAGgAaABoAGgAaABoAGgAaABoAGgAaABoAGgAaABoAGgAaABoAGgAaABoAGgAaABoAGgASkNoAGgAaABoAGgAaABoAGgAaABoAGgAaABoAGgAaABoAGgAaABoAGgAaABoAGgAaABoAGgAaABoAGgAaABoAEpDaABoAGgAaABoAGgAaABoAGgAaABoAGgAaABoAGgAaABoAGgAaABoAGgAaABoAGgAaABoAGgAaABoAGgAaABKQ2gAaABoAGgAaABoAGgAaABoAGgAaABoAGgAaABoAGgAaABoAGgAaABoAGgAaABoAGgAaABoAGgAaABoAGgASkNoAGgAaABoAGgAaABoAGgAaABoAGgAaABoAGgAaABoAGgAaABoAGgAaABoAGgAaABoAGgAaABoAGgAaABoAEpDWkNeQ2gAaABoAGgAaABoAGgAaABoAGgAaABoAGgAaABoAGgAaABoAGgAaABoAGgAaABoAGgAaABoAGgAaABKQ2gAaABoAGgAaABoAGgAaABoAGgAaABoAGgAaABoAGgAaABoAGgAaABoAGgAaABoAGgAaABoAGgAaABoAGgASkNoAGgAaABoAGgAaABoAGgAaABoAGgAaABoAGgAaABoAGgAaABoAGgAaABoAGgAaABoAGgAaABoAGgAaABoAEpDY8DjwOPA48DjwOPA48DjwNYCY8DWgZaBmAJ/QWPA/UEjwOPA48DjwOPA48DjwNoCY8DjwOPA28JjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DJAQkBCQEJAQkBCQEJAQkBHcJJAQkBCQEJAQkBCQEJAR/CYMJJAQkBCQEJASTCYsJJASbCSQEJASjCakJJAQkBCQEJAQkBCQEJAQkBCQEJAS5CbEJJAQkBCQEJAQkBCQEJAQkBCQEwQkkBCQEJAQkBCQEyQnQCdYJJAQkBCQEJAT8BN4J5QnsCQYE7wmPA48D4gT2CY8D/AkGBAEKCQqPA48DDgqPA48DjwOPAyAIFgoGBIEFXAUdCo8DjwOPA48DjwPeCSUKjwOPAy0KNQqPA48DjwOPA48DjwM5CkEKjwOPA0kKXAVRCo8DVwqPA48D7QVfCo8DjwOPA48DjwOPA2QKjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA2wKcAp4Co8DfwqPA48DjwOPA48DjwOPA48DjwOPA48DjwOGCo8DjwOUCo4KjwOPA48DnAqkCo8DqAqPA48DjwOPA48DjwOPA48DjwOPA4MFjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA64KjwO0Co8DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DugqPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwMWBcIKjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA8kK0QrXCo8DjwNaBloG3wqPA48DjwOPA48DWgZaBjMIjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48D4QqPA+gKjwPkCo8D6wqPA/MK9wqPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA90D/wrdAwYLDQsVC48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPAx0LJQuPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DJAQkBCQEJAQkBCQELQskBDULNQs8CyQEJAQkBCQEJAQkBCQEJAQkBCQEJAQkBCQEJAQkBCQEJAQkBCQEJAQkBCQEJAQkBPQIjgSOBCQEJAQkBCQEJAQkBCQEJAQkBCQEjgSOBI4EjgSOBI4EjgRECyQEJAQkBCQEJAQkBCQEJARaBkwLWgZaBl0GUQtVC0QIXQuxA48DYwuPA48DjwOPA48DjwOPA2oHjwOPA48DjwNaBloGWgZaBloGWgZaBloGWgZaBloGWgZaBloGWgZaBloGWgZaBloGWgZaBloGWgZaBloGWgZaBloGWgZrC3MLWgZaBloGXQZaBloGewuPA0wLWgaDC1oGiwtGCI8DjwNMC48LWgaXC1oGnwunC1oGjwOPA48DRgiPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA68LjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48DjwOPA48Drwu/C7cLtwu3C8ALwAvAC8AL3QPdA90D3QPdA90D3QPIC8ALwAvAC8ALwAvAC8ALwAvAC8ALwAvAC8ALwAvAC8ALwAvAC8ALwAvAC8ALwAvAC8ALwAvAC8ALwAvAC8ALwAvAC8ALwAvAC8ALwAvAC8ALwAvAC8ALwAvAC8ALwAvAC8ALwAvAC8ALwAvAC8ALwAvAC8ALwAvAC8ALwAvAC8ALbgNuA24DEgASABIAEgASABIAEgASABIACAAHAAgACQAHABIAEgASABIAEgASABIAEgASABIAEgASABIAEgAHAAcABwAIAAkACgAKAAQABAAEAAoACgAKMQryCgADAAYAAwAGAAYAAgACAAIAAgACAAIAAgACAAIAAgAGAAoAClAKAArQCgAKAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAKUQoACtIKAAoACgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAClEKAArSCgASAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEgASABIAEgASAAcAEgASABIAEgASABIAEgASABIAEgASABIAEgASABIAEgASABIAEgASABIAEgASABIAEgASAAYACgAEAAQABAAEAAoACgAKAAoAAAAKkAoAsgAKAAoABAAEAAIAAgAKAAAACgAKAAoAAgAAAAqQCgAKAAoACgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAoAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACgAKAAAAAAAAAAAAAAAAAAAACgAKAAoACgAKAAoACgAKAAoACgAKAAoACgAKAAAAAAAKAAoACgAKAAoACgAKAAoACgAKAAoACgAKAAoAAAAAAAAAAAAAAAoACgAKAAoACgAKAAoACgAKAAAACgAKAAoACgAKAAoACgAKAAoACgAKAAoACgAKAAoACgAKALEAsQCxALEAsQCxALEAsQCxALEAsQCxALEAsQCxALEAsQCxALEAsQCxALEAsQCxALEAsQCxALEAsQCxALEAsQCxALEAsQCxALEAsQCxALEAsQCxALEAsQCxALEAsQCxALEAsQCxALEAsQCxALEAsQCxALEAsQCxALEAsQCxALEAAAAAAAAAAAAKAAoAAAAAAAAAAAAAAAAAAAAAAAoAAAAAAAAAAAAAAAoACgAAAAoAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAKAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAALEAsQCxALEAsQCxALEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAoAAAAAAAoACgAEAAEAsQCxALEAsQCxALEAsQCxALEAsQCxALEAsQCxALEAsQCxALEAsQCxALEAsQCxALEAsQCxALEAsQCxALEAsQCxALEAsQCxALEAsQCxALEAsQCxALEAsQCxALEAAQCxAAEAsQCxAAEAsQCxAAEAsQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEABQAFAAUABQAFAAUACgAKAA0ABAAEAA0ABgANAAoACgCxALEAsQCxALEAsQCxALEAsQCxALEADQCtCA0ADQANAE0ADQCNAI0AjQCNAE0AjQBNAI0ATQBNAE0ATQBNAI0AjQCNAI0ATQBNAE0ATQBNAE0ATQBNAE0ATQBNAE0ATQAtAE0ATQBNAE0ATQBNAE0AjQBNAE0AsQCxALEAsQCxALEAsQCxALEAsQCxALEAsQCxALEAsQCxALEAsQCxALEABQAFAAUABQAFAAUABQAFAAUABQAEAAUABQANAE0ATQCxAI0AjQCNAA0AjQCNAI0ATQBNAE0ATQBNAE0ATQBNAI0AjQCNAI0AjQCNAI0AjQCNAI0AjQCNAI0AjQCNAI0AjQCNAE0ATQBNAE0ATQBNAE0ATQBNAE0ATQBNAE0ATQBNAE0ATQBNAE0ATQBNAE0ATQBNAE0ATQBNAE0ATQBNAE0ATQBNAE0ATQBNAE0ATQCNAE0ATQCNAI0AjQCNAI0AjQCNAI0AjQBNAI0ATQCNAE0ATQCNAI0ADQCNALEAsQCxALEAsQCxALEABQAKALEAsQCxALEAsQCxAA0ADQCxALEACgCxALEAsQCxAI0AjQACAAIAAgACAAIAAgACAAIAAgACAE0ATQBNAA0ADQBNAA0ADQANAA0ADQANAA0ADQANAA0ADQANAA0ADQANAK0AjQCxAE0ATQBNAI0AjQCNAI0AjQBNAE0ATQBNAI0ATQBNAE0ATQBNAE0ATQBNAE0AjQBNAI0ATQCNAE0ATQCNALEAsQCxALEAsQCxALEAsQCxALEAsQCxALEAsQCxALEAsQCxALEADQANAI0ATQBNAE0ATQBNAE0ATQBNAE0ATQBNAI0AjQCNAE0ATQBNAE0ATQBNAE0ATQBNAE0ATQBNAE0ATQBNAI0AjQBNAE0ATQBNAI0ATQCNAI0ATQBNAE0AjQCNAE0ATQBNAE0ATQBNAA0ADQANAA0ADQANAA0ADQANAA0ADQANAA0ADQANAA0ADQANAA0ADQANAA0ADQANAA0ADQANAA0ADQANAA0ADQANAA0ADQANAA0ADQCxALEAsQCxALEAsQCxALEAsQCxALEADQANAA0ADQANAA0ADQANAA0ADQANAA0ADQANAA0AAQABAAEAAQABAAEAAQABAAEAAQBBAEEAQQBBAEEAQQBBAEEAQQBBAEEAQQBBAEEAQQBBAEEAQQBBAEEAQQBBAEEAQQBBAEEAQQBBAEEAQQBBAEEAQQCxALEAsQCxALEAsQCxALEAsQABAAEACgAKAAoACgAhAAEAAQCxAAEAAQCxALEAsQCxAAEAsQCxALEAAQCxALEAsQCxALEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAsQCxALEAsQABALEAsQCxALEAsQCBAEEAQQBBAEEAQQCBAIEAQQCBAEEAQQBBAEEAQQBBAEEAQQBBAEEAgQBBAAEAAQABALEAsQCxAAEAAQABAAEATQANAE0ATQBNAE0ADQCNAE0AjQCNAA0ADQANAA0ADQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABALEAsQAFALEAsQCxALEAsQCxALEAsQCxALEAsQCxALEAsQCxALEAsQCxALEAsQCxALEAsQCxALEAsQCxALEAsQBNAE0ATQBNAE0ATQBNAE0ATQBNAI0AjQCNAA0AjQBNAE0AjQCNAE0ATQANAE0ATQBNAI0ATQBNAE0ATQANAA0ADQANAA0ADQANAA0ADQANAA0ADQANAA0ADQANAA0ADQANAA0ADQCxALEAsQCxALEAsQCxALEAsQCxALEAsQCxALEAsQCxAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAsQAAALEAAAAAAAAAAACxALEAsQCxALEAsQCxALEAAAAAAAAAAACxAAAAAAAAALEAsQCxALEAsQCxALEAAAAAAAAAAAAAAAAAAAAAAAAAAACxALEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAALEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAsQAAAAAAAAAAALEAsQCxALEAAAAAAAAAAAAAAAAAAAAAALEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAALEAsQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAEAAAAAAAAAAAAAAAAAAAABAAAAAAAsQAAAAAAsQCxAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAALEAsQAAAAAAAAAAALEAsQAAAAAAsQCxALEAAAAAAAAAsQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACxALEAAAAAAAAAsQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAsQCxALEAsQCxAAAAsQCxAAAAAAAAAAAAsQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAsQCxAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAsQCxALEAsQCxALEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACxAAAAAACxAAAAsQCxALEAsQAAAAAAAAAAAAAAAAAAAAAAsQAAAAAAAAAAAAAAAAAAAAAAsQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAsQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACxAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAoACgAKAAoACgAKAAQACgAAAAAAAAAAAAAAsQAAAAAAAACxAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAALEAsQCxAAAAAAAAAAAAAACxALEAsQAAALEAsQCxALEAAAAAAAAAAAAAAAAAAACxALEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAALEAsQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACgAKAAoACgAKAAoACgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAsQAAAAAAoAAAAAAAAAAAAAAAAACgAAAAAAAAAAAAAACxALEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAALEAsQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAALEAAAAAAAAAAAAAAAAAAACxALEAsQAAALEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAsQAAAAAAsQCxALEAsQCxALEAsQAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAACxALEAsQCxALEAsQCxALEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAsQAAAAAAsQCxALEAsQCxALEAAACxALEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAALEAsQCxALEAsQCxAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACxALEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAALEAAACxAAAAsQAKMQryCjEK8gAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAsQCxALEAsQCxALEAsQCxALEAsQCxALEAsQCxAAAAsQCxALEAsQCxAAAAsQCxAAAAAAAAAAAAAACxALEAsQCxALEAsQCxALEAsQCxALEAAACxALEAsQCxALEAsQCxALEAsQCxALEAsQCxALEAsQCxALEAsQCxALEAsQCxALEAsQCxALEAsQCxALEAsQCxALEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACxALEAsQCxAAAAsQCxALEAsQCxALEAAACxALEAAAAAALEAsQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAALEAsQAAAAAAAAAAALEAsQCxAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAsQCxALEAsQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAALEAAAAAALEAsQAAAAAAAAAAAAAAAACxAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAALEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACxALEAsQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAoACgAKAAoACgAKAAoACgAKAAoAAAAAAAAAAAAAAAAACgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAkAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAoxCvIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACxALEAsQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAsQCxAAAAsQCxALEAsQCxALEAsQAAAAAAAAAAAAAAAAAAAAAAsQAAAAAAsQCxALEAsQCxALEAsQCxALEAsQCxAAAAAAAAAAAAAAAAAAAABAAAALEAAAAAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAALEAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAKAAoACgAKAAoACgAKAEoACgAKACoAsQCxALEAEgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQAAAAAAAAAAAAAAAAAAAAAAAsQCxAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAsQCxALEAAAAAAAAAAACxALEAAAAAAAAAAAAAAAAAAAAAAAAAsQAAAAAAAAAAAAAAAACxALEAsQAAAAAAAAAAAAoAAAAAAAAACgAKAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAKAAoACgAKAAoACgAKAAoACgAKAAoACgAKAAoACgAKAAoACgAKAAoACgAKAAoACgAKAAoACgAKAAoACgAKAAoACgAKAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACxALEAAAAAALEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACxAAAAsQCxALEAsQCxALEAsQAAALEAAACxAAAAAACxALEAsQCxALEAsQCxALEAAAAAAAAAAAAAAAAAsQCxALEAsQCxALEAsQCxALEAsQAAAAAAsQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAALEAsQCxALEAsQCxALEAsQCxALEAsQCxALEAsQCxAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAALEAAACxALEAsQCxALEAAACxAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACxALEAsQCxALEAsQCxALEAsQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAsQCxALEAsQAAAAAAsQCxAAAAsQCxALEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAALEAAACxALEAAAAAAAAAsQAAALEAsQCxAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACxALEAsQCxALEAsQCxALEAAAAAALEAsQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAALEAsQCxAAAAsQCxALEAsQCxALEAsQCxALEAsQCxALEAsQAAALEAsQCxALEAsQCxALEAAAAAAAAAAACxAAAAAAAAAAAAAAAAALEAAAAAAAAAsQCxAAAAAAAAAAAAAAAAALEAsQCxALEAsQCxALEAsQCxALEAsQCxALEAsQCxALEAsQCxALEAsQCxALEAsQCxALEAsQAAALEAsQCxALEAsQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACgAAAAoACgAKAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAKAAoACgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAoACgAKAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACgAKAAAACgAKAAoACgAGAAoxCvIKAAoACgAKAAoACgAKAAoACgAKAAoACgAKAAoACgAKAAoACgAKAAoACgAKAAoACgAJALIAsgCyALIAsgASABQIFQgTCBYIsgCyALIAsgCyALIAAgAAAAAAAAACAAIAAgACAAIAAgADAAMACgAKMQryAAAJAAkACQAJAAkACQAJAAkACQAJAAkAsgASBDIEoAihCAoACgAKAAoACgAKAAoACgAKAAoACgAKAAoACgAKAAoACQAHAKsIrgiwCKwIrwgGAAQABAAEAAQABAAKAAoACgAKAAowCvAKAAoACgAKAAoAAgACAAIAAgACAAIAAgACAAIAAgADAAMACgAKMQryAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABACxALEAsQCxALEAsQCxALEAsQCxALEAsQCxALEAsQCxAAoACgAAAAoACgAKAAoAAAAKAAoAAAAAAAAAAAAAAAAAAAAAAAAAAAAKAAAACgAKAAoAAAAAAAAAAAAAAAoACgAKAAoACgAKAAAACgAAAAoAAAAKAAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACgAKAAAAAAAAAAAAChAKAAoACgAKAAAAAAAAAAAAAAAKAAoACgAKAAAAAAAKAAoACgAKAAoACgAKAAoACgAKAAoACgAKAAoACgAKAAAAAAAAAAAAAAAAAAAAAAAAAAoACgAKAAAAAAAAAAAACgAKAAoACgAKAAoACgAKAAoACgAKAAoACgAKAAoACgAKMArwCjAK8AowCvAKMArwCjAK8AowCvAKMArwCgAKAAowCvAKkAqQCpAKEAqQCpAKEAoQCpAKkAqQCpAKkAoQCgAKEAoQChAKEAoACgAKAApwCnAKcAqwCrAKsAoACgAKAAoQAwAEAAoACpAKEAoACgAKAAoQChAKEAoQCgAKkAqQCpAKkAoACpAKAAoQCgAKAAoACgAKEAoQChAKEAoQChAKEAoQChAKAAoACgAKAAoAChAKAAoQCjAK8AoQChAKEAoQChAKkAoQCpAKEAoQChAKEAoQChAKkAoACgAKAAoACgAKMArwCjAK8AoACgAKAAoACgAKAAoACgAKAAoQChAKAAoQCgAKMArwCjAK8AowCvAKMArwCgAKAAowCvAKMArwCjAK8AowCvAKMArwCjAK8AowCvAKMArwCjAK8AoQCgAKAAowCvAKMArwCgAKAAoACgAKAAqQCgAKAAoACgAKAAoACgAKAAoACjAK8AoACgAKkAoQCpAKkAoQCpAKEAoQChAKEAowCvAKMArwCjAK8AowCvAKkAoACgAKAAoACgAKEAoQCgAKAAoACgAKAAoACgAKAAoACjAK8AowCvAKkAoACgAKMArwCgAKAAoACgAKMArwCjAK8AowCvAKMArwCjAK8AoACgAKAAoACgAKAAoACgAKMQryCjEK8goACgAKAAoACgAKAAoACgAKAAoACgAKAAoACgAKAAoACgAKAAoACgAKEAoQCgAKAAoACgAKAAoACgAKMQryCgAKAAoACgAKAAoACgAKAAoACgAKAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAKAAoACgAKAAoACgAKAAoACgAKAAoACgAKAAoACgAKAAoACgAKAAoACgAKAAAACgAKAAoACgAKAAoACgAKAAoACgAKAAoACgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAKAAoACgAKAAoACgAKAAoAAgACAAIAAgACAAIAAgACAAIAAgACAAIAAgACAAIAAgACAAIAAgACAAAAAAAAAAAACgAKAAoACgAKAAoACgAKAAoACgAKAAoAAAAKAAoACgAKAAoACgAKAAoACgAKAAoACgAKAAoACgAKAAoACgAKAAoxCvIKMQryCjEK8goxCvIKMQryCjEK8goxCvIKAAoACgAKAAoACgAKAAoACgAKAAoQCgAKAAowCvAKMQryCgAKMArwCgAKUAoQCtAKAAoACgAKAAoAChAKEAowCvAKAAoACgAKAAoACpAKMArwCgAKAAoACjAK8AowCvAKMQryCjEK8goxCvIKMQryCjEK8goACgAKAAoACgAKAAoACgAKAAoACgAKAAoACgAKAAoACgAKEAoAChAKEAoQCgAKAAowCvAKAAoACgAKAAoACgAKAAoACgAKAAoQCpAKEAoQCjAK8AoACgAKMQryCgAKAAoACgAKAAoxCvIKMQryCjEK8goxCvIKMQryCnEKMgrxCrIKMQryCjEK8goxCvIKMQryCgAKAAqQChAKEAoQChAKkAoAChAKkAowCvAKEAoQCjAK8AowCvAKMArwCjAK8AoACgAKAAoACgAKAAoACgAKkAoACgAKAAoACgAKAAoACjAK8AoQChAKMArwCgAKAAoAChAKAAoACgAKAAoQCjAK8AowCvAKAAowCvAKAAoACjEK8goxCvIKEAoACgAKAAoACgAKEAqQCpAKkAoQCgAKAAoACgAKAAowCvAKkAoACgAKAAoAChAKAAoACgAKMArwCjAK8AoQCgAKEAoACgAKAAoACgAKAAoACgAKAAoACgAKAAoQChAKEAoQChAKEAoQChAKEAoQChAKEAoQChAKEAoQChAKEAoQCgAKEAoQChAKEAoACgAKEAoAChAKAAoAChAKAAowCvAKMArwCgAKAAoACgAKAAowCvAKAAoACgAKAAoACgAKMArwChAKAAoACgAKAAoACgAKAAoACgAKAAoACgAKAAoACgAKAAoACgAKAAoACgAKAAoACgAKEAoQCgAKAAoACgAKAAoACgAKMArwCgAKAAoACgAKEAoQChAKEAoAChAKEAoACgAKEAoQCgAKAAoACgAKMArwCjAK8AowCvAKMArwCjAK8AowCvAKMArwCjAK8AowCvAKMArwCjAK8AowCvAKMArwCjAK8AowCvAKMArwCjAK8AowCvAKMArwChAKAAoACjAK8AowCvAKMArwCjAK8AoACjAK8AowCvAKMArwCjAK8AowCvAKMArwCjAK8AowCvAKMArwCjAK8AowCvAKMArwCgAKAAoACgAKAAoQCgAKkAoACgAKAAoACgAKAAoACgAKAAoACgAKAAoACgAKAAoACgAKAAoACgAKAAAAAAAKAAoACgAKAAoACgAKAAoACgAKAAoACgAKAAoACgAKAAoACgAKAAoACgAKAAoACgAAAAAACgAKAAoACgAKAAoACgAKAAoAAAAKAAoACgAKAAoACgAKAAoACgAKAAoACgAKAAoACgAKAAoACgAKAAoACgAKAAoACgAKAAoACgAKAAoACgAKAAoACpAAAAAAAAAAAAAAAAAKAAoACgAKAAoACgAAAAAAAAAAALEAsQCxAAAAAAAAAAAAAAAAAAAACgAKAAoACgAKAAoACgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAALEACgAKAAowCvAKMArwCgAKAAoACjAK8AoACjAK8AoACgAKAAoACgAKAAoACgAKAAoACgAKAAoACgAKMArwCgAKAAowCvAKMQryCjEK8goxCvIKMQryCgAKAAoACgAKAAoACgAKAAoACgAKAAoACgAKAAoACgAKAAoACgAKAAoACgAKAAoACgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACgAKAAoACgAKAAoACgAKAAoACgAKAAoACgAKAAoACgAKAAoACgAKAAoACgAKAAoACgAKAAAACgAKAAoACgAKAAoACgAKAAoACgAKAAoACgAKAAoACgAKAAoACgAKAAoACgAKAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAoACgAKAAoACgAKAAoACgAKAAoACgAKAAAAAAAAAAAACgAAAAAAAAAAAAAAAAAAAAAAAACxALEAsQCxAAAAAAAKAAAAAAAAAAAAAAAKAAoAAAAAAAAAAAAAAAoACgAKAAkACgAKAAoACgAAAAAAAAAKMQryCjEK8goxCvIKMQryCjEK8goACgAKMQryCjEK8goxCvIKMQryCgAKAAoACgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAALEAsQAKAAoAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAKAAoACgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAKAAoACgAKAAoACgAKAAoACgAKAAoACgAKAAoACgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAKAAoACgAKAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAKAAoACgAKAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAKAAoACgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAALEAsQCxALEACgCxALEAsQCxALEAsQCxALEAsQCxAAoACgAAAAAAAAAAAAAAAAAAAAAACgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAALEAAAAAAAAAsQAAAAAAAAAAALEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAsQCxAAAACgAKAAoACgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAQAAAAAAAAAAAAAAAAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAYAAAAAoACgAKAAoAAAAAAAAAAAAAAAAAAAAAALEAsQCxALEAsQCxALEAsQCxALEAsQCxALEAsQCxALEAsQCxAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAsQAAAAAAAAAAAAAAAACxALEAsQCxALEAsQCxALEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAsQCxALEAsQCxALEAsQCxALEAsQCxAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAALEAAAAAALEAsQCxALEAAAAAALEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAsQCxALEAsQCxALEAAAAAALEAsQAAAAAAsQCxAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAALEAAAAAAAAAAAAAAAAAAAAAALEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACxAAAAsQCxALEAAAAAALEAsQAAAAAAAAAAAAAAsQCxAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAALEAsQAAAAAAAAAAAAAAAAAAAAAAsQAAAAAAAAAAAAAAAAAAAAAAAAAAALEAAAAAALEAAAAAAAAAAACxAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAQABAAEAAQABAAEAAQABAAMAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQANAA0ADQANAA0ADQANAA0ADQANAA0ADQANAA0ADQANAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABALEAAQANAA0ADQANAA0ADQANAA0ADQANAA0ADQANAA0ADQANAA0ADQANAA0ADQANAA0ADQANAA0ADQANAA0ADQAKAAoADQANAA0ADQANAA0ADQANAA0ADQANAA0ADQANAA0ADQASABIAEgASABIAEgASABIAEgASABIAEgASABIAEgASAA0ADQANAA0ADQANAA0ADQANAA0ADQANAA0ACgANAA0AsQCxALEAsQCxALEAsQCxALEAsQCxALEAsQCxALEAsQAKAAoACgAKAAoACgAKAAoACgAKAAAAAAAAAAAAAAAAALEAsQCxALEAsQCxALEAsQCxALEAsQCxALEAsQCxALEACgAKAAoACgAKAAoACgAKAAoACgAKAAoACgAKAAoACgAGAAoABgAAAAoABgAKAAoACgAKMQryCjEK8goxCvIEAAoACgADAAMACjAK8AoAAAAKAAQABAAKAAAAAAAAAAAADQANAA0ADQANAA0ADQANAA0ADQANAA0ADQANAA0ADQANAA0ADQANAA0ADQANAA0ADQANAA0ADQANAA0ADQCyAAAACgAKAAQABAAEAAoACgAKMQryCgADAAYAAwAGAAYAAgACAAIAAgACAAIAAgACAAIAAgAGAAoAClAKAArQCgAKAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAKUQoACtIKAAoxCvIKAAoxCvIKAAoAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQABAAKAAoACgAEAAQAAAAKAAoACgAKAAoACgAKAAAAEgASABIAEgASABIAEgASABIAqgCqAKoACgAKABIAEgAAAAoAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACgAKAAoACgAKAAoACgAKAAoACgAKAAoACgAAAAAAAAAKAAoACgAKAAoACgAKAAoACgAKAAoACgAAAAAAAAAAALEAAgACAAIAAgACAAIAAgACAAIAAgACAAIAAgACAAIAAgACAAIAAgACAAIAAgACAAIAAgACAAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACxALEAsQCxALEAAAAAAAAAAAAAAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEACgABALEAsQCxAAEAsQCxAAEAAQABAAEAAQCxALEAsQCxAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABALEAsQCxAAEAAQABAAEAsQBBAIEAAQABAIEAsQCxAAEAAQABAAEAQQBBAEEAQQCBAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAQQBBAEEAQQBBAIEAAQCBAAEAgQCBAAEAAQBhAIEAgQCBAIEAgQBBAEEAQQBBAGEAQQBBAEEAQQBBAIEAQQBBAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEACgAKAAoACgAKAAoACgBBAIEAQQCBAIEAgQBBAEEAQQCBAEEAQQCBAEEAgQCBAEEAgQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQCBAIEAgQCBAEEAQQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEATQBNAI0ATQCxALEAsQCxAA0ADQANAA0ADQANAA0ADQAFAAUABQAFAAUABQAFAAUABQAFAA0ADQANAA0ADQANAG0ATQBNAE0ATQBNAE0ATQBNAE0ATQBNAE0ATQBNAE0ATQBNAE0ATQBNAE0ATQBNAE0ATQBNAE0ATQBNAE0ATQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQBNAE0ATQCNAE0ATQBNAE0ATQBNAE0ATQBNAE0ATQBNAE0ADQCxALEAsQCxALEAsQCxALEAsQCxALEATQBNAE0AjQANAA0ADQANAA0ADQANAA0ADQANAA0ADQANAA0ADQANAA0ADQANAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAsQCxALEAsQCxALEAsQCxALEAsQCxAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAKAAoACgAKAAoACgAKAAoACgAKAAoACgAKAAoACgAKAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAsQCxALEAsQAAAAAAsQCxAAAAAAAAAAAAAAAAAAAAAACxALEAsQCxALEAAACxALEAsQCxALEAsQCxALEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACxAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAsQCxALEAsQCxALEAsQCxALEAAAAAAAAAAAAAAAAAAAAAAAAAAACxALEAsQCxAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAsQCxALEAAAAAALEAAACxALEAAAAAAAAAAAAAAAAAsQAAAAAAAAAAALEAsQCxALEAsQCxALEAsQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAsQCxALEAsQCxALEAsQAAAAAAAACxALEAsQCxALEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACxALEAsQAAALEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAALEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAALEAsQCxALEAsQCxAAAAsQAAAAAAAAAAALEAsQAAALEAsQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACxALEAsQCxAAAAAAAAAAAAAAAAALEAsQAAALEAsQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACxALEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAsQCxALEAsQCxALEAsQCxAAAAAACxAAAAsQAKAAoACgAKAAoACgAKAAoACgAKAAoACgAKAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAsQAAALEAAAAAALEAsQCxALEAsQCxAAAAsQAAAAAAAAAAAAAAAAAAAAAAAAAAALEAsQCxALEAAACxALEAsQCxALEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAALEAsQCxALEAsQCxALEAsQCxAAAAsQCxAAAAAAAAAAAAAAAAALEAsQCxALEAsQCxAKAAoACxALEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAsQCxALEAsQCxALEAAAAAALEAsQCxALEAAAAAAAAAAAAAAAAAAAAAALEAAAAAAAAAAAAAAAAAAAAAAAAAsQCxALEAsQCxALEAAAAAALEAsQCxAAAAAAAAAAAAAAAAAAAAAAAAAAAAsQCxALEAsQCxALEAsQCxALEAsQCxALEAsQAAALEAsQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACxALEAsQCxALEAsQCxAAAAsQCxALEAsQCxALEAAACgALEAsQCxALEAsQCxALEAsQAAAAAAsQCxALEAsQCxALEAsQAAALEAsQAAALEAsQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAALEAsQCxALEAsQCxALEAsQCxALEAsQCxALEAsQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAsQCxALEAsQCxALEAAAAAAAAAsQAAALEAsQAAALEAsQCxALEAsQCxALEAAACxAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAALEAsQAAAAAAAACxAAAAsQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAALEAsQCxALEAsQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAALEAsQCxALEAsQCxALEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACxALEAsQCxAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAsgCyALIAsgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAALEAsQCxAAAAAAAAAAAAAAAAAAAAAAAAALIAsgCyALIAsgCyALIAsgCxALEAsQCxALEAsQCxALEAAAAAALEAsQCxALEAsQCxALEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACxALEAsQCxAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAoACgCxALEAsQAKAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAKEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAoQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAKEAAAAAAAAAAAAAAAAAAAAAAAAAAAAgACAAIAAgACAAIAAgACAAIAAgACAAIAAgACAAIAAgACAAIAAgACAAIAAgACAAIAAgACAAIAAgACAAIAAgACAAIAAgCxALEAsQCxALEAsQCxALEAsQCxALEAsQCxALEAsQCxALEAsQCxALEAsQCxALEAAAAAAAAAAACxALEAsQCxALEAsQCxALEAsQCxALEAsQCxALEAAAAAAAAAAAAAAAAAAAAAALEAAAAAAAAAAAAAAAAAAAAAAAAAAACxAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAsQCxALEAsQCxAAAAsQCxALEAsQCxALEAsQCxALEAsQCxALEAsQCxALEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACxALEAsQCxALEAsQCxAAAAsQCxALEAsQCxALEAsQCxALEAsQCxALEAsQCxALEAsQCxAAAAAACxALEAsQCxALEAsQCxAAAAsQCxAAAAsQCxALEAsQCxAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAsQCxALEAsQCxALEAsQABAAEAAQABAAEAAQABAAEAAQBBAEEAQQBBAEEAQQBBAEEAQQBBAEEAQQBBAEEAQQBBAEEAQQBBAEEAQQBBAEEAQQBBAEEAQQBBAEEAQQBBAEEAsQCxALEAsQCxALEAsQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQANAA0ADQANAA0ADQANAA0ADQANAA0ADQANAA0ADQANAAoACgANAA0ADQANAA0ADQANAA0ADQANAA0ADQANAA0ACgAKAAoACgAKAAoACgAKAAoACgAKAAoAAAAAAAAAAAAKAAoACgAKAAoACgAKAAoACgAKAAoACgAKAAoACgAKAAoACgAKAAAAAAAKAAoACgAKAAoACgAKAAoACgAKAAoACgAKAAoACgAAAAoACgAKAAoACgAKAAoACgAKAAoACgAKAAoACgAKAAIAAgACAAIAAgACAAIAAgACAAIAAgAKAAoAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACgAKAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAKAAoACgAKAAoACgAKAAoACgAKAAoACgAKAAoACgAKAAoACgAKAAoACgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACgAKAAoACgAKAAoACgAKAAoACgAKAAoACgAAAAAAAAAKAAoACgAKAAoACgAKAAoACgAKAAAAAAAAAAAAAAAAAAoACgAKAAoACgAKAAoACgAKAAoACgAKAAoACgAKAAoACgAKAAoACgAKAAoACgAKAAoAAAAAAAAAAAAAAAAAAAAKAAoACgAKAAoACgAKAAoAAAAAAAAAAAAAAAAAAAAAAAoACgAKAAoACgAKAAoACgAKAAoAAAAAAAAAAAAAAAAACgAKAAoACgAKAAoACgAKAAAAAAAAAAAAAAAAAAAAAAAKAAoACgAKAAoACgAKAAoACgAKAAoACgAKAAoACgAKAAoACgAKAAoACgAKAAoACgAKAAoACgAKAAoACgAKAAAACgAKAAoACgAKAAoACgAKAAoACgAKAAoACgAKAAoACgAKAAAAAAAKAAoACgAKAAAAAAAAAAoAAAAKAAoACgAKAAoACgAKAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACgAKAAoACgAKAAoACgAKAAoACgAAAAAAAAAAAAAAAAAKAAoACgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAoACgAKAAoACgAKAAoACgAKAAoACgAKAAoACgAKAAoAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEgASALIAsgCyALIAsgCyALIAsgCyALIAsgCyALIAsgCyALIAsgCyALIAsgCyALIAsgCyALIAsgCyALIAsgCyALIAsgASALIAEgASABIAEgASABIAEgASABIAEgASABIAEgASABIAEgASABIAEgASABIAEgASABIAEgASABIAEgASABIAEgASABIAEgCxALEAsQCxALEAsQCxALEAsQCxALEAsQCxALEAsQCxABIAEgASABIAEgASABIAEgASABIAEgASABIAEgASABIAAAAAAAAAAAAAAAAAAAAAAMARAQBREgEAsBABAAAAAADAEQEA/hEBAMAQAQAAAAAAmBEBAB8SAQDAEQEALBIBAKAQAQAAAAAAwBEBAJcSAQCwEAEAAAAAAMARAQBzEgEA2BABAAAAAAABAAAAAgAAAJACAADAAwAA4BEBAOARAQCwAQAAwAMAAOARAQDgEQEAYAMAAJADAADgEQEA4BEBAAADAAAwAwAA4BEBAOARAQDAAgAAUAIAAOkRAQDwEQEAkAIAAOABAADgEQEA5REBACACAABQAgAA6REBAPARAQCwAQAA4AEAAOARAQDlEQEAABAAAACAAAAACAAAAEAAAAAAAACgEAEAAQAAAAIAAAADAAAABAAAAAEAAAABAAAAAQAAAAEAAAAAAAAAyBABAAEAAAAFAAAAAwAAAAQAAAABAAAAAgAAAAIAAAACAAAAAAECAwQAAQ0OAAECBQYHCAABCQoLDAACBAYICgwOTjEwX19jeHhhYml2MTE2X19zaGltX3R5cGVfaW5mb0UAU3Q5dHlwZV9pbmZvAE4xMF9fY3h4YWJpdjEyMF9fc2lfY2xhc3NfdHlwZV9pbmZvRQBOMTBfX2N4eGFiaXYxMTdfX2NsYXNzX3R5cGVfaW5mb0UATjEwX19jeHhhYml2MTE5X19wb2ludGVyX3R5cGVfaW5mb0UATjEwX19jeHhhYml2MTE3X19wYmFzZV90eXBlX2luZm9F";
+var tempDoublePtr = 71104;
+var ENV = {};
+function ___buildEnvironment(environ) {
+  var MAX_ENV_VALUES = 64;
+  var TOTAL_ENV_SIZE = 1024;
+  var poolPtr;
+  var envPtr;
+  if (!___buildEnvironment.called) {
+    ___buildEnvironment.called = true;
+    ENV["USER"] = ENV["LOGNAME"] = "web_user";
+    ENV["PATH"] = "/";
+    ENV["PWD"] = "/";
+    ENV["HOME"] = "/home/web_user";
+    ENV["LANG"] = "C.UTF-8";
+    ENV["_"] = Module["thisProgram"];
+    poolPtr = getMemory(TOTAL_ENV_SIZE);
+    envPtr = getMemory(MAX_ENV_VALUES * 4);
+    HEAP32[envPtr >> 2] = poolPtr;
+    HEAP32[environ >> 2] = envPtr;
+  } else {
+    envPtr = HEAP32[environ >> 2];
+    poolPtr = HEAP32[envPtr >> 2];
+  }
+  var strings = [];
+  var totalSize = 0;
+  for (var key2 in ENV) {
+    if (typeof ENV[key2] === "string") {
+      var line = key2 + "=" + ENV[key2];
+      strings.push(line);
+      totalSize += line.length;
+    }
+  }
+  if (totalSize > TOTAL_ENV_SIZE) {
+    throw new Error("Environment size exceeded TOTAL_ENV_SIZE!");
+  }
+  var ptrSize = 4;
+  for (var i = 0; i < strings.length; i++) {
+    var line = strings[i];
+    writeAsciiToMemory(line, poolPtr);
+    HEAP32[envPtr + i * ptrSize >> 2] = poolPtr;
+    poolPtr += line.length + 1;
+  }
+  HEAP32[envPtr + strings.length * ptrSize >> 2] = 0;
+}
+function __ZSt18uncaught_exceptionv() {
+  return !!__ZSt18uncaught_exceptionv.uncaught_exception;
+}
+function ___cxa_free_exception(ptr) {
+  try {
+    return _free(ptr);
+  } catch (e) {
+  }
+}
+var EXCEPTIONS = {
+  last: 0,
+  caught: [],
+  infos: {},
+  deAdjust: function(adjusted) {
+    if (!adjusted || EXCEPTIONS.infos[adjusted])
+      return adjusted;
+    for (var key2 in EXCEPTIONS.infos) {
+      var ptr = +key2;
+      var adj = EXCEPTIONS.infos[ptr].adjusted;
+      var len5 = adj.length;
+      for (var i = 0; i < len5; i++) {
+        if (adj[i] === adjusted) {
+          return ptr;
+        }
+      }
+    }
+    return adjusted;
+  },
+  addRef: function(ptr) {
+    if (!ptr)
+      return;
+    var info = EXCEPTIONS.infos[ptr];
+    info.refcount++;
+  },
+  decRef: function(ptr) {
+    if (!ptr)
+      return;
+    var info = EXCEPTIONS.infos[ptr];
+    info.refcount--;
+    if (info.refcount === 0 && !info.rethrown) {
+      if (info.destructor) {
+        Module["dynCall_vi"](info.destructor, ptr);
+      }
+      delete EXCEPTIONS.infos[ptr];
+      ___cxa_free_exception(ptr);
+    }
+  },
+  clearRef: function(ptr) {
+    if (!ptr)
+      return;
+    var info = EXCEPTIONS.infos[ptr];
+    info.refcount = 0;
+  }
+};
+function ___resumeException(ptr) {
+  if (!EXCEPTIONS.last) {
+    EXCEPTIONS.last = ptr;
+  }
+  throw ptr;
+}
+function ___cxa_find_matching_catch() {
+  var thrown = EXCEPTIONS.last;
+  if (!thrown) {
+    return (setTempRet0(0), 0) | 0;
+  }
+  var info = EXCEPTIONS.infos[thrown];
+  var throwntype = info.type;
+  if (!throwntype) {
+    return (setTempRet0(0), thrown) | 0;
+  }
+  var typeArray = Array.prototype.slice.call(arguments);
+  var pointer = Module["___cxa_is_pointer_type"](throwntype);
+  if (!___cxa_find_matching_catch.buffer)
+    ___cxa_find_matching_catch.buffer = _malloc(4);
+  HEAP32[___cxa_find_matching_catch.buffer >> 2] = thrown;
+  thrown = ___cxa_find_matching_catch.buffer;
+  for (var i = 0; i < typeArray.length; i++) {
+    if (typeArray[i] && Module["___cxa_can_catch"](typeArray[i], throwntype, thrown)) {
+      thrown = HEAP32[thrown >> 2];
+      info.adjusted.push(thrown);
+      return (setTempRet0(typeArray[i]), thrown) | 0;
+    }
+  }
+  thrown = HEAP32[thrown >> 2];
+  return (setTempRet0(throwntype), thrown) | 0;
+}
+function ___gxx_personality_v0() {
+}
+function _emscripten_get_heap_size() {
+  return HEAP8.length;
+}
+function abortOnCannotGrowMemory(requestedSize) {
+  abort("OOM");
+}
+function emscripten_realloc_buffer(size) {
+  try {
+    var newBuffer = new ArrayBuffer(size);
+    if (newBuffer.byteLength != size)
+      return false;
+    new Int8Array(newBuffer).set(HEAP8);
+  } catch (e) {
+    return false;
+  }
+  buffer = newBuffer;
+  Module["_emscripten_replace_memory"](newBuffer);
+  return true;
+}
+function _emscripten_resize_heap(requestedSize) {
+  var oldSize = _emscripten_get_heap_size();
+  var PAGE_MULTIPLE = 16777216;
+  var LIMIT = 2147483648 - PAGE_MULTIPLE;
+  if (requestedSize > LIMIT) {
+    return false;
+  }
+  var MIN_TOTAL_MEMORY = 16777216;
+  var newSize = Math.max(oldSize, MIN_TOTAL_MEMORY);
+  while (newSize < requestedSize) {
+    if (newSize <= 536870912) {
+      newSize = alignUp(2 * newSize, PAGE_MULTIPLE);
+    } else {
+      newSize = Math.min(alignUp((3 * newSize + 2147483648) / 4, PAGE_MULTIPLE), LIMIT);
+    }
+  }
+  if (!emscripten_realloc_buffer(newSize)) {
+    return false;
+  }
+  updateGlobalBufferViews();
+  return true;
+}
+function _emscripten_memcpy_big(dest, src, num) {
+  HEAPU8.set(HEAPU8.subarray(src, src + num), dest);
+}
+function ___setErrNo(value) {
+  if (Module["___errno_location"])
+    HEAP32[Module["___errno_location"]() >> 2] = value;
+  return value;
+}
+var ASSERTIONS = false;
+function intArrayToString(array) {
+  var ret = [];
+  for (var i = 0; i < array.length; i++) {
+    var chr = array[i];
+    if (chr > 255) {
+      if (ASSERTIONS) {
+      }
+      chr &= 255;
+    }
+    ret.push(String.fromCharCode(chr));
+  }
+  return ret.join("");
+}
+var decodeBase64 = typeof atob === "function" ? atob : function(input) {
+  var keyStr = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
+  var output = "";
+  var chr1, chr2, chr3;
+  var enc1, enc2, enc3, enc4;
+  var i = 0;
+  input = input.replace(/[^A-Za-z0-9\+\/\=]/g, "");
+  do {
+    enc1 = keyStr.indexOf(input.charAt(i++));
+    enc2 = keyStr.indexOf(input.charAt(i++));
+    enc3 = keyStr.indexOf(input.charAt(i++));
+    enc4 = keyStr.indexOf(input.charAt(i++));
+    chr1 = enc1 << 2 | enc2 >> 4;
+    chr2 = (enc2 & 15) << 4 | enc3 >> 2;
+    chr3 = (enc3 & 3) << 6 | enc4;
+    output = output + String.fromCharCode(chr1);
+    if (enc3 !== 64) {
+      output = output + String.fromCharCode(chr2);
+    }
+    if (enc4 !== 64) {
+      output = output + String.fromCharCode(chr3);
+    }
+  } while (i < input.length);
+  return output;
+};
+function intArrayFromBase64(s) {
+  if (typeof ENVIRONMENT_IS_NODE === "boolean" && ENVIRONMENT_IS_NODE) {
+    var buf;
+    try {
+      buf = Buffer.from(s, "base64");
+    } catch (_) {
+      buf = new Buffer(s, "base64");
+    }
+    return new Uint8Array(buf.buffer, buf.byteOffset, buf.byteLength);
+  }
+  try {
+    var decoded = decodeBase64(s);
+    var bytes = new Uint8Array(decoded.length);
+    for (var i = 0; i < decoded.length; ++i) {
+      bytes[i] = decoded.charCodeAt(i);
+    }
+    return bytes;
+  } catch (_) {
+    throw new Error("Converting base64 string to bytes failed.");
+  }
+}
+function tryParseAsDataURI(filename) {
+  if (!isDataURI(filename)) {
+    return;
+  }
+  return intArrayFromBase64(filename.slice(dataURIPrefix.length));
+}
+var asmGlobalArg = {
+  "Int8Array": Int8Array,
+  "Int16Array": Int16Array,
+  "Int32Array": Int32Array,
+  "Uint8Array": Uint8Array,
+  "Uint16Array": Uint16Array
+};
+var asmLibraryArg = {
+  "a": abort,
+  "b": setTempRet0,
+  "c": getTempRet0,
+  "d": __ZSt18uncaught_exceptionv,
+  "e": ___buildEnvironment,
+  "f": ___cxa_find_matching_catch,
+  "g": ___cxa_free_exception,
+  "h": ___gxx_personality_v0,
+  "i": ___resumeException,
+  "j": ___setErrNo,
+  "k": _emscripten_get_heap_size,
+  "l": _emscripten_memcpy_big,
+  "m": _emscripten_resize_heap,
+  "n": abortOnCannotGrowMemory,
+  "o": emscripten_realloc_buffer,
+  "p": tempDoublePtr,
+  "q": DYNAMICTOP_PTR
+};
+var asm = function(global, env, buffer2) {
+  "almost asm";
+  var a = new global.Int8Array(buffer2), b = new global.Int16Array(buffer2), c = new global.Int32Array(buffer2), d = new global.Uint8Array(buffer2), e = new global.Uint16Array(buffer2), f = env.p | 0, g = env.q | 0, h = 0, i = 0, j = 0, k = 0, l = 0, m = 0, n = 0, o = 0, p = env.a, q = env.b, r = env.c, s = env.d, t = env.e, u = env.f, v = env.g, w = env.h, x = env.i, y = env.j, z = env.k, A = env.l, B = env.m, C = env.n, D = env.o, E = 71120, F = 5314e3, G = 0;
+  function H(newBuffer) {
+    a = new Int8Array(newBuffer);
+    d = new Uint8Array(newBuffer);
+    b = new Int16Array(newBuffer);
+    e = new Uint16Array(newBuffer);
+    c = new Int32Array(newBuffer);
+    buffer2 = newBuffer;
+    return true;
+  }
+  function O(a2) {
+    a2 = a2 | 0;
+    var b2 = 0;
+    b2 = E;
+    E = E + a2 | 0;
+    E = E + 15 & -16;
+    return b2 | 0;
+  }
+  function P() {
+    return E | 0;
+  }
+  function Q(a2) {
+    a2 = a2 | 0;
+    E = a2;
+  }
+  function R(a2, b2) {
+    a2 = a2 | 0;
+    b2 = b2 | 0;
+    E = a2;
+    F = b2;
+  }
+  function S(a2, d2) {
+    a2 = a2 | 0;
+    d2 = d2 | 0;
+    var e2 = 0, f2 = 0, g2 = 0, h2 = 0, i2 = 0;
+    g2 = E;
+    E = E + 16 | 0;
+    h2 = g2;
+    c[h2 >> 2] = 0;
+    f2 = Ya(a2, d2, 0, 0, h2) | 0;
+    i2 = f2 + 1 | 0;
+    c[h2 >> 2] = 0;
+    e2 = Ab(i2 << 1) | 0;
+    Ya(a2, d2, e2, i2, h2) | 0;
+    if ((c[h2 >> 2] | 0) > 0) {
+      Bb(e2);
+      e2 = 0;
+    } else
+      b[e2 + (f2 << 1) >> 1] = 0;
+    E = g2;
+    return e2 | 0;
+  }
+  function T(a2, b2) {
+    a2 = a2 | 0;
+    b2 = b2 | 0;
+    var d2 = 0, e2 = 0, f2 = 0;
+    f2 = E;
+    E = E + 16 | 0;
+    e2 = f2;
+    d2 = c[17592] | 0;
+    if (!d2) {
+      d2 = Z() | 0;
+      c[17592] = d2;
+    }
+    c[e2 >> 2] = 0;
+    ea(d2, a2, b2, -2, e2);
+    if ((c[e2 >> 2] | 0) > 0)
+      d2 = 0;
+    else
+      d2 = Ea(c[17592] | 0) | 0;
+    E = f2;
+    return d2 | 0;
+  }
+  function U(a2) {
+    a2 = a2 | 0;
+    var b2 = 0, d2 = 0, e2 = 0;
+    e2 = E;
+    E = E + 16 | 0;
+    d2 = e2 + 4 | 0;
+    b2 = e2;
+    c[d2 >> 2] = 0;
+    c[b2 >> 2] = 0;
+    Fa(c[17592] | 0, a2, b2, d2);
+    E = e2;
+    return ((c[d2 >> 2] | 0) > 0 ? 0 : c[b2 >> 2] | 0) | 0;
+  }
+  function V(a2, b2, d2) {
+    a2 = a2 | 0;
+    b2 = b2 | 0;
+    d2 = d2 | 0;
+    return (Va(c[17593] | 0, a2, b2, d2) | 0) == 1 | 0;
+  }
+  function W(a2, b2) {
+    a2 = a2 | 0;
+    b2 = b2 | 0;
+    var d2 = 0, e2 = 0, f2 = 0;
+    f2 = E;
+    E = E + 16 | 0;
+    e2 = f2;
+    c[e2 >> 2] = 0;
+    d2 = c[17593] | 0;
+    if (!d2) {
+      d2 = Z() | 0;
+      c[17593] = d2;
+    }
+    Ma(c[17592] | 0, a2, b2, d2, e2);
+    if ((c[e2 >> 2] | 0) > 0)
+      d2 = 0;
+    else {
+      c[e2 >> 2] = 0;
+      d2 = Qa(d2, e2) | 0;
+      d2 = (c[e2 >> 2] | 0) > 0 ? 0 : d2;
+    }
+    E = f2;
+    return d2 | 0;
+  }
+  function X(a2, d2, e2) {
+    a2 = a2 | 0;
+    d2 = d2 | 0;
+    e2 = e2 | 0;
+    var f2 = 0, g2 = 0, h2 = 0;
+    g2 = E;
+    E = E + 16 | 0;
+    h2 = g2;
+    c[h2 >> 2] = 0;
+    f2 = Ab((e2 << 1) + 2 | 0) | 0;
+    a2 = Ha(a2 + (d2 << 1) | 0, e2, f2, e2, h2) | 0;
+    if ((c[h2 >> 2] | 0) > 0)
+      f2 = 0;
+    else
+      b[f2 + (a2 << 1) >> 1] = 0;
+    E = g2;
+    return f2 | 0;
+  }
+  function Y(a2, d2) {
+    a2 = a2 | 0;
+    d2 = d2 | 0;
+    var e2 = 0, f2 = 0, g2 = 0, h2 = 0, i2 = 0;
+    i2 = E;
+    E = E + 16 | 0;
+    h2 = i2;
+    c[h2 >> 2] = 0;
+    f2 = c[17593] | 0;
+    if (!f2) {
+      f2 = Z() | 0;
+      c[17593] = f2;
+    }
+    Ma(c[17592] | 0, a2, d2, f2, h2);
+    if ((c[h2 >> 2] | 0) <= 0 ? (g2 = Da(f2) | 0, d2 = g2 + 1 | 0, e2 = Ab(d2 << 1) | 0, Ka(c[17593] | 0, e2, d2, 10, h2) | 0, (c[h2 >> 2] | 0) <= 0) : 0)
+      b[e2 + (g2 << 1) >> 1] = 0;
+    else
+      e2 = 0;
+    E = i2;
+    return e2 | 0;
+  }
+  function Z() {
+    var a2 = 0, b2 = 0;
+    b2 = E;
+    E = E + 16 | 0;
+    a2 = b2;
+    c[a2 >> 2] = 0;
+    a2 = _(a2) | 0;
+    E = b2;
+    return a2 | 0;
+  }
+  function _(b2) {
+    b2 = b2 | 0;
+    var d2 = 0;
+    if (!b2) {
+      d2 = 0;
+      return d2 | 0;
+    }
+    if (($(c[b2 >> 2] | 0) | 0) << 24 >> 24) {
+      d2 = 0;
+      return d2 | 0;
+    }
+    d2 = lb(360) | 0;
+    if (!d2) {
+      c[b2 >> 2] = 7;
+      d2 = 0;
+      return d2 | 0;
+    }
+    fc(d2 | 0, 0, 360) | 0;
+    a[d2 + 68 >> 0] = 1;
+    a[d2 + 69 >> 0] = 1;
+    if ((ba(c[b2 >> 2] | 0) | 0) << 24 >> 24)
+      return d2 | 0;
+    ca(d2);
+    d2 = 0;
+    return d2 | 0;
+  }
+  function $(a2) {
+    a2 = a2 | 0;
+    return (a2 | 0) > 0 | 0;
+  }
+  function aa(a2, b2, d2, e2) {
+    a2 = a2 | 0;
+    b2 = b2 | 0;
+    d2 = d2 | 0;
+    e2 = e2 | 0;
+    var f2 = 0, g2 = 0;
+    g2 = c[a2 >> 2] | 0;
+    if (!g2)
+      if (d2 << 24 >> 24 != 0 ? (g2 = lb(e2) | 0, c[a2 >> 2] = g2, (g2 | 0) != 0) : 0) {
+        c[b2 >> 2] = e2;
+        a2 = 1;
+      } else
+        a2 = 0;
+    else if ((c[b2 >> 2] | 0) < (e2 | 0))
+      if (d2 << 24 >> 24 != 0 ? (f2 = mb(g2, e2) | 0, (f2 | 0) != 0) : 0) {
+        c[a2 >> 2] = f2;
+        c[b2 >> 2] = e2;
+        a2 = 1;
+      } else
+        a2 = 0;
+    else
+      a2 = 1;
+    return a2 | 0;
+  }
+  function ba(a2) {
+    a2 = a2 | 0;
+    return (a2 | 0) < 1 | 0;
+  }
+  function ca(a2) {
+    a2 = a2 | 0;
+    var b2 = 0;
+    if (!a2)
+      return;
+    c[a2 >> 2] = 0;
+    b2 = c[a2 + 44 >> 2] | 0;
+    if (b2 | 0)
+      nb(b2);
+    b2 = c[a2 + 48 >> 2] | 0;
+    if (b2 | 0)
+      nb(b2);
+    b2 = c[a2 + 52 >> 2] | 0;
+    if (b2 | 0)
+      nb(b2);
+    b2 = c[a2 + 56 >> 2] | 0;
+    if (b2 | 0)
+      nb(b2);
+    b2 = c[a2 + 60 >> 2] | 0;
+    if (b2 | 0)
+      nb(b2);
+    b2 = c[a2 + 64 >> 2] | 0;
+    if (b2 | 0)
+      nb(b2);
+    b2 = c[a2 + 344 >> 2] | 0;
+    if (b2 | 0)
+      nb(b2);
+    nb(a2);
+    return;
+  }
+  function da(a2, b2, d2) {
+    a2 = a2 | 0;
+    b2 = b2 | 0;
+    d2 = d2 | 0;
+    var e2 = 0, f2 = 0;
+    e2 = 0;
+    while (1) {
+      if ((e2 | 0) >= (a2 | 0)) {
+        f2 = 5;
+        break;
+      }
+      if ((c[b2 + (e2 << 3) >> 2] | 0) > (d2 | 0))
+        break;
+      e2 = e2 + 1 | 0;
+    }
+    if ((f2 | 0) == 5)
+      e2 = a2 + -1 | 0;
+    return c[b2 + (e2 << 3) + 4 >> 2] & 255 | 0;
+  }
+  function ea(b2, e2, f2, g2, h2) {
+    b2 = b2 | 0;
+    e2 = e2 | 0;
+    f2 = f2 | 0;
+    g2 = g2 | 0;
+    h2 = h2 | 0;
+    var i2 = 0, j2 = 0, k2 = 0, l2 = 0, m2 = 0, n2 = 0, o2 = 0, p2 = 0, q2 = 0, r2 = 0, s2 = 0, t2 = 0, u2 = 0, v2 = 0, w2 = 0, x2 = 0, y2 = 0, z2 = 0;
+    if (!h2)
+      return;
+    if (($(c[h2 >> 2] | 0) | 0) << 24 >> 24)
+      return;
+    if ((b2 | 0) == 0 | (e2 | 0) == 0 | (f2 | 0) < -1 | g2 + -126 << 24 >> 24 << 24 >> 24 > -1) {
+      c[h2 >> 2] = 1;
+      return;
+    }
+    if ((f2 | 0) == -1)
+      f2 = ob(e2) | 0;
+    u2 = b2 + 84 | 0;
+    if ((c[u2 >> 2] | 0) == 3) {
+      fa(b2, e2, f2, g2, h2);
+      return;
+    }
+    c[b2 >> 2] = 0;
+    c[b2 + 4 >> 2] = e2;
+    z2 = b2 + 16 | 0;
+    c[z2 >> 2] = f2;
+    c[b2 + 8 >> 2] = f2;
+    l2 = b2 + 12 | 0;
+    c[l2 >> 2] = f2;
+    s2 = b2 + 93 | 0;
+    a[s2 >> 0] = g2;
+    i2 = g2 & 1;
+    j2 = i2 & 255;
+    m2 = b2 + 116 | 0;
+    c[m2 >> 2] = j2;
+    x2 = b2 + 132 | 0;
+    c[x2 >> 2] = 1;
+    k2 = b2 + 72 | 0;
+    c[k2 >> 2] = 0;
+    n2 = b2 + 76 | 0;
+    c[n2 >> 2] = 0;
+    c[b2 + 224 >> 2] = 0;
+    y2 = b2 + 332 | 0;
+    c[y2 >> 2] = 0;
+    c[b2 + 336 >> 2] = 0;
+    e2 = (g2 & 255) > 253;
+    t2 = b2 + 94 | 0;
+    a[t2 >> 0] = e2 & 1;
+    if (!f2) {
+      if (e2) {
+        a[s2 >> 0] = i2;
+        a[t2 >> 0] = 0;
+      }
+      c[b2 + 120 >> 2] = c[69880 + (j2 << 2) >> 2];
+      c[b2 + 220 >> 2] = 0;
+      c[x2 >> 2] = 0;
+      ga(b2);
+      return;
+    }
+    c[b2 + 220 >> 2] = -1;
+    e2 = c[b2 + 56 >> 2] | 0;
+    w2 = b2 + 136 | 0;
+    c[w2 >> 2] = (e2 | 0) == 0 ? b2 + 140 | 0 : e2;
+    e2 = b2 + 44 | 0;
+    i2 = b2 + 68 | 0;
+    if (!((aa(e2, b2 + 20 | 0, a[i2 >> 0] | 0, f2) | 0) << 24 >> 24)) {
+      c[h2 >> 2] = 7;
+      return;
+    }
+    c[k2 >> 2] = c[e2 >> 2];
+    if (!((ha(b2) | 0) << 24 >> 24)) {
+      c[h2 >> 2] = 7;
+      return;
+    }
+    v2 = c[k2 >> 2] | 0;
+    q2 = c[l2 >> 2] | 0;
+    k2 = b2 + 128 | 0;
+    c[k2 >> 2] = q2;
+    f2 = b2 + 48 | 0;
+    if (!((aa(f2, b2 + 24 | 0, a[i2 >> 0] | 0, q2) | 0) << 24 >> 24)) {
+      c[h2 >> 2] = 7;
+      return;
+    }
+    c[n2 >> 2] = c[f2 >> 2];
+    j2 = ia(b2, h2) | 0;
+    if (($(c[h2 >> 2] | 0) | 0) << 24 >> 24)
+      return;
+    g2 = b2 + 240 | 0;
+    f2 = c[g2 >> 2] | 0;
+    do
+      if ((f2 | 0) < 6)
+        c[b2 + 244 >> 2] = b2 + 248;
+      else {
+        f2 = f2 << 4;
+        e2 = b2 + 40 | 0;
+        i2 = b2 + 64 | 0;
+        if ((f2 | 0) <= (c[e2 >> 2] | 0)) {
+          c[b2 + 244 >> 2] = c[i2 >> 2];
+          break;
+        }
+        if ((aa(i2, e2, 1, f2) | 0) << 24 >> 24) {
+          c[b2 + 244 >> 2] = c[i2 >> 2];
+          break;
+        }
+        c[h2 >> 2] = 7;
+        return;
+      }
+    while (0);
+    c[g2 >> 2] = -1;
+    c[m2 >> 2] = j2;
+    a:
+      do
+        switch (j2 | 0) {
+          case 0: {
+            c[k2 >> 2] = 0;
+            break;
+          }
+          case 1: {
+            c[k2 >> 2] = 0;
+            break;
+          }
+          default: {
+            b:
+              do
+                switch (c[u2 >> 2] | 0) {
+                  case 0: {
+                    c[b2 + 112 >> 2] = 69888;
+                    break;
+                  }
+                  case 1: {
+                    c[b2 + 112 >> 2] = 69904;
+                    break;
+                  }
+                  case 2: {
+                    c[b2 + 112 >> 2] = 69920;
+                    break;
+                  }
+                  case 4: {
+                    c[b2 + 112 >> 2] = 69936;
+                    break;
+                  }
+                  case 5: {
+                    f2 = b2 + 112 | 0;
+                    if (!(c[b2 + 88 >> 2] & 1)) {
+                      c[f2 >> 2] = 69968;
+                      break b;
+                    } else {
+                      c[f2 >> 2] = 69952;
+                      break b;
+                    }
+                  }
+                  case 6: {
+                    f2 = b2 + 112 | 0;
+                    if (!(c[b2 + 88 >> 2] & 1)) {
+                      c[f2 >> 2] = 7e4;
+                      break b;
+                    } else {
+                      c[f2 >> 2] = 69984;
+                      break b;
+                    }
+                  }
+                  default: {
+                  }
+                }
+              while (0);
+            j2 = c[x2 >> 2] | 0;
+            if ((j2 | 0) < 2 ? (c[b2 + 120 >> 2] | 0) >= 0 : 0) {
+              do
+                if (a[t2 >> 0] | 0) {
+                  e2 = c[w2 >> 2] | 0;
+                  i2 = c[e2 >> 2] | 0;
+                  if ((i2 | 0) > 0)
+                    f2 = a[s2 >> 0] | 0;
+                  else
+                    f2 = da(j2, e2, 0) | 0;
+                  f2 = f2 & 1;
+                  if ((q2 | 0) > (i2 | 0)) {
+                    e2 = da(j2, e2, q2 + -1 | 0) | 0;
+                    break;
+                  } else {
+                    e2 = a[s2 >> 0] | 0;
+                    break;
+                  }
+                } else {
+                  f2 = a[s2 >> 0] | 0;
+                  e2 = f2;
+                  f2 = f2 & 1;
+                }
+              while (0);
+              ja(b2, 0, q2, f2, e2 & 1);
+            } else {
+              o2 = c[n2 >> 2] | 0;
+              if ((a[t2 >> 0] | 0) != 0 ? (p2 = c[w2 >> 2] | 0, (c[p2 >> 2] | 0) <= 0) : 0)
+                f2 = da(j2, p2, 0) | 0;
+              else
+                f2 = a[s2 >> 0] | 0;
+              p2 = a[o2 >> 0] | 0;
+              n2 = q2 + -1 | 0;
+              l2 = p2;
+              m2 = 0;
+              f2 = ((f2 & 255) < (p2 & 255) ? p2 : f2) & 1;
+              while (1) {
+                if ((m2 | 0) > 0 ? (a[v2 + (m2 + -1) >> 0] | 0) == 7 : 0) {
+                  do
+                    if (!(a[t2 >> 0] | 0))
+                      r2 = 61;
+                    else {
+                      f2 = c[w2 >> 2] | 0;
+                      if ((m2 | 0) < (c[f2 >> 2] | 0)) {
+                        r2 = 61;
+                        break;
+                      }
+                      f2 = da(c[x2 >> 2] | 0, f2, m2) | 0;
+                    }
+                  while (0);
+                  if ((r2 | 0) == 61) {
+                    r2 = 0;
+                    f2 = a[s2 >> 0] | 0;
+                  }
+                  f2 = f2 & 1;
+                }
+                g2 = m2;
+                while (1) {
+                  k2 = g2 + 1 | 0;
+                  if ((k2 | 0) >= (q2 | 0)) {
+                    r2 = 69;
+                    break;
+                  }
+                  e2 = a[o2 + k2 >> 0] | 0;
+                  if (e2 << 24 >> 24 != l2 << 24 >> 24 ? (1 << d[v2 + k2 >> 0] & 382976 | 0) == 0 : 0) {
+                    j2 = 1;
+                    break;
+                  }
+                  g2 = k2;
+                }
+                c:
+                  do
+                    if ((r2 | 0) == 69) {
+                      r2 = 0;
+                      do
+                        if (a[t2 >> 0] | 0) {
+                          e2 = c[w2 >> 2] | 0;
+                          if ((q2 | 0) <= (c[e2 >> 2] | 0))
+                            break;
+                          e2 = da(c[x2 >> 2] | 0, e2, n2) | 0;
+                          j2 = 0;
+                          break c;
+                        }
+                      while (0);
+                      e2 = a[s2 >> 0] | 0;
+                      j2 = 0;
+                    }
+                  while (0);
+                p2 = l2 & 255;
+                i2 = e2 & 255;
+                i2 = ((p2 & 127) >>> 0 < (i2 & 127) >>> 0 ? i2 : p2) & 1;
+                if (!(p2 & 128))
+                  ja(b2, m2, k2, f2, i2);
+                else {
+                  f2 = m2;
+                  while (1) {
+                    p2 = o2 + f2 | 0;
+                    a[p2 >> 0] = a[p2 >> 0] & 127;
+                    if ((f2 | 0) < (g2 | 0))
+                      f2 = f2 + 1 | 0;
+                    else
+                      break;
+                  }
+                }
+                if (j2) {
+                  l2 = e2;
+                  m2 = k2;
+                  f2 = i2;
+                } else
+                  break;
+              }
+            }
+            f2 = c[b2 + 340 >> 2] | 0;
+            if (!(($(f2) | 0) << 24 >> 24)) {
+              ka(b2);
+              break a;
+            }
+            c[h2 >> 2] = f2;
+            return;
+          }
+        }
+      while (0);
+    k2 = b2 + 88 | 0;
+    d:
+      do
+        if ((a[t2 >> 0] | 0 ? c[k2 >> 2] & 1 | 0 : 0) ? ((c[u2 >> 2] | 0) + -5 | 0) >>> 0 < 2 : 0) {
+          g2 = 0;
+          while (1) {
+            if ((g2 | 0) >= (c[x2 >> 2] | 0))
+              break d;
+            e2 = c[w2 >> 2] | 0;
+            f2 = (c[e2 + (g2 << 3) >> 2] | 0) + -1 | 0;
+            e:
+              do
+                if (c[e2 + (g2 << 3) + 4 >> 2] & 255 | 0) {
+                  if (!g2)
+                    i2 = 0;
+                  else
+                    i2 = c[e2 + (g2 + -1 << 3) >> 2] | 0;
+                  e2 = f2;
+                  while (1) {
+                    if ((e2 | 0) < (i2 | 0))
+                      break e;
+                    j2 = a[v2 + e2 >> 0] | 0;
+                    if (!(j2 << 24 >> 24))
+                      break;
+                    if (1 << (j2 & 255) & 8194 | 0)
+                      break e;
+                    e2 = e2 + -1 | 0;
+                  }
+                  if ((e2 | 0) < (f2 | 0))
+                    while (1)
+                      if ((a[v2 + f2 >> 0] | 0) == 7)
+                        f2 = f2 + -1 | 0;
+                      else
+                        break;
+                  la(b2, f2, 4);
+                }
+              while (0);
+            g2 = g2 + 1 | 0;
+          }
+        }
+      while (0);
+    if (!(c[k2 >> 2] & 2))
+      f2 = (c[z2 >> 2] | 0) + (c[y2 >> 2] | 0) | 0;
+    else
+      f2 = (c[z2 >> 2] | 0) - (c[b2 + 348 >> 2] | 0) | 0;
+    c[z2 >> 2] = f2;
+    ga(b2);
+    return;
+  }
+  function fa(b2, e2, f2, g2, h2) {
+    b2 = b2 | 0;
+    e2 = e2 | 0;
+    f2 = f2 | 0;
+    g2 = g2 | 0;
+    h2 = h2 | 0;
+    var i2 = 0, j2 = 0, k2 = 0, l2 = 0, m2 = 0, n2 = 0, o2 = 0, p2 = 0, q2 = 0, r2 = 0, s2 = 0, t2 = 0, u2 = 0, v2 = 0, w2 = 0, x2 = 0, y2 = 0, z2 = 0, A2 = 0, B2 = 0, C2 = 0, D2 = 0, E2 = 0;
+    C2 = b2 + 84 | 0;
+    c[C2 >> 2] = 0;
+    if (!f2) {
+      ea(b2, e2, 0, g2, h2);
+      D2 = 0;
+      nb(D2);
+      c[C2 >> 2] = 3;
+      return;
+    }
+    D2 = lb(f2 * 7 | 0) | 0;
+    if (!D2) {
+      c[h2 >> 2] = 7;
+      D2 = 0;
+      nb(D2);
+      c[C2 >> 2] = 3;
+      return;
+    }
+    j2 = D2 + (f2 << 2) | 0;
+    B2 = j2 + (f2 << 1) | 0;
+    k2 = b2 + 88 | 0;
+    l2 = c[k2 >> 2] | 0;
+    if (l2 & 1 | 0)
+      c[k2 >> 2] = l2 & -4 | 2;
+    g2 = g2 & 1;
+    ea(b2, e2, f2, g2, h2);
+    if (($(c[h2 >> 2] | 0) | 0) << 24 >> 24) {
+      nb(D2);
+      c[C2 >> 2] = 3;
+      return;
+    }
+    x2 = Pa(b2, h2) | 0;
+    v2 = b2 + 12 | 0;
+    w2 = c[v2 >> 2] | 0;
+    ec(B2 | 0, x2 | 0, w2 | 0) | 0;
+    x2 = b2 + 128 | 0;
+    y2 = c[x2 >> 2] | 0;
+    z2 = b2 + 116 | 0;
+    A2 = c[z2 >> 2] | 0;
+    i2 = Ka(b2, j2, f2, 2, h2) | 0;
+    Wa(b2, D2, h2);
+    if (!(($(c[h2 >> 2] | 0) | 0) << 24 >> 24)) {
+      c[k2 >> 2] = l2;
+      c[C2 >> 2] = 5;
+      u2 = b2 + 68 | 0;
+      t2 = a[u2 >> 0] | 0;
+      a[u2 >> 0] = 0;
+      ea(b2, j2, i2, g2 ^ 1, h2);
+      a[u2 >> 0] = t2;
+      Ra(b2, h2);
+      a:
+        do
+          if (!(($(c[h2 >> 2] | 0) | 0) << 24 >> 24)) {
+            n2 = b2 + 220 | 0;
+            q2 = c[n2 >> 2] | 0;
+            o2 = b2 + 224 | 0;
+            p2 = c[o2 >> 2] | 0;
+            j2 = 0;
+            g2 = 0;
+            h2 = 0;
+            while (1) {
+              if ((h2 | 0) >= (q2 | 0))
+                break;
+              m2 = c[p2 + (h2 * 12 | 0) + 4 >> 2] | 0;
+              g2 = m2 - g2 | 0;
+              b:
+                do
+                  if ((g2 | 0) < 2)
+                    g2 = j2;
+                  else {
+                    i2 = c[p2 + (h2 * 12 | 0) >> 2] & 2147483647;
+                    l2 = i2 + g2 | 0;
+                    g2 = j2;
+                    while (1) {
+                      do {
+                        j2 = i2;
+                        i2 = i2 + 1 | 0;
+                        if ((i2 | 0) >= (l2 | 0))
+                          break b;
+                        k2 = c[D2 + (i2 << 2) >> 2] | 0;
+                        j2 = c[D2 + (j2 << 2) >> 2] | 0;
+                        u2 = k2 - j2 | 0;
+                        if ((((u2 | 0) > -1 ? u2 : 0 - u2 | 0) | 0) != 1)
+                          break;
+                      } while ((a[B2 + k2 >> 0] | 0) == (a[B2 + j2 >> 0] | 0));
+                      g2 = g2 + 1 | 0;
+                    }
+                  }
+                while (0);
+              j2 = g2;
+              g2 = m2;
+              h2 = h2 + 1 | 0;
+            }
+            if (!j2)
+              t2 = p2;
+            else {
+              g2 = b2 + 60 | 0;
+              if (!((aa(g2, b2 + 36 | 0, a[b2 + 69 >> 0] | 0, (j2 + q2 | 0) * 12 | 0) | 0) << 24 >> 24))
+                break;
+              if ((q2 | 0) == 1) {
+                u2 = c[g2 >> 2] | 0;
+                c[u2 >> 2] = c[p2 >> 2];
+                c[u2 + 4 >> 2] = c[p2 + 4 >> 2];
+                c[u2 + 8 >> 2] = c[p2 + 8 >> 2];
+              }
+              t2 = c[g2 >> 2] | 0;
+              c[o2 >> 2] = t2;
+              c[n2 >> 2] = (c[n2 >> 2] | 0) + j2;
+            }
+            u2 = t2 + 4 | 0;
+            g2 = q2;
+            i2 = j2;
+            while (1) {
+              s2 = g2 + -1 | 0;
+              if ((g2 | 0) <= 0)
+                break a;
+              if (!s2)
+                g2 = c[u2 >> 2] | 0;
+              else
+                g2 = (c[t2 + (s2 * 12 | 0) + 4 >> 2] | 0) - (c[t2 + ((g2 + -2 | 0) * 12 | 0) + 4 >> 2] | 0) | 0;
+              q2 = t2 + (s2 * 12 | 0) | 0;
+              j2 = c[q2 >> 2] | 0;
+              r2 = j2 >>> 31;
+              j2 = j2 & 2147483647;
+              if ((g2 | 0) < 2) {
+                if (!i2)
+                  g2 = s2;
+                else {
+                  g2 = s2 + i2 | 0;
+                  p2 = t2 + (g2 * 12 | 0) | 0;
+                  c[p2 >> 2] = c[q2 >> 2];
+                  c[p2 + 4 >> 2] = c[q2 + 4 >> 2];
+                  c[p2 + 8 >> 2] = c[q2 + 8 >> 2];
+                }
+                j2 = c[D2 + (j2 << 2) >> 2] | 0;
+              } else {
+                l2 = (r2 | 0) == 0;
+                h2 = g2 + -1 + j2 | 0;
+                p2 = l2 ? j2 : h2;
+                m2 = l2 ? -1 : 1;
+                n2 = t2 + (s2 * 12 | 0) + 4 | 0;
+                o2 = t2 + (s2 * 12 | 0) + 8 | 0;
+                h2 = l2 ? h2 : j2;
+                c:
+                  while (1) {
+                    g2 = h2;
+                    while (1) {
+                      if ((g2 | 0) == (p2 | 0))
+                        break c;
+                      j2 = c[D2 + (g2 << 2) >> 2] | 0;
+                      k2 = g2 + m2 | 0;
+                      l2 = c[D2 + (k2 << 2) >> 2] | 0;
+                      E2 = j2 - l2 | 0;
+                      if ((((E2 | 0) > -1 ? E2 : 0 - E2 | 0) | 0) != 1)
+                        break;
+                      if ((a[B2 + j2 >> 0] | 0) == (a[B2 + l2 >> 0] | 0))
+                        g2 = k2;
+                      else
+                        break;
+                    }
+                    E2 = c[D2 + (h2 << 2) >> 2] | 0;
+                    E2 = (E2 | 0) < (j2 | 0) ? E2 : j2;
+                    l2 = i2 + s2 | 0;
+                    c[t2 + (l2 * 12 | 0) >> 2] = (r2 ^ d[B2 + E2 >> 0]) << 31 | E2;
+                    c[t2 + (l2 * 12 | 0) + 4 >> 2] = c[n2 >> 2];
+                    E2 = g2 - h2 | 0;
+                    c[n2 >> 2] = (c[n2 >> 2] | 0) + ~((E2 | 0) > -1 ? E2 : 0 - E2 | 0);
+                    E2 = c[o2 >> 2] & 10;
+                    c[t2 + (l2 * 12 | 0) + 8 >> 2] = E2;
+                    c[o2 >> 2] = c[o2 >> 2] & ~E2;
+                    h2 = k2;
+                    i2 = i2 + -1 | 0;
+                  }
+                if (!i2)
+                  g2 = s2;
+                else {
+                  g2 = i2 + s2 | 0;
+                  E2 = t2 + (g2 * 12 | 0) | 0;
+                  c[E2 >> 2] = c[q2 >> 2];
+                  c[E2 + 4 >> 2] = c[q2 + 4 >> 2];
+                  c[E2 + 8 >> 2] = c[q2 + 8 >> 2];
+                }
+                E2 = c[D2 + (h2 << 2) >> 2] | 0;
+                j2 = c[D2 + (p2 << 2) >> 2] | 0;
+                j2 = (E2 | 0) < (j2 | 0) ? E2 : j2;
+              }
+              c[t2 + (g2 * 12 | 0) >> 2] = (r2 ^ d[B2 + j2 >> 0]) << 31 | j2;
+              g2 = s2;
+            }
+          }
+        while (0);
+      E2 = b2 + 93 | 0;
+      a[E2 >> 0] = a[E2 >> 0] ^ 1;
+    }
+    c[b2 + 4 >> 2] = e2;
+    c[v2 >> 2] = w2;
+    c[b2 + 8 >> 2] = f2;
+    c[z2 >> 2] = A2;
+    E2 = c[b2 + 24 >> 2] | 0;
+    ec(c[b2 + 76 >> 2] | 0, B2 | 0, ((w2 | 0) > (E2 | 0) ? E2 : w2) | 0) | 0;
+    c[x2 >> 2] = y2;
+    if ((c[b2 + 220 >> 2] | 0) <= 1) {
+      E2 = D2;
+      nb(E2);
+      c[C2 >> 2] = 3;
+      return;
+    }
+    c[z2 >> 2] = 2;
+    E2 = D2;
+    nb(E2);
+    c[C2 >> 2] = 3;
+    return;
+  }
+  function ga(a2) {
+    a2 = a2 | 0;
+    c[a2 + 100 >> 2] = 0;
+    c[a2 + 108 >> 2] = 0;
+    c[a2 >> 2] = a2;
+    return;
+  }
+  function ha(f2) {
+    f2 = f2 | 0;
+    var g2 = 0, h2 = 0, i2 = 0, j2 = 0, k2 = 0, l2 = 0, m2 = 0, n2 = 0, o2 = 0, p2 = 0, q2 = 0, r2 = 0, s2 = 0, t2 = 0, u2 = 0, v2 = 0, w2 = 0, x2 = 0, y2 = 0, z2 = 0, A2 = 0, B2 = 0, C2 = 0, D2 = 0, F2 = 0, G2 = 0, H2 = 0, I2 = 0, J2 = 0, K2 = 0, L2 = 0, M2 = 0, N2 = 0;
+    N2 = E;
+    E = E + 1024 | 0;
+    x2 = N2 + 512 | 0;
+    G2 = N2;
+    B2 = c[f2 + 4 >> 2] | 0;
+    D2 = c[f2 + 44 >> 2] | 0;
+    J2 = c[f2 + 8 >> 2] | 0;
+    K2 = f2 + 93 | 0;
+    g2 = a[K2 >> 0] | 0;
+    H2 = (g2 & 255) > 253;
+    if (H2)
+      C2 = ((c[f2 + 84 >> 2] | 0) + -5 | 0) >>> 0 < 2;
+    else
+      C2 = 0;
+    I2 = f2 + 88 | 0;
+    M2 = c[I2 >> 2] | 0;
+    j2 = M2 & 2;
+    if (M2 & 4 | 0)
+      c[f2 + 12 >> 2] = 0;
+    g2 = g2 & 255;
+    v2 = g2 & 1;
+    w2 = v2 & 255;
+    M2 = f2 + 136 | 0;
+    h2 = (c[M2 >> 2] | 0) + 4 | 0;
+    if (H2) {
+      c[h2 >> 2] = v2;
+      if ((c[f2 + 100 >> 2] | 0) > 0 ? (i2 = Ba(f2) | 0, i2 << 24 >> 24 != 10) : 0) {
+        c[(c[M2 >> 2] | 0) + 4 >> 2] = i2 << 24 >> 24 != 0 & 1;
+        i2 = w2;
+        k2 = 0;
+      } else {
+        i2 = w2;
+        k2 = 1;
+      }
+    } else {
+      c[h2 >> 2] = g2;
+      i2 = 10;
+      k2 = 0;
+    }
+    u2 = (j2 | 0) == 0;
+    y2 = f2 + 132 | 0;
+    z2 = f2 + 12 | 0;
+    A2 = f2 + 348 | 0;
+    h2 = -1;
+    j2 = 0;
+    l2 = 0;
+    F2 = -1;
+    g2 = 0;
+    a:
+      while (1) {
+        b:
+          while (1) {
+            t2 = C2 & i2 << 24 >> 24 == 1;
+            i2 = l2;
+            c:
+              while (1) {
+                d:
+                  while (1) {
+                    s2 = (h2 | 0) < 126;
+                    r2 = (k2 | 0) == 2 & s2;
+                    q2 = (h2 | 0) > -1;
+                    e:
+                      while (1) {
+                        p2 = i2;
+                        f:
+                          while (1) {
+                            if ((j2 | 0) >= (J2 | 0))
+                              break a;
+                            i2 = j2 + 1 | 0;
+                            l2 = e[B2 + (j2 << 1) >> 1] | 0;
+                            if (!((i2 | 0) == (J2 | 0) | (l2 & 64512 | 0) != 55296)) {
+                              m2 = e[B2 + (i2 << 1) >> 1] | 0;
+                              o2 = (m2 & 64512 | 0) == 56320;
+                              j2 = o2 ? j2 + 2 | 0 : i2;
+                              if (o2)
+                                l2 = (l2 << 10) + -56613888 + m2 | 0;
+                            } else
+                              j2 = i2;
+                            o2 = pa(f2, l2) | 0;
+                            i2 = o2 & 255;
+                            o2 = o2 & 255;
+                            g2 = 1 << o2 | g2;
+                            n2 = j2 + -1 | 0;
+                            m2 = D2 + n2 | 0;
+                            a[m2 >> 0] = i2;
+                            if ((l2 | 0) > 65535) {
+                              a[D2 + (j2 + -2) >> 0] = 18;
+                              g2 = g2 | 262144;
+                            }
+                            if (!u2)
+                              p2 = p2 + (((l2 + -8294 | 0) >>> 0 < 4 | ((l2 & -4 | 0) == 8204 | (l2 + -8234 | 0) >>> 0 < 5)) & 1) | 0;
+                            switch (i2 << 24 >> 24) {
+                              case 13:
+                              case 1:
+                                break b;
+                              case 0: {
+                                L2 = 25;
+                                break c;
+                              }
+                              default: {
+                              }
+                            }
+                            if ((o2 + -19 | 0) >>> 0 < 3) {
+                              L2 = 35;
+                              break e;
+                            }
+                            switch (i2 << 24 >> 24) {
+                              case 22:
+                                break f;
+                              case 7: {
+                                i2 = (j2 | 0) < (J2 | 0);
+                                if (!((l2 | 0) == 13 & i2))
+                                  break d;
+                                if ((b[B2 + (j2 << 1) >> 1] | 0) != 10) {
+                                  i2 = 1;
+                                  break d;
+                                }
+                                break;
+                              }
+                              default: {
+                              }
+                            }
+                          }
+                        g2 = r2 ? g2 | 1048576 : g2;
+                        if (q2) {
+                          L2 = 43;
+                          break;
+                        } else
+                          i2 = p2;
+                      }
+                    if ((L2 | 0) == 35) {
+                      L2 = 0;
+                      i2 = h2 + 1 | 0;
+                      if ((h2 | 0) < 125) {
+                        c[x2 + (i2 << 2) >> 2] = n2;
+                        c[G2 + (i2 << 2) >> 2] = k2;
+                      }
+                      if ((o2 | 0) == 19) {
+                        a[m2 >> 0] = 20;
+                        h2 = i2;
+                        k2 = 2;
+                      } else {
+                        h2 = i2;
+                        k2 = 3;
+                      }
+                    } else if ((L2 | 0) == 43) {
+                      L2 = 0;
+                      if (s2)
+                        k2 = c[G2 + (h2 << 2) >> 2] | 0;
+                      h2 = h2 + -1 | 0;
+                    }
+                    i2 = p2;
+                  }
+                c[(c[M2 >> 2] | 0) + ((c[y2 >> 2] | 0) + -1 << 3) >> 2] = j2;
+                if (t2)
+                  c[(c[M2 >> 2] | 0) + ((c[y2 >> 2] | 0) + -1 << 3) + 4 >> 2] = 1;
+                if (c[I2 >> 2] & 4 | 0) {
+                  c[z2 >> 2] = j2;
+                  c[A2 >> 2] = p2;
+                }
+                if (i2) {
+                  c[y2 >> 2] = (c[y2 >> 2] | 0) + 1;
+                  if (!((Ca(f2) | 0) << 24 >> 24)) {
+                    g2 = 0;
+                    L2 = 76;
+                    break a;
+                  }
+                  if (H2) {
+                    L2 = 56;
+                    break;
+                  }
+                  c[(c[M2 >> 2] | 0) + ((c[y2 >> 2] | 0) + -1 << 3) + 4 >> 2] = d[K2 >> 0];
+                  h2 = -1;
+                  k2 = 0;
+                }
+                i2 = p2;
+              }
+            g:
+              do
+                if ((L2 | 0) == 25) {
+                  L2 = 0;
+                  switch (k2 | 0) {
+                    case 1: {
+                      c[(c[M2 >> 2] | 0) + ((c[y2 >> 2] | 0) + -1 << 3) + 4 >> 2] = 0;
+                      i2 = 0;
+                      k2 = 0;
+                      break g;
+                    }
+                    case 2: {
+                      g2 = s2 ? g2 | 1048576 : g2;
+                      i2 = 0;
+                      k2 = 3;
+                      break g;
+                    }
+                    default: {
+                      i2 = 0;
+                      break g;
+                    }
+                  }
+                } else if ((L2 | 0) == 56) {
+                  L2 = 0;
+                  c[(c[M2 >> 2] | 0) + ((c[y2 >> 2] | 0) + -1 << 3) + 4 >> 2] = v2;
+                  h2 = -1;
+                  i2 = w2;
+                  k2 = 1;
+                }
+              while (0);
+            l2 = p2;
+          }
+        switch (k2 | 0) {
+          case 1: {
+            c[(c[M2 >> 2] | 0) + ((c[y2 >> 2] | 0) + -1 << 3) + 4 >> 2] = 1;
+            k2 = 0;
+            break;
+          }
+          case 2: {
+            if (s2) {
+              a[D2 + (c[x2 + (h2 << 2) >> 2] | 0) >> 0] = 21;
+              k2 = 3;
+              g2 = g2 | 2097152;
+            } else
+              k2 = 3;
+            break;
+          }
+          default: {
+          }
+        }
+        l2 = p2;
+        F2 = (o2 | 0) == 13 ? n2 : F2;
+        i2 = 1;
+      }
+    if ((L2 | 0) == 76) {
+      E = N2;
+      return g2 | 0;
+    }
+    D2 = (h2 | 0) > 125;
+    i2 = D2 ? 2 : k2;
+    h2 = D2 ? 125 : h2;
+    while (1) {
+      if ((h2 | 0) <= -1)
+        break;
+      if ((i2 | 0) == 2) {
+        L2 = 62;
+        break;
+      }
+      i2 = c[G2 + (h2 << 2) >> 2] | 0;
+      h2 = h2 + -1 | 0;
+    }
+    if ((L2 | 0) == 62)
+      g2 = g2 | 1048576;
+    if (c[I2 >> 2] & 4) {
+      if ((c[z2 >> 2] | 0) < (J2 | 0))
+        c[y2 >> 2] = (c[y2 >> 2] | 0) + -1;
+    } else {
+      c[(c[M2 >> 2] | 0) + ((c[y2 >> 2] | 0) + -1 << 3) >> 2] = J2;
+      c[A2 >> 2] = p2;
+    }
+    if (t2)
+      c[(c[M2 >> 2] | 0) + ((c[y2 >> 2] | 0) + -1 << 3) + 4 >> 2] = 1;
+    if (H2)
+      a[K2 >> 0] = c[(c[M2 >> 2] | 0) + 4 >> 2];
+    i2 = c[y2 >> 2] | 0;
+    h2 = 0;
+    while (1) {
+      if ((h2 | 0) >= (i2 | 0))
+        break;
+      L2 = c[69880 + ((c[(c[M2 >> 2] | 0) + (h2 << 3) + 4 >> 2] & 1) << 2) >> 2] | g2;
+      h2 = h2 + 1 | 0;
+      g2 = L2;
+    }
+    c[f2 + 120 >> 2] = g2 | (g2 & 128 | 0) != 0 & (a[f2 + 92 >> 0] | 0) != 0 & 1;
+    c[f2 + 124 >> 2] = F2;
+    f2 = 1;
+    E = N2;
+    return f2 | 0;
+  }
+  function ia(f2, g2) {
+    f2 = f2 | 0;
+    g2 = g2 | 0;
+    var h2 = 0, i2 = 0, j2 = 0, k2 = 0, l2 = 0, m2 = 0, n2 = 0, o2 = 0, p2 = 0, q2 = 0, r2 = 0, s2 = 0, t2 = 0, u2 = 0, v2 = 0, w2 = 0, x2 = 0, y2 = 0, z2 = 0, A2 = 0, B2 = 0, C2 = 0, D2 = 0, F2 = 0, G2 = 0, H2 = 0, I2 = 0, J2 = 0, K2 = 0, L2 = 0;
+    L2 = E;
+    E = E + 5328 | 0;
+    o2 = L2 + 2788 | 0;
+    B2 = L2;
+    C2 = L2 + 256 | 0;
+    I2 = c[f2 + 72 >> 2] | 0;
+    K2 = c[f2 + 76 >> 2] | 0;
+    G2 = c[f2 + 4 >> 2] | 0;
+    H2 = c[f2 + 12 >> 2] | 0;
+    D2 = f2 + 120 | 0;
+    i2 = c[D2 >> 2] | 0;
+    y2 = f2 + 94 | 0;
+    if ((a[y2 >> 0] | 0) != 0 ? (h2 = c[f2 + 136 >> 2] | 0, (c[h2 >> 2] | 0) <= 0) : 0)
+      j2 = da(c[f2 + 132 >> 2] | 0, h2, 0) | 0;
+    else
+      j2 = a[f2 + 93 >> 0] | 0;
+    x2 = f2 + 240 | 0;
+    c[x2 >> 2] = 0;
+    if (($(c[g2 >> 2] | 0) | 0) << 24 >> 24) {
+      K2 = 0;
+      E = L2;
+      return K2 | 0;
+    }
+    h2 = ra(i2) | 0;
+    if ((h2 | 0) != 2) {
+      K2 = h2;
+      E = L2;
+      return K2 | 0;
+    }
+    if ((c[f2 + 84 >> 2] | 0) > 1) {
+      m2 = f2 + 132 | 0;
+      k2 = f2 + 136 | 0;
+      j2 = 0;
+      while (1) {
+        if ((j2 | 0) >= (c[m2 >> 2] | 0)) {
+          F2 = 2;
+          break;
+        }
+        if (!j2) {
+          h2 = 0;
+          i2 = c[k2 >> 2] | 0;
+        } else {
+          i2 = c[k2 >> 2] | 0;
+          h2 = c[i2 + (j2 + -1 << 3) >> 2] | 0;
+        }
+        l2 = c[i2 + (j2 << 3) >> 2] | 0;
+        i2 = c[i2 + (j2 << 3) + 4 >> 2] & 255;
+        while (1) {
+          if ((h2 | 0) >= (l2 | 0))
+            break;
+          a[K2 + h2 >> 0] = i2;
+          h2 = h2 + 1 | 0;
+        }
+        j2 = j2 + 1 | 0;
+      }
+      E = L2;
+      return F2 | 0;
+    }
+    if (!(i2 & 7985152)) {
+      sa(f2, o2);
+      n2 = f2 + 132 | 0;
+      l2 = f2 + 136 | 0;
+      k2 = 0;
+      a:
+        while (1) {
+          if ((k2 | 0) >= (c[n2 >> 2] | 0)) {
+            F2 = 2;
+            J2 = 89;
+            break;
+          }
+          if (!k2) {
+            i2 = 0;
+            h2 = c[l2 >> 2] | 0;
+          } else {
+            h2 = c[l2 >> 2] | 0;
+            i2 = c[h2 + (k2 + -1 << 3) >> 2] | 0;
+          }
+          m2 = c[h2 + (k2 << 3) >> 2] | 0;
+          j2 = c[h2 + (k2 << 3) + 4 >> 2] & 255;
+          while (1) {
+            if ((i2 | 0) >= (m2 | 0))
+              break;
+            a[K2 + i2 >> 0] = j2;
+            b:
+              do
+                switch (a[I2 + i2 >> 0] | 0) {
+                  case 18:
+                    break;
+                  case 7: {
+                    h2 = i2 + 1 | 0;
+                    if ((h2 | 0) < (H2 | 0)) {
+                      if ((b[G2 + (i2 << 1) >> 1] | 0) == 13 ? (b[G2 + (h2 << 1) >> 1] | 0) == 10 : 0)
+                        break b;
+                      ta(o2, j2);
+                    }
+                    break;
+                  }
+                  default:
+                    if (!((ua(o2, i2) | 0) << 24 >> 24))
+                      break a;
+                }
+              while (0);
+            i2 = i2 + 1 | 0;
+          }
+          k2 = k2 + 1 | 0;
+        }
+      if ((J2 | 0) == 89) {
+        E = L2;
+        return F2 | 0;
+      }
+      c[g2 >> 2] = 7;
+      K2 = 0;
+      E = L2;
+      return K2 | 0;
+    }
+    sa(f2, C2);
+    b[B2 >> 1] = j2 & 255;
+    v2 = f2 + 93 | 0;
+    w2 = f2 + 136 | 0;
+    u2 = f2 + 132 | 0;
+    r2 = 0;
+    p2 = 0;
+    s2 = 0;
+    i2 = 0;
+    m2 = 0;
+    g2 = j2;
+    q2 = j2;
+    h2 = 0;
+    t2 = 0;
+    c:
+      while (1) {
+        if ((t2 | 0) >= (H2 | 0))
+          break;
+        o2 = I2 + t2 | 0;
+        l2 = a[o2 >> 0] | 0;
+        n2 = l2 & 255;
+        d:
+          do
+            switch (l2 << 24 >> 24) {
+              case 15:
+              case 12:
+              case 14:
+              case 11: {
+                h2 = h2 | 262144;
+                a[K2 + t2 >> 0] = g2;
+                if ((l2 + -11 & 255) < 2)
+                  j2 = q2 + 2 & 126;
+                else
+                  j2 = (q2 & 127) + 1 << 24 >> 24 | 1;
+                if (!((p2 | s2 | 0) == 0 & (j2 & 255) < 126)) {
+                  k2 = r2;
+                  p2 = p2 + ((s2 | 0) == 0 & 1) | 0;
+                  l2 = s2;
+                  j2 = q2;
+                  break d;
+                }
+                switch (l2 << 24 >> 24) {
+                  case 15:
+                  case 12: {
+                    j2 = j2 | -128;
+                    break;
+                  }
+                  default: {
+                  }
+                }
+                i2 = i2 + 1 | 0;
+                b[B2 + (i2 << 1) >> 1] = j2 & 255;
+                k2 = r2;
+                l2 = s2;
+                m2 = t2;
+                break;
+              }
+              case 16: {
+                h2 = h2 | 262144;
+                a[K2 + t2 >> 0] = g2;
+                if (!s2) {
+                  if (p2 | 0) {
+                    k2 = r2;
+                    p2 = p2 + -1 | 0;
+                    l2 = 0;
+                    j2 = q2;
+                    break d;
+                  }
+                  if (i2) {
+                    n2 = i2 + -1 | 0;
+                    if ((e[B2 + (i2 << 1) >> 1] | 0) < 256) {
+                      k2 = r2;
+                      p2 = 0;
+                      l2 = 0;
+                      m2 = t2;
+                      j2 = b[B2 + (n2 << 1) >> 1] & 255;
+                      i2 = n2;
+                    } else {
+                      k2 = r2;
+                      p2 = 0;
+                      l2 = 0;
+                      j2 = q2;
+                    }
+                  } else {
+                    k2 = r2;
+                    p2 = 0;
+                    l2 = 0;
+                    j2 = q2;
+                    i2 = 0;
+                  }
+                } else {
+                  k2 = r2;
+                  l2 = s2;
+                  j2 = q2;
+                }
+                break;
+              }
+              case 21:
+              case 20: {
+                k2 = q2 & 255;
+                h2 = h2 | c[69880 + ((k2 & 1) << 2) >> 2];
+                j2 = k2 & 127;
+                a[K2 + t2 >> 0] = j2;
+                if ((j2 | 0) == (g2 & 127 | 0))
+                  h2 = h2 | 1024;
+                else {
+                  va(C2, m2, g2, q2);
+                  h2 = h2 | -2147482624;
+                }
+                l2 = l2 << 24 >> 24 == 20 ? k2 + 2 & 382 : j2 + 1 | 1;
+                j2 = l2 & 255;
+                if (!((p2 | s2 | 0) == 0 & (l2 & 254) >>> 0 < 126)) {
+                  a[o2 >> 0] = 9;
+                  g2 = q2;
+                  k2 = r2;
+                  l2 = s2 + 1 | 0;
+                  j2 = q2;
+                  break d;
+                }
+                k2 = r2 + 1 | 0;
+                if ((r2 | 0) >= (c[x2 >> 2] | 0))
+                  c[x2 >> 2] = k2;
+                i2 = i2 + 1 | 0;
+                b[B2 + (i2 << 1) >> 1] = l2 | 256;
+                wa(C2, j2);
+                g2 = q2;
+                l2 = s2;
+                m2 = t2;
+                h2 = h2 | 1 << n2;
+                break;
+              }
+              case 22: {
+                if ((g2 ^ q2) & 127) {
+                  va(C2, m2, g2, q2);
+                  h2 = h2 | -2147483648;
+                }
+                do
+                  if (!s2) {
+                    if (!r2) {
+                      a[o2 >> 0] = 9;
+                      k2 = 0;
+                      j2 = p2;
+                      l2 = 0;
+                      break;
+                    }
+                    do {
+                      s2 = i2;
+                      i2 = i2 + -1 | 0;
+                    } while ((e[B2 + (s2 << 1) >> 1] | 0) < 256);
+                    xa(C2);
+                    k2 = r2 + -1 | 0;
+                    j2 = 0;
+                    l2 = 0;
+                    m2 = t2;
+                    h2 = h2 | 4194304;
+                  } else {
+                    a[o2 >> 0] = 9;
+                    k2 = r2;
+                    j2 = p2;
+                    l2 = s2 + -1 | 0;
+                  }
+                while (0);
+                g2 = b[B2 + (i2 << 1) >> 1] | 0;
+                s2 = g2 & 255;
+                g2 = g2 & 255;
+                h2 = h2 | c[69880 + ((g2 & 1) << 2) >> 2] | 1024;
+                a[K2 + t2 >> 0] = g2 & 127;
+                g2 = s2;
+                p2 = j2;
+                j2 = s2;
+                break;
+              }
+              case 7: {
+                h2 = h2 | 128;
+                if ((a[y2 >> 0] | 0) != 0 ? (z2 = c[w2 >> 2] | 0, (t2 | 0) >= (c[z2 >> 2] | 0)) : 0)
+                  j2 = da(c[u2 >> 2] | 0, z2, t2) | 0;
+                else
+                  j2 = a[v2 >> 0] | 0;
+                a[K2 + t2 >> 0] = j2;
+                j2 = t2 + 1 | 0;
+                if ((j2 | 0) < (H2 | 0)) {
+                  if ((b[G2 + (t2 << 1) >> 1] | 0) == 13 ? (b[G2 + (j2 << 1) >> 1] | 0) == 10 : 0) {
+                    k2 = r2;
+                    l2 = s2;
+                    j2 = q2;
+                    break d;
+                  }
+                  if ((a[y2 >> 0] | 0) != 0 ? (A2 = c[w2 >> 2] | 0, (j2 | 0) >= (c[A2 >> 2] | 0)) : 0)
+                    i2 = da(c[u2 >> 2] | 0, A2, j2) | 0;
+                  else
+                    i2 = a[v2 >> 0] | 0;
+                  b[B2 >> 1] = i2 & 255;
+                  ta(C2, i2);
+                  g2 = i2;
+                  k2 = 0;
+                  p2 = 0;
+                  l2 = 0;
+                  j2 = i2;
+                  i2 = 0;
+                } else {
+                  k2 = r2;
+                  l2 = s2;
+                  j2 = q2;
+                }
+                break;
+              }
+              case 18: {
+                a[K2 + t2 >> 0] = g2;
+                k2 = r2;
+                l2 = s2;
+                j2 = q2;
+                h2 = h2 | 262144;
+                break;
+              }
+              default: {
+                j2 = q2 & 255;
+                if ((j2 & 127 | 0) == (g2 & 127 | 0))
+                  n2 = h2;
+                else {
+                  va(C2, m2, g2, q2);
+                  n2 = c[((j2 & 128 | 0) == 0 ? 70024 : 70016) + ((j2 & 1) << 2) >> 2] | (h2 | -2147483648);
+                }
+                a[K2 + t2 >> 0] = q2;
+                if (!((ua(C2, t2) | 0) << 24 >> 24)) {
+                  F2 = -1;
+                  J2 = 89;
+                  break c;
+                }
+                g2 = q2;
+                k2 = r2;
+                l2 = s2;
+                j2 = q2;
+                h2 = 1 << d[o2 >> 0] | n2;
+              }
+            }
+          while (0);
+        r2 = k2;
+        s2 = l2;
+        q2 = j2;
+        t2 = t2 + 1 | 0;
+      }
+    if ((J2 | 0) == 89) {
+      E = L2;
+      return F2 | 0;
+    }
+    if (h2 & 8380376)
+      h2 = c[69880 + ((a[v2 >> 0] & 1) << 2) >> 2] | h2;
+    K2 = h2 | (h2 & 128 | 0) != 0 & (a[f2 + 92 >> 0] | 0) != 0 & 1;
+    c[D2 >> 2] = K2;
+    K2 = ra(K2) | 0;
+    E = L2;
+    return K2 | 0;
+  }
+  function ja(d2, e2, f2, g2, h2) {
+    d2 = d2 | 0;
+    e2 = e2 | 0;
+    f2 = f2 | 0;
+    g2 = g2 | 0;
+    h2 = h2 | 0;
+    var i2 = 0, j2 = 0, k2 = 0, l2 = 0, m2 = 0, n2 = 0, o2 = 0, p2 = 0, q2 = 0, r2 = 0, s2 = 0, t2 = 0, u2 = 0;
+    u2 = E;
+    E = E + 32 | 0;
+    s2 = u2;
+    t2 = c[d2 + 72 >> 2] | 0;
+    if ((c[d2 + 124 >> 2] | 0) > (e2 | 0)) {
+      if ((a[d2 + 94 >> 0] | 0) != 0 ? (i2 = c[d2 + 136 >> 2] | 0, (c[i2 >> 2] | 0) <= (e2 | 0)) : 0)
+        i2 = da(c[d2 + 132 >> 2] | 0, i2, e2) | 0;
+      else
+        i2 = a[d2 + 93 >> 0] | 0;
+      if (i2 & 1)
+        q2 = ((c[d2 + 84 >> 2] | 0) + -5 | 0) >>> 0 < 2;
+      else
+        q2 = 0;
+    } else
+      q2 = 0;
+    c[s2 + 12 >> 2] = -1;
+    c[s2 + 16 >> 2] = -1;
+    c[s2 + 24 >> 2] = e2;
+    r2 = a[(c[d2 + 76 >> 2] | 0) + e2 >> 0] | 0;
+    a[s2 + 28 >> 0] = r2;
+    p2 = c[d2 + 112 >> 2] | 0;
+    r2 = r2 & 1;
+    c[s2 >> 2] = c[p2 + (r2 << 2) >> 2];
+    c[s2 + 4 >> 2] = c[p2 + 8 + (r2 << 2) >> 2];
+    if ((e2 | 0) == 0 ? (c[d2 + 100 >> 2] | 0) > 0 : 0) {
+      i2 = ma(d2) | 0;
+      i2 = i2 << 24 >> 24 == 4 ? g2 : i2;
+    } else
+      i2 = g2;
+    g2 = t2 + e2 | 0;
+    r2 = d2 + 240 | 0;
+    if ((a[g2 >> 0] | 0) == 22 ? (j2 = c[r2 >> 2] | 0, (j2 | 0) > -1) : 0) {
+      o2 = c[d2 + 244 >> 2] | 0;
+      c[s2 + 8 >> 2] = c[o2 + (j2 << 4) >> 2];
+      g2 = c[o2 + (j2 << 4) + 4 >> 2] | 0;
+      p2 = b[o2 + (j2 << 4) + 12 >> 1] | 0;
+      c[s2 + 20 >> 2] = c[o2 + (j2 << 4) + 8 >> 2];
+      c[r2 >> 2] = j2 + -1;
+      j2 = p2;
+    } else {
+      c[s2 + 8 >> 2] = -1;
+      j2 = (a[g2 >> 0] | 0) == 17 ? (i2 & 255) + 1 & 65535 : 0;
+      c[s2 + 20 >> 2] = 0;
+      na(d2, s2, i2, e2, e2);
+      g2 = e2;
+    }
+    i2 = -1;
+    m2 = 1;
+    n2 = e2;
+    o2 = e2;
+    p2 = g2;
+    l2 = j2;
+    while (1) {
+      if ((n2 | 0) > (f2 | 0))
+        break;
+      if ((n2 | 0) >= (f2 | 0)) {
+        g2 = f2;
+        do {
+          g2 = g2 + -1 | 0;
+          j2 = a[t2 + g2 >> 0] | 0;
+          if ((g2 | 0) <= (e2 | 0))
+            break;
+        } while ((1 << (j2 & 255) & 382976 | 0) != 0);
+        if ((j2 & -2) << 24 >> 24 == 20)
+          break;
+        else {
+          k2 = h2;
+          j2 = m2;
+        }
+      } else {
+        g2 = a[t2 + n2 >> 0] | 0;
+        if (g2 << 24 >> 24 == 7)
+          c[r2 >> 2] = -1;
+        a:
+          do
+            if (q2) {
+              switch (g2 << 24 >> 24) {
+                case 13: {
+                  g2 = 1;
+                  j2 = m2;
+                  break a;
+                }
+                case 2:
+                  break;
+                default: {
+                  j2 = m2;
+                  break a;
+                }
+              }
+              b:
+                do
+                  if ((i2 | 0) > (n2 | 0))
+                    j2 = m2;
+                  else {
+                    i2 = n2;
+                    while (1) {
+                      i2 = i2 + 1 | 0;
+                      if ((i2 | 0) >= (f2 | 0)) {
+                        g2 = 2;
+                        i2 = f2;
+                        j2 = 1;
+                        break a;
+                      }
+                      g2 = a[t2 + i2 >> 0] | 0;
+                      switch (g2 << 24 >> 24) {
+                        case 13:
+                        case 1:
+                        case 0: {
+                          j2 = g2;
+                          break b;
+                        }
+                        default: {
+                        }
+                      }
+                    }
+                  }
+                while (0);
+              g2 = j2 << 24 >> 24 == 13 ? 5 : 2;
+            } else
+              j2 = m2;
+          while (0);
+        k2 = a[16 + (g2 & 255) >> 0] | 0;
+      }
+      g2 = l2 & 65535;
+      k2 = a[(k2 & 255) + (48 + (g2 << 4)) >> 0] | 0;
+      l2 = k2 & 31;
+      k2 = (k2 & 255) >>> 5;
+      k2 = (n2 | 0) == (f2 | 0) & k2 << 24 >> 24 == 0 ? 1 : k2 & 255;
+      c:
+        do
+          if (!(k2 << 16 >> 16)) {
+            k2 = o2;
+            g2 = p2;
+          } else {
+            g2 = a[48 + (g2 << 4) + 15 >> 0] | 0;
+            switch (k2 & 7) {
+              case 1: {
+                na(d2, s2, g2, p2, n2);
+                k2 = o2;
+                g2 = n2;
+                break c;
+              }
+              case 2: {
+                k2 = n2;
+                g2 = p2;
+                break c;
+              }
+              case 3: {
+                na(d2, s2, g2, p2, o2);
+                na(d2, s2, 4, o2, n2);
+                k2 = o2;
+                g2 = n2;
+                break c;
+              }
+              case 4: {
+                na(d2, s2, g2, p2, o2);
+                k2 = n2;
+                g2 = o2;
+                break c;
+              }
+              default: {
+                k2 = o2;
+                g2 = p2;
+                break c;
+              }
+            }
+          }
+        while (0);
+      m2 = j2;
+      n2 = n2 + 1 | 0;
+      o2 = k2;
+      p2 = g2;
+    }
+    k2 = d2 + 12 | 0;
+    if ((c[k2 >> 2] | 0) == (f2 | 0) ? (c[d2 + 108 >> 2] | 0) > 0 : 0) {
+      i2 = oa(d2) | 0;
+      i2 = i2 << 24 >> 24 == 4 ? h2 : i2;
+    } else
+      i2 = h2;
+    g2 = f2;
+    do {
+      g2 = g2 + -1 | 0;
+      j2 = a[t2 + g2 >> 0] | 0;
+      if ((g2 | 0) <= (e2 | 0))
+        break;
+    } while ((1 << (j2 & 255) & 382976 | 0) != 0);
+    if ((j2 & -2) << 24 >> 24 == 20 ? (c[k2 >> 2] | 0) > (f2 | 0) : 0) {
+      f2 = (c[r2 >> 2] | 0) + 1 | 0;
+      c[r2 >> 2] = f2;
+      t2 = d2 + 244 | 0;
+      b[(c[t2 >> 2] | 0) + (f2 << 4) + 12 >> 1] = l2;
+      c[(c[t2 >> 2] | 0) + (c[r2 >> 2] << 4) + 8 >> 2] = c[s2 + 20 >> 2];
+      c[(c[t2 >> 2] | 0) + (c[r2 >> 2] << 4) + 4 >> 2] = p2;
+      c[(c[t2 >> 2] | 0) + (c[r2 >> 2] << 4) >> 2] = c[s2 + 8 >> 2];
+      E = u2;
+      return;
+    }
+    na(d2, s2, i2, f2, f2);
+    E = u2;
+    return;
+  }
+  function ka(b2) {
+    b2 = b2 | 0;
+    var d2 = 0, e2 = 0, f2 = 0, g2 = 0, h2 = 0, i2 = 0, j2 = 0, k2 = 0, l2 = 0, m2 = 0, n2 = 0, o2 = 0, p2 = 0;
+    l2 = c[b2 + 72 >> 2] | 0;
+    n2 = c[b2 + 76 >> 2] | 0;
+    if (!(c[b2 + 120 >> 2] & 8248192))
+      return;
+    h2 = (a[b2 + 92 >> 0] | 0) != 0;
+    i2 = b2 + 94 | 0;
+    j2 = b2 + 93 | 0;
+    k2 = b2 + 136 | 0;
+    g2 = b2 + 132 | 0;
+    b2 = c[b2 + 128 >> 2] | 0;
+    while (1) {
+      if ((b2 | 0) <= 0)
+        break;
+      while (1) {
+        if ((b2 | 0) <= 0)
+          break;
+        e2 = b2 + -1 | 0;
+        d2 = a[l2 + e2 >> 0] | 0;
+        if (!(1 << (d2 & 255) & 8248192)) {
+          b2 = e2;
+          break;
+        }
+        do
+          if (h2 & d2 << 24 >> 24 == 7)
+            b2 = 0;
+          else {
+            if (a[i2 >> 0] | 0 ? (m2 = c[k2 >> 2] | 0, (b2 | 0) > (c[m2 >> 2] | 0)) : 0) {
+              b2 = da(c[g2 >> 2] | 0, m2, e2) | 0;
+              break;
+            }
+            b2 = a[j2 >> 0] | 0;
+          }
+        while (0);
+        a[n2 + e2 >> 0] = b2;
+        b2 = e2;
+      }
+      while (1) {
+        if ((b2 | 0) <= 0)
+          break;
+        f2 = b2 + -1 | 0;
+        d2 = a[l2 + f2 >> 0] | 0;
+        e2 = 1 << (d2 & 255);
+        if (!(e2 & 382976)) {
+          if (h2 & d2 << 24 >> 24 == 7) {
+            b2 = 0;
+            p2 = 24;
+            break;
+          }
+          if (e2 & 384 | 0) {
+            p2 = 20;
+            break;
+          }
+        } else
+          a[n2 + f2 >> 0] = a[n2 + b2 >> 0] | 0;
+        b2 = f2;
+      }
+      do
+        if ((p2 | 0) == 20) {
+          if (a[i2 >> 0] | 0 ? (o2 = c[k2 >> 2] | 0, (b2 | 0) > (c[o2 >> 2] | 0)) : 0) {
+            b2 = da(c[g2 >> 2] | 0, o2, f2) | 0;
+            p2 = 24;
+            break;
+          }
+          b2 = a[j2 >> 0] | 0;
+          p2 = 24;
+        }
+      while (0);
+      if ((p2 | 0) == 24) {
+        p2 = 0;
+        a[n2 + f2 >> 0] = b2;
+        b2 = f2;
+      }
+    }
+    return;
+  }
+  function la(a2, b2, d2) {
+    a2 = a2 | 0;
+    b2 = b2 | 0;
+    d2 = d2 | 0;
+    var e2 = 0, f2 = 0, g2 = 0, h2 = 0, i2 = 0, j2 = 0, k2 = 0;
+    k2 = a2 + 328 | 0;
+    e2 = c[k2 >> 2] | 0;
+    do
+      if (!e2) {
+        g2 = lb(80) | 0;
+        e2 = a2 + 344 | 0;
+        c[e2 >> 2] = g2;
+        if (g2 | 0) {
+          c[k2 >> 2] = 10;
+          i2 = e2;
+          f2 = g2;
+          h2 = 10;
+          break;
+        }
+        c[a2 + 340 >> 2] = 7;
+        return;
+      } else {
+        i2 = a2 + 344 | 0;
+        g2 = c[i2 >> 2] | 0;
+        f2 = g2;
+        h2 = e2;
+      }
+    while (0);
+    j2 = a2 + 332 | 0;
+    e2 = c[j2 >> 2] | 0;
+    do
+      if ((e2 | 0) >= (h2 | 0)) {
+        f2 = mb(g2, h2 << 4) | 0;
+        c[i2 >> 2] = f2;
+        if (f2 | 0) {
+          c[k2 >> 2] = c[k2 >> 2] << 1;
+          e2 = c[j2 >> 2] | 0;
+          break;
+        }
+        c[i2 >> 2] = g2;
+        c[a2 + 340 >> 2] = 7;
+        return;
+      }
+    while (0);
+    c[f2 + (e2 << 3) >> 2] = b2;
+    c[f2 + (e2 << 3) + 4 >> 2] = d2;
+    c[j2 >> 2] = (c[j2 >> 2] | 0) + 1;
+    return;
+  }
+  function ma(a2) {
+    a2 = a2 | 0;
+    var b2 = 0, d2 = 0, f2 = 0, g2 = 0, h2 = 0, i2 = 0;
+    g2 = c[a2 + 96 >> 2] | 0;
+    b2 = c[a2 + 100 >> 2] | 0;
+    a:
+      while (1) {
+        if ((b2 | 0) <= 0) {
+          b2 = 4;
+          d2 = 8;
+          break;
+        }
+        f2 = b2 + -1 | 0;
+        d2 = e[g2 + (f2 << 1) >> 1] | 0;
+        if ((b2 | 0) != 1 & (d2 & 64512 | 0) == 56320) {
+          b2 = b2 + -2 | 0;
+          i2 = e[g2 + (b2 << 1) >> 1] | 0;
+          h2 = (i2 & 64512 | 0) == 55296;
+          d2 = h2 ? d2 + -56613888 + (i2 << 10) | 0 : d2;
+          b2 = h2 ? b2 : f2;
+        } else
+          b2 = f2;
+        switch (((pa(a2, d2) | 0) & 255) << 24 >> 24) {
+          case 13:
+          case 1: {
+            d2 = 6;
+            break a;
+          }
+          case 7: {
+            d2 = 7;
+            break a;
+          }
+          case 0: {
+            b2 = 0;
+            d2 = 8;
+            break a;
+          }
+          default: {
+          }
+        }
+      }
+    if ((d2 | 0) == 6) {
+      i2 = 1;
+      return i2 | 0;
+    } else if ((d2 | 0) == 7) {
+      i2 = 4;
+      return i2 | 0;
+    } else if ((d2 | 0) == 8)
+      return b2 | 0;
+    return 0;
+  }
+  function na(b2, e2, f2, g2, h2) {
+    b2 = b2 | 0;
+    e2 = e2 | 0;
+    f2 = f2 | 0;
+    g2 = g2 | 0;
+    h2 = h2 | 0;
+    var i2 = 0, j2 = 0, k2 = 0, l2 = 0, m2 = 0, n2 = 0, o2 = 0, p2 = 0, q2 = 0, r2 = 0, s2 = 0, t2 = 0;
+    l2 = c[e2 >> 2] | 0;
+    p2 = c[e2 + 4 >> 2] | 0;
+    s2 = b2 + 76 | 0;
+    t2 = c[s2 >> 2] | 0;
+    o2 = e2 + 20 | 0;
+    k2 = c[o2 >> 2] & 255;
+    q2 = d[(f2 & 255) + (l2 + (k2 << 3)) >> 0] | 0;
+    r2 = q2 & 15;
+    c[o2 >> 2] = r2;
+    r2 = a[l2 + (r2 << 3) + 7 >> 0] | 0;
+    a:
+      do
+        switch (a[p2 + (q2 >>> 4) >> 0] | 0) {
+          case 14: {
+            l2 = e2 + 8 | 0;
+            m2 = (a[e2 + 28 >> 0] | 0) + 1 << 24 >> 24;
+            i2 = g2;
+            while (1) {
+              k2 = i2 + -1 | 0;
+              if ((i2 | 0) <= (c[l2 >> 2] | 0)) {
+                i2 = g2;
+                break a;
+              }
+              i2 = t2 + k2 | 0;
+              j2 = a[i2 >> 0] | 0;
+              if ((j2 & 255) > (m2 & 255))
+                a[i2 >> 0] = (j2 & 255) + 254;
+              i2 = k2;
+            }
+          }
+          case 1: {
+            c[e2 + 8 >> 2] = g2;
+            i2 = g2;
+            break;
+          }
+          case 2: {
+            i2 = c[e2 + 8 >> 2] | 0;
+            break;
+          }
+          case 3: {
+            qa(c[b2 + 72 >> 2] | 0, c[s2 >> 2] | 0, c[e2 + 8 >> 2] | 0, g2, (d[e2 + 28 >> 0] | 0) + 1 & 255);
+            i2 = g2;
+            break;
+          }
+          case 4: {
+            qa(c[b2 + 72 >> 2] | 0, c[s2 >> 2] | 0, c[e2 + 8 >> 2] | 0, g2, (d[e2 + 28 >> 0] | 0) + 2 & 255);
+            i2 = g2;
+            break;
+          }
+          case 5: {
+            i2 = e2 + 12 | 0;
+            j2 = c[i2 >> 2] | 0;
+            if ((j2 | 0) > -1)
+              la(b2, j2, 1);
+            c[i2 >> 2] = -1;
+            if (c[b2 + 328 >> 2] | 0 ? (m2 = b2 + 332 | 0, n2 = b2 + 336 | 0, (c[m2 >> 2] | 0) > (c[n2 >> 2] | 0)) : 0) {
+              j2 = e2 + 16 | 0;
+              i2 = c[j2 >> 2] | 0;
+              while (1) {
+                i2 = i2 + 1 | 0;
+                if ((i2 | 0) >= (g2 | 0))
+                  break;
+                q2 = t2 + i2 | 0;
+                a[q2 >> 0] = (a[q2 >> 0] | 0) + -2 << 24 >> 24 & -2;
+              }
+              c[n2 >> 2] = c[m2 >> 2];
+              c[j2 >> 2] = -1;
+              if (f2 << 24 >> 24 != 5) {
+                i2 = g2;
+                break a;
+              }
+              la(b2, g2, 1);
+              c[n2 >> 2] = c[m2 >> 2];
+              i2 = g2;
+              break a;
+            }
+            c[e2 + 16 >> 2] = -1;
+            if (!(a[l2 + (k2 << 3) + 7 >> 0] & 1))
+              i2 = g2;
+            else {
+              i2 = c[e2 + 8 >> 2] | 0;
+              i2 = (i2 | 0) > 0 ? i2 : g2;
+            }
+            if (f2 << 24 >> 24 == 5) {
+              la(b2, g2, 1);
+              c[b2 + 336 >> 2] = c[b2 + 332 >> 2];
+            }
+            break;
+          }
+          case 6: {
+            if ((c[b2 + 328 >> 2] | 0) > 0)
+              c[b2 + 332 >> 2] = c[b2 + 336 >> 2];
+            c[e2 + 8 >> 2] = -1;
+            c[e2 + 12 >> 2] = -1;
+            c[e2 + 16 >> 2] = h2 + -1;
+            i2 = g2;
+            break;
+          }
+          case 7: {
+            if ((f2 << 24 >> 24 == 3 ? (a[(c[b2 + 72 >> 2] | 0) + g2 >> 0] | 0) == 5 : 0) ? (c[b2 + 84 >> 2] | 0) != 6 : 0) {
+              i2 = e2 + 12 | 0;
+              j2 = c[i2 >> 2] | 0;
+              if ((j2 | 0) == -1) {
+                c[e2 + 16 >> 2] = h2 + -1;
+                i2 = g2;
+                break a;
+              }
+              if ((j2 | 0) > -1) {
+                la(b2, j2, 1);
+                c[i2 >> 2] = -2;
+              }
+              la(b2, g2, 1);
+              i2 = g2;
+              break a;
+            }
+            i2 = e2 + 12 | 0;
+            if ((c[i2 >> 2] | 0) == -1) {
+              c[i2 >> 2] = g2;
+              i2 = g2;
+            } else
+              i2 = g2;
+            break;
+          }
+          case 8: {
+            c[e2 + 16 >> 2] = h2 + -1;
+            c[e2 + 8 >> 2] = -1;
+            i2 = g2;
+            break;
+          }
+          case 9: {
+            i2 = g2;
+            while (1) {
+              q2 = i2;
+              i2 = i2 + -1 | 0;
+              if ((q2 | 0) <= 0)
+                break;
+              if (a[t2 + i2 >> 0] & 1) {
+                j2 = 36;
+                break;
+              }
+            }
+            if ((j2 | 0) == 36) {
+              la(b2, i2, 4);
+              c[b2 + 336 >> 2] = c[b2 + 332 >> 2];
+            }
+            c[e2 + 8 >> 2] = g2;
+            i2 = g2;
+            break;
+          }
+          case 10: {
+            la(b2, g2, 1);
+            la(b2, g2, 2);
+            i2 = g2;
+            break;
+          }
+          case 11: {
+            i2 = b2 + 336 | 0;
+            j2 = b2 + 332 | 0;
+            c[j2 >> 2] = c[i2 >> 2];
+            if (f2 << 24 >> 24 == 5) {
+              la(b2, g2, 4);
+              c[i2 >> 2] = c[j2 >> 2];
+              i2 = g2;
+            } else
+              i2 = g2;
+            break;
+          }
+          case 12: {
+            l2 = (d[e2 + 28 >> 0] | 0) + (r2 & 255) | 0;
+            j2 = l2 & 255;
+            k2 = e2 + 8 | 0;
+            l2 = l2 & 255;
+            i2 = c[k2 >> 2] | 0;
+            while (1) {
+              if ((i2 | 0) >= (g2 | 0))
+                break;
+              m2 = t2 + i2 | 0;
+              if (l2 >>> 0 > (d[m2 >> 0] | 0) >>> 0)
+                a[m2 >> 0] = j2;
+              i2 = i2 + 1 | 0;
+            }
+            c[b2 + 336 >> 2] = c[b2 + 332 >> 2];
+            c[k2 >> 2] = g2;
+            i2 = g2;
+            break;
+          }
+          case 13: {
+            n2 = a[e2 + 28 >> 0] | 0;
+            f2 = e2 + 8 | 0;
+            q2 = n2 & 255;
+            o2 = q2 + 3 | 0;
+            p2 = q2 + 2 | 0;
+            q2 = q2 + 1 & 255;
+            i2 = g2;
+            while (1) {
+              k2 = i2 + -1 | 0;
+              if ((i2 | 0) <= (c[f2 >> 2] | 0)) {
+                i2 = g2;
+                break a;
+              }
+              j2 = t2 + k2 | 0;
+              l2 = a[j2 >> 0] | 0;
+              m2 = l2 & 255;
+              if ((o2 | 0) == (m2 | 0)) {
+                i2 = k2;
+                j2 = l2;
+                while (1) {
+                  if ((o2 | 0) != (j2 & 255 | 0))
+                    break;
+                  j2 = i2 + -1 | 0;
+                  a[t2 + i2 >> 0] = q2;
+                  i2 = j2;
+                  j2 = a[t2 + j2 >> 0] | 0;
+                }
+                l2 = i2;
+                while (1) {
+                  i2 = l2 + -1 | 0;
+                  if (j2 << 24 >> 24 != n2 << 24 >> 24)
+                    break;
+                  l2 = i2;
+                  j2 = a[t2 + i2 >> 0] | 0;
+                }
+                i2 = l2;
+                k2 = j2 & 255;
+                j2 = t2 + l2 | 0;
+              } else {
+                i2 = k2;
+                k2 = m2;
+              }
+              a[j2 >> 0] = (p2 | 0) == (k2 | 0) ? n2 : q2;
+            }
+          }
+          default:
+            i2 = g2;
+        }
+      while (0);
+    if (!(r2 << 24 >> 24 != 0 | (i2 | 0) < (g2 | 0)))
+      return;
+    j2 = (d[e2 + 28 >> 0] | 0) + (r2 & 255) & 255;
+    if ((i2 | 0) < (c[e2 + 24 >> 2] | 0)) {
+      qa(c[b2 + 72 >> 2] | 0, c[s2 >> 2] | 0, i2, h2, j2);
+      return;
+    }
+    while (1) {
+      if ((i2 | 0) >= (h2 | 0))
+        break;
+      a[t2 + i2 >> 0] = j2;
+      i2 = i2 + 1 | 0;
+    }
+    return;
+  }
+  function oa(a2) {
+    a2 = a2 | 0;
+    var b2 = 0, d2 = 0, f2 = 0, g2 = 0, h2 = 0, i2 = 0, j2 = 0;
+    g2 = c[a2 + 104 >> 2] | 0;
+    h2 = c[a2 + 108 >> 2] | 0;
+    b2 = 0;
+    a:
+      while (1) {
+        if ((b2 | 0) >= (h2 | 0)) {
+          b2 = 4;
+          d2 = 7;
+          break;
+        }
+        f2 = b2 + 1 | 0;
+        d2 = e[g2 + (b2 << 1) >> 1] | 0;
+        if ((f2 | 0) == (h2 | 0) | (d2 & 64512 | 0) != 55296)
+          b2 = f2;
+        else {
+          j2 = e[g2 + (f2 << 1) >> 1] | 0;
+          i2 = (j2 & 64512 | 0) == 56320;
+          d2 = i2 ? (d2 << 10) + -56613888 + j2 | 0 : d2;
+          b2 = i2 ? b2 + 2 | 0 : f2;
+        }
+        switch (((pa(a2, d2) | 0) & 255) << 24 >> 24) {
+          case 0: {
+            b2 = 0;
+            d2 = 7;
+            break a;
+          }
+          case 13:
+          case 1: {
+            d2 = 8;
+            break a;
+          }
+          case 5: {
+            d2 = 6;
+            break a;
+          }
+          case 2: {
+            b2 = 2;
+            d2 = 9;
+            break a;
+          }
+          default: {
+          }
+        }
+      }
+    if ((d2 | 0) == 6) {
+      j2 = 3;
+      return j2 | 0;
+    } else if ((d2 | 0) == 7) {
+      j2 = b2;
+      return j2 | 0;
+    } else if ((d2 | 0) == 8) {
+      j2 = 1;
+      return j2 | 0;
+    } else if ((d2 | 0) == 9)
+      return b2 | 0;
+    return 0;
+  }
+  function pa(a2, b2) {
+    a2 = a2 | 0;
+    b2 = b2 | 0;
+    var d2 = 0, e2 = 0;
+    e2 = c[a2 + 352 >> 2] | 0;
+    if (!((e2 | 0) != 0 ? (d2 = I[e2 & 0](c[a2 + 356 >> 2] | 0, b2) | 0, (d2 | 0) != 23) : 0))
+      d2 = tb(b2) | 0;
+    return ((d2 | 0) > 22 ? 10 : d2) | 0;
+  }
+  function qa(b2, c2, d2, e2, f2) {
+    b2 = b2 | 0;
+    c2 = c2 | 0;
+    d2 = d2 | 0;
+    e2 = e2 | 0;
+    f2 = f2 | 0;
+    var g2 = 0, h2 = 0;
+    g2 = 0;
+    while (1) {
+      if ((d2 | 0) >= (e2 | 0))
+        break;
+      h2 = a[b2 + d2 >> 0] | 0;
+      g2 = g2 + ((h2 << 24 >> 24 == 22) << 31 >> 31) | 0;
+      if (!g2)
+        a[c2 + d2 >> 0] = f2;
+      d2 = d2 + 1 | 0;
+      g2 = g2 + ((h2 & -2) << 24 >> 24 == 20 & 1) | 0;
+    }
+    return;
+  }
+  function ra(a2) {
+    a2 = a2 | 0;
+    if ((a2 & 2154498 | 0) == 0 ? (a2 & 32 | 0) == 0 | (a2 & 8249304 | 0) == 0 : 0) {
+      a2 = 0;
+      return a2 | 0;
+    }
+    a2 = (a2 & 26220581 | 0) == 0 ? 1 : 2;
+    return a2 | 0;
+  }
+  function sa(d2, e2) {
+    d2 = d2 | 0;
+    e2 = e2 | 0;
+    var f2 = 0, g2 = 0, h2 = 0;
+    c[e2 >> 2] = d2;
+    c[e2 + 492 >> 2] = 0;
+    b[e2 + 500 >> 1] = 0;
+    b[e2 + 502 >> 1] = 0;
+    h2 = d2 + 94 | 0;
+    if ((a[h2 >> 0] | 0) != 0 ? (f2 = c[d2 + 136 >> 2] | 0, (c[f2 >> 2] | 0) <= 0) : 0)
+      f2 = da(c[d2 + 132 >> 2] | 0, f2, 0) | 0;
+    else
+      f2 = a[d2 + 93 >> 0] | 0;
+    a[e2 + 504 >> 0] = f2;
+    if ((a[h2 >> 0] | 0) != 0 ? (g2 = c[d2 + 136 >> 2] | 0, (c[g2 >> 2] | 0) <= 0) : 0)
+      f2 = da(c[d2 + 132 >> 2] | 0, g2, 0) | 0;
+    else
+      f2 = a[d2 + 93 >> 0] | 0;
+    f2 = f2 & 1;
+    a[e2 + 506 >> 0] = f2;
+    a[e2 + 505 >> 0] = f2;
+    c[e2 + 508 >> 2] = f2 & 255;
+    c[e2 + 496 >> 2] = 0;
+    f2 = c[d2 + 52 >> 2] | 0;
+    if (!f2) {
+      c[e2 + 484 >> 2] = e2 + 4;
+      g2 = 20;
+      h2 = e2 + 488 | 0;
+      c[h2 >> 2] = g2;
+      d2 = d2 + 84 | 0;
+      d2 = c[d2 >> 2] | 0;
+      h2 = (d2 | 0) == 1;
+      d2 = (d2 | 0) == 6;
+      d2 = h2 | d2;
+      d2 = d2 & 1;
+      e2 = e2 + 2528 | 0;
+      a[e2 >> 0] = d2;
+      return;
+    } else {
+      c[e2 + 484 >> 2] = f2;
+      g2 = ((c[d2 + 28 >> 2] | 0) >>> 0) / 24 | 0;
+      h2 = e2 + 488 | 0;
+      c[h2 >> 2] = g2;
+      d2 = d2 + 84 | 0;
+      d2 = c[d2 >> 2] | 0;
+      h2 = (d2 | 0) == 1;
+      d2 = (d2 | 0) == 6;
+      d2 = h2 | d2;
+      d2 = d2 & 1;
+      e2 = e2 + 2528 | 0;
+      a[e2 >> 0] = d2;
+      return;
+    }
+  }
+  function ta(d2, e2) {
+    d2 = d2 | 0;
+    e2 = e2 | 0;
+    c[d2 + 492 >> 2] = 0;
+    b[d2 + 502 >> 1] = 0;
+    a[d2 + 504 >> 0] = e2;
+    e2 = e2 & 1;
+    a[d2 + 506 >> 0] = e2;
+    a[d2 + 505 >> 0] = e2;
+    c[d2 + 508 >> 2] = e2 & 255;
+    c[d2 + 496 >> 2] = 0;
+    return;
+  }
+  function ua(f2, g2) {
+    f2 = f2 | 0;
+    g2 = g2 | 0;
+    var h2 = 0, i2 = 0, j2 = 0, k2 = 0, l2 = 0, m2 = 0, n2 = 0, o2 = 0, p2 = 0, q2 = 0, r2 = 0, s2 = 0, t2 = 0;
+    s2 = c[f2 + 492 >> 2] | 0;
+    p2 = f2 + 496 + (s2 << 4) | 0;
+    h2 = c[f2 >> 2] | 0;
+    r2 = (c[h2 + 72 >> 2] | 0) + g2 | 0;
+    m2 = a[r2 >> 0] | 0;
+    do
+      if (m2 << 24 >> 24 == 10) {
+        h2 = b[(c[h2 + 4 >> 2] | 0) + (g2 << 1) >> 1] | 0;
+        l2 = f2 + 496 + (s2 << 4) + 4 | 0;
+        i2 = e[l2 >> 1] | 0;
+        o2 = f2 + 484 | 0;
+        j2 = h2 & 65535;
+        n2 = e[f2 + 496 + (s2 << 4) + 6 >> 1] | 0;
+        while (1) {
+          t2 = n2;
+          n2 = n2 + -1 | 0;
+          if ((t2 | 0) <= (i2 | 0))
+            break;
+          if ((c[(c[o2 >> 2] | 0) + (n2 * 24 | 0) + 4 >> 2] | 0) == (j2 | 0)) {
+            q2 = 5;
+            break;
+          }
+        }
+        if ((q2 | 0) == 5) {
+          h2 = ya(f2, n2, g2) | 0;
+          if (h2 << 24 >> 24 == 10)
+            break;
+          a[f2 + 496 + (s2 << 4) + 10 >> 0] = 10;
+          c[f2 + 496 + (s2 << 4) + 12 >> 2] = h2 & 255;
+          c[p2 >> 2] = g2;
+          h2 = c[(c[f2 >> 2] | 0) + 76 >> 2] | 0;
+          i2 = d[h2 + g2 >> 0] | 0;
+          if (i2 & 128) {
+            i2 = i2 & 1;
+            a[f2 + 496 + (s2 << 4) + 9 >> 0] = i2;
+            i2 = 1 << i2;
+            h2 = e[l2 >> 1] | 0;
+            while (1) {
+              if ((h2 | 0) >= (n2 | 0))
+                break;
+              t2 = (c[o2 >> 2] | 0) + (h2 * 24 | 0) + 12 | 0;
+              b[t2 >> 1] = i2 | e[t2 >> 1];
+              h2 = h2 + 1 | 0;
+            }
+            h2 = (c[(c[f2 >> 2] | 0) + 76 >> 2] | 0) + g2 | 0;
+            a[h2 >> 0] = a[h2 >> 0] & 127;
+            h2 = c[(c[f2 >> 2] | 0) + 76 >> 2] | 0;
+          }
+          t2 = h2 + (c[(c[o2 >> 2] | 0) + (n2 * 24 | 0) >> 2] | 0) | 0;
+          a[t2 >> 0] = a[t2 >> 0] & 127;
+          t2 = 1;
+          return t2 | 0;
+        }
+        if ((h2 << 16 >> 16 ? (k2 = (zb(j2) | 0) & 65535, h2 << 16 >> 16 != k2 << 16 >> 16) : 0) ? (wb(j2) | 0) == 1 : 0) {
+          a:
+            do
+              if (k2 << 16 >> 16 < 12297) {
+                switch (k2 << 16 >> 16) {
+                  case 9002:
+                    break;
+                  default:
+                    break a;
+                }
+                if (!((za(f2, 12297, g2) | 0) << 24 >> 24)) {
+                  t2 = 0;
+                  return t2 | 0;
+                }
+              } else {
+                switch (k2 << 16 >> 16) {
+                  case 12297:
+                    break;
+                  default:
+                    break a;
+                }
+                if (!((za(f2, 9002, g2) | 0) << 24 >> 24)) {
+                  t2 = 0;
+                  return t2 | 0;
+                }
+              }
+            while (0);
+          if (!((za(f2, k2, g2) | 0) << 24 >> 24)) {
+            t2 = 0;
+            return t2 | 0;
+          }
+        }
+      }
+    while (0);
+    h2 = d[(c[(c[f2 >> 2] | 0) + 76 >> 2] | 0) + g2 >> 0] | 0;
+    b:
+      do
+        if (!(h2 & 128))
+          switch (m2 << 24 >> 24) {
+            case 0:
+            case 1:
+            case 13: {
+              h2 = m2 << 24 >> 24 != 0;
+              a[f2 + 496 + (s2 << 4) + 10 >> 0] = m2;
+              a[f2 + 496 + (s2 << 4) + 9 >> 0] = m2;
+              c[f2 + 496 + (s2 << 4) + 12 >> 2] = h2 & 1;
+              c[p2 >> 2] = g2;
+              h2 = h2 & 1;
+              q2 = 35;
+              break b;
+            }
+            case 2: {
+              a[f2 + 496 + (s2 << 4) + 10 >> 0] = 2;
+              switch (a[f2 + 496 + (s2 << 4) + 9 >> 0] | 0) {
+                case 0: {
+                  if (!(a[f2 + 2528 >> 0] | 0))
+                    a[r2 >> 0] = 23;
+                  c[f2 + 496 + (s2 << 4) + 12 >> 2] = 0;
+                  c[p2 >> 2] = g2;
+                  h2 = 0;
+                  break b;
+                }
+                case 13: {
+                  h2 = 5;
+                  break;
+                }
+                default:
+                  h2 = 24;
+              }
+              a[r2 >> 0] = h2;
+              c[f2 + 496 + (s2 << 4) + 12 >> 2] = 1;
+              c[p2 >> 2] = g2;
+              h2 = 1;
+              break b;
+            }
+            case 5: {
+              a[f2 + 496 + (s2 << 4) + 10 >> 0] = 5;
+              c[f2 + 496 + (s2 << 4) + 12 >> 2] = 1;
+              c[p2 >> 2] = g2;
+              h2 = 1;
+              break b;
+            }
+            case 17: {
+              h2 = a[f2 + 496 + (s2 << 4) + 10 >> 0] | 0;
+              if (h2 << 24 >> 24 != 10) {
+                q2 = 35;
+                break b;
+              }
+              a[r2 >> 0] = 10;
+              t2 = 1;
+              return t2 | 0;
+            }
+            default: {
+              a[f2 + 496 + (s2 << 4) + 10 >> 0] = m2;
+              h2 = m2;
+              q2 = 35;
+              break b;
+            }
+          }
+        else {
+          i2 = h2 & 1;
+          h2 = i2 & 255;
+          if ((m2 + -8 & 255) >= 3)
+            a[r2 >> 0] = h2;
+          a[f2 + 496 + (s2 << 4) + 10 >> 0] = h2;
+          a[f2 + 496 + (s2 << 4) + 9 >> 0] = h2;
+          c[f2 + 496 + (s2 << 4) + 12 >> 2] = i2;
+          c[p2 >> 2] = g2;
+          q2 = 35;
+        }
+      while (0);
+    c:
+      do
+        if ((q2 | 0) == 35) {
+          switch (h2 << 24 >> 24) {
+            case 0:
+            case 1:
+            case 13:
+              break c;
+            default:
+              h2 = 1;
+          }
+          return h2 | 0;
+        }
+      while (0);
+    j2 = 1 << (h2 << 24 >> 24 != 0 & 1);
+    k2 = f2 + 496 + (s2 << 4) + 6 | 0;
+    l2 = f2 + 484 | 0;
+    h2 = e[f2 + 496 + (s2 << 4) + 4 >> 1] | 0;
+    while (1) {
+      if (h2 >>> 0 >= (e[k2 >> 1] | 0) >>> 0) {
+        h2 = 1;
+        break;
+      }
+      i2 = c[l2 >> 2] | 0;
+      if ((c[i2 + (h2 * 24 | 0) >> 2] | 0) < (g2 | 0)) {
+        t2 = i2 + (h2 * 24 | 0) + 12 | 0;
+        b[t2 >> 1] = j2 | e[t2 >> 1];
+      }
+      h2 = h2 + 1 | 0;
+    }
+    return h2 | 0;
+  }
+  function va(e2, f2, g2, h2) {
+    e2 = e2 | 0;
+    f2 = f2 | 0;
+    g2 = g2 | 0;
+    h2 = h2 | 0;
+    var i2 = 0;
+    i2 = c[e2 + 492 >> 2] | 0;
+    if (1 << (d[(c[(c[e2 >> 2] | 0) + 72 >> 2] | 0) + f2 >> 0] | 0) & 7864320 | 0)
+      return;
+    b[e2 + 496 + (i2 << 4) + 6 >> 1] = b[e2 + 496 + (i2 << 4) + 4 >> 1] | 0;
+    a[e2 + 496 + (i2 << 4) + 8 >> 0] = h2;
+    h2 = ((h2 & 127) > (g2 & 127) ? h2 : g2) & 1;
+    a[e2 + 496 + (i2 << 4) + 10 >> 0] = h2;
+    a[e2 + 496 + (i2 << 4) + 9 >> 0] = h2;
+    c[e2 + 496 + (i2 << 4) + 12 >> 2] = h2 & 255;
+    c[e2 + 496 + (i2 << 4) >> 2] = f2;
+    return;
+  }
+  function wa(d2, e2) {
+    d2 = d2 | 0;
+    e2 = e2 | 0;
+    var f2 = 0, g2 = 0, h2 = 0;
+    g2 = d2 + 492 | 0;
+    h2 = c[g2 >> 2] | 0;
+    f2 = d2 + 496 + (h2 << 4) | 0;
+    a[d2 + 496 + (h2 << 4) + 10 >> 0] = 10;
+    d2 = b[d2 + 496 + (h2 << 4) + 6 >> 1] | 0;
+    c[g2 >> 2] = h2 + 1;
+    b[f2 + 22 >> 1] = d2;
+    b[f2 + 20 >> 1] = d2;
+    a[f2 + 24 >> 0] = e2;
+    e2 = e2 & 1;
+    a[f2 + 26 >> 0] = e2;
+    a[f2 + 25 >> 0] = e2;
+    c[f2 + 28 >> 2] = e2 & 255;
+    c[f2 + 16 >> 2] = 0;
+    return;
+  }
+  function xa(b2) {
+    b2 = b2 | 0;
+    var d2 = 0, e2 = 0;
+    e2 = b2 + 492 | 0;
+    d2 = (c[e2 >> 2] | 0) + -1 | 0;
+    c[e2 >> 2] = d2;
+    a[b2 + 496 + (d2 << 4) + 10 >> 0] = 10;
+    return;
+  }
+  function ya(d2, f2, g2) {
+    d2 = d2 | 0;
+    f2 = f2 | 0;
+    g2 = g2 | 0;
+    var h2 = 0, i2 = 0, j2 = 0, k2 = 0, l2 = 0, m2 = 0, n2 = 0, o2 = 0, p2 = 0, q2 = 0;
+    o2 = c[d2 + 492 >> 2] | 0;
+    q2 = d2 + 484 | 0;
+    m2 = c[q2 >> 2] | 0;
+    j2 = a[d2 + 496 + (o2 << 4) + 8 >> 0] & 1;
+    h2 = j2 & 255;
+    i2 = b[m2 + (f2 * 24 | 0) + 12 >> 1] | 0;
+    if (!(j2 << 24 >> 24))
+      if (!(i2 & 1))
+        l2 = 4;
+      else {
+        p2 = 0;
+        k2 = 0;
+      }
+    else if (!(i2 & 2))
+      l2 = 4;
+    else {
+      p2 = 1;
+      k2 = 0;
+    }
+    do
+      if ((l2 | 0) == 4) {
+        if (i2 & 3) {
+          p2 = c[m2 + (f2 * 24 | 0) + 16 >> 2] | 0;
+          p2 = (p2 | 0) == (h2 | 0) ? j2 : p2 & 255;
+          k2 = (e[d2 + 496 + (o2 << 4) + 4 >> 1] | 0 | 0) != (f2 | 0);
+          break;
+        }
+        b[d2 + 496 + (o2 << 4) + 6 >> 1] = f2;
+        q2 = 10;
+        return q2 | 0;
+      }
+    while (0);
+    n2 = m2 + (f2 * 24 | 0) | 0;
+    a[(c[(c[d2 >> 2] | 0) + 72 >> 2] | 0) + (c[n2 >> 2] | 0) >> 0] = p2;
+    a[(c[(c[d2 >> 2] | 0) + 72 >> 2] | 0) + g2 >> 0] = p2;
+    Aa(d2, f2, c[n2 >> 2] | 0, p2);
+    if (!k2) {
+      i2 = d2 + 496 + (o2 << 4) + 6 | 0;
+      h2 = b[d2 + 496 + (o2 << 4) + 4 >> 1] | 0;
+      j2 = f2 & 65535;
+      while (1) {
+        b[i2 >> 1] = j2;
+        if ((j2 & 65535) <= (h2 & 65535)) {
+          h2 = p2;
+          l2 = 21;
+          break;
+        }
+        if ((c[(c[q2 >> 2] | 0) + (((j2 & 65535) + -1 | 0) * 24 | 0) >> 2] | 0) == (c[n2 >> 2] | 0))
+          j2 = j2 + -1 << 16 >> 16;
+        else {
+          h2 = p2;
+          l2 = 21;
+          break;
+        }
+      }
+      if ((l2 | 0) == 21)
+        return h2 | 0;
+    }
+    c[m2 + (f2 * 24 | 0) + 4 >> 2] = 0 - g2;
+    j2 = d2 + 496 + (o2 << 4) + 4 | 0;
+    h2 = f2;
+    while (1) {
+      i2 = h2 + -1 | 0;
+      if ((h2 | 0) <= (e[j2 >> 1] | 0 | 0))
+        break;
+      h2 = c[q2 >> 2] | 0;
+      if ((c[h2 + (i2 * 24 | 0) >> 2] | 0) != (c[n2 >> 2] | 0))
+        break;
+      c[h2 + (i2 * 24 | 0) + 4 >> 2] = 0;
+      h2 = i2;
+    }
+    i2 = d2 + 496 + (o2 << 4) + 6 | 0;
+    while (1) {
+      f2 = f2 + 1 | 0;
+      if ((f2 | 0) >= (e[i2 >> 1] | 0 | 0)) {
+        h2 = p2;
+        l2 = 21;
+        break;
+      }
+      h2 = c[q2 >> 2] | 0;
+      if ((c[h2 + (f2 * 24 | 0) >> 2] | 0) >= (g2 | 0)) {
+        h2 = p2;
+        l2 = 21;
+        break;
+      }
+      h2 = h2 + (f2 * 24 | 0) + 4 | 0;
+      if ((c[h2 >> 2] | 0) > 0)
+        c[h2 >> 2] = 0;
+    }
+    if ((l2 | 0) == 21)
+      return h2 | 0;
+    return 0;
+  }
+  function za(a2, d2, f2) {
+    a2 = a2 | 0;
+    d2 = d2 | 0;
+    f2 = f2 | 0;
+    var g2 = 0, h2 = 0, i2 = 0, j2 = 0, k2 = 0, l2 = 0, m2 = 0;
+    l2 = c[a2 + 492 >> 2] | 0;
+    m2 = a2 + 496 + (l2 << 4) + 6 | 0;
+    g2 = e[m2 >> 1] | 0;
+    k2 = a2 + 488 | 0;
+    if ((c[k2 >> 2] | 0) > (g2 | 0))
+      h2 = c[a2 + 484 >> 2] | 0;
+    else {
+      j2 = c[a2 >> 2] | 0;
+      i2 = j2 + 52 | 0;
+      j2 = j2 + 28 | 0;
+      if (!((aa(i2, j2, 1, g2 * 48 | 0) | 0) << 24 >> 24)) {
+        m2 = 0;
+        return m2 | 0;
+      }
+      g2 = a2 + 484 | 0;
+      h2 = c[g2 >> 2] | 0;
+      if ((h2 | 0) == (a2 + 4 | 0))
+        ec(c[i2 >> 2] | 0, h2 | 0, 480) | 0;
+      h2 = c[i2 >> 2] | 0;
+      c[g2 >> 2] = h2;
+      c[k2 >> 2] = ((c[j2 >> 2] | 0) >>> 0) / 24 | 0;
+      g2 = e[m2 >> 1] | 0;
+    }
+    c[h2 + (g2 * 24 | 0) >> 2] = f2;
+    c[h2 + (g2 * 24 | 0) + 4 >> 2] = d2 & 65535;
+    c[h2 + (g2 * 24 | 0) + 16 >> 2] = c[a2 + 496 + (l2 << 4) + 12 >> 2];
+    c[h2 + (g2 * 24 | 0) + 8 >> 2] = c[a2 + 496 + (l2 << 4) >> 2];
+    b[h2 + (g2 * 24 | 0) + 12 >> 1] = 0;
+    b[m2 >> 1] = (b[m2 >> 1] | 0) + 1 << 16 >> 16;
+    m2 = 1;
+    return m2 | 0;
+  }
+  function Aa(b2, d2, f2, g2) {
+    b2 = b2 | 0;
+    d2 = d2 | 0;
+    f2 = f2 | 0;
+    g2 = g2 | 0;
+    var h2 = 0, i2 = 0, j2 = 0, k2 = 0, l2 = 0, m2 = 0, n2 = 0;
+    m2 = c[(c[b2 >> 2] | 0) + 72 >> 2] | 0;
+    h2 = d2 + 1 | 0;
+    i2 = g2 & 255;
+    j2 = b2 + 496 + (c[b2 + 492 >> 2] << 4) + 6 | 0;
+    d2 = (c[b2 + 484 >> 2] | 0) + (h2 * 24 | 0) | 0;
+    while (1) {
+      if ((h2 | 0) >= (e[j2 >> 1] | 0 | 0)) {
+        d2 = 9;
+        break;
+      }
+      k2 = d2 + 4 | 0;
+      if ((c[k2 >> 2] | 0) <= -1) {
+        if ((c[d2 + 8 >> 2] | 0) > (f2 | 0)) {
+          d2 = 9;
+          break;
+        }
+        l2 = c[d2 >> 2] | 0;
+        if ((l2 | 0) > (f2 | 0)) {
+          if ((c[d2 + 16 >> 2] | 0) == (i2 | 0)) {
+            d2 = 9;
+            break;
+          }
+          a[m2 + l2 >> 0] = g2;
+          n2 = 0 - (c[k2 >> 2] | 0) | 0;
+          a[m2 + n2 >> 0] = g2;
+          c[k2 >> 2] = 0;
+          Aa(b2, h2, l2, g2);
+          Aa(b2, h2, n2, g2);
+        }
+      }
+      d2 = d2 + 24 | 0;
+      h2 = h2 + 1 | 0;
+    }
+    if ((d2 | 0) == 9)
+      return;
+  }
+  function Ba(a2) {
+    a2 = a2 | 0;
+    var b2 = 0, d2 = 0, f2 = 0, g2 = 0, h2 = 0, i2 = 0, j2 = 0, k2 = 0;
+    h2 = c[a2 + 96 >> 2] | 0;
+    i2 = c[a2 + 100 >> 2] | 0;
+    g2 = 0;
+    b2 = 10;
+    while (1) {
+      if ((g2 | 0) >= (i2 | 0))
+        break;
+      f2 = g2 + 1 | 0;
+      d2 = e[h2 + (g2 << 1) >> 1] | 0;
+      if ((f2 | 0) == (i2 | 0) | (d2 & 64512 | 0) != 55296)
+        g2 = f2;
+      else {
+        k2 = e[h2 + (f2 << 1) >> 1] | 0;
+        j2 = (k2 & 64512 | 0) == 56320;
+        d2 = j2 ? (d2 << 10) + -56613888 + k2 | 0 : d2;
+        g2 = j2 ? g2 + 2 | 0 : f2;
+      }
+      d2 = pa(a2, d2) | 0;
+      f2 = d2 & 255;
+      a:
+        do
+          if (b2 << 24 >> 24 == 10) {
+            switch (f2 << 24 >> 24) {
+              case 13:
+              case 1:
+              case 0:
+                break;
+              default: {
+                b2 = 10;
+                break a;
+              }
+            }
+            b2 = f2;
+          } else
+            b2 = (d2 & 255 | 0) == 7 ? 10 : b2;
+        while (0);
+    }
+    return b2 | 0;
+  }
+  function Ca(a2) {
+    a2 = a2 | 0;
+    var b2 = 0, d2 = 0, e2 = 0;
+    d2 = c[a2 + 132 >> 2] | 0;
+    e2 = a2 + 136 | 0;
+    b2 = c[e2 >> 2] | 0;
+    if ((b2 | 0) != (a2 + 140 | 0)) {
+      b2 = a2 + 56 | 0;
+      if (!((aa(b2, a2 + 32 | 0, 1, d2 << 4) | 0) << 24 >> 24)) {
+        e2 = 0;
+        return e2 | 0;
+      }
+      c[e2 >> 2] = c[b2 >> 2];
+      e2 = 1;
+      return e2 | 0;
+    }
+    if ((d2 | 0) < 11) {
+      e2 = 1;
+      return e2 | 0;
+    }
+    d2 = a2 + 56 | 0;
+    if (!((aa(d2, a2 + 32 | 0, 1, 160) | 0) << 24 >> 24)) {
+      e2 = 0;
+      return e2 | 0;
+    }
+    a2 = c[d2 >> 2] | 0;
+    c[e2 >> 2] = a2;
+    d2 = a2 + 80 | 0;
+    do {
+      c[a2 >> 2] = c[b2 >> 2];
+      a2 = a2 + 4 | 0;
+      b2 = b2 + 4 | 0;
+    } while ((a2 | 0) < (d2 | 0));
+    e2 = 1;
+    return e2 | 0;
+  }
+  function Da(a2) {
+    a2 = a2 | 0;
+    var b2 = 0;
+    do
+      if (!a2)
+        a2 = 0;
+      else {
+        b2 = c[a2 >> 2] | 0;
+        if ((b2 | 0) != (a2 | 0)) {
+          if (!b2) {
+            a2 = 0;
+            break;
+          }
+          if ((c[b2 >> 2] | 0) != (b2 | 0)) {
+            a2 = 0;
+            break;
+          }
+        }
+        a2 = c[a2 + 12 >> 2] | 0;
+      }
+    while (0);
+    return a2 | 0;
+  }
+  function Ea(a2) {
+    a2 = a2 | 0;
+    var b2 = 0;
+    do
+      if (!a2)
+        a2 = 0;
+      else {
+        b2 = c[a2 >> 2] | 0;
+        if ((b2 | 0) != (a2 | 0)) {
+          if (!b2) {
+            a2 = 0;
+            break;
+          }
+          if ((c[b2 >> 2] | 0) != (b2 | 0)) {
+            a2 = 0;
+            break;
+          }
+        }
+        a2 = c[a2 + 132 >> 2] | 0;
+      }
+    while (0);
+    return a2 | 0;
+  }
+  function Fa(a2, b2, d2, e2) {
+    a2 = a2 | 0;
+    b2 = b2 | 0;
+    d2 = d2 | 0;
+    e2 = e2 | 0;
+    var f2 = 0;
+    if (!e2)
+      return;
+    if (($(c[e2 >> 2] | 0) | 0) << 24 >> 24)
+      return;
+    do
+      if (a2 | 0) {
+        f2 = c[a2 >> 2] | 0;
+        if ((f2 | 0) != (a2 | 0)) {
+          if (!f2)
+            break;
+          if ((c[f2 >> 2] | 0) != (f2 | 0))
+            break;
+        }
+        if ((b2 | 0) >= 0 ? (c[a2 + 132 >> 2] | 0) > (b2 | 0) : 0) {
+          if (!d2)
+            return;
+          c[d2 >> 2] = c[(c[f2 + 136 >> 2] | 0) + (b2 << 3) >> 2];
+          return;
+        }
+        c[e2 >> 2] = 1;
+        return;
+      }
+    while (0);
+    c[e2 >> 2] = 27;
+    return;
+  }
+  function Ga(a2, b2, d2) {
+    a2 = a2 | 0;
+    b2 = b2 | 0;
+    d2 = d2 | 0;
+    var e2 = 0, f2 = 0;
+    if (!d2) {
+      f2 = -1;
+      return f2 | 0;
+    }
+    if (($(c[d2 >> 2] | 0) | 0) << 24 >> 24) {
+      f2 = -1;
+      return f2 | 0;
+    }
+    do
+      if (a2 | 0) {
+        f2 = c[a2 >> 2] | 0;
+        if ((f2 | 0) != (a2 | 0)) {
+          if (!f2)
+            break;
+          if ((c[f2 >> 2] | 0) != (f2 | 0))
+            break;
+        }
+        if ((b2 | 0) >= 0 ? (c[f2 + 12 >> 2] | 0) > (b2 | 0) : 0) {
+          e2 = c[f2 + 136 >> 2] | 0;
+          a2 = 0;
+          while (1)
+            if ((c[e2 + (a2 << 3) >> 2] | 0) > (b2 | 0))
+              break;
+            else
+              a2 = a2 + 1 | 0;
+          Fa(f2, a2, 0, d2);
+          f2 = a2;
+          return f2 | 0;
+        }
+        c[d2 >> 2] = 1;
+        f2 = -1;
+        return f2 | 0;
+      }
+    while (0);
+    c[d2 >> 2] = 27;
+    f2 = -1;
+    return f2 | 0;
+  }
+  function Ha(a2, b2, d2, e2, f2) {
+    a2 = a2 | 0;
+    b2 = b2 | 0;
+    d2 = d2 | 0;
+    e2 = e2 | 0;
+    f2 = f2 | 0;
+    var g2 = 0;
+    if (!f2) {
+      f2 = 0;
+      return f2 | 0;
+    }
+    if ((Ia(c[f2 >> 2] | 0) | 0) << 24 >> 24) {
+      f2 = 0;
+      return f2 | 0;
+    }
+    if (!((a2 | 0) == 0 | (b2 | 0) < -1 | (e2 | 0) < 0) ? (g2 = (d2 | 0) == 0, !(g2 & (e2 | 0) > 0)) : 0) {
+      do
+        if (!g2) {
+          if (!(a2 >>> 0 >= d2 >>> 0 & (d2 + (e2 << 1) | 0) >>> 0 > a2 >>> 0) ? !(d2 >>> 0 >= a2 >>> 0 & (a2 + (b2 << 1) | 0) >>> 0 > d2 >>> 0) : 0)
+            break;
+          c[f2 >> 2] = 1;
+          f2 = 0;
+          return f2 | 0;
+        }
+      while (0);
+      if ((b2 | 0) == -1)
+        b2 = ob(a2) | 0;
+      if ((b2 | 0) > 0)
+        b2 = Ja(a2, b2, d2, e2, 10, f2) | 0;
+      else
+        b2 = 0;
+      f2 = qb(d2, e2, b2, f2) | 0;
+      return f2 | 0;
+    }
+    c[f2 >> 2] = 1;
+    f2 = 0;
+    return f2 | 0;
+  }
+  function Ia(a2) {
+    a2 = a2 | 0;
+    return (a2 | 0) > 0 | 0;
+  }
+  function Ja(a2, d2, f2, g2, h2, i2) {
+    a2 = a2 | 0;
+    d2 = d2 | 0;
+    f2 = f2 | 0;
+    g2 = g2 | 0;
+    h2 = h2 | 0;
+    i2 = i2 | 0;
+    var j2 = 0, k2 = 0, l2 = 0, m2 = 0, n2 = 0, o2 = 0, p2 = 0;
+    l2 = h2 & 65535;
+    switch (l2 & 11) {
+      case 0: {
+        if ((g2 | 0) < (d2 | 0)) {
+          c[i2 >> 2] = 15;
+          o2 = d2;
+          return o2 | 0;
+        }
+        k2 = d2;
+        h2 = f2;
+        while (1) {
+          j2 = k2 + -1 | 0;
+          f2 = k2 + -2 | 0;
+          if ((k2 | 0) > 1 ? (b[a2 + (j2 << 1) >> 1] & -1024) << 16 >> 16 == -9216 : 0)
+            j2 = (b[a2 + (f2 << 1) >> 1] & -1024) << 16 >> 16 == -10240 ? f2 : j2;
+          f2 = j2;
+          do {
+            n2 = f2;
+            f2 = f2 + 1 | 0;
+            o2 = h2;
+            h2 = h2 + 2 | 0;
+            b[o2 >> 1] = b[a2 + (n2 << 1) >> 1] | 0;
+          } while ((f2 | 0) < (k2 | 0));
+          if ((j2 | 0) > 0)
+            k2 = j2;
+          else {
+            h2 = d2;
+            break;
+          }
+        }
+        return h2 | 0;
+      }
+      case 1: {
+        if ((g2 | 0) < (d2 | 0)) {
+          c[i2 >> 2] = 15;
+          o2 = d2;
+          return o2 | 0;
+        }
+        i2 = d2;
+        g2 = f2;
+        while (1) {
+          f2 = i2;
+          while (1) {
+            j2 = f2 + -1 | 0;
+            h2 = e[a2 + (j2 << 1) >> 1] | 0;
+            if ((f2 | 0) > 1 & (h2 & 64512 | 0) == 56320) {
+              f2 = f2 + -2 | 0;
+              n2 = e[a2 + (f2 << 1) >> 1] | 0;
+              o2 = (n2 & 64512 | 0) == 55296;
+              h2 = o2 ? h2 + -56613888 + (n2 << 10) | 0 : h2;
+              f2 = o2 ? f2 : j2;
+            } else
+              f2 = j2;
+            if ((f2 | 0) <= 0) {
+              k2 = 0;
+              break;
+            }
+            if (!(1 << ((sb(h2) | 0) << 24 >> 24) & 448)) {
+              k2 = 1;
+              break;
+            }
+          }
+          j2 = f2;
+          h2 = g2;
+          do {
+            n2 = j2;
+            j2 = j2 + 1 | 0;
+            o2 = h2;
+            h2 = h2 + 2 | 0;
+            b[o2 >> 1] = b[a2 + (n2 << 1) >> 1] | 0;
+          } while ((j2 | 0) < (i2 | 0));
+          if (k2) {
+            i2 = f2;
+            g2 = h2;
+          } else {
+            h2 = d2;
+            break;
+          }
+        }
+        return h2 | 0;
+      }
+      default: {
+        n2 = (l2 & 8 | 0) != 0;
+        if (n2) {
+          j2 = a2;
+          k2 = d2;
+          h2 = 0;
+          while (1) {
+            m2 = j2;
+            j2 = j2 + 2 | 0;
+            m2 = e[m2 >> 1] | 0;
+            h2 = h2 + ((((m2 + -8294 | 0) >>> 0 < 4 | ((m2 & 65532 | 0) == 8204 | (m2 + -8234 | 0) >>> 0 < 5)) ^ 1) & 1) | 0;
+            if ((k2 | 0) <= 1)
+              break;
+            else
+              k2 = k2 + -1 | 0;
+          }
+          a2 = j2 + (0 - d2 << 1) | 0;
+        } else
+          h2 = d2;
+        if ((h2 | 0) > (g2 | 0)) {
+          c[i2 >> 2] = 15;
+          o2 = h2;
+          return o2 | 0;
+        }
+        m2 = (l2 & 1 | 0) == 0;
+        l2 = (l2 & 2 | 0) == 0;
+        i2 = d2;
+        while (1) {
+          k2 = i2 + -1 | 0;
+          j2 = e[a2 + (k2 << 1) >> 1] | 0;
+          if ((i2 | 0) > 1 & (j2 & 64512 | 0) == 56320) {
+            d2 = i2 + -2 | 0;
+            p2 = e[a2 + (d2 << 1) >> 1] | 0;
+            g2 = (p2 & 64512 | 0) == 55296;
+            j2 = g2 ? j2 + -56613888 + (p2 << 10) | 0 : j2;
+            k2 = g2 ? d2 : k2;
+          }
+          a:
+            do
+              if (!m2)
+                while (1) {
+                  if ((k2 | 0) <= 0)
+                    break a;
+                  if (!(1 << ((sb(j2) | 0) << 24 >> 24) & 448))
+                    break a;
+                  g2 = k2 + -1 | 0;
+                  j2 = e[a2 + (g2 << 1) >> 1] | 0;
+                  if ((k2 | 0) > 1 & (j2 & 64512 | 0) == 56320) {
+                    k2 = k2 + -2 | 0;
+                    d2 = e[a2 + (k2 << 1) >> 1] | 0;
+                    p2 = (d2 & 64512 | 0) == 55296;
+                    j2 = p2 ? j2 + -56613888 + (d2 << 10) | 0 : j2;
+                    k2 = p2 ? k2 : g2;
+                  } else
+                    k2 = g2;
+                }
+            while (0);
+          if (n2) {
+            if ((j2 & -4 | 0) != 8204)
+              switch (j2 | 0) {
+                case 8234:
+                case 8235:
+                case 8236:
+                case 8237:
+                case 8238:
+                case 8294:
+                case 8295:
+                case 8296:
+                case 8297:
+                  break;
+                default:
+                  o2 = 40;
+              }
+          } else
+            o2 = 40;
+          b:
+            do
+              if ((o2 | 0) == 40) {
+                o2 = 0;
+                if (l2)
+                  g2 = k2;
+                else {
+                  j2 = yb(j2) | 0;
+                  if (j2 >>> 0 < 65536) {
+                    b[f2 >> 1] = j2;
+                    j2 = 1;
+                  } else {
+                    b[f2 >> 1] = (j2 >>> 10) + 55232;
+                    b[f2 + 2 >> 1] = j2 & 1023 | 56320;
+                    j2 = 2;
+                  }
+                  g2 = j2 + k2 | 0;
+                  f2 = f2 + (j2 << 1) | 0;
+                }
+                j2 = g2;
+                while (1) {
+                  if ((j2 | 0) >= (i2 | 0))
+                    break b;
+                  b[f2 >> 1] = b[a2 + (j2 << 1) >> 1] | 0;
+                  j2 = j2 + 1 | 0;
+                  f2 = f2 + 2 | 0;
+                }
+              }
+            while (0);
+          if ((k2 | 0) > 0)
+            i2 = k2;
+          else
+            break;
+        }
+        return h2 | 0;
+      }
+    }
+    return 0;
+  }
+  function Ka(e2, f2, g2, h2, i2) {
+    e2 = e2 | 0;
+    f2 = f2 | 0;
+    g2 = g2 | 0;
+    h2 = h2 | 0;
+    i2 = i2 | 0;
+    var j2 = 0, k2 = 0, l2 = 0, m2 = 0, n2 = 0, o2 = 0, p2 = 0, q2 = 0, r2 = 0, s2 = 0, t2 = 0, u2 = 0, v2 = 0, w2 = 0, x2 = 0, y2 = 0, z2 = 0;
+    y2 = E;
+    E = E + 16 | 0;
+    w2 = y2 + 4 | 0;
+    x2 = y2;
+    if (!i2) {
+      i2 = 0;
+      E = y2;
+      return i2 | 0;
+    }
+    if ((Ia(c[i2 >> 2] | 0) | 0) << 24 >> 24) {
+      i2 = 0;
+      E = y2;
+      return i2 | 0;
+    }
+    if (((e2 | 0 ? (v2 = c[e2 + 4 >> 2] | 0, v2 | 0) : 0) ? (j2 = c[e2 + 12 >> 2] | 0, (j2 | g2 | 0) >= 0) : 0) ? (k2 = (f2 | 0) == 0, !(k2 & (g2 | 0) > 0)) : 0) {
+      do
+        if (!k2) {
+          if (!(v2 >>> 0 >= f2 >>> 0 & v2 >>> 0 < (f2 + (g2 << 1) | 0) >>> 0)) {
+            if (v2 >>> 0 > f2 >>> 0)
+              break;
+            if ((v2 + (c[e2 + 8 >> 2] << 1) | 0) >>> 0 <= f2 >>> 0)
+              break;
+          }
+          c[i2 >> 2] = 1;
+          i2 = 0;
+          E = y2;
+          return i2 | 0;
+        }
+      while (0);
+      if (!j2) {
+        qb(f2, g2, 0, i2) | 0;
+        i2 = 0;
+        E = y2;
+        return i2 | 0;
+      }
+      t2 = Qa(e2, i2) | 0;
+      if ((Ia(c[i2 >> 2] | 0) | 0) << 24 >> 24) {
+        i2 = 0;
+        E = y2;
+        return i2 | 0;
+      }
+      k2 = c[e2 + 88 >> 2] | 0;
+      u2 = h2 & -13;
+      u2 = (k2 & 2 | 0) == 0 ? (k2 & 1 | 0) == 0 ? h2 : u2 | 4 : u2 | 8;
+      u2 = ((c[e2 + 84 >> 2] | 0) + -3 | 0) >>> 0 < 4 ? u2 : u2 & -5;
+      k2 = u2 & 65535;
+      j2 = (k2 & 4 | 0) != 0;
+      a:
+        do
+          if (!(k2 & 16)) {
+            if (!j2) {
+              n2 = k2 & 65533;
+              l2 = f2;
+              j2 = g2;
+              m2 = 0;
+              while (1) {
+                if ((m2 | 0) >= (t2 | 0))
+                  break a;
+                s2 = (Va(e2, m2, w2, x2) | 0) == 0;
+                k2 = v2 + (c[w2 >> 2] << 1) | 0;
+                h2 = c[x2 >> 2] | 0;
+                if (s2)
+                  k2 = La(k2, h2, l2, j2, n2, i2) | 0;
+                else
+                  k2 = Ja(k2, h2, l2, j2, u2, i2) | 0;
+                c[x2 >> 2] = k2;
+                l2 = (l2 | 0) == 0 ? 0 : l2 + (k2 << 1) | 0;
+                j2 = j2 - k2 | 0;
+                m2 = m2 + 1 | 0;
+              }
+            }
+            q2 = c[e2 + 72 >> 2] | 0;
+            r2 = e2 + 224 | 0;
+            s2 = e2 + 80 | 0;
+            p2 = k2 & 65533;
+            j2 = g2;
+            o2 = 0;
+            k2 = f2;
+            while (1) {
+              if ((o2 | 0) >= (t2 | 0))
+                break a;
+              z2 = Va(e2, o2, w2, x2) | 0;
+              l2 = c[w2 >> 2] | 0;
+              n2 = v2 + (l2 << 1) | 0;
+              h2 = c[(c[r2 >> 2] | 0) + (o2 * 12 | 0) + 8 >> 2] | 0;
+              h2 = (h2 | 0) > 0 ? h2 : 0;
+              m2 = (a[s2 >> 0] | 0) != 0;
+              do
+                if (!z2) {
+                  if (m2)
+                    h2 = h2 | (a[q2 + l2 >> 0] | 0) != 0;
+                  l2 = 8207 - (h2 & 1) << 16 >> 16;
+                  if (h2 & 5) {
+                    if ((j2 | 0) > 0) {
+                      b[k2 >> 1] = l2;
+                      k2 = k2 + 2 | 0;
+                    }
+                    j2 = j2 + -1 | 0;
+                  }
+                  l2 = La(n2, c[x2 >> 2] | 0, k2, j2, p2, i2) | 0;
+                  c[x2 >> 2] = l2;
+                  k2 = (k2 | 0) == 0 ? 0 : k2 + (l2 << 1) | 0;
+                  j2 = j2 - l2 | 0;
+                  if (a[s2 >> 0] | 0)
+                    h2 = (a[q2 + (l2 + -1 + (c[w2 >> 2] | 0)) >> 0] | 0) == 0 ? h2 : h2 | 2;
+                  if (!(h2 & 10))
+                    break;
+                  if ((j2 | 0) > 0) {
+                    b[k2 >> 1] = 8207 - (h2 >>> 1 & 1) << 16 >> 16;
+                    k2 = k2 + 2 | 0;
+                  }
+                  j2 = j2 + -1 | 0;
+                } else {
+                  if (m2)
+                    h2 = (1 << d[q2 + (l2 + -1 + (c[x2 >> 2] | 0)) >> 0] & 8194 | 0) == 0 ? h2 | 4 : h2;
+                  l2 = 8207 - (h2 & 1) << 16 >> 16;
+                  if (h2 & 5) {
+                    if ((j2 | 0) > 0) {
+                      b[k2 >> 1] = l2;
+                      k2 = k2 + 2 | 0;
+                    }
+                    j2 = j2 + -1 | 0;
+                  }
+                  z2 = Ja(n2, c[x2 >> 2] | 0, k2, j2, u2, i2) | 0;
+                  c[x2 >> 2] = z2;
+                  k2 = (k2 | 0) == 0 ? 0 : k2 + (z2 << 1) | 0;
+                  j2 = j2 - z2 | 0;
+                  if (a[s2 >> 0] | 0)
+                    h2 = (1 << d[q2 + (c[w2 >> 2] | 0) >> 0] & 8194 | 0) == 0 ? h2 | 8 : h2;
+                  if (!(h2 & 10))
+                    break;
+                  if ((j2 | 0) > 0) {
+                    b[k2 >> 1] = 8207 - (h2 >>> 1 & 1) << 16 >> 16;
+                    k2 = k2 + 2 | 0;
+                  }
+                  j2 = j2 + -1 | 0;
+                }
+              while (0);
+              o2 = o2 + 1 | 0;
+            }
+          } else {
+            if (!j2) {
+              n2 = k2 & 65533;
+              m2 = f2;
+              k2 = t2;
+              j2 = g2;
+              while (1) {
+                l2 = k2 + -1 | 0;
+                if ((k2 | 0) <= 0)
+                  break a;
+                z2 = (Va(e2, l2, w2, x2) | 0) == 0;
+                k2 = v2 + (c[w2 >> 2] << 1) | 0;
+                h2 = c[x2 >> 2] | 0;
+                if (z2)
+                  h2 = Ja(k2, h2, m2, j2, n2, i2) | 0;
+                else
+                  h2 = La(k2, h2, m2, j2, u2, i2) | 0;
+                c[x2 >> 2] = h2;
+                m2 = (m2 | 0) == 0 ? 0 : m2 + (h2 << 1) | 0;
+                k2 = l2;
+                j2 = j2 - h2 | 0;
+              }
+            }
+            p2 = c[e2 + 72 >> 2] | 0;
+            o2 = k2 & 65533;
+            k2 = f2;
+            h2 = t2;
+            j2 = g2;
+            while (1) {
+              n2 = h2 + -1 | 0;
+              if ((h2 | 0) <= 0)
+                break a;
+              z2 = Va(e2, n2, w2, x2) | 0;
+              l2 = c[w2 >> 2] | 0;
+              m2 = v2 + (l2 << 1) | 0;
+              if (!z2) {
+                h2 = c[x2 >> 2] | 0;
+                if (a[p2 + (l2 + -1 + h2) >> 0] | 0) {
+                  if ((j2 | 0) > 0) {
+                    b[k2 >> 1] = 8206;
+                    k2 = k2 + 2 | 0;
+                    h2 = c[x2 >> 2] | 0;
+                  }
+                  j2 = j2 + -1 | 0;
+                }
+                z2 = Ja(m2, h2, k2, j2, o2, i2) | 0;
+                c[x2 >> 2] = z2;
+                k2 = (k2 | 0) == 0 ? 0 : k2 + (z2 << 1) | 0;
+                j2 = j2 - z2 | 0;
+                if (a[p2 + (c[w2 >> 2] | 0) >> 0] | 0) {
+                  if ((j2 | 0) > 0) {
+                    b[k2 >> 1] = 8206;
+                    k2 = k2 + 2 | 0;
+                  }
+                  j2 = j2 + -1 | 0;
+                }
+              } else {
+                if (!(1 << d[p2 + l2 >> 0] & 8194)) {
+                  if ((j2 | 0) > 0) {
+                    b[k2 >> 1] = 8207;
+                    k2 = k2 + 2 | 0;
+                  }
+                  j2 = j2 + -1 | 0;
+                }
+                z2 = La(m2, c[x2 >> 2] | 0, k2, j2, u2, i2) | 0;
+                c[x2 >> 2] = z2;
+                k2 = (k2 | 0) == 0 ? 0 : k2 + (z2 << 1) | 0;
+                j2 = j2 - z2 | 0;
+                if (!(1 << d[p2 + (z2 + -1 + (c[w2 >> 2] | 0)) >> 0] & 8194)) {
+                  if ((j2 | 0) > 0) {
+                    b[k2 >> 1] = 8207;
+                    k2 = k2 + 2 | 0;
+                  }
+                  j2 = j2 + -1 | 0;
+                }
+              }
+              h2 = n2;
+            }
+          }
+        while (0);
+      z2 = qb(f2, g2, g2 - j2 | 0, i2) | 0;
+      E = y2;
+      return z2 | 0;
+    }
+    c[i2 >> 2] = 1;
+    z2 = 0;
+    E = y2;
+    return z2 | 0;
+  }
+  function La(a2, d2, f2, g2, h2, i2) {
+    a2 = a2 | 0;
+    d2 = d2 | 0;
+    f2 = f2 | 0;
+    g2 = g2 | 0;
+    h2 = h2 | 0;
+    i2 = i2 | 0;
+    var j2 = 0, k2 = 0, l2 = 0, m2 = 0, n2 = 0;
+    switch (h2 & 10) {
+      case 0: {
+        if ((g2 | 0) < (d2 | 0)) {
+          c[i2 >> 2] = 15;
+          g2 = d2;
+          return g2 | 0;
+        }
+        j2 = d2;
+        h2 = f2;
+        while (1) {
+          b[h2 >> 1] = b[a2 >> 1] | 0;
+          if ((j2 | 0) > 1) {
+            a2 = a2 + 2 | 0;
+            j2 = j2 + -1 | 0;
+            h2 = h2 + 2 | 0;
+          } else {
+            h2 = d2;
+            break;
+          }
+        }
+        return h2 | 0;
+      }
+      case 2: {
+        if ((g2 | 0) < (d2 | 0)) {
+          c[i2 >> 2] = 15;
+          g2 = d2;
+          return g2 | 0;
+        }
+        l2 = 0;
+        j2 = 0;
+        while (1) {
+          k2 = j2 + 1 | 0;
+          h2 = e[a2 + (j2 << 1) >> 1] | 0;
+          if ((k2 | 0) == (d2 | 0) | (h2 & 64512 | 0) != 55296)
+            j2 = k2;
+          else {
+            m2 = e[a2 + (k2 << 1) >> 1] | 0;
+            g2 = (m2 & 64512 | 0) == 56320;
+            h2 = g2 ? (h2 << 10) + -56613888 + m2 | 0 : h2;
+            j2 = g2 ? j2 + 2 | 0 : k2;
+          }
+          h2 = yb(h2) | 0;
+          if (h2 >>> 0 < 65536)
+            k2 = l2 + 1 | 0;
+          else {
+            b[f2 + (l2 + 1 << 1) >> 1] = h2 & 1023 | 56320;
+            k2 = l2 + 2 | 0;
+            h2 = (h2 >>> 10) + 55232 | 0;
+          }
+          b[f2 + (l2 << 1) >> 1] = h2;
+          if ((j2 | 0) < (d2 | 0))
+            l2 = k2;
+          else {
+            h2 = d2;
+            break;
+          }
+        }
+        return h2 | 0;
+      }
+      case 8: {
+        l2 = g2;
+        h2 = a2;
+        a2 = f2;
+        a:
+          while (1) {
+            k2 = h2;
+            h2 = h2 + 2 | 0;
+            k2 = b[k2 >> 1] | 0;
+            b:
+              do
+                if ((k2 & -4) << 16 >> 16 == 8204)
+                  j2 = l2;
+                else {
+                  switch (k2 << 16 >> 16) {
+                    case 8234:
+                    case 8235:
+                    case 8236:
+                    case 8237:
+                    case 8238:
+                    case 8294:
+                    case 8295:
+                    case 8296:
+                    case 8297: {
+                      j2 = l2;
+                      break b;
+                    }
+                    default: {
+                    }
+                  }
+                  j2 = l2 + -1 | 0;
+                  if ((l2 | 0) < 1)
+                    break a;
+                  b[a2 >> 1] = k2;
+                  a2 = a2 + 2 | 0;
+                }
+              while (0);
+            if ((d2 | 0) <= 1) {
+              m2 = 26;
+              break;
+            } else {
+              l2 = j2;
+              d2 = d2 + -1 | 0;
+            }
+          }
+        if ((m2 | 0) == 26) {
+          g2 = g2 - j2 | 0;
+          return g2 | 0;
+        }
+        c[i2 >> 2] = 15;
+        a2 = d2;
+        while (1) {
+          if ((a2 | 0) <= 1)
+            break;
+          f2 = e[h2 >> 1] | 0;
+          j2 = j2 + ((((f2 + -8294 | 0) >>> 0 < 4 | ((f2 & 65532 | 0) == 8204 | (f2 + -8234 | 0) >>> 0 < 5)) ^ 1) << 31 >> 31) | 0;
+          a2 = a2 + -1 | 0;
+          h2 = h2 + 2 | 0;
+        }
+        g2 = g2 - j2 | 0;
+        return g2 | 0;
+      }
+      default: {
+        h2 = 0;
+        k2 = g2;
+        j2 = d2;
+        c:
+          while (1) {
+            l2 = e[a2 >> 1] | 0;
+            if ((j2 | 0) == 1 | (l2 & 64512 | 0) != 55296)
+              d2 = 1;
+            else {
+              n2 = e[a2 + 2 >> 1] | 0;
+              d2 = (n2 & 64512 | 0) == 56320;
+              l2 = d2 ? (l2 << 10) + -56613888 + n2 | 0 : l2;
+              d2 = d2 ? 2 : 1;
+            }
+            a2 = a2 + (d2 << 1) | 0;
+            j2 = j2 - d2 | 0;
+            d:
+              do
+                if ((l2 & -4 | 0) != 8204) {
+                  switch (l2 | 0) {
+                    case 8234:
+                    case 8235:
+                    case 8236:
+                    case 8237:
+                    case 8238:
+                    case 8294:
+                    case 8295:
+                    case 8296:
+                    case 8297:
+                      break d;
+                    default: {
+                    }
+                  }
+                  k2 = k2 - d2 | 0;
+                  if ((k2 | 0) < 0)
+                    break c;
+                  l2 = yb(l2) | 0;
+                  if (l2 >>> 0 < 65536) {
+                    b[f2 + (h2 << 1) >> 1] = l2;
+                    h2 = h2 + 1 | 0;
+                    break;
+                  } else {
+                    b[f2 + (h2 << 1) >> 1] = (l2 >>> 10) + 55232;
+                    b[f2 + (h2 + 1 << 1) >> 1] = l2 & 1023 | 56320;
+                    h2 = h2 + 2 | 0;
+                    break;
+                  }
+                }
+              while (0);
+            if ((j2 | 0) <= 0) {
+              m2 = 40;
+              break;
+            }
+          }
+        if ((m2 | 0) == 40)
+          return h2 | 0;
+        c[i2 >> 2] = 15;
+        h2 = a2;
+        while (1) {
+          if ((j2 | 0) <= 0)
+            break;
+          n2 = e[h2 >> 1] | 0;
+          k2 = k2 + ((((n2 + -8294 | 0) >>> 0 < 4 | ((n2 & 65532 | 0) == 8204 | (n2 + -8234 | 0) >>> 0 < 5)) ^ 1) << 31 >> 31) | 0;
+          j2 = j2 + -1 | 0;
+          h2 = h2 + 2 | 0;
+        }
+        n2 = g2 - k2 | 0;
+        return n2 | 0;
+      }
+    }
+    return 0;
+  }
+  function Ma(d2, e2, f2, g2, h2) {
+    d2 = d2 | 0;
+    e2 = e2 | 0;
+    f2 = f2 | 0;
+    g2 = g2 | 0;
+    h2 = h2 | 0;
+    var i2 = 0, j2 = 0, k2 = 0, l2 = 0, m2 = 0, n2 = 0, o2 = 0, p2 = 0;
+    if (!h2)
+      return;
+    if ((Na(c[h2 >> 2] | 0) | 0) << 24 >> 24)
+      return;
+    if (d2 | 0 ? (c[d2 >> 2] | 0) == (d2 | 0) : 0) {
+      if (!((e2 | 0) > -1 & (f2 | 0) > (e2 | 0))) {
+        c[h2 >> 2] = 1;
+        return;
+      }
+      if ((f2 | 0) >= 0 ? (c[d2 + 12 >> 2] | 0) >= (f2 | 0) : 0) {
+        if (!g2) {
+          c[h2 >> 2] = 1;
+          return;
+        }
+        p2 = Ga(d2, e2, h2) | 0;
+        if ((p2 | 0) != (Ga(d2, f2 + -1 | 0, h2) | 0)) {
+          c[h2 >> 2] = 1;
+          return;
+        }
+        c[g2 >> 2] = 0;
+        l2 = d2 + 4 | 0;
+        c[g2 + 4 >> 2] = (c[l2 >> 2] | 0) + (e2 << 1);
+        o2 = f2 - e2 | 0;
+        c[g2 + 12 >> 2] = o2;
+        c[g2 + 8 >> 2] = o2;
+        m2 = g2 + 16 | 0;
+        c[m2 >> 2] = o2;
+        if ((a[d2 + 94 >> 0] | 0) != 0 ? (i2 = c[d2 + 136 >> 2] | 0, (c[i2 >> 2] | 0) <= (e2 | 0)) : 0) {
+          h2 = d2 + 132 | 0;
+          j2 = h2;
+          h2 = da(c[h2 >> 2] | 0, i2, e2) | 0;
+        } else {
+          j2 = d2 + 132 | 0;
+          h2 = a[d2 + 93 >> 0] | 0;
+        }
+        p2 = g2 + 93 | 0;
+        a[p2 >> 0] = h2;
+        c[g2 + 132 >> 2] = c[j2 >> 2];
+        c[g2 + 224 >> 2] = 0;
+        c[g2 + 120 >> 2] = 0;
+        c[g2 + 84 >> 2] = c[d2 + 84 >> 2];
+        c[g2 + 88 >> 2] = c[d2 + 88 >> 2];
+        k2 = g2 + 348 | 0;
+        c[k2 >> 2] = 0;
+        if ((c[d2 + 348 >> 2] | 0) > 0) {
+          j2 = e2;
+          h2 = 0;
+          while (1) {
+            if ((j2 | 0) >= (f2 | 0))
+              break;
+            i2 = b[(c[l2 >> 2] | 0) + (j2 << 1) >> 1] | 0;
+            if ((i2 & -4) << 16 >> 16 == 8204)
+              n2 = 24;
+            else
+              switch (i2 << 16 >> 16) {
+                case 8234:
+                case 8235:
+                case 8236:
+                case 8237:
+                case 8238:
+                case 8294:
+                case 8295:
+                case 8296:
+                case 8297: {
+                  n2 = 24;
+                  break;
+                }
+                default: {
+                }
+              }
+            if ((n2 | 0) == 24) {
+              n2 = 0;
+              h2 = h2 + 1 | 0;
+              c[k2 >> 2] = h2;
+            }
+            j2 = j2 + 1 | 0;
+          }
+          c[m2 >> 2] = o2 - h2;
+        }
+        c[g2 + 72 >> 2] = (c[d2 + 72 >> 2] | 0) + e2;
+        l2 = (c[d2 + 76 >> 2] | 0) + e2 | 0;
+        c[g2 + 76 >> 2] = l2;
+        c[g2 + 220 >> 2] = -1;
+        h2 = c[d2 + 116 >> 2] | 0;
+        a:
+          do
+            if ((h2 | 0) != 2) {
+              c[g2 + 116 >> 2] = h2;
+              h2 = c[d2 + 128 >> 2] | 0;
+              if ((h2 | 0) <= (e2 | 0)) {
+                c[g2 + 128 >> 2] = 0;
+                break;
+              }
+              if ((h2 | 0) < (f2 | 0)) {
+                c[g2 + 128 >> 2] = h2 - e2;
+                break;
+              } else {
+                c[g2 + 128 >> 2] = o2;
+                break;
+              }
+            } else {
+              Oa(g2);
+              k2 = g2 + 128 | 0;
+              j2 = c[k2 >> 2] | 0;
+              b:
+                do
+                  if (!j2)
+                    h2 = a[p2 >> 0] & 1;
+                  else {
+                    h2 = a[l2 >> 0] & 1;
+                    if ((j2 | 0) < (o2 | 0) ? (a[p2 >> 0] & 1) != h2 << 24 >> 24 : 0) {
+                      h2 = 2;
+                      break;
+                    }
+                    i2 = 1;
+                    while (1) {
+                      if ((i2 | 0) == (j2 | 0))
+                        break b;
+                      if ((a[l2 + i2 >> 0] & 1) == h2 << 24 >> 24)
+                        i2 = i2 + 1 | 0;
+                      else {
+                        h2 = 2;
+                        break;
+                      }
+                    }
+                  }
+                while (0);
+              c[g2 + 116 >> 2] = h2 & 255;
+              switch (h2 & 3) {
+                case 0: {
+                  a[p2 >> 0] = (a[p2 >> 0] | 0) + 1 << 24 >> 24 & -2;
+                  c[k2 >> 2] = 0;
+                  break a;
+                }
+                case 1: {
+                  a[p2 >> 0] = a[p2 >> 0] | 1;
+                  c[k2 >> 2] = 0;
+                  break a;
+                }
+                default:
+                  break a;
+              }
+            }
+          while (0);
+        c[g2 >> 2] = d2;
+        return;
+      }
+      c[h2 >> 2] = 1;
+      return;
+    }
+    c[h2 >> 2] = 27;
+    return;
+  }
+  function Na(a2) {
+    a2 = a2 | 0;
+    return (a2 | 0) > 0 | 0;
+  }
+  function Oa(b2) {
+    b2 = b2 | 0;
+    var e2 = 0, f2 = 0, g2 = 0, h2 = 0, i2 = 0;
+    g2 = c[b2 + 72 >> 2] | 0;
+    h2 = c[b2 + 76 >> 2] | 0;
+    e2 = c[b2 + 12 >> 2] | 0;
+    i2 = a[b2 + 93 >> 0] | 0;
+    if ((a[g2 + (e2 + -1) >> 0] | 0) == 7) {
+      i2 = e2;
+      b2 = b2 + 128 | 0;
+      c[b2 >> 2] = i2;
+      return;
+    }
+    while (1) {
+      if ((e2 | 0) <= 0)
+        break;
+      f2 = e2 + -1 | 0;
+      if (!(1 << d[g2 + f2 >> 0] & 8248192))
+        break;
+      else
+        e2 = f2;
+    }
+    while (1) {
+      if ((e2 | 0) <= 0) {
+        f2 = 8;
+        break;
+      }
+      f2 = e2 + -1 | 0;
+      if ((a[h2 + f2 >> 0] | 0) == i2 << 24 >> 24)
+        e2 = f2;
+      else {
+        f2 = 8;
+        break;
+      }
+    }
+    if ((f2 | 0) == 8) {
+      b2 = b2 + 128 | 0;
+      c[b2 >> 2] = e2;
+      return;
+    }
+  }
+  function Pa(b2, d2) {
+    b2 = b2 | 0;
+    d2 = d2 | 0;
+    var e2 = 0, f2 = 0, g2 = 0, h2 = 0, i2 = 0;
+    if (!d2) {
+      i2 = 0;
+      return i2 | 0;
+    }
+    if ((Na(c[d2 >> 2] | 0) | 0) << 24 >> 24) {
+      i2 = 0;
+      return i2 | 0;
+    }
+    do
+      if (b2 | 0) {
+        e2 = c[b2 >> 2] | 0;
+        if ((e2 | 0) != (b2 | 0)) {
+          if (!e2)
+            break;
+          if ((c[e2 >> 2] | 0) != (e2 | 0))
+            break;
+        }
+        f2 = c[b2 + 12 >> 2] | 0;
+        if ((f2 | 0) < 1) {
+          c[d2 >> 2] = 1;
+          i2 = 0;
+          return i2 | 0;
+        }
+        g2 = b2 + 128 | 0;
+        h2 = c[g2 >> 2] | 0;
+        if ((f2 | 0) == (h2 | 0)) {
+          i2 = c[b2 + 76 >> 2] | 0;
+          return i2 | 0;
+        }
+        e2 = b2 + 48 | 0;
+        if (!((aa(e2, b2 + 24 | 0, a[b2 + 68 >> 0] | 0, f2) | 0) << 24 >> 24)) {
+          c[d2 >> 2] = 7;
+          i2 = 0;
+          return i2 | 0;
+        }
+        e2 = c[e2 >> 2] | 0;
+        d2 = b2 + 76 | 0;
+        if ((h2 | 0) > 0 ? (i2 = c[d2 >> 2] | 0, (e2 | 0) != (i2 | 0)) : 0)
+          ec(e2 | 0, i2 | 0, h2 | 0) | 0;
+        fc(e2 + h2 | 0, a[b2 + 93 >> 0] | 0, f2 - h2 | 0) | 0;
+        c[g2 >> 2] = f2;
+        c[d2 >> 2] = e2;
+        i2 = e2;
+        return i2 | 0;
+      }
+    while (0);
+    c[d2 >> 2] = 27;
+    i2 = 0;
+    return i2 | 0;
+  }
+  function Qa(a2, b2) {
+    a2 = a2 | 0;
+    b2 = b2 | 0;
+    var d2 = 0;
+    if (!b2) {
+      d2 = -1;
+      return d2 | 0;
+    }
+    if ((Na(c[b2 >> 2] | 0) | 0) << 24 >> 24) {
+      d2 = -1;
+      return d2 | 0;
+    }
+    do
+      if (a2 | 0) {
+        d2 = c[a2 >> 2] | 0;
+        if ((d2 | 0) != (a2 | 0)) {
+          if (!d2)
+            break;
+          if ((c[d2 >> 2] | 0) != (d2 | 0))
+            break;
+        }
+        Ra(a2, b2);
+        if ((Na(c[b2 >> 2] | 0) | 0) << 24 >> 24) {
+          d2 = -1;
+          return d2 | 0;
+        }
+        d2 = c[a2 + 220 >> 2] | 0;
+        return d2 | 0;
+      }
+    while (0);
+    c[b2 >> 2] = 27;
+    d2 = -1;
+    return d2 | 0;
+  }
+  function Ra(e2, f2) {
+    e2 = e2 | 0;
+    f2 = f2 | 0;
+    var g2 = 0, h2 = 0, i2 = 0, j2 = 0, k2 = 0, l2 = 0, m2 = 0, n2 = 0, o2 = 0, p2 = 0, q2 = 0, r2 = 0, s2 = 0, t2 = 0;
+    s2 = e2 + 220 | 0;
+    if ((c[s2 >> 2] | 0) > -1)
+      return;
+    do
+      if ((c[e2 + 116 >> 2] | 0) == 2) {
+        o2 = c[e2 + 12 >> 2] | 0;
+        r2 = c[e2 + 76 >> 2] | 0;
+        p2 = c[e2 + 128 >> 2] | 0;
+        g2 = 0;
+        i2 = 0;
+        h2 = -2;
+        while (1) {
+          if ((g2 | 0) >= (p2 | 0))
+            break;
+          q2 = a[r2 + g2 >> 0] | 0;
+          g2 = g2 + 1 | 0;
+          i2 = i2 + (q2 << 24 >> 24 != h2 << 24 >> 24 & 1) | 0;
+          h2 = q2;
+        }
+        if ((o2 | 0) == (p2 | 0) & (i2 | 0) == 1) {
+          Sa(e2, a[r2 >> 0] | 0);
+          break;
+        }
+        l2 = (o2 | 0) > (p2 | 0);
+        q2 = i2 + (l2 & 1) | 0;
+        g2 = e2 + 60 | 0;
+        if (!((aa(g2, e2 + 36 | 0, a[e2 + 69 >> 0] | 0, q2 * 12 | 0) | 0) << 24 >> 24))
+          return;
+        n2 = c[g2 >> 2] | 0;
+        m2 = 0;
+        g2 = 126;
+        k2 = 0;
+        i2 = 0;
+        while (1) {
+          h2 = a[r2 + i2 >> 0] | 0;
+          g2 = (h2 & 255) < (g2 & 255) ? h2 : g2;
+          k2 = (h2 & 255) > (k2 & 255) ? h2 : k2;
+          j2 = i2;
+          while (1) {
+            j2 = j2 + 1 | 0;
+            if ((j2 | 0) >= (p2 | 0)) {
+              h2 = 0;
+              break;
+            }
+            if ((a[r2 + j2 >> 0] | 0) != h2 << 24 >> 24) {
+              h2 = 1;
+              break;
+            }
+          }
+          c[n2 + (m2 * 12 | 0) >> 2] = i2;
+          c[n2 + (m2 * 12 | 0) + 4 >> 2] = j2 - i2;
+          c[n2 + (m2 * 12 | 0) + 8 >> 2] = 0;
+          m2 = m2 + 1 | 0;
+          if (!h2)
+            break;
+          else
+            i2 = j2;
+        }
+        if (l2) {
+          c[n2 + (m2 * 12 | 0) >> 2] = p2;
+          c[n2 + (m2 * 12 | 0) + 4 >> 2] = o2 - p2;
+          p2 = a[e2 + 93 >> 0] | 0;
+          g2 = (p2 & 255) < (g2 & 255) ? p2 : g2;
+        }
+        c[e2 + 224 >> 2] = n2;
+        c[s2 >> 2] = q2;
+        Ta(e2, g2, k2);
+        g2 = 0;
+        h2 = 0;
+        while (1) {
+          if ((h2 | 0) == (q2 | 0))
+            break;
+          o2 = n2 + (h2 * 12 | 0) | 0;
+          p2 = c[o2 >> 2] | 0;
+          c[o2 >> 2] = d[r2 + p2 >> 0] << 31 | p2;
+          o2 = n2 + (h2 * 12 | 0) + 4 | 0;
+          p2 = (c[o2 >> 2] | 0) + g2 | 0;
+          c[o2 >> 2] = p2;
+          g2 = p2;
+          h2 = h2 + 1 | 0;
+        }
+        if (m2 >>> 0 < q2 >>> 0) {
+          q2 = d[e2 + 93 >> 0] | 0;
+          r2 = n2 + (((q2 & 1 | 0) == 0 ? m2 : 0) * 12 | 0) | 0;
+          c[r2 >> 2] = q2 << 31 | c[r2 >> 2];
+        }
+      } else
+        Sa(e2, a[e2 + 93 >> 0] | 0);
+    while (0);
+    g2 = c[e2 + 332 >> 2] | 0;
+    a:
+      do
+        if ((g2 | 0) > 0) {
+          r2 = c[e2 + 344 >> 2] | 0;
+          h2 = r2 + (g2 << 3) | 0;
+          i2 = e2 + 224 | 0;
+          g2 = r2;
+          while (1) {
+            if (g2 >>> 0 >= h2 >>> 0)
+              break a;
+            r2 = Ua(c[s2 >> 2] | 0, c[i2 >> 2] | 0, c[g2 >> 2] | 0, f2) | 0;
+            r2 = (c[i2 >> 2] | 0) + (r2 * 12 | 0) + 8 | 0;
+            c[r2 >> 2] = c[r2 >> 2] | c[g2 + 4 >> 2];
+            g2 = g2 + 8 | 0;
+          }
+        }
+      while (0);
+    if ((c[e2 + 348 >> 2] | 0) <= 0)
+      return;
+    g2 = c[e2 + 4 >> 2] | 0;
+    j2 = g2 + (c[e2 + 12 >> 2] << 1) | 0;
+    k2 = g2;
+    h2 = e2 + 224 | 0;
+    while (1) {
+      if (g2 >>> 0 >= j2 >>> 0)
+        break;
+      i2 = b[g2 >> 1] | 0;
+      if ((i2 & -4) << 16 >> 16 == 8204)
+        t2 = 31;
+      else
+        switch (i2 << 16 >> 16) {
+          case 8234:
+          case 8235:
+          case 8236:
+          case 8237:
+          case 8238:
+          case 8294:
+          case 8295:
+          case 8296:
+          case 8297: {
+            t2 = 31;
+            break;
+          }
+          default: {
+          }
+        }
+      if ((t2 | 0) == 31) {
+        t2 = 0;
+        e2 = Ua(c[s2 >> 2] | 0, c[h2 >> 2] | 0, g2 - k2 >> 1, f2) | 0;
+        e2 = (c[h2 >> 2] | 0) + (e2 * 12 | 0) + 8 | 0;
+        c[e2 >> 2] = (c[e2 >> 2] | 0) + -1;
+      }
+      g2 = g2 + 2 | 0;
+    }
+    return;
+  }
+  function Sa(a2, b2) {
+    a2 = a2 | 0;
+    b2 = b2 | 0;
+    var d2 = 0;
+    d2 = a2 + 228 | 0;
+    c[a2 + 224 >> 2] = d2;
+    c[a2 + 220 >> 2] = 1;
+    c[d2 >> 2] = (b2 & 255) << 31;
+    c[a2 + 232 >> 2] = c[a2 + 12 >> 2];
+    c[a2 + 236 >> 2] = 0;
+    return;
+  }
+  function Ta(a2, b2, e2) {
+    a2 = a2 | 0;
+    b2 = b2 | 0;
+    e2 = e2 | 0;
+    var f2 = 0, g2 = 0, h2 = 0, i2 = 0, j2 = 0, k2 = 0, l2 = 0, m2 = 0, n2 = 0, o2 = 0, p2 = 0, q2 = 0;
+    o2 = E;
+    E = E + 16 | 0;
+    n2 = o2;
+    if (((b2 | 1) & 255) >= (e2 & 255)) {
+      E = o2;
+      return;
+    }
+    l2 = b2 + 1 << 24 >> 24;
+    m2 = c[a2 + 224 >> 2] | 0;
+    i2 = c[a2 + 76 >> 2] | 0;
+    j2 = a2 + 128 | 0;
+    k2 = a2 + 12 | 0;
+    h2 = (c[a2 + 220 >> 2] | 0) + (((c[j2 >> 2] | 0) < (c[k2 >> 2] | 0)) << 31 >> 31) | 0;
+    b2 = e2;
+    while (1) {
+      b2 = b2 + -1 << 24 >> 24;
+      if ((b2 & 255) < (l2 & 255))
+        break;
+      a2 = 0;
+      while (1) {
+        if ((a2 | 0) >= (h2 | 0))
+          break;
+        if ((d[i2 + (c[m2 + (a2 * 12 | 0) >> 2] | 0) >> 0] | 0) >= (b2 & 255)) {
+          e2 = a2;
+          while (1) {
+            g2 = e2 + 1 | 0;
+            if ((g2 | 0) >= (h2 | 0))
+              break;
+            if ((d[i2 + (c[m2 + (g2 * 12 | 0) >> 2] | 0) >> 0] | 0) < (b2 & 255))
+              break;
+            else
+              e2 = g2;
+          }
+          f2 = e2;
+          while (1) {
+            if ((a2 | 0) >= (f2 | 0))
+              break;
+            q2 = m2 + (a2 * 12 | 0) | 0;
+            c[n2 >> 2] = c[q2 >> 2];
+            c[n2 + 4 >> 2] = c[q2 + 4 >> 2];
+            c[n2 + 8 >> 2] = c[q2 + 8 >> 2];
+            p2 = m2 + (f2 * 12 | 0) | 0;
+            c[q2 >> 2] = c[p2 >> 2];
+            c[q2 + 4 >> 2] = c[p2 + 4 >> 2];
+            c[q2 + 8 >> 2] = c[p2 + 8 >> 2];
+            c[p2 >> 2] = c[n2 >> 2];
+            c[p2 + 4 >> 2] = c[n2 + 4 >> 2];
+            c[p2 + 8 >> 2] = c[n2 + 8 >> 2];
+            f2 = f2 + -1 | 0;
+            a2 = a2 + 1 | 0;
+          }
+          if ((g2 | 0) == (h2 | 0))
+            break;
+          else
+            a2 = e2 + 2 | 0;
+        } else
+          a2 = a2 + 1 | 0;
+      }
+    }
+    if (l2 & 1) {
+      E = o2;
+      return;
+    }
+    b2 = h2 + (((c[j2 >> 2] | 0) == (c[k2 >> 2] | 0)) << 31 >> 31) | 0;
+    a2 = 0;
+    while (1) {
+      if ((a2 | 0) >= (b2 | 0))
+        break;
+      p2 = m2 + (a2 * 12 | 0) | 0;
+      c[n2 >> 2] = c[p2 >> 2];
+      c[n2 + 4 >> 2] = c[p2 + 4 >> 2];
+      c[n2 + 8 >> 2] = c[p2 + 8 >> 2];
+      q2 = m2 + (b2 * 12 | 0) | 0;
+      c[p2 >> 2] = c[q2 >> 2];
+      c[p2 + 4 >> 2] = c[q2 + 4 >> 2];
+      c[p2 + 8 >> 2] = c[q2 + 8 >> 2];
+      c[q2 >> 2] = c[n2 >> 2];
+      c[q2 + 4 >> 2] = c[n2 + 4 >> 2];
+      c[q2 + 8 >> 2] = c[n2 + 8 >> 2];
+      b2 = b2 + -1 | 0;
+      a2 = a2 + 1 | 0;
+    }
+    E = o2;
+    return;
+  }
+  function Ua(a2, b2, d2, e2) {
+    a2 = a2 | 0;
+    b2 = b2 | 0;
+    d2 = d2 | 0;
+    e2 = e2 | 0;
+    var f2 = 0, g2 = 0, h2 = 0, i2 = 0, j2 = 0;
+    g2 = 0;
+    f2 = 0;
+    while (1) {
+      if ((f2 | 0) >= (a2 | 0))
+        break;
+      h2 = c[b2 + (f2 * 12 | 0) + 4 >> 2] | 0;
+      j2 = c[b2 + (f2 * 12 | 0) >> 2] & 2147483647;
+      if ((j2 | 0) <= (d2 | 0) ? (h2 - g2 + j2 | 0) > (d2 | 0) : 0) {
+        i2 = 7;
+        break;
+      }
+      g2 = h2;
+      f2 = f2 + 1 | 0;
+    }
+    if ((i2 | 0) == 7)
+      return f2 | 0;
+    c[e2 >> 2] = 27;
+    j2 = 0;
+    return j2 | 0;
+  }
+  function Va(a2, b2, d2, e2) {
+    a2 = a2 | 0;
+    b2 = b2 | 0;
+    d2 = d2 | 0;
+    e2 = e2 | 0;
+    var f2 = 0, g2 = 0, h2 = 0;
+    h2 = E;
+    E = E + 16 | 0;
+    f2 = h2;
+    c[f2 >> 2] = 0;
+    do
+      if (a2 | 0) {
+        g2 = c[a2 >> 2] | 0;
+        if ((g2 | 0) != (a2 | 0)) {
+          if (!g2)
+            break;
+          if ((c[g2 >> 2] | 0) != (g2 | 0))
+            break;
+        }
+        Ra(a2, f2);
+        if ((Na(c[f2 >> 2] | 0) | 0) << 24 >> 24) {
+          e2 = 0;
+          E = h2;
+          return e2 | 0;
+        }
+        if ((b2 | 0) >= 0 ? (c[a2 + 220 >> 2] | 0) > (b2 | 0) : 0) {
+          a2 = a2 + 224 | 0;
+          f2 = c[(c[a2 >> 2] | 0) + (b2 * 12 | 0) >> 2] | 0;
+          if (d2 | 0)
+            c[d2 >> 2] = f2 & 2147483647;
+          if (e2 | 0) {
+            a2 = c[a2 >> 2] | 0;
+            if ((b2 | 0) > 0)
+              a2 = (c[a2 + (b2 * 12 | 0) + 4 >> 2] | 0) - (c[a2 + ((b2 + -1 | 0) * 12 | 0) + 4 >> 2] | 0) | 0;
+            else
+              a2 = c[a2 + 4 >> 2] | 0;
+            c[e2 >> 2] = a2;
+          }
+          e2 = f2 >>> 31;
+          E = h2;
+          return e2 | 0;
+        }
+        c[f2 >> 2] = 1;
+        e2 = 0;
+        E = h2;
+        return e2 | 0;
+      }
+    while (0);
+    c[f2 >> 2] = 27;
+    e2 = 0;
+    E = h2;
+    return e2 | 0;
+  }
+  function Wa(a2, d2, e2) {
+    a2 = a2 | 0;
+    d2 = d2 | 0;
+    e2 = e2 | 0;
+    var f2 = 0, g2 = 0, h2 = 0, i2 = 0, j2 = 0, k2 = 0, l2 = 0, m2 = 0, n2 = 0, o2 = 0, p2 = 0;
+    if (!e2)
+      return;
+    if ((Na(c[e2 >> 2] | 0) | 0) << 24 >> 24)
+      return;
+    if (!d2) {
+      c[e2 >> 2] = 1;
+      return;
+    }
+    Qa(a2, e2) | 0;
+    if (!((Xa(c[e2 >> 2] | 0) | 0) << 24 >> 24))
+      return;
+    m2 = a2 + 224 | 0;
+    e2 = c[m2 >> 2] | 0;
+    k2 = a2 + 220 | 0;
+    l2 = e2 + ((c[k2 >> 2] | 0) * 12 | 0) | 0;
+    n2 = a2 + 16 | 0;
+    if ((c[n2 >> 2] | 0) < 1)
+      return;
+    g2 = 0;
+    f2 = d2;
+    while (1) {
+      if (e2 >>> 0 >= l2 >>> 0)
+        break;
+      h2 = c[e2 >> 2] | 0;
+      j2 = c[e2 + 4 >> 2] | 0;
+      if ((h2 | 0) > -1)
+        while (1) {
+          i2 = f2 + 4 | 0;
+          c[f2 >> 2] = h2;
+          g2 = g2 + 1 | 0;
+          if ((g2 | 0) < (j2 | 0)) {
+            h2 = h2 + 1 | 0;
+            f2 = i2;
+          } else {
+            f2 = i2;
+            break;
+          }
+        }
+      else {
+        i2 = j2 - g2 + (h2 & 2147483647) | 0;
+        while (1) {
+          i2 = i2 + -1 | 0;
+          h2 = f2 + 4 | 0;
+          c[f2 >> 2] = i2;
+          g2 = g2 + 1 | 0;
+          if ((g2 | 0) >= (j2 | 0)) {
+            f2 = h2;
+            break;
+          } else
+            f2 = h2;
+        }
+      }
+      e2 = e2 + 12 | 0;
+    }
+    if ((c[a2 + 332 >> 2] | 0) > 0) {
+      g2 = c[k2 >> 2] | 0;
+      m2 = c[m2 >> 2] | 0;
+      f2 = 0;
+      e2 = 0;
+      while (1) {
+        if ((e2 | 0) >= (g2 | 0))
+          break;
+        p2 = c[m2 + (e2 * 12 | 0) + 8 >> 2] | 0;
+        f2 = f2 + ((p2 & 5 | 0) != 0 & 1) + ((p2 & 10 | 0) != 0 & 1) | 0;
+        e2 = e2 + 1 | 0;
+      }
+      e2 = c[n2 >> 2] | 0;
+      while (1) {
+        l2 = g2 + -1 | 0;
+        if (!((g2 | 0) > 0 & (f2 | 0) > 0))
+          break;
+        k2 = c[m2 + (l2 * 12 | 0) + 8 >> 2] | 0;
+        h2 = e2 + -1 | 0;
+        if (k2 & 10) {
+          c[d2 + (h2 << 2) >> 2] = -1;
+          e2 = h2;
+          f2 = f2 + -1 | 0;
+        }
+        if ((g2 | 0) > 1)
+          j2 = c[m2 + ((g2 + -2 | 0) * 12 | 0) + 4 >> 2] | 0;
+        else
+          j2 = 0;
+        i2 = (f2 | 0) > 0;
+        h2 = c[m2 + (l2 * 12 | 0) + 4 >> 2] | 0;
+        while (1) {
+          g2 = h2 + -1 | 0;
+          if (!(i2 & (h2 | 0) > (j2 | 0)))
+            break;
+          p2 = e2 + -1 | 0;
+          c[d2 + (p2 << 2) >> 2] = c[d2 + (g2 << 2) >> 2];
+          h2 = g2;
+          e2 = p2;
+        }
+        g2 = e2 + -1 | 0;
+        if (k2 & 5) {
+          c[d2 + (g2 << 2) >> 2] = -1;
+          e2 = g2;
+          f2 = f2 + -1 | 0;
+        }
+        g2 = l2;
+      }
+      return;
+    }
+    if ((c[a2 + 348 >> 2] | 0) <= 0)
+      return;
+    p2 = c[k2 >> 2] | 0;
+    o2 = c[m2 >> 2] | 0;
+    a2 = a2 + 4 | 0;
+    e2 = 0;
+    m2 = 0;
+    f2 = 0;
+    while (1) {
+      if ((m2 | 0) >= (p2 | 0))
+        break;
+      n2 = c[o2 + (m2 * 12 | 0) + 4 >> 2] | 0;
+      l2 = n2 - f2 | 0;
+      g2 = (c[o2 + (m2 * 12 | 0) + 8 >> 2] | 0) == 0;
+      a:
+        do
+          if ((e2 | 0) == (f2 | 0) & g2)
+            e2 = l2 + e2 | 0;
+          else {
+            if (g2)
+              while (1) {
+                if ((f2 | 0) >= (n2 | 0))
+                  break a;
+                c[d2 + (e2 << 2) >> 2] = c[d2 + (f2 << 2) >> 2];
+                f2 = f2 + 1 | 0;
+                e2 = e2 + 1 | 0;
+              }
+            j2 = c[o2 + (m2 * 12 | 0) >> 2] | 0;
+            i2 = (j2 | 0) > -1;
+            j2 = j2 & 2147483647;
+            k2 = l2 + -1 + j2 | 0;
+            h2 = 0;
+            while (1) {
+              if ((h2 | 0) >= (l2 | 0))
+                break a;
+              f2 = i2 ? h2 + j2 | 0 : k2 - h2 | 0;
+              g2 = b[(c[a2 >> 2] | 0) + (f2 << 1) >> 1] | 0;
+              b:
+                do
+                  if ((g2 & -4) << 16 >> 16 != 8204) {
+                    switch (g2 << 16 >> 16) {
+                      case 8234:
+                      case 8235:
+                      case 8236:
+                      case 8237:
+                      case 8238:
+                      case 8294:
+                      case 8295:
+                      case 8296:
+                      case 8297:
+                        break b;
+                      default: {
+                      }
+                    }
+                    c[d2 + (e2 << 2) >> 2] = f2;
+                    e2 = e2 + 1 | 0;
+                  }
+                while (0);
+              h2 = h2 + 1 | 0;
+            }
+          }
+        while (0);
+      m2 = m2 + 1 | 0;
+      f2 = n2;
+    }
+    return;
+  }
+  function Xa(a2) {
+    a2 = a2 | 0;
+    return (a2 | 0) < 1 | 0;
+  }
+  function Ya(a2, d2, e2, f2, g2) {
+    a2 = a2 | 0;
+    d2 = d2 | 0;
+    e2 = e2 | 0;
+    f2 = f2 | 0;
+    g2 = g2 | 0;
+    var h2 = 0, i2 = 0, j2 = 0, k2 = 0, l2 = 0, m2 = 0, n2 = 0, o2 = 0;
+    o2 = E;
+    E = E + 656 | 0;
+    j2 = o2 + 632 | 0;
+    l2 = o2;
+    m2 = o2 + 628 | 0;
+    n2 = o2 + 624 | 0;
+    k2 = o2 + 600 | 0;
+    if (!g2) {
+      n2 = 0;
+      E = o2;
+      return n2 | 0;
+    }
+    if ((Za(c[g2 >> 2] | 0) | 0) << 24 >> 24) {
+      n2 = 0;
+      E = o2;
+      return n2 | 0;
+    }
+    if (!((a2 | 0) == 0 | (d2 | 0) < -1) ? (h2 = (e2 | 0) == 0, !((f2 | 0) < 0 | h2 & (f2 | 0) != 0)) : 0) {
+      if ((d2 | 0) == -1)
+        d2 = ob(a2) | 0;
+      if ((d2 | 0) < 1) {
+        qb(e2, f2, 0, g2) | 0;
+        n2 = 0;
+        E = o2;
+        return n2 | 0;
+      }
+      do
+        if (!h2) {
+          if (!(a2 >>> 0 <= e2 >>> 0 & (a2 + (d2 << 1) | 0) >>> 0 > e2 >>> 0) ? !(e2 >>> 0 <= a2 >>> 0 & (e2 + (f2 << 1) | 0) >>> 0 > a2 >>> 0) : 0)
+            break;
+          c[g2 >> 2] = 1;
+          n2 = 0;
+          E = o2;
+          return n2 | 0;
+        }
+      while (0);
+      c[m2 >> 2] = 0;
+      c[n2 >> 2] = 0;
+      h2 = $a(a2, d2) | 0;
+      if ((h2 | 0) > (f2 | 0)) {
+        c[g2 >> 2] = 15;
+        n2 = h2;
+        E = o2;
+        return n2 | 0;
+      }
+      h2 = (d2 | 0) > (h2 | 0) ? d2 : h2;
+      if ((h2 | 0) >= 301) {
+        i2 = lb(h2 << 1) | 0;
+        if (!i2) {
+          c[g2 >> 2] = 7;
+          n2 = 0;
+          E = o2;
+          return n2 | 0;
+        }
+      } else {
+        i2 = l2;
+        h2 = 300;
+      }
+      pb(i2, a2, d2) | 0;
+      if ((h2 | 0) > (d2 | 0))
+        fc(i2 + (d2 << 1) | 0, 0, h2 - d2 << 1 | 0) | 0;
+      ab(i2, d2, m2, n2);
+      bb(i2, d2, c[m2 >> 2] | 0, c[n2 >> 2] | 0);
+      b[k2 >> 1] = 8203;
+      b[k2 + 2 >> 1] = 0;
+      c[k2 + 4 >> 2] = 3;
+      c[k2 + 8 >> 2] = 2;
+      c[k2 + 12 >> 2] = 262144;
+      c[k2 + 16 >> 2] = 393216;
+      c[k2 + 20 >> 2] = 0;
+      c[j2 >> 2] = c[k2 >> 2];
+      c[j2 + 4 >> 2] = c[k2 + 4 >> 2];
+      c[j2 + 8 >> 2] = c[k2 + 8 >> 2];
+      c[j2 + 12 >> 2] = c[k2 + 12 >> 2];
+      c[j2 + 16 >> 2] = c[k2 + 16 >> 2];
+      c[j2 + 20 >> 2] = c[k2 + 20 >> 2];
+      d2 = cb(i2, d2, g2, j2) | 0;
+      ab(i2, d2, m2, n2);
+      bb(i2, d2, c[m2 >> 2] | 0, c[n2 >> 2] | 0);
+      pb(e2, i2, kb(d2, f2) | 0) | 0;
+      if ((i2 | 0) != (l2 | 0))
+        nb(i2);
+      if ((d2 | 0) > (f2 | 0)) {
+        c[g2 >> 2] = 15;
+        n2 = d2;
+        E = o2;
+        return n2 | 0;
+      } else {
+        n2 = qb(e2, f2, d2, g2) | 0;
+        E = o2;
+        return n2 | 0;
+      }
+    }
+    c[g2 >> 2] = 1;
+    n2 = 0;
+    E = o2;
+    return n2 | 0;
+  }
+  function Za(a2) {
+    a2 = a2 | 0;
+    return (a2 | 0) > 0 | 0;
+  }
+  function _a2(a2) {
+    a2 = a2 | 0;
+    var c2 = 0;
+    c2 = a2 & 65535;
+    if ((a2 + -1570 & 65535) < 178) {
+      c2 = b[1712 + (c2 + -1570 << 1) >> 1] | 0;
+      return c2 | 0;
+    }
+    if (a2 << 16 >> 16 == 8205) {
+      c2 = 3;
+      return c2 | 0;
+    }
+    if ((a2 + -8301 & 65535) < 3) {
+      c2 = 4;
+      return c2 | 0;
+    }
+    if ((a2 + 1200 & 65535) < 275) {
+      c2 = d[2080 + (c2 + -64336) >> 0] | 0;
+      return c2 | 0;
+    }
+    if ((a2 + 400 & 65535) >= 141) {
+      c2 = 0;
+      return c2 | 0;
+    }
+    c2 = d[2368 + (c2 + -65136) >> 0] | 0;
+    return c2 | 0;
+  }
+  function $a(a2, c2) {
+    a2 = a2 | 0;
+    c2 = c2 | 0;
+    var d2 = 0, e2 = 0, f2 = 0, g2 = 0, h2 = 0;
+    g2 = c2 + -1 | 0;
+    f2 = 0;
+    d2 = c2;
+    while (1) {
+      if ((f2 | 0) >= (c2 | 0))
+        break;
+      e2 = b[a2 + (f2 << 1) >> 1] | 0;
+      if ((f2 | 0) < (g2 | 0) & e2 << 16 >> 16 == 1604 ? (ib(b[a2 + (f2 + 1 << 1) >> 1] | 0) | 0) != 0 : 0)
+        h2 = 6;
+      else if (jb(e2) | 0)
+        h2 = 6;
+      if ((h2 | 0) == 6) {
+        h2 = 0;
+        d2 = d2 + -1 | 0;
+      }
+      f2 = f2 + 1 | 0;
+    }
+    return d2 | 0;
+  }
+  function ab(a2, d2, e2, f2) {
+    a2 = a2 | 0;
+    d2 = d2 | 0;
+    e2 = e2 | 0;
+    f2 = f2 | 0;
+    var g2 = 0, h2 = 0;
+    h2 = 0;
+    while (1) {
+      g2 = (h2 | 0) < (d2 | 0);
+      if (g2 & (b[a2 + (h2 << 1) >> 1] | 0) == 32)
+        h2 = h2 + 1 | 0;
+      else
+        break;
+    }
+    if (!g2) {
+      a2 = 0;
+      c[e2 >> 2] = h2;
+      c[f2 >> 2] = a2;
+      return;
+    }
+    g2 = 0;
+    while (1) {
+      d2 = d2 + -1 | 0;
+      if ((b[a2 + (d2 << 1) >> 1] | 0) != 32)
+        break;
+      else
+        g2 = g2 + 1 | 0;
+    }
+    c[e2 >> 2] = h2;
+    c[f2 >> 2] = g2;
+    return;
+  }
+  function bb(a2, c2, d2, e2) {
+    a2 = a2 | 0;
+    c2 = c2 | 0;
+    d2 = d2 | 0;
+    e2 = e2 | 0;
+    var f2 = 0, g2 = 0;
+    c2 = c2 - e2 | 0;
+    while (1) {
+      c2 = c2 + -1 | 0;
+      if ((d2 | 0) >= (c2 | 0))
+        break;
+      g2 = a2 + (d2 << 1) | 0;
+      f2 = b[g2 >> 1] | 0;
+      e2 = a2 + (c2 << 1) | 0;
+      b[g2 >> 1] = b[e2 >> 1] | 0;
+      b[e2 >> 1] = f2;
+      d2 = d2 + 1 | 0;
+    }
+    return;
+  }
+  function cb(a2, e2, f2, g2) {
+    a2 = a2 | 0;
+    e2 = e2 | 0;
+    f2 = f2 | 0;
+    g2 = g2 | 0;
+    var h2 = 0, i2 = 0, j2 = 0, k2 = 0, l2 = 0, m2 = 0, n2 = 0, o2 = 0, p2 = 0, q2 = 0, r2 = 0, s2 = 0, t2 = 0, u2 = 0, v2 = 0, w2 = 0, x2 = 0, y2 = 0, z2 = 0;
+    z2 = E;
+    E = E + 32 | 0;
+    x2 = z2;
+    j2 = 0;
+    while (1) {
+      if ((j2 | 0) >= (e2 | 0))
+        break;
+      k2 = a2 + (j2 << 1) | 0;
+      h2 = b[k2 >> 1] | 0;
+      i2 = h2 & 65535;
+      if ((h2 + 1200 & 65535) < 176) {
+        h2 = b[1008 + (i2 + -64336 << 1) >> 1] | 0;
+        if (h2 << 16 >> 16)
+          b[k2 >> 1] = h2;
+      } else if ((h2 + 400 & 65535) < 141)
+        b[k2 >> 1] = b[1360 + (i2 + -65136 << 1) >> 1] | 0;
+      j2 = j2 + 1 | 0;
+    }
+    l2 = e2 + -1 | 0;
+    w2 = l2;
+    j2 = 0;
+    h2 = _a2(b[a2 + (l2 << 1) >> 1] | 0) | 0;
+    m2 = 0;
+    v2 = 0;
+    r2 = 0;
+    s2 = 0;
+    p2 = 0;
+    k2 = -2;
+    while (1) {
+      if ((l2 | 0) == -1)
+        break;
+      o2 = h2 & 65535;
+      if (!((o2 & 65280 | 0) == 0 ? ((_a2(b[a2 + (l2 << 1) >> 1] | 0) | 0) & 4) == 0 : 0))
+        y2 = 13;
+      do
+        if ((y2 | 0) == 13) {
+          y2 = 0;
+          n2 = l2 + -1 | 0;
+          while (1) {
+            if ((k2 | 0) >= 0)
+              break;
+            if ((n2 | 0) == -1) {
+              i2 = -1;
+              j2 = 0;
+              k2 = 3e3;
+            } else {
+              j2 = _a2(b[a2 + (n2 << 1) >> 1] | 0) | 0;
+              u2 = (j2 & 4) == 0;
+              i2 = n2 + ((u2 ^ 1) << 31 >> 31) | 0;
+              k2 = u2 ? n2 : k2;
+            }
+            n2 = i2;
+          }
+          do
+            if (!((m2 & 16) == 0 | (o2 & 32 | 0) == 0)) {
+              h2 = a2 + (l2 << 1) | 0;
+              i2 = eb(b[h2 >> 1] | 0) | 0;
+              if (!(i2 << 16 >> 16)) {
+                h2 = _a2(0) | 0;
+                t2 = v2;
+                u2 = 1;
+                break;
+              } else {
+                b[h2 >> 1] = -1;
+                b[a2 + (w2 << 1) >> 1] = i2;
+                h2 = _a2(i2) | 0;
+                t2 = v2;
+                u2 = 1;
+                l2 = w2;
+                break;
+              }
+            } else {
+              t2 = m2;
+              u2 = p2;
+            }
+          while (0);
+          if ((l2 | 0) > 0) {
+            if ((b[a2 + (l2 + -1 << 1) >> 1] | 0) == 32) {
+              p2 = b[a2 + (l2 << 1) >> 1] | 0;
+              q2 = (fb(p2) | 0) == 0;
+              r2 = p2 << 16 >> 16 == 1574 & q2 ? 1 : r2;
+              s2 = q2 ? s2 : 1;
+            }
+          } else if (!l2) {
+            p2 = b[a2 >> 1] | 0;
+            q2 = (fb(p2) | 0) == 0;
+            r2 = p2 << 16 >> 16 == 1574 & q2 ? 1 : r2;
+            s2 = q2 ? s2 : 1;
+          }
+          n2 = j2 & 65535;
+          o2 = t2 & 65535;
+          q2 = h2 & 65535;
+          m2 = q2 & 3;
+          p2 = d[1648 + ((n2 & 3) << 4) + ((o2 & 3) << 2) + m2 >> 0] | 0;
+          if ((m2 | 0) != 1) {
+            m2 = a2 + (l2 << 1) | 0;
+            i2 = b[m2 >> 1] | 0;
+            if (gb(i2) | 0)
+              if ((o2 & 2 | 0) == 0 | (n2 & 1 | 0) == 0 | (i2 & -2) << 16 >> 16 == 1612)
+                p2 = 0;
+              else
+                p2 = o2 >>> 4 & 1 ^ 1 | n2 >>> 5 & 1 ^ 1;
+          } else {
+            i2 = a2 + (l2 << 1) | 0;
+            p2 = p2 & 1;
+            m2 = i2;
+            i2 = b[i2 >> 1] | 0;
+          }
+          if (((i2 ^ 1536) & 65535) < 256) {
+            if (gb(i2) | 0) {
+              b[m2 >> 1] = p2 + 65136 + (d[70134 + ((i2 & 65535) + -1611) >> 0] | 0);
+              m2 = t2;
+              p2 = u2;
+              break;
+            }
+            i2 = q2 >>> 8;
+            if (q2 & 8 | 0) {
+              b[m2 >> 1] = p2 + i2 + 64336;
+              m2 = t2;
+              p2 = u2;
+              break;
+            }
+            if ((i2 | 0) != 0 & (q2 & 4 | 0) == 0) {
+              b[m2 >> 1] = p2 + i2 + 65136;
+              m2 = t2;
+              p2 = u2;
+            } else {
+              m2 = t2;
+              p2 = u2;
+            }
+          } else {
+            m2 = t2;
+            p2 = u2;
+          }
+        }
+      while (0);
+      i2 = (h2 & 4) == 0;
+      n2 = i2 ? m2 : v2;
+      m2 = i2 ? h2 : m2;
+      i2 = i2 ? l2 : w2;
+      o2 = l2 + -1 | 0;
+      if ((o2 | 0) != (k2 | 0)) {
+        if (l2)
+          h2 = _a2(b[a2 + (o2 << 1) >> 1] | 0) | 0;
+      } else {
+        h2 = j2;
+        k2 = -2;
+      }
+      w2 = i2;
+      v2 = n2;
+      l2 = o2;
+    }
+    if (p2) {
+      c[x2 >> 2] = c[g2 >> 2];
+      c[x2 + 4 >> 2] = c[g2 + 4 >> 2];
+      c[x2 + 8 >> 2] = c[g2 + 8 >> 2];
+      c[x2 + 12 >> 2] = c[g2 + 12 >> 2];
+      c[x2 + 16 >> 2] = c[g2 + 16 >> 2];
+      c[x2 + 20 >> 2] = c[g2 + 20 >> 2];
+      e2 = hb(a2, e2, f2, x2) | 0;
+    }
+    if (!(r2 | s2)) {
+      y2 = e2;
+      E = z2;
+      return y2 | 0;
+    }
+    y2 = db(e2) | 0;
+    E = z2;
+    return y2 | 0;
+  }
+  function db(a2) {
+    a2 = a2 | 0;
+    return a2 | 0;
+  }
+  function eb(a2) {
+    a2 = a2 | 0;
+    switch (a2 << 16 >> 16) {
+      case 1570: {
+        a2 = 1628;
+        break;
+      }
+      case 1571: {
+        a2 = 1629;
+        break;
+      }
+      case 1573: {
+        a2 = 1630;
+        break;
+      }
+      case 1575: {
+        a2 = 1631;
+        break;
+      }
+      default:
+        a2 = 0;
+    }
+    return a2 | 0;
+  }
+  function fb(a2) {
+    a2 = a2 | 0;
+    return (a2 + -1587 & 65535) < 4 | 0;
+  }
+  function gb(a2) {
+    a2 = a2 | 0;
+    return (a2 + -1611 & 65535) < 8 | 0;
+  }
+  function hb(a2, d2, e2, f2) {
+    a2 = a2 | 0;
+    d2 = d2 | 0;
+    e2 = e2 | 0;
+    f2 = f2 | 0;
+    var g2 = 0, h2 = 0, i2 = 0, j2 = 0, k2 = 0, l2 = 0, m2 = 0, n2 = 0;
+    m2 = (d2 << 1) + 2 | 0;
+    n2 = lb(m2) | 0;
+    if (!n2) {
+      c[e2 >> 2] = 7;
+      n2 = 0;
+      return n2 | 0;
+    }
+    fc(n2 | 0, 0, m2 | 0) | 0;
+    e2 = 0;
+    h2 = 0;
+    g2 = 0;
+    while (1) {
+      if ((g2 | 0) >= (d2 | 0))
+        break;
+      i2 = b[a2 + (g2 << 1) >> 1] | 0;
+      if (i2 << 16 >> 16 == -1) {
+        e2 = e2 + 1 | 0;
+        h2 = h2 + -1 | 0;
+      } else
+        b[n2 + (h2 << 1) >> 1] = i2;
+      h2 = h2 + 1 | 0;
+      g2 = g2 + 1 | 0;
+    }
+    while (1) {
+      if ((e2 | 0) <= -1)
+        break;
+      b[n2 + (g2 << 1) >> 1] = 0;
+      g2 = g2 + -1 | 0;
+      e2 = e2 + -1 | 0;
+    }
+    pb(a2, n2, d2) | 0;
+    if (c[f2 + 4 >> 2] | 0) {
+      e2 = ob(a2) | 0;
+      if (!(c[f2 + 12 >> 2] | 0)) {
+        j2 = 0;
+        k2 = 1;
+        l2 = 15;
+      }
+    } else {
+      j2 = 1;
+      k2 = (c[f2 + 12 >> 2] | 0) == 0;
+      l2 = 15;
+    }
+    if ((l2 | 0) == 15) {
+      fc(n2 | 0, 0, m2 | 0) | 0;
+      e2 = d2;
+      g2 = 0;
+      i2 = d2;
+      while (1) {
+        if ((i2 | 0) <= -1)
+          break;
+        h2 = b[a2 + (i2 << 1) >> 1] | 0;
+        if (j2 & h2 << 16 >> 16 == -1 | k2 & h2 << 16 >> 16 == -2) {
+          e2 = e2 + 1 | 0;
+          g2 = g2 + 1 | 0;
+        } else
+          b[n2 + (e2 << 1) >> 1] = h2;
+        e2 = e2 + -1 | 0;
+        i2 = i2 + -1 | 0;
+      }
+      e2 = 0;
+      while (1) {
+        if ((e2 | 0) >= (g2 | 0))
+          break;
+        b[n2 + (e2 << 1) >> 1] = 32;
+        e2 = e2 + 1 | 0;
+      }
+      pb(a2, n2, d2) | 0;
+      e2 = d2;
+    }
+    k2 = (c[f2 + 8 >> 2] | 0) == 0;
+    f2 = (c[f2 + 16 >> 2] | 0) == 0;
+    j2 = f2 | k2 ^ 1;
+    if (k2 | f2) {
+      fc(n2 | 0, 0, m2 | 0) | 0;
+      h2 = 0;
+      e2 = 0;
+      g2 = 0;
+      while (1) {
+        if ((g2 | 0) >= (d2 | 0))
+          break;
+        i2 = b[a2 + (g2 << 1) >> 1] | 0;
+        if (k2 & i2 << 16 >> 16 == -1 | j2 & i2 << 16 >> 16 == -2) {
+          h2 = h2 + -1 | 0;
+          e2 = e2 + 1 | 0;
+        } else
+          b[n2 + (h2 << 1) >> 1] = i2;
+        h2 = h2 + 1 | 0;
+        g2 = g2 + 1 | 0;
+      }
+      while (1) {
+        if ((e2 | 0) <= -1)
+          break;
+        b[n2 + (g2 << 1) >> 1] = 32;
+        g2 = g2 + -1 | 0;
+        e2 = e2 + -1 | 0;
+      }
+      pb(a2, n2, d2) | 0;
+      e2 = d2;
+    }
+    nb(n2);
+    n2 = e2;
+    return n2 | 0;
+  }
+  function ib(a2) {
+    a2 = a2 | 0;
+    switch (a2 << 16 >> 16) {
+      case 1573:
+      case 1571:
+      case 1570: {
+        a2 = 1;
+        break;
+      }
+      default:
+        a2 = a2 << 16 >> 16 == 1575 & 1;
+    }
+    return a2 | 0;
+  }
+  function jb(a2) {
+    a2 = a2 | 0;
+    return (a2 & -16) << 16 >> 16 == -400 | 0;
+  }
+  function kb(a2, b2) {
+    a2 = a2 | 0;
+    b2 = b2 | 0;
+    return ((a2 | 0) > (b2 | 0) ? b2 : a2) | 0;
+  }
+  function lb(a2) {
+    a2 = a2 | 0;
+    if (!a2)
+      a2 = 70336;
+    else
+      a2 = Ab(a2) | 0;
+    return a2 | 0;
+  }
+  function mb(a2, b2) {
+    a2 = a2 | 0;
+    b2 = b2 | 0;
+    do
+      if ((a2 | 0) != 70336)
+        if (!b2) {
+          Bb(a2);
+          a2 = 70336;
+          break;
+        } else {
+          a2 = Cb(a2, b2) | 0;
+          break;
+        }
+      else
+        a2 = lb(b2) | 0;
+    while (0);
+    return a2 | 0;
+  }
+  function nb(a2) {
+    a2 = a2 | 0;
+    if ((a2 | 0) == 70336)
+      return;
+    Bb(a2);
+    return;
+  }
+  function ob(a2) {
+    a2 = a2 | 0;
+    var c2 = 0;
+    c2 = a2;
+    while (1)
+      if (!(b[c2 >> 1] | 0))
+        break;
+      else
+        c2 = c2 + 2 | 0;
+    return c2 - a2 >> 1 | 0;
+  }
+  function pb(a2, b2, c2) {
+    a2 = a2 | 0;
+    b2 = b2 | 0;
+    c2 = c2 | 0;
+    if ((c2 | 0) <= 0)
+      return a2 | 0;
+    ec(a2 | 0, b2 | 0, c2 << 1 | 0) | 0;
+    return a2 | 0;
+  }
+  function qb(a2, d2, e2, f2) {
+    a2 = a2 | 0;
+    d2 = d2 | 0;
+    e2 = e2 | 0;
+    f2 = f2 | 0;
+    do
+      if (f2 | 0 ? !((e2 | 0) < 0 | (rb(c[f2 >> 2] | 0) | 0) << 24 >> 24 == 0) : 0) {
+        if ((e2 | 0) < (d2 | 0)) {
+          b[a2 + (e2 << 1) >> 1] = 0;
+          if ((c[f2 >> 2] | 0) != -124)
+            break;
+          c[f2 >> 2] = 0;
+          break;
+        }
+        if ((e2 | 0) == (d2 | 0)) {
+          c[f2 >> 2] = -124;
+          break;
+        } else {
+          c[f2 >> 2] = 15;
+          break;
+        }
+      }
+    while (0);
+    return e2 | 0;
+  }
+  function rb(a2) {
+    a2 = a2 | 0;
+    return (a2 | 0) < 1 | 0;
+  }
+  function sb(a2) {
+    a2 = a2 | 0;
+    var c2 = 0;
+    do
+      if (a2 >>> 0 >= 55296) {
+        if (a2 >>> 0 < 65536) {
+          c2 = ((a2 | 0) < 56320 ? 320 : 0) + (a2 >>> 5) | 0;
+          break;
+        }
+        if (a2 >>> 0 > 1114111) {
+          a2 = 4596;
+          a2 = 2512 + (a2 << 1) | 0;
+          a2 = b[a2 >> 1] | 0;
+          a2 = a2 & 255;
+          a2 = a2 & 31;
+          return a2 | 0;
+        } else {
+          c2 = (a2 >>> 5 & 63) + (e[2512 + ((a2 >>> 11) + 2080 << 1) >> 1] | 0) | 0;
+          break;
+        }
+      } else
+        c2 = a2 >>> 5;
+    while (0);
+    a2 = ((e[2512 + (c2 << 1) >> 1] | 0) << 2) + (a2 & 31) | 0;
+    a2 = 2512 + (a2 << 1) | 0;
+    a2 = b[a2 >> 1] | 0;
+    a2 = a2 & 255;
+    a2 = a2 & 31;
+    return a2 | 0;
+  }
+  function tb(a2) {
+    a2 = a2 | 0;
+    var c2 = 0;
+    do
+      if (a2 >>> 0 >= 55296) {
+        if (a2 >>> 0 < 65536) {
+          c2 = ((a2 | 0) < 56320 ? 320 : 0) + (a2 >>> 5) | 0;
+          break;
+        }
+        if (a2 >>> 0 > 1114111) {
+          a2 = 3644;
+          a2 = 45584 + (a2 << 1) | 0;
+          a2 = b[a2 >> 1] | 0;
+          a2 = a2 & 31;
+          a2 = a2 & 65535;
+          return a2 | 0;
+        } else {
+          c2 = (a2 >>> 5 & 63) + (e[45584 + ((a2 >>> 11) + 2080 << 1) >> 1] | 0) | 0;
+          break;
+        }
+      } else
+        c2 = a2 >>> 5;
+    while (0);
+    a2 = ((e[45584 + (c2 << 1) >> 1] | 0) << 2) + (a2 & 31) | 0;
+    a2 = 45584 + (a2 << 1) | 0;
+    a2 = b[a2 >> 1] | 0;
+    a2 = a2 & 31;
+    a2 = a2 & 65535;
+    return a2 | 0;
+  }
+  function ub(a2) {
+    a2 = a2 | 0;
+    var c2 = 0;
+    do
+      if (a2 >>> 0 >= 55296) {
+        if (a2 >>> 0 < 65536) {
+          c2 = ((a2 | 0) < 56320 ? 320 : 0) + (a2 >>> 5) | 0;
+          break;
+        }
+        if (a2 >>> 0 > 1114111) {
+          c2 = 3644;
+          c2 = 45584 + (c2 << 1) | 0;
+          c2 = b[c2 >> 1] | 0;
+          a2 = vb(a2, c2) | 0;
+          return a2 | 0;
+        } else {
+          c2 = (a2 >>> 5 & 63) + (e[45584 + ((a2 >>> 11) + 2080 << 1) >> 1] | 0) | 0;
+          break;
+        }
+      } else
+        c2 = a2 >>> 5;
+    while (0);
+    c2 = ((e[45584 + (c2 << 1) >> 1] | 0) << 2) + (a2 & 31) | 0;
+    c2 = 45584 + (c2 << 1) | 0;
+    c2 = b[c2 >> 1] | 0;
+    a2 = vb(a2, c2) | 0;
+    return a2 | 0;
+  }
+  function vb(a2, b2) {
+    a2 = a2 | 0;
+    b2 = b2 | 0;
+    var d2 = 0, e2 = 0;
+    b2 = b2 << 16 >> 16 >> 13;
+    if ((b2 | 0) != -4) {
+      e2 = b2 + a2 | 0;
+      return e2 | 0;
+    }
+    b2 = 0;
+    while (1) {
+      if (b2 >>> 0 >= 40) {
+        b2 = 8;
+        break;
+      }
+      e2 = c[45424 + (b2 << 2) >> 2] | 0;
+      d2 = e2 & 2097151;
+      if ((d2 | 0) == (a2 | 0)) {
+        b2 = 6;
+        break;
+      }
+      if ((d2 | 0) > (a2 | 0)) {
+        b2 = 8;
+        break;
+      } else
+        b2 = b2 + 1 | 0;
+    }
+    if ((b2 | 0) == 6) {
+      e2 = c[45424 + (e2 >>> 21 << 2) >> 2] & 2097151;
+      return e2 | 0;
+    } else if ((b2 | 0) == 8)
+      return a2 | 0;
+    return 0;
+  }
+  function wb(a2) {
+    a2 = a2 | 0;
+    var c2 = 0, d2 = 0;
+    do
+      if (a2 >>> 0 >= 55296) {
+        if (a2 >>> 0 < 65536) {
+          c2 = ((a2 | 0) < 56320 ? 320 : 0) + (a2 >>> 5) | 0;
+          d2 = 7;
+          break;
+        }
+        if (a2 >>> 0 > 1114111)
+          c2 = 3644;
+        else {
+          c2 = (a2 >>> 5 & 63) + (e[45584 + ((a2 >>> 11) + 2080 << 1) >> 1] | 0) | 0;
+          d2 = 7;
+        }
+      } else {
+        c2 = a2 >>> 5;
+        d2 = 7;
+      }
+    while (0);
+    if ((d2 | 0) == 7)
+      c2 = ((e[45584 + (c2 << 1) >> 1] | 0) << 2) + (a2 & 31) | 0;
+    return (b[45584 + (c2 << 1) >> 1] & 768) >>> 8 | 0;
+  }
+  function xb(a2) {
+    a2 = a2 | 0;
+    var c2 = 0, d2 = 0;
+    do
+      if (a2 >>> 0 >= 55296) {
+        if (a2 >>> 0 < 65536) {
+          c2 = ((a2 | 0) < 56320 ? 320 : 0) + (a2 >>> 5) | 0;
+          d2 = 7;
+          break;
+        }
+        if (a2 >>> 0 > 1114111)
+          c2 = 3644;
+        else {
+          c2 = (a2 >>> 5 & 63) + (e[45584 + ((a2 >>> 11) + 2080 << 1) >> 1] | 0) | 0;
+          d2 = 7;
+        }
+      } else {
+        c2 = a2 >>> 5;
+        d2 = 7;
+      }
+    while (0);
+    if ((d2 | 0) == 7)
+      c2 = ((e[45584 + (c2 << 1) >> 1] | 0) << 2) + (a2 & 31) | 0;
+    c2 = b[45584 + (c2 << 1) >> 1] | 0;
+    if (!(c2 & 768))
+      return a2 | 0;
+    a2 = vb(a2, c2) | 0;
+    return a2 | 0;
+  }
+  function yb(a2) {
+    a2 = a2 | 0;
+    return ub(a2) | 0;
+  }
+  function zb(a2) {
+    a2 = a2 | 0;
+    return xb(a2) | 0;
+  }
+  function Ab(a2) {
+    a2 = a2 | 0;
+    var b2 = 0, d2 = 0, e2 = 0, f2 = 0, g2 = 0, h2 = 0, i2 = 0, j2 = 0, k2 = 0, l2 = 0, m2 = 0, n2 = 0, o2 = 0, p2 = 0, q2 = 0, r2 = 0, s2 = 0, t2 = 0;
+    t2 = E;
+    E = E + 16 | 0;
+    n2 = t2;
+    do
+      if (a2 >>> 0 < 245) {
+        k2 = a2 >>> 0 < 11 ? 16 : a2 + 11 & -8;
+        a2 = k2 >>> 3;
+        m2 = c[17594] | 0;
+        d2 = m2 >>> a2;
+        if (d2 & 3 | 0) {
+          b2 = (d2 & 1 ^ 1) + a2 | 0;
+          a2 = 70416 + (b2 << 1 << 2) | 0;
+          d2 = a2 + 8 | 0;
+          e2 = c[d2 >> 2] | 0;
+          f2 = e2 + 8 | 0;
+          g2 = c[f2 >> 2] | 0;
+          if ((g2 | 0) == (a2 | 0))
+            c[17594] = m2 & ~(1 << b2);
+          else {
+            c[g2 + 12 >> 2] = a2;
+            c[d2 >> 2] = g2;
+          }
+          s2 = b2 << 3;
+          c[e2 + 4 >> 2] = s2 | 3;
+          s2 = e2 + s2 + 4 | 0;
+          c[s2 >> 2] = c[s2 >> 2] | 1;
+          s2 = f2;
+          E = t2;
+          return s2 | 0;
+        }
+        l2 = c[17596] | 0;
+        if (k2 >>> 0 > l2 >>> 0) {
+          if (d2 | 0) {
+            b2 = 2 << a2;
+            b2 = d2 << a2 & (b2 | 0 - b2);
+            b2 = (b2 & 0 - b2) + -1 | 0;
+            i2 = b2 >>> 12 & 16;
+            b2 = b2 >>> i2;
+            d2 = b2 >>> 5 & 8;
+            b2 = b2 >>> d2;
+            g2 = b2 >>> 2 & 4;
+            b2 = b2 >>> g2;
+            a2 = b2 >>> 1 & 2;
+            b2 = b2 >>> a2;
+            e2 = b2 >>> 1 & 1;
+            e2 = (d2 | i2 | g2 | a2 | e2) + (b2 >>> e2) | 0;
+            b2 = 70416 + (e2 << 1 << 2) | 0;
+            a2 = b2 + 8 | 0;
+            g2 = c[a2 >> 2] | 0;
+            i2 = g2 + 8 | 0;
+            d2 = c[i2 >> 2] | 0;
+            if ((d2 | 0) == (b2 | 0)) {
+              a2 = m2 & ~(1 << e2);
+              c[17594] = a2;
+            } else {
+              c[d2 + 12 >> 2] = b2;
+              c[a2 >> 2] = d2;
+              a2 = m2;
+            }
+            s2 = e2 << 3;
+            h2 = s2 - k2 | 0;
+            c[g2 + 4 >> 2] = k2 | 3;
+            f2 = g2 + k2 | 0;
+            c[f2 + 4 >> 2] = h2 | 1;
+            c[g2 + s2 >> 2] = h2;
+            if (l2 | 0) {
+              e2 = c[17599] | 0;
+              b2 = l2 >>> 3;
+              d2 = 70416 + (b2 << 1 << 2) | 0;
+              b2 = 1 << b2;
+              if (!(a2 & b2)) {
+                c[17594] = a2 | b2;
+                b2 = d2;
+                a2 = d2 + 8 | 0;
+              } else {
+                a2 = d2 + 8 | 0;
+                b2 = c[a2 >> 2] | 0;
+              }
+              c[a2 >> 2] = e2;
+              c[b2 + 12 >> 2] = e2;
+              c[e2 + 8 >> 2] = b2;
+              c[e2 + 12 >> 2] = d2;
+            }
+            c[17596] = h2;
+            c[17599] = f2;
+            s2 = i2;
+            E = t2;
+            return s2 | 0;
+          }
+          g2 = c[17595] | 0;
+          if (g2) {
+            d2 = (g2 & 0 - g2) + -1 | 0;
+            f2 = d2 >>> 12 & 16;
+            d2 = d2 >>> f2;
+            e2 = d2 >>> 5 & 8;
+            d2 = d2 >>> e2;
+            h2 = d2 >>> 2 & 4;
+            d2 = d2 >>> h2;
+            i2 = d2 >>> 1 & 2;
+            d2 = d2 >>> i2;
+            j2 = d2 >>> 1 & 1;
+            j2 = c[70680 + ((e2 | f2 | h2 | i2 | j2) + (d2 >>> j2) << 2) >> 2] | 0;
+            d2 = j2;
+            i2 = j2;
+            j2 = (c[j2 + 4 >> 2] & -8) - k2 | 0;
+            while (1) {
+              a2 = c[d2 + 16 >> 2] | 0;
+              if (!a2) {
+                a2 = c[d2 + 20 >> 2] | 0;
+                if (!a2)
+                  break;
+              }
+              h2 = (c[a2 + 4 >> 2] & -8) - k2 | 0;
+              f2 = h2 >>> 0 < j2 >>> 0;
+              d2 = a2;
+              i2 = f2 ? a2 : i2;
+              j2 = f2 ? h2 : j2;
+            }
+            h2 = i2 + k2 | 0;
+            if (h2 >>> 0 > i2 >>> 0) {
+              f2 = c[i2 + 24 >> 2] | 0;
+              b2 = c[i2 + 12 >> 2] | 0;
+              do
+                if ((b2 | 0) == (i2 | 0)) {
+                  a2 = i2 + 20 | 0;
+                  b2 = c[a2 >> 2] | 0;
+                  if (!b2) {
+                    a2 = i2 + 16 | 0;
+                    b2 = c[a2 >> 2] | 0;
+                    if (!b2) {
+                      d2 = 0;
+                      break;
+                    }
+                  }
+                  while (1) {
+                    e2 = b2 + 20 | 0;
+                    d2 = c[e2 >> 2] | 0;
+                    if (!d2) {
+                      e2 = b2 + 16 | 0;
+                      d2 = c[e2 >> 2] | 0;
+                      if (!d2)
+                        break;
+                      else {
+                        b2 = d2;
+                        a2 = e2;
+                      }
+                    } else {
+                      b2 = d2;
+                      a2 = e2;
+                    }
+                  }
+                  c[a2 >> 2] = 0;
+                  d2 = b2;
+                } else {
+                  d2 = c[i2 + 8 >> 2] | 0;
+                  c[d2 + 12 >> 2] = b2;
+                  c[b2 + 8 >> 2] = d2;
+                  d2 = b2;
+                }
+              while (0);
+              do
+                if (f2 | 0) {
+                  b2 = c[i2 + 28 >> 2] | 0;
+                  a2 = 70680 + (b2 << 2) | 0;
+                  if ((i2 | 0) == (c[a2 >> 2] | 0)) {
+                    c[a2 >> 2] = d2;
+                    if (!d2) {
+                      c[17595] = g2 & ~(1 << b2);
+                      break;
+                    }
+                  } else {
+                    s2 = f2 + 16 | 0;
+                    c[((c[s2 >> 2] | 0) == (i2 | 0) ? s2 : f2 + 20 | 0) >> 2] = d2;
+                    if (!d2)
+                      break;
+                  }
+                  c[d2 + 24 >> 2] = f2;
+                  b2 = c[i2 + 16 >> 2] | 0;
+                  if (b2 | 0) {
+                    c[d2 + 16 >> 2] = b2;
+                    c[b2 + 24 >> 2] = d2;
+                  }
+                  b2 = c[i2 + 20 >> 2] | 0;
+                  if (b2 | 0) {
+                    c[d2 + 20 >> 2] = b2;
+                    c[b2 + 24 >> 2] = d2;
+                  }
+                }
+              while (0);
+              if (j2 >>> 0 < 16) {
+                s2 = j2 + k2 | 0;
+                c[i2 + 4 >> 2] = s2 | 3;
+                s2 = i2 + s2 + 4 | 0;
+                c[s2 >> 2] = c[s2 >> 2] | 1;
+              } else {
+                c[i2 + 4 >> 2] = k2 | 3;
+                c[h2 + 4 >> 2] = j2 | 1;
+                c[h2 + j2 >> 2] = j2;
+                if (l2 | 0) {
+                  e2 = c[17599] | 0;
+                  b2 = l2 >>> 3;
+                  d2 = 70416 + (b2 << 1 << 2) | 0;
+                  b2 = 1 << b2;
+                  if (!(b2 & m2)) {
+                    c[17594] = b2 | m2;
+                    b2 = d2;
+                    a2 = d2 + 8 | 0;
+                  } else {
+                    a2 = d2 + 8 | 0;
+                    b2 = c[a2 >> 2] | 0;
+                  }
+                  c[a2 >> 2] = e2;
+                  c[b2 + 12 >> 2] = e2;
+                  c[e2 + 8 >> 2] = b2;
+                  c[e2 + 12 >> 2] = d2;
+                }
+                c[17596] = j2;
+                c[17599] = h2;
+              }
+              s2 = i2 + 8 | 0;
+              E = t2;
+              return s2 | 0;
+            } else
+              m2 = k2;
+          } else
+            m2 = k2;
+        } else
+          m2 = k2;
+      } else if (a2 >>> 0 <= 4294967231) {
+        a2 = a2 + 11 | 0;
+        k2 = a2 & -8;
+        e2 = c[17595] | 0;
+        if (e2) {
+          f2 = 0 - k2 | 0;
+          a2 = a2 >>> 8;
+          if (a2)
+            if (k2 >>> 0 > 16777215)
+              j2 = 31;
+            else {
+              m2 = (a2 + 1048320 | 0) >>> 16 & 8;
+              r2 = a2 << m2;
+              i2 = (r2 + 520192 | 0) >>> 16 & 4;
+              r2 = r2 << i2;
+              j2 = (r2 + 245760 | 0) >>> 16 & 2;
+              j2 = 14 - (i2 | m2 | j2) + (r2 << j2 >>> 15) | 0;
+              j2 = k2 >>> (j2 + 7 | 0) & 1 | j2 << 1;
+            }
+          else
+            j2 = 0;
+          d2 = c[70680 + (j2 << 2) >> 2] | 0;
+          a:
+            do
+              if (!d2) {
+                d2 = 0;
+                a2 = 0;
+                r2 = 61;
+              } else {
+                a2 = 0;
+                i2 = k2 << ((j2 | 0) == 31 ? 0 : 25 - (j2 >>> 1) | 0);
+                g2 = 0;
+                while (1) {
+                  h2 = (c[d2 + 4 >> 2] & -8) - k2 | 0;
+                  if (h2 >>> 0 < f2 >>> 0)
+                    if (!h2) {
+                      a2 = d2;
+                      f2 = 0;
+                      r2 = 65;
+                      break a;
+                    } else {
+                      a2 = d2;
+                      f2 = h2;
+                    }
+                  r2 = c[d2 + 20 >> 2] | 0;
+                  d2 = c[d2 + 16 + (i2 >>> 31 << 2) >> 2] | 0;
+                  g2 = (r2 | 0) == 0 | (r2 | 0) == (d2 | 0) ? g2 : r2;
+                  if (!d2) {
+                    d2 = g2;
+                    r2 = 61;
+                    break;
+                  } else
+                    i2 = i2 << 1;
+                }
+              }
+            while (0);
+          if ((r2 | 0) == 61) {
+            if ((d2 | 0) == 0 & (a2 | 0) == 0) {
+              a2 = 2 << j2;
+              a2 = (a2 | 0 - a2) & e2;
+              if (!a2) {
+                m2 = k2;
+                break;
+              }
+              m2 = (a2 & 0 - a2) + -1 | 0;
+              h2 = m2 >>> 12 & 16;
+              m2 = m2 >>> h2;
+              g2 = m2 >>> 5 & 8;
+              m2 = m2 >>> g2;
+              i2 = m2 >>> 2 & 4;
+              m2 = m2 >>> i2;
+              j2 = m2 >>> 1 & 2;
+              m2 = m2 >>> j2;
+              d2 = m2 >>> 1 & 1;
+              a2 = 0;
+              d2 = c[70680 + ((g2 | h2 | i2 | j2 | d2) + (m2 >>> d2) << 2) >> 2] | 0;
+            }
+            if (!d2) {
+              i2 = a2;
+              h2 = f2;
+            } else
+              r2 = 65;
+          }
+          if ((r2 | 0) == 65) {
+            g2 = d2;
+            while (1) {
+              m2 = (c[g2 + 4 >> 2] & -8) - k2 | 0;
+              d2 = m2 >>> 0 < f2 >>> 0;
+              f2 = d2 ? m2 : f2;
+              a2 = d2 ? g2 : a2;
+              d2 = c[g2 + 16 >> 2] | 0;
+              if (!d2)
+                d2 = c[g2 + 20 >> 2] | 0;
+              if (!d2) {
+                i2 = a2;
+                h2 = f2;
+                break;
+              } else
+                g2 = d2;
+            }
+          }
+          if (((i2 | 0) != 0 ? h2 >>> 0 < ((c[17596] | 0) - k2 | 0) >>> 0 : 0) ? (l2 = i2 + k2 | 0, l2 >>> 0 > i2 >>> 0) : 0) {
+            g2 = c[i2 + 24 >> 2] | 0;
+            b2 = c[i2 + 12 >> 2] | 0;
+            do
+              if ((b2 | 0) == (i2 | 0)) {
+                a2 = i2 + 20 | 0;
+                b2 = c[a2 >> 2] | 0;
+                if (!b2) {
+                  a2 = i2 + 16 | 0;
+                  b2 = c[a2 >> 2] | 0;
+                  if (!b2) {
+                    b2 = 0;
+                    break;
+                  }
+                }
+                while (1) {
+                  f2 = b2 + 20 | 0;
+                  d2 = c[f2 >> 2] | 0;
+                  if (!d2) {
+                    f2 = b2 + 16 | 0;
+                    d2 = c[f2 >> 2] | 0;
+                    if (!d2)
+                      break;
+                    else {
+                      b2 = d2;
+                      a2 = f2;
+                    }
+                  } else {
+                    b2 = d2;
+                    a2 = f2;
+                  }
+                }
+                c[a2 >> 2] = 0;
+              } else {
+                s2 = c[i2 + 8 >> 2] | 0;
+                c[s2 + 12 >> 2] = b2;
+                c[b2 + 8 >> 2] = s2;
+              }
+            while (0);
+            do
+              if (g2) {
+                a2 = c[i2 + 28 >> 2] | 0;
+                d2 = 70680 + (a2 << 2) | 0;
+                if ((i2 | 0) == (c[d2 >> 2] | 0)) {
+                  c[d2 >> 2] = b2;
+                  if (!b2) {
+                    e2 = e2 & ~(1 << a2);
+                    c[17595] = e2;
+                    break;
+                  }
+                } else {
+                  s2 = g2 + 16 | 0;
+                  c[((c[s2 >> 2] | 0) == (i2 | 0) ? s2 : g2 + 20 | 0) >> 2] = b2;
+                  if (!b2)
+                    break;
+                }
+                c[b2 + 24 >> 2] = g2;
+                a2 = c[i2 + 16 >> 2] | 0;
+                if (a2 | 0) {
+                  c[b2 + 16 >> 2] = a2;
+                  c[a2 + 24 >> 2] = b2;
+                }
+                a2 = c[i2 + 20 >> 2] | 0;
+                if (a2) {
+                  c[b2 + 20 >> 2] = a2;
+                  c[a2 + 24 >> 2] = b2;
+                }
+              }
+            while (0);
+            b:
+              do
+                if (h2 >>> 0 < 16) {
+                  s2 = h2 + k2 | 0;
+                  c[i2 + 4 >> 2] = s2 | 3;
+                  s2 = i2 + s2 + 4 | 0;
+                  c[s2 >> 2] = c[s2 >> 2] | 1;
+                } else {
+                  c[i2 + 4 >> 2] = k2 | 3;
+                  c[l2 + 4 >> 2] = h2 | 1;
+                  c[l2 + h2 >> 2] = h2;
+                  b2 = h2 >>> 3;
+                  if (h2 >>> 0 < 256) {
+                    d2 = 70416 + (b2 << 1 << 2) | 0;
+                    a2 = c[17594] | 0;
+                    b2 = 1 << b2;
+                    if (!(a2 & b2)) {
+                      c[17594] = a2 | b2;
+                      b2 = d2;
+                      a2 = d2 + 8 | 0;
+                    } else {
+                      a2 = d2 + 8 | 0;
+                      b2 = c[a2 >> 2] | 0;
+                    }
+                    c[a2 >> 2] = l2;
+                    c[b2 + 12 >> 2] = l2;
+                    c[l2 + 8 >> 2] = b2;
+                    c[l2 + 12 >> 2] = d2;
+                    break;
+                  }
+                  b2 = h2 >>> 8;
+                  if (b2)
+                    if (h2 >>> 0 > 16777215)
+                      d2 = 31;
+                    else {
+                      r2 = (b2 + 1048320 | 0) >>> 16 & 8;
+                      s2 = b2 << r2;
+                      q2 = (s2 + 520192 | 0) >>> 16 & 4;
+                      s2 = s2 << q2;
+                      d2 = (s2 + 245760 | 0) >>> 16 & 2;
+                      d2 = 14 - (q2 | r2 | d2) + (s2 << d2 >>> 15) | 0;
+                      d2 = h2 >>> (d2 + 7 | 0) & 1 | d2 << 1;
+                    }
+                  else
+                    d2 = 0;
+                  b2 = 70680 + (d2 << 2) | 0;
+                  c[l2 + 28 >> 2] = d2;
+                  a2 = l2 + 16 | 0;
+                  c[a2 + 4 >> 2] = 0;
+                  c[a2 >> 2] = 0;
+                  a2 = 1 << d2;
+                  if (!(a2 & e2)) {
+                    c[17595] = a2 | e2;
+                    c[b2 >> 2] = l2;
+                    c[l2 + 24 >> 2] = b2;
+                    c[l2 + 12 >> 2] = l2;
+                    c[l2 + 8 >> 2] = l2;
+                    break;
+                  }
+                  b2 = c[b2 >> 2] | 0;
+                  c:
+                    do
+                      if ((c[b2 + 4 >> 2] & -8 | 0) != (h2 | 0)) {
+                        e2 = h2 << ((d2 | 0) == 31 ? 0 : 25 - (d2 >>> 1) | 0);
+                        while (1) {
+                          d2 = b2 + 16 + (e2 >>> 31 << 2) | 0;
+                          a2 = c[d2 >> 2] | 0;
+                          if (!a2)
+                            break;
+                          if ((c[a2 + 4 >> 2] & -8 | 0) == (h2 | 0)) {
+                            b2 = a2;
+                            break c;
+                          } else {
+                            e2 = e2 << 1;
+                            b2 = a2;
+                          }
+                        }
+                        c[d2 >> 2] = l2;
+                        c[l2 + 24 >> 2] = b2;
+                        c[l2 + 12 >> 2] = l2;
+                        c[l2 + 8 >> 2] = l2;
+                        break b;
+                      }
+                    while (0);
+                  r2 = b2 + 8 | 0;
+                  s2 = c[r2 >> 2] | 0;
+                  c[s2 + 12 >> 2] = l2;
+                  c[r2 >> 2] = l2;
+                  c[l2 + 8 >> 2] = s2;
+                  c[l2 + 12 >> 2] = b2;
+                  c[l2 + 24 >> 2] = 0;
+                }
+              while (0);
+            s2 = i2 + 8 | 0;
+            E = t2;
+            return s2 | 0;
+          } else
+            m2 = k2;
+        } else
+          m2 = k2;
+      } else
+        m2 = -1;
+    while (0);
+    d2 = c[17596] | 0;
+    if (d2 >>> 0 >= m2 >>> 0) {
+      b2 = d2 - m2 | 0;
+      a2 = c[17599] | 0;
+      if (b2 >>> 0 > 15) {
+        s2 = a2 + m2 | 0;
+        c[17599] = s2;
+        c[17596] = b2;
+        c[s2 + 4 >> 2] = b2 | 1;
+        c[a2 + d2 >> 2] = b2;
+        c[a2 + 4 >> 2] = m2 | 3;
+      } else {
+        c[17596] = 0;
+        c[17599] = 0;
+        c[a2 + 4 >> 2] = d2 | 3;
+        s2 = a2 + d2 + 4 | 0;
+        c[s2 >> 2] = c[s2 >> 2] | 1;
+      }
+      s2 = a2 + 8 | 0;
+      E = t2;
+      return s2 | 0;
+    }
+    h2 = c[17597] | 0;
+    if (h2 >>> 0 > m2 >>> 0) {
+      q2 = h2 - m2 | 0;
+      c[17597] = q2;
+      s2 = c[17600] | 0;
+      r2 = s2 + m2 | 0;
+      c[17600] = r2;
+      c[r2 + 4 >> 2] = q2 | 1;
+      c[s2 + 4 >> 2] = m2 | 3;
+      s2 = s2 + 8 | 0;
+      E = t2;
+      return s2 | 0;
+    }
+    if (!(c[17712] | 0)) {
+      c[17714] = 4096;
+      c[17713] = 4096;
+      c[17715] = -1;
+      c[17716] = -1;
+      c[17717] = 0;
+      c[17705] = 0;
+      c[17712] = n2 & -16 ^ 1431655768;
+      a2 = 4096;
+    } else
+      a2 = c[17714] | 0;
+    i2 = m2 + 48 | 0;
+    j2 = m2 + 47 | 0;
+    g2 = a2 + j2 | 0;
+    f2 = 0 - a2 | 0;
+    k2 = g2 & f2;
+    if (k2 >>> 0 <= m2 >>> 0) {
+      s2 = 0;
+      E = t2;
+      return s2 | 0;
+    }
+    a2 = c[17704] | 0;
+    if (a2 | 0 ? (l2 = c[17702] | 0, n2 = l2 + k2 | 0, n2 >>> 0 <= l2 >>> 0 | n2 >>> 0 > a2 >>> 0) : 0) {
+      s2 = 0;
+      E = t2;
+      return s2 | 0;
+    }
+    d:
+      do
+        if (!(c[17705] & 4)) {
+          e2 = c[17600] | 0;
+          e:
+            do
+              if (e2) {
+                a2 = 70824;
+                while (1) {
+                  d2 = c[a2 >> 2] | 0;
+                  if (d2 >>> 0 <= e2 >>> 0 ? (q2 = a2 + 4 | 0, (d2 + (c[q2 >> 2] | 0) | 0) >>> 0 > e2 >>> 0) : 0)
+                    break;
+                  a2 = c[a2 + 8 >> 2] | 0;
+                  if (!a2) {
+                    r2 = 128;
+                    break e;
+                  }
+                }
+                b2 = g2 - h2 & f2;
+                if (b2 >>> 0 < 2147483647) {
+                  e2 = gc(b2 | 0) | 0;
+                  if ((e2 | 0) == ((c[a2 >> 2] | 0) + (c[q2 >> 2] | 0) | 0)) {
+                    if ((e2 | 0) != (-1 | 0))
+                      break d;
+                  } else
+                    r2 = 136;
+                } else
+                  b2 = 0;
+              } else
+                r2 = 128;
+            while (0);
+          do
+            if ((r2 | 0) == 128) {
+              a2 = gc(0) | 0;
+              if ((a2 | 0) != (-1 | 0) ? (b2 = a2, o2 = c[17713] | 0, p2 = o2 + -1 | 0, b2 = ((p2 & b2 | 0) == 0 ? 0 : (p2 + b2 & 0 - o2) - b2 | 0) + k2 | 0, o2 = c[17702] | 0, p2 = b2 + o2 | 0, b2 >>> 0 > m2 >>> 0 & b2 >>> 0 < 2147483647) : 0) {
+                q2 = c[17704] | 0;
+                if (q2 | 0 ? p2 >>> 0 <= o2 >>> 0 | p2 >>> 0 > q2 >>> 0 : 0) {
+                  b2 = 0;
+                  break;
+                }
+                e2 = gc(b2 | 0) | 0;
+                if ((e2 | 0) == (a2 | 0)) {
+                  e2 = a2;
+                  break d;
+                } else
+                  r2 = 136;
+              } else
+                b2 = 0;
+            }
+          while (0);
+          do
+            if ((r2 | 0) == 136) {
+              d2 = 0 - b2 | 0;
+              if (!(i2 >>> 0 > b2 >>> 0 & (b2 >>> 0 < 2147483647 & (e2 | 0) != (-1 | 0))))
+                if ((e2 | 0) == (-1 | 0)) {
+                  b2 = 0;
+                  break;
+                } else
+                  break d;
+              a2 = c[17714] | 0;
+              a2 = j2 - b2 + a2 & 0 - a2;
+              if (a2 >>> 0 >= 2147483647)
+                break d;
+              if ((gc(a2 | 0) | 0) == (-1 | 0)) {
+                gc(d2 | 0) | 0;
+                b2 = 0;
+                break;
+              } else {
+                b2 = a2 + b2 | 0;
+                break d;
+              }
+            }
+          while (0);
+          c[17705] = c[17705] | 4;
+          r2 = 143;
+        } else {
+          b2 = 0;
+          r2 = 143;
+        }
+      while (0);
+    if ((r2 | 0) == 143) {
+      if (k2 >>> 0 >= 2147483647) {
+        s2 = 0;
+        E = t2;
+        return s2 | 0;
+      }
+      e2 = gc(k2 | 0) | 0;
+      q2 = gc(0) | 0;
+      a2 = q2 - e2 | 0;
+      d2 = a2 >>> 0 > (m2 + 40 | 0) >>> 0;
+      if ((e2 | 0) == (-1 | 0) | d2 ^ 1 | e2 >>> 0 < q2 >>> 0 & ((e2 | 0) != (-1 | 0) & (q2 | 0) != (-1 | 0)) ^ 1) {
+        s2 = 0;
+        E = t2;
+        return s2 | 0;
+      } else
+        b2 = d2 ? a2 : b2;
+    }
+    a2 = (c[17702] | 0) + b2 | 0;
+    c[17702] = a2;
+    if (a2 >>> 0 > (c[17703] | 0) >>> 0)
+      c[17703] = a2;
+    j2 = c[17600] | 0;
+    f:
+      do
+        if (j2) {
+          a2 = 70824;
+          while (1) {
+            d2 = c[a2 >> 2] | 0;
+            f2 = a2 + 4 | 0;
+            g2 = c[f2 >> 2] | 0;
+            if ((e2 | 0) == (d2 + g2 | 0)) {
+              r2 = 154;
+              break;
+            }
+            h2 = c[a2 + 8 >> 2] | 0;
+            if (!h2)
+              break;
+            else
+              a2 = h2;
+          }
+          if (((r2 | 0) == 154 ? (c[a2 + 12 >> 2] & 8 | 0) == 0 : 0) ? e2 >>> 0 > j2 >>> 0 & d2 >>> 0 <= j2 >>> 0 : 0) {
+            c[f2 >> 2] = g2 + b2;
+            s2 = (c[17597] | 0) + b2 | 0;
+            q2 = j2 + 8 | 0;
+            q2 = (q2 & 7 | 0) == 0 ? 0 : 0 - q2 & 7;
+            r2 = j2 + q2 | 0;
+            q2 = s2 - q2 | 0;
+            c[17600] = r2;
+            c[17597] = q2;
+            c[r2 + 4 >> 2] = q2 | 1;
+            c[j2 + s2 + 4 >> 2] = 40;
+            c[17601] = c[17716];
+            break;
+          }
+          if (e2 >>> 0 < (c[17598] | 0) >>> 0)
+            c[17598] = e2;
+          f2 = e2 + b2 | 0;
+          a2 = 70824;
+          while (1) {
+            if ((c[a2 >> 2] | 0) == (f2 | 0)) {
+              r2 = 162;
+              break;
+            }
+            d2 = c[a2 + 8 >> 2] | 0;
+            if (!d2)
+              break;
+            else
+              a2 = d2;
+          }
+          if ((r2 | 0) == 162 ? (c[a2 + 12 >> 2] & 8 | 0) == 0 : 0) {
+            c[a2 >> 2] = e2;
+            l2 = a2 + 4 | 0;
+            c[l2 >> 2] = (c[l2 >> 2] | 0) + b2;
+            l2 = e2 + 8 | 0;
+            l2 = e2 + ((l2 & 7 | 0) == 0 ? 0 : 0 - l2 & 7) | 0;
+            b2 = f2 + 8 | 0;
+            b2 = f2 + ((b2 & 7 | 0) == 0 ? 0 : 0 - b2 & 7) | 0;
+            k2 = l2 + m2 | 0;
+            i2 = b2 - l2 - m2 | 0;
+            c[l2 + 4 >> 2] = m2 | 3;
+            g:
+              do
+                if ((j2 | 0) == (b2 | 0)) {
+                  s2 = (c[17597] | 0) + i2 | 0;
+                  c[17597] = s2;
+                  c[17600] = k2;
+                  c[k2 + 4 >> 2] = s2 | 1;
+                } else {
+                  if ((c[17599] | 0) == (b2 | 0)) {
+                    s2 = (c[17596] | 0) + i2 | 0;
+                    c[17596] = s2;
+                    c[17599] = k2;
+                    c[k2 + 4 >> 2] = s2 | 1;
+                    c[k2 + s2 >> 2] = s2;
+                    break;
+                  }
+                  a2 = c[b2 + 4 >> 2] | 0;
+                  if ((a2 & 3 | 0) == 1) {
+                    h2 = a2 & -8;
+                    e2 = a2 >>> 3;
+                    h:
+                      do
+                        if (a2 >>> 0 < 256) {
+                          a2 = c[b2 + 8 >> 2] | 0;
+                          d2 = c[b2 + 12 >> 2] | 0;
+                          if ((d2 | 0) == (a2 | 0)) {
+                            c[17594] = c[17594] & ~(1 << e2);
+                            break;
+                          } else {
+                            c[a2 + 12 >> 2] = d2;
+                            c[d2 + 8 >> 2] = a2;
+                            break;
+                          }
+                        } else {
+                          g2 = c[b2 + 24 >> 2] | 0;
+                          a2 = c[b2 + 12 >> 2] | 0;
+                          do
+                            if ((a2 | 0) == (b2 | 0)) {
+                              d2 = b2 + 16 | 0;
+                              e2 = d2 + 4 | 0;
+                              a2 = c[e2 >> 2] | 0;
+                              if (!a2) {
+                                a2 = c[d2 >> 2] | 0;
+                                if (!a2) {
+                                  a2 = 0;
+                                  break;
+                                }
+                              } else
+                                d2 = e2;
+                              while (1) {
+                                f2 = a2 + 20 | 0;
+                                e2 = c[f2 >> 2] | 0;
+                                if (!e2) {
+                                  f2 = a2 + 16 | 0;
+                                  e2 = c[f2 >> 2] | 0;
+                                  if (!e2)
+                                    break;
+                                  else {
+                                    a2 = e2;
+                                    d2 = f2;
+                                  }
+                                } else {
+                                  a2 = e2;
+                                  d2 = f2;
+                                }
+                              }
+                              c[d2 >> 2] = 0;
+                            } else {
+                              s2 = c[b2 + 8 >> 2] | 0;
+                              c[s2 + 12 >> 2] = a2;
+                              c[a2 + 8 >> 2] = s2;
+                            }
+                          while (0);
+                          if (!g2)
+                            break;
+                          d2 = c[b2 + 28 >> 2] | 0;
+                          e2 = 70680 + (d2 << 2) | 0;
+                          do
+                            if ((c[e2 >> 2] | 0) != (b2 | 0)) {
+                              s2 = g2 + 16 | 0;
+                              c[((c[s2 >> 2] | 0) == (b2 | 0) ? s2 : g2 + 20 | 0) >> 2] = a2;
+                              if (!a2)
+                                break h;
+                            } else {
+                              c[e2 >> 2] = a2;
+                              if (a2 | 0)
+                                break;
+                              c[17595] = c[17595] & ~(1 << d2);
+                              break h;
+                            }
+                          while (0);
+                          c[a2 + 24 >> 2] = g2;
+                          d2 = b2 + 16 | 0;
+                          e2 = c[d2 >> 2] | 0;
+                          if (e2 | 0) {
+                            c[a2 + 16 >> 2] = e2;
+                            c[e2 + 24 >> 2] = a2;
+                          }
+                          d2 = c[d2 + 4 >> 2] | 0;
+                          if (!d2)
+                            break;
+                          c[a2 + 20 >> 2] = d2;
+                          c[d2 + 24 >> 2] = a2;
+                        }
+                      while (0);
+                    b2 = b2 + h2 | 0;
+                    f2 = h2 + i2 | 0;
+                  } else
+                    f2 = i2;
+                  b2 = b2 + 4 | 0;
+                  c[b2 >> 2] = c[b2 >> 2] & -2;
+                  c[k2 + 4 >> 2] = f2 | 1;
+                  c[k2 + f2 >> 2] = f2;
+                  b2 = f2 >>> 3;
+                  if (f2 >>> 0 < 256) {
+                    d2 = 70416 + (b2 << 1 << 2) | 0;
+                    a2 = c[17594] | 0;
+                    b2 = 1 << b2;
+                    if (!(a2 & b2)) {
+                      c[17594] = a2 | b2;
+                      b2 = d2;
+                      a2 = d2 + 8 | 0;
+                    } else {
+                      a2 = d2 + 8 | 0;
+                      b2 = c[a2 >> 2] | 0;
+                    }
+                    c[a2 >> 2] = k2;
+                    c[b2 + 12 >> 2] = k2;
+                    c[k2 + 8 >> 2] = b2;
+                    c[k2 + 12 >> 2] = d2;
+                    break;
+                  }
+                  b2 = f2 >>> 8;
+                  do
+                    if (!b2)
+                      e2 = 0;
+                    else {
+                      if (f2 >>> 0 > 16777215) {
+                        e2 = 31;
+                        break;
+                      }
+                      r2 = (b2 + 1048320 | 0) >>> 16 & 8;
+                      s2 = b2 << r2;
+                      q2 = (s2 + 520192 | 0) >>> 16 & 4;
+                      s2 = s2 << q2;
+                      e2 = (s2 + 245760 | 0) >>> 16 & 2;
+                      e2 = 14 - (q2 | r2 | e2) + (s2 << e2 >>> 15) | 0;
+                      e2 = f2 >>> (e2 + 7 | 0) & 1 | e2 << 1;
+                    }
+                  while (0);
+                  b2 = 70680 + (e2 << 2) | 0;
+                  c[k2 + 28 >> 2] = e2;
+                  a2 = k2 + 16 | 0;
+                  c[a2 + 4 >> 2] = 0;
+                  c[a2 >> 2] = 0;
+                  a2 = c[17595] | 0;
+                  d2 = 1 << e2;
+                  if (!(a2 & d2)) {
+                    c[17595] = a2 | d2;
+                    c[b2 >> 2] = k2;
+                    c[k2 + 24 >> 2] = b2;
+                    c[k2 + 12 >> 2] = k2;
+                    c[k2 + 8 >> 2] = k2;
+                    break;
+                  }
+                  b2 = c[b2 >> 2] | 0;
+                  i:
+                    do
+                      if ((c[b2 + 4 >> 2] & -8 | 0) != (f2 | 0)) {
+                        e2 = f2 << ((e2 | 0) == 31 ? 0 : 25 - (e2 >>> 1) | 0);
+                        while (1) {
+                          d2 = b2 + 16 + (e2 >>> 31 << 2) | 0;
+                          a2 = c[d2 >> 2] | 0;
+                          if (!a2)
+                            break;
+                          if ((c[a2 + 4 >> 2] & -8 | 0) == (f2 | 0)) {
+                            b2 = a2;
+                            break i;
+                          } else {
+                            e2 = e2 << 1;
+                            b2 = a2;
+                          }
+                        }
+                        c[d2 >> 2] = k2;
+                        c[k2 + 24 >> 2] = b2;
+                        c[k2 + 12 >> 2] = k2;
+                        c[k2 + 8 >> 2] = k2;
+                        break g;
+                      }
+                    while (0);
+                  r2 = b2 + 8 | 0;
+                  s2 = c[r2 >> 2] | 0;
+                  c[s2 + 12 >> 2] = k2;
+                  c[r2 >> 2] = k2;
+                  c[k2 + 8 >> 2] = s2;
+                  c[k2 + 12 >> 2] = b2;
+                  c[k2 + 24 >> 2] = 0;
+                }
+              while (0);
+            s2 = l2 + 8 | 0;
+            E = t2;
+            return s2 | 0;
+          }
+          a2 = 70824;
+          while (1) {
+            d2 = c[a2 >> 2] | 0;
+            if (d2 >>> 0 <= j2 >>> 0 ? (s2 = d2 + (c[a2 + 4 >> 2] | 0) | 0, s2 >>> 0 > j2 >>> 0) : 0)
+              break;
+            a2 = c[a2 + 8 >> 2] | 0;
+          }
+          f2 = s2 + -47 | 0;
+          a2 = f2 + 8 | 0;
+          a2 = f2 + ((a2 & 7 | 0) == 0 ? 0 : 0 - a2 & 7) | 0;
+          f2 = j2 + 16 | 0;
+          a2 = a2 >>> 0 < f2 >>> 0 ? j2 : a2;
+          r2 = a2 + 8 | 0;
+          d2 = b2 + -40 | 0;
+          p2 = e2 + 8 | 0;
+          p2 = (p2 & 7 | 0) == 0 ? 0 : 0 - p2 & 7;
+          q2 = e2 + p2 | 0;
+          p2 = d2 - p2 | 0;
+          c[17600] = q2;
+          c[17597] = p2;
+          c[q2 + 4 >> 2] = p2 | 1;
+          c[e2 + d2 + 4 >> 2] = 40;
+          c[17601] = c[17716];
+          d2 = a2 + 4 | 0;
+          c[d2 >> 2] = 27;
+          c[r2 >> 2] = c[17706];
+          c[r2 + 4 >> 2] = c[17707];
+          c[r2 + 8 >> 2] = c[17708];
+          c[r2 + 12 >> 2] = c[17709];
+          c[17706] = e2;
+          c[17707] = b2;
+          c[17709] = 0;
+          c[17708] = r2;
+          b2 = a2 + 24 | 0;
+          do {
+            r2 = b2;
+            b2 = b2 + 4 | 0;
+            c[b2 >> 2] = 7;
+          } while ((r2 + 8 | 0) >>> 0 < s2 >>> 0);
+          if ((a2 | 0) != (j2 | 0)) {
+            g2 = a2 - j2 | 0;
+            c[d2 >> 2] = c[d2 >> 2] & -2;
+            c[j2 + 4 >> 2] = g2 | 1;
+            c[a2 >> 2] = g2;
+            b2 = g2 >>> 3;
+            if (g2 >>> 0 < 256) {
+              d2 = 70416 + (b2 << 1 << 2) | 0;
+              a2 = c[17594] | 0;
+              b2 = 1 << b2;
+              if (!(a2 & b2)) {
+                c[17594] = a2 | b2;
+                b2 = d2;
+                a2 = d2 + 8 | 0;
+              } else {
+                a2 = d2 + 8 | 0;
+                b2 = c[a2 >> 2] | 0;
+              }
+              c[a2 >> 2] = j2;
+              c[b2 + 12 >> 2] = j2;
+              c[j2 + 8 >> 2] = b2;
+              c[j2 + 12 >> 2] = d2;
+              break;
+            }
+            b2 = g2 >>> 8;
+            if (b2)
+              if (g2 >>> 0 > 16777215)
+                e2 = 31;
+              else {
+                r2 = (b2 + 1048320 | 0) >>> 16 & 8;
+                s2 = b2 << r2;
+                q2 = (s2 + 520192 | 0) >>> 16 & 4;
+                s2 = s2 << q2;
+                e2 = (s2 + 245760 | 0) >>> 16 & 2;
+                e2 = 14 - (q2 | r2 | e2) + (s2 << e2 >>> 15) | 0;
+                e2 = g2 >>> (e2 + 7 | 0) & 1 | e2 << 1;
+              }
+            else
+              e2 = 0;
+            d2 = 70680 + (e2 << 2) | 0;
+            c[j2 + 28 >> 2] = e2;
+            c[j2 + 20 >> 2] = 0;
+            c[f2 >> 2] = 0;
+            b2 = c[17595] | 0;
+            a2 = 1 << e2;
+            if (!(b2 & a2)) {
+              c[17595] = b2 | a2;
+              c[d2 >> 2] = j2;
+              c[j2 + 24 >> 2] = d2;
+              c[j2 + 12 >> 2] = j2;
+              c[j2 + 8 >> 2] = j2;
+              break;
+            }
+            b2 = c[d2 >> 2] | 0;
+            j:
+              do
+                if ((c[b2 + 4 >> 2] & -8 | 0) != (g2 | 0)) {
+                  e2 = g2 << ((e2 | 0) == 31 ? 0 : 25 - (e2 >>> 1) | 0);
+                  while (1) {
+                    d2 = b2 + 16 + (e2 >>> 31 << 2) | 0;
+                    a2 = c[d2 >> 2] | 0;
+                    if (!a2)
+                      break;
+                    if ((c[a2 + 4 >> 2] & -8 | 0) == (g2 | 0)) {
+                      b2 = a2;
+                      break j;
+                    } else {
+                      e2 = e2 << 1;
+                      b2 = a2;
+                    }
+                  }
+                  c[d2 >> 2] = j2;
+                  c[j2 + 24 >> 2] = b2;
+                  c[j2 + 12 >> 2] = j2;
+                  c[j2 + 8 >> 2] = j2;
+                  break f;
+                }
+              while (0);
+            r2 = b2 + 8 | 0;
+            s2 = c[r2 >> 2] | 0;
+            c[s2 + 12 >> 2] = j2;
+            c[r2 >> 2] = j2;
+            c[j2 + 8 >> 2] = s2;
+            c[j2 + 12 >> 2] = b2;
+            c[j2 + 24 >> 2] = 0;
+          }
+        } else {
+          s2 = c[17598] | 0;
+          if ((s2 | 0) == 0 | e2 >>> 0 < s2 >>> 0)
+            c[17598] = e2;
+          c[17706] = e2;
+          c[17707] = b2;
+          c[17709] = 0;
+          c[17603] = c[17712];
+          c[17602] = -1;
+          c[17607] = 70416;
+          c[17606] = 70416;
+          c[17609] = 70424;
+          c[17608] = 70424;
+          c[17611] = 70432;
+          c[17610] = 70432;
+          c[17613] = 70440;
+          c[17612] = 70440;
+          c[17615] = 70448;
+          c[17614] = 70448;
+          c[17617] = 70456;
+          c[17616] = 70456;
+          c[17619] = 70464;
+          c[17618] = 70464;
+          c[17621] = 70472;
+          c[17620] = 70472;
+          c[17623] = 70480;
+          c[17622] = 70480;
+          c[17625] = 70488;
+          c[17624] = 70488;
+          c[17627] = 70496;
+          c[17626] = 70496;
+          c[17629] = 70504;
+          c[17628] = 70504;
+          c[17631] = 70512;
+          c[17630] = 70512;
+          c[17633] = 70520;
+          c[17632] = 70520;
+          c[17635] = 70528;
+          c[17634] = 70528;
+          c[17637] = 70536;
+          c[17636] = 70536;
+          c[17639] = 70544;
+          c[17638] = 70544;
+          c[17641] = 70552;
+          c[17640] = 70552;
+          c[17643] = 70560;
+          c[17642] = 70560;
+          c[17645] = 70568;
+          c[17644] = 70568;
+          c[17647] = 70576;
+          c[17646] = 70576;
+          c[17649] = 70584;
+          c[17648] = 70584;
+          c[17651] = 70592;
+          c[17650] = 70592;
+          c[17653] = 70600;
+          c[17652] = 70600;
+          c[17655] = 70608;
+          c[17654] = 70608;
+          c[17657] = 70616;
+          c[17656] = 70616;
+          c[17659] = 70624;
+          c[17658] = 70624;
+          c[17661] = 70632;
+          c[17660] = 70632;
+          c[17663] = 70640;
+          c[17662] = 70640;
+          c[17665] = 70648;
+          c[17664] = 70648;
+          c[17667] = 70656;
+          c[17666] = 70656;
+          c[17669] = 70664;
+          c[17668] = 70664;
+          s2 = b2 + -40 | 0;
+          q2 = e2 + 8 | 0;
+          q2 = (q2 & 7 | 0) == 0 ? 0 : 0 - q2 & 7;
+          r2 = e2 + q2 | 0;
+          q2 = s2 - q2 | 0;
+          c[17600] = r2;
+          c[17597] = q2;
+          c[r2 + 4 >> 2] = q2 | 1;
+          c[e2 + s2 + 4 >> 2] = 40;
+          c[17601] = c[17716];
+        }
+      while (0);
+    b2 = c[17597] | 0;
+    if (b2 >>> 0 <= m2 >>> 0) {
+      s2 = 0;
+      E = t2;
+      return s2 | 0;
+    }
+    q2 = b2 - m2 | 0;
+    c[17597] = q2;
+    s2 = c[17600] | 0;
+    r2 = s2 + m2 | 0;
+    c[17600] = r2;
+    c[r2 + 4 >> 2] = q2 | 1;
+    c[s2 + 4 >> 2] = m2 | 3;
+    s2 = s2 + 8 | 0;
+    E = t2;
+    return s2 | 0;
+  }
+  function Bb(a2) {
+    a2 = a2 | 0;
+    var b2 = 0, d2 = 0, e2 = 0, f2 = 0, g2 = 0, h2 = 0, i2 = 0, j2 = 0;
+    if (!a2)
+      return;
+    d2 = a2 + -8 | 0;
+    f2 = c[17598] | 0;
+    a2 = c[a2 + -4 >> 2] | 0;
+    b2 = a2 & -8;
+    j2 = d2 + b2 | 0;
+    do
+      if (!(a2 & 1)) {
+        e2 = c[d2 >> 2] | 0;
+        if (!(a2 & 3))
+          return;
+        h2 = d2 + (0 - e2) | 0;
+        g2 = e2 + b2 | 0;
+        if (h2 >>> 0 < f2 >>> 0)
+          return;
+        if ((c[17599] | 0) == (h2 | 0)) {
+          a2 = j2 + 4 | 0;
+          b2 = c[a2 >> 2] | 0;
+          if ((b2 & 3 | 0) != 3) {
+            i2 = h2;
+            b2 = g2;
+            break;
+          }
+          c[17596] = g2;
+          c[a2 >> 2] = b2 & -2;
+          c[h2 + 4 >> 2] = g2 | 1;
+          c[h2 + g2 >> 2] = g2;
+          return;
+        }
+        d2 = e2 >>> 3;
+        if (e2 >>> 0 < 256) {
+          a2 = c[h2 + 8 >> 2] | 0;
+          b2 = c[h2 + 12 >> 2] | 0;
+          if ((b2 | 0) == (a2 | 0)) {
+            c[17594] = c[17594] & ~(1 << d2);
+            i2 = h2;
+            b2 = g2;
+            break;
+          } else {
+            c[a2 + 12 >> 2] = b2;
+            c[b2 + 8 >> 2] = a2;
+            i2 = h2;
+            b2 = g2;
+            break;
+          }
+        }
+        f2 = c[h2 + 24 >> 2] | 0;
+        a2 = c[h2 + 12 >> 2] | 0;
+        do
+          if ((a2 | 0) == (h2 | 0)) {
+            b2 = h2 + 16 | 0;
+            d2 = b2 + 4 | 0;
+            a2 = c[d2 >> 2] | 0;
+            if (!a2) {
+              a2 = c[b2 >> 2] | 0;
+              if (!a2) {
+                a2 = 0;
+                break;
+              }
+            } else
+              b2 = d2;
+            while (1) {
+              e2 = a2 + 20 | 0;
+              d2 = c[e2 >> 2] | 0;
+              if (!d2) {
+                e2 = a2 + 16 | 0;
+                d2 = c[e2 >> 2] | 0;
+                if (!d2)
+                  break;
+                else {
+                  a2 = d2;
+                  b2 = e2;
+                }
+              } else {
+                a2 = d2;
+                b2 = e2;
+              }
+            }
+            c[b2 >> 2] = 0;
+          } else {
+            i2 = c[h2 + 8 >> 2] | 0;
+            c[i2 + 12 >> 2] = a2;
+            c[a2 + 8 >> 2] = i2;
+          }
+        while (0);
+        if (f2) {
+          b2 = c[h2 + 28 >> 2] | 0;
+          d2 = 70680 + (b2 << 2) | 0;
+          if ((c[d2 >> 2] | 0) == (h2 | 0)) {
+            c[d2 >> 2] = a2;
+            if (!a2) {
+              c[17595] = c[17595] & ~(1 << b2);
+              i2 = h2;
+              b2 = g2;
+              break;
+            }
+          } else {
+            i2 = f2 + 16 | 0;
+            c[((c[i2 >> 2] | 0) == (h2 | 0) ? i2 : f2 + 20 | 0) >> 2] = a2;
+            if (!a2) {
+              i2 = h2;
+              b2 = g2;
+              break;
+            }
+          }
+          c[a2 + 24 >> 2] = f2;
+          b2 = h2 + 16 | 0;
+          d2 = c[b2 >> 2] | 0;
+          if (d2 | 0) {
+            c[a2 + 16 >> 2] = d2;
+            c[d2 + 24 >> 2] = a2;
+          }
+          b2 = c[b2 + 4 >> 2] | 0;
+          if (b2) {
+            c[a2 + 20 >> 2] = b2;
+            c[b2 + 24 >> 2] = a2;
+            i2 = h2;
+            b2 = g2;
+          } else {
+            i2 = h2;
+            b2 = g2;
+          }
+        } else {
+          i2 = h2;
+          b2 = g2;
+        }
+      } else {
+        i2 = d2;
+        h2 = d2;
+      }
+    while (0);
+    if (h2 >>> 0 >= j2 >>> 0)
+      return;
+    a2 = j2 + 4 | 0;
+    e2 = c[a2 >> 2] | 0;
+    if (!(e2 & 1))
+      return;
+    if (!(e2 & 2)) {
+      if ((c[17600] | 0) == (j2 | 0)) {
+        j2 = (c[17597] | 0) + b2 | 0;
+        c[17597] = j2;
+        c[17600] = i2;
+        c[i2 + 4 >> 2] = j2 | 1;
+        if ((i2 | 0) != (c[17599] | 0))
+          return;
+        c[17599] = 0;
+        c[17596] = 0;
+        return;
+      }
+      if ((c[17599] | 0) == (j2 | 0)) {
+        j2 = (c[17596] | 0) + b2 | 0;
+        c[17596] = j2;
+        c[17599] = h2;
+        c[i2 + 4 >> 2] = j2 | 1;
+        c[h2 + j2 >> 2] = j2;
+        return;
+      }
+      f2 = (e2 & -8) + b2 | 0;
+      d2 = e2 >>> 3;
+      do
+        if (e2 >>> 0 < 256) {
+          b2 = c[j2 + 8 >> 2] | 0;
+          a2 = c[j2 + 12 >> 2] | 0;
+          if ((a2 | 0) == (b2 | 0)) {
+            c[17594] = c[17594] & ~(1 << d2);
+            break;
+          } else {
+            c[b2 + 12 >> 2] = a2;
+            c[a2 + 8 >> 2] = b2;
+            break;
+          }
+        } else {
+          g2 = c[j2 + 24 >> 2] | 0;
+          a2 = c[j2 + 12 >> 2] | 0;
+          do
+            if ((a2 | 0) == (j2 | 0)) {
+              b2 = j2 + 16 | 0;
+              d2 = b2 + 4 | 0;
+              a2 = c[d2 >> 2] | 0;
+              if (!a2) {
+                a2 = c[b2 >> 2] | 0;
+                if (!a2) {
+                  d2 = 0;
+                  break;
+                }
+              } else
+                b2 = d2;
+              while (1) {
+                e2 = a2 + 20 | 0;
+                d2 = c[e2 >> 2] | 0;
+                if (!d2) {
+                  e2 = a2 + 16 | 0;
+                  d2 = c[e2 >> 2] | 0;
+                  if (!d2)
+                    break;
+                  else {
+                    a2 = d2;
+                    b2 = e2;
+                  }
+                } else {
+                  a2 = d2;
+                  b2 = e2;
+                }
+              }
+              c[b2 >> 2] = 0;
+              d2 = a2;
+            } else {
+              d2 = c[j2 + 8 >> 2] | 0;
+              c[d2 + 12 >> 2] = a2;
+              c[a2 + 8 >> 2] = d2;
+              d2 = a2;
+            }
+          while (0);
+          if (g2 | 0) {
+            a2 = c[j2 + 28 >> 2] | 0;
+            b2 = 70680 + (a2 << 2) | 0;
+            if ((c[b2 >> 2] | 0) == (j2 | 0)) {
+              c[b2 >> 2] = d2;
+              if (!d2) {
+                c[17595] = c[17595] & ~(1 << a2);
+                break;
+              }
+            } else {
+              e2 = g2 + 16 | 0;
+              c[((c[e2 >> 2] | 0) == (j2 | 0) ? e2 : g2 + 20 | 0) >> 2] = d2;
+              if (!d2)
+                break;
+            }
+            c[d2 + 24 >> 2] = g2;
+            a2 = j2 + 16 | 0;
+            b2 = c[a2 >> 2] | 0;
+            if (b2 | 0) {
+              c[d2 + 16 >> 2] = b2;
+              c[b2 + 24 >> 2] = d2;
+            }
+            a2 = c[a2 + 4 >> 2] | 0;
+            if (a2 | 0) {
+              c[d2 + 20 >> 2] = a2;
+              c[a2 + 24 >> 2] = d2;
+            }
+          }
+        }
+      while (0);
+      c[i2 + 4 >> 2] = f2 | 1;
+      c[h2 + f2 >> 2] = f2;
+      if ((i2 | 0) == (c[17599] | 0)) {
+        c[17596] = f2;
+        return;
+      }
+    } else {
+      c[a2 >> 2] = e2 & -2;
+      c[i2 + 4 >> 2] = b2 | 1;
+      c[h2 + b2 >> 2] = b2;
+      f2 = b2;
+    }
+    a2 = f2 >>> 3;
+    if (f2 >>> 0 < 256) {
+      d2 = 70416 + (a2 << 1 << 2) | 0;
+      b2 = c[17594] | 0;
+      a2 = 1 << a2;
+      if (!(b2 & a2)) {
+        c[17594] = b2 | a2;
+        a2 = d2;
+        b2 = d2 + 8 | 0;
+      } else {
+        b2 = d2 + 8 | 0;
+        a2 = c[b2 >> 2] | 0;
+      }
+      c[b2 >> 2] = i2;
+      c[a2 + 12 >> 2] = i2;
+      c[i2 + 8 >> 2] = a2;
+      c[i2 + 12 >> 2] = d2;
+      return;
+    }
+    a2 = f2 >>> 8;
+    if (a2)
+      if (f2 >>> 0 > 16777215)
+        e2 = 31;
+      else {
+        h2 = (a2 + 1048320 | 0) >>> 16 & 8;
+        j2 = a2 << h2;
+        g2 = (j2 + 520192 | 0) >>> 16 & 4;
+        j2 = j2 << g2;
+        e2 = (j2 + 245760 | 0) >>> 16 & 2;
+        e2 = 14 - (g2 | h2 | e2) + (j2 << e2 >>> 15) | 0;
+        e2 = f2 >>> (e2 + 7 | 0) & 1 | e2 << 1;
+      }
+    else
+      e2 = 0;
+    a2 = 70680 + (e2 << 2) | 0;
+    c[i2 + 28 >> 2] = e2;
+    c[i2 + 20 >> 2] = 0;
+    c[i2 + 16 >> 2] = 0;
+    b2 = c[17595] | 0;
+    d2 = 1 << e2;
+    a:
+      do
+        if (!(b2 & d2)) {
+          c[17595] = b2 | d2;
+          c[a2 >> 2] = i2;
+          c[i2 + 24 >> 2] = a2;
+          c[i2 + 12 >> 2] = i2;
+          c[i2 + 8 >> 2] = i2;
+        } else {
+          a2 = c[a2 >> 2] | 0;
+          b:
+            do
+              if ((c[a2 + 4 >> 2] & -8 | 0) != (f2 | 0)) {
+                e2 = f2 << ((e2 | 0) == 31 ? 0 : 25 - (e2 >>> 1) | 0);
+                while (1) {
+                  d2 = a2 + 16 + (e2 >>> 31 << 2) | 0;
+                  b2 = c[d2 >> 2] | 0;
+                  if (!b2)
+                    break;
+                  if ((c[b2 + 4 >> 2] & -8 | 0) == (f2 | 0)) {
+                    a2 = b2;
+                    break b;
+                  } else {
+                    e2 = e2 << 1;
+                    a2 = b2;
+                  }
+                }
+                c[d2 >> 2] = i2;
+                c[i2 + 24 >> 2] = a2;
+                c[i2 + 12 >> 2] = i2;
+                c[i2 + 8 >> 2] = i2;
+                break a;
+              }
+            while (0);
+          h2 = a2 + 8 | 0;
+          j2 = c[h2 >> 2] | 0;
+          c[j2 + 12 >> 2] = i2;
+          c[h2 >> 2] = i2;
+          c[i2 + 8 >> 2] = j2;
+          c[i2 + 12 >> 2] = a2;
+          c[i2 + 24 >> 2] = 0;
+        }
+      while (0);
+    j2 = (c[17602] | 0) + -1 | 0;
+    c[17602] = j2;
+    if (j2 | 0)
+      return;
+    a2 = 70832;
+    while (1) {
+      a2 = c[a2 >> 2] | 0;
+      if (!a2)
+        break;
+      else
+        a2 = a2 + 8 | 0;
+    }
+    c[17602] = -1;
+    return;
+  }
+  function Cb(a2, b2) {
+    a2 = a2 | 0;
+    b2 = b2 | 0;
+    var d2 = 0, e2 = 0;
+    if (!a2) {
+      b2 = Ab(b2) | 0;
+      return b2 | 0;
+    }
+    if (b2 >>> 0 > 4294967231) {
+      b2 = 0;
+      return b2 | 0;
+    }
+    d2 = Db(a2 + -8 | 0, b2 >>> 0 < 11 ? 16 : b2 + 11 & -8) | 0;
+    if (d2 | 0) {
+      b2 = d2 + 8 | 0;
+      return b2 | 0;
+    }
+    d2 = Ab(b2) | 0;
+    if (!d2) {
+      b2 = 0;
+      return b2 | 0;
+    }
+    e2 = c[a2 + -4 >> 2] | 0;
+    e2 = (e2 & -8) - ((e2 & 3 | 0) == 0 ? 8 : 4) | 0;
+    ec(d2 | 0, a2 | 0, (e2 >>> 0 < b2 >>> 0 ? e2 : b2) | 0) | 0;
+    Bb(a2);
+    b2 = d2;
+    return b2 | 0;
+  }
+  function Db(a2, b2) {
+    a2 = a2 | 0;
+    b2 = b2 | 0;
+    var d2 = 0, e2 = 0, f2 = 0, g2 = 0, h2 = 0, i2 = 0, j2 = 0, k2 = 0, l2 = 0, m2 = 0;
+    l2 = a2 + 4 | 0;
+    m2 = c[l2 >> 2] | 0;
+    d2 = m2 & -8;
+    i2 = a2 + d2 | 0;
+    if (!(m2 & 3)) {
+      if (b2 >>> 0 < 256) {
+        a2 = 0;
+        return a2 | 0;
+      }
+      if (d2 >>> 0 >= (b2 + 4 | 0) >>> 0 ? (d2 - b2 | 0) >>> 0 <= c[17714] << 1 >>> 0 : 0)
+        return a2 | 0;
+      a2 = 0;
+      return a2 | 0;
+    }
+    if (d2 >>> 0 >= b2 >>> 0) {
+      d2 = d2 - b2 | 0;
+      if (d2 >>> 0 <= 15)
+        return a2 | 0;
+      k2 = a2 + b2 | 0;
+      c[l2 >> 2] = m2 & 1 | b2 | 2;
+      c[k2 + 4 >> 2] = d2 | 3;
+      m2 = i2 + 4 | 0;
+      c[m2 >> 2] = c[m2 >> 2] | 1;
+      Eb(k2, d2);
+      return a2 | 0;
+    }
+    if ((c[17600] | 0) == (i2 | 0)) {
+      k2 = (c[17597] | 0) + d2 | 0;
+      d2 = k2 - b2 | 0;
+      e2 = a2 + b2 | 0;
+      if (k2 >>> 0 <= b2 >>> 0) {
+        a2 = 0;
+        return a2 | 0;
+      }
+      c[l2 >> 2] = m2 & 1 | b2 | 2;
+      c[e2 + 4 >> 2] = d2 | 1;
+      c[17600] = e2;
+      c[17597] = d2;
+      return a2 | 0;
+    }
+    if ((c[17599] | 0) == (i2 | 0)) {
+      e2 = (c[17596] | 0) + d2 | 0;
+      if (e2 >>> 0 < b2 >>> 0) {
+        a2 = 0;
+        return a2 | 0;
+      }
+      d2 = e2 - b2 | 0;
+      if (d2 >>> 0 > 15) {
+        k2 = a2 + b2 | 0;
+        e2 = a2 + e2 | 0;
+        c[l2 >> 2] = m2 & 1 | b2 | 2;
+        c[k2 + 4 >> 2] = d2 | 1;
+        c[e2 >> 2] = d2;
+        e2 = e2 + 4 | 0;
+        c[e2 >> 2] = c[e2 >> 2] & -2;
+        e2 = k2;
+      } else {
+        c[l2 >> 2] = m2 & 1 | e2 | 2;
+        e2 = a2 + e2 + 4 | 0;
+        c[e2 >> 2] = c[e2 >> 2] | 1;
+        e2 = 0;
+        d2 = 0;
+      }
+      c[17596] = d2;
+      c[17599] = e2;
+      return a2 | 0;
+    }
+    e2 = c[i2 + 4 >> 2] | 0;
+    if (e2 & 2 | 0) {
+      a2 = 0;
+      return a2 | 0;
+    }
+    j2 = (e2 & -8) + d2 | 0;
+    if (j2 >>> 0 < b2 >>> 0) {
+      a2 = 0;
+      return a2 | 0;
+    }
+    k2 = j2 - b2 | 0;
+    f2 = e2 >>> 3;
+    do
+      if (e2 >>> 0 < 256) {
+        e2 = c[i2 + 8 >> 2] | 0;
+        d2 = c[i2 + 12 >> 2] | 0;
+        if ((d2 | 0) == (e2 | 0)) {
+          c[17594] = c[17594] & ~(1 << f2);
+          break;
+        } else {
+          c[e2 + 12 >> 2] = d2;
+          c[d2 + 8 >> 2] = e2;
+          break;
+        }
+      } else {
+        h2 = c[i2 + 24 >> 2] | 0;
+        d2 = c[i2 + 12 >> 2] | 0;
+        do
+          if ((d2 | 0) == (i2 | 0)) {
+            e2 = i2 + 16 | 0;
+            f2 = e2 + 4 | 0;
+            d2 = c[f2 >> 2] | 0;
+            if (!d2) {
+              d2 = c[e2 >> 2] | 0;
+              if (!d2) {
+                f2 = 0;
+                break;
+              }
+            } else
+              e2 = f2;
+            while (1) {
+              g2 = d2 + 20 | 0;
+              f2 = c[g2 >> 2] | 0;
+              if (!f2) {
+                g2 = d2 + 16 | 0;
+                f2 = c[g2 >> 2] | 0;
+                if (!f2)
+                  break;
+                else {
+                  d2 = f2;
+                  e2 = g2;
+                }
+              } else {
+                d2 = f2;
+                e2 = g2;
+              }
+            }
+            c[e2 >> 2] = 0;
+            f2 = d2;
+          } else {
+            f2 = c[i2 + 8 >> 2] | 0;
+            c[f2 + 12 >> 2] = d2;
+            c[d2 + 8 >> 2] = f2;
+            f2 = d2;
+          }
+        while (0);
+        if (h2 | 0) {
+          d2 = c[i2 + 28 >> 2] | 0;
+          e2 = 70680 + (d2 << 2) | 0;
+          if ((c[e2 >> 2] | 0) == (i2 | 0)) {
+            c[e2 >> 2] = f2;
+            if (!f2) {
+              c[17595] = c[17595] & ~(1 << d2);
+              break;
+            }
+          } else {
+            g2 = h2 + 16 | 0;
+            c[((c[g2 >> 2] | 0) == (i2 | 0) ? g2 : h2 + 20 | 0) >> 2] = f2;
+            if (!f2)
+              break;
+          }
+          c[f2 + 24 >> 2] = h2;
+          d2 = i2 + 16 | 0;
+          e2 = c[d2 >> 2] | 0;
+          if (e2 | 0) {
+            c[f2 + 16 >> 2] = e2;
+            c[e2 + 24 >> 2] = f2;
+          }
+          d2 = c[d2 + 4 >> 2] | 0;
+          if (d2 | 0) {
+            c[f2 + 20 >> 2] = d2;
+            c[d2 + 24 >> 2] = f2;
+          }
+        }
+      }
+    while (0);
+    if (k2 >>> 0 < 16) {
+      c[l2 >> 2] = m2 & 1 | j2 | 2;
+      m2 = a2 + j2 + 4 | 0;
+      c[m2 >> 2] = c[m2 >> 2] | 1;
+      return a2 | 0;
+    } else {
+      i2 = a2 + b2 | 0;
+      c[l2 >> 2] = m2 & 1 | b2 | 2;
+      c[i2 + 4 >> 2] = k2 | 3;
+      m2 = a2 + j2 + 4 | 0;
+      c[m2 >> 2] = c[m2 >> 2] | 1;
+      Eb(i2, k2);
+      return a2 | 0;
+    }
+    return 0;
+  }
+  function Eb(a2, b2) {
+    a2 = a2 | 0;
+    b2 = b2 | 0;
+    var d2 = 0, e2 = 0, f2 = 0, g2 = 0, h2 = 0, i2 = 0;
+    i2 = a2 + b2 | 0;
+    d2 = c[a2 + 4 >> 2] | 0;
+    do
+      if (!(d2 & 1)) {
+        f2 = c[a2 >> 2] | 0;
+        if (!(d2 & 3))
+          return;
+        h2 = a2 + (0 - f2) | 0;
+        b2 = f2 + b2 | 0;
+        if ((c[17599] | 0) == (h2 | 0)) {
+          a2 = i2 + 4 | 0;
+          d2 = c[a2 >> 2] | 0;
+          if ((d2 & 3 | 0) != 3)
+            break;
+          c[17596] = b2;
+          c[a2 >> 2] = d2 & -2;
+          c[h2 + 4 >> 2] = b2 | 1;
+          c[i2 >> 2] = b2;
+          return;
+        }
+        e2 = f2 >>> 3;
+        if (f2 >>> 0 < 256) {
+          a2 = c[h2 + 8 >> 2] | 0;
+          d2 = c[h2 + 12 >> 2] | 0;
+          if ((d2 | 0) == (a2 | 0)) {
+            c[17594] = c[17594] & ~(1 << e2);
+            break;
+          } else {
+            c[a2 + 12 >> 2] = d2;
+            c[d2 + 8 >> 2] = a2;
+            break;
+          }
+        }
+        g2 = c[h2 + 24 >> 2] | 0;
+        a2 = c[h2 + 12 >> 2] | 0;
+        do
+          if ((a2 | 0) == (h2 | 0)) {
+            d2 = h2 + 16 | 0;
+            e2 = d2 + 4 | 0;
+            a2 = c[e2 >> 2] | 0;
+            if (!a2) {
+              a2 = c[d2 >> 2] | 0;
+              if (!a2) {
+                a2 = 0;
+                break;
+              }
+            } else
+              d2 = e2;
+            while (1) {
+              f2 = a2 + 20 | 0;
+              e2 = c[f2 >> 2] | 0;
+              if (!e2) {
+                f2 = a2 + 16 | 0;
+                e2 = c[f2 >> 2] | 0;
+                if (!e2)
+                  break;
+                else {
+                  a2 = e2;
+                  d2 = f2;
+                }
+              } else {
+                a2 = e2;
+                d2 = f2;
+              }
+            }
+            c[d2 >> 2] = 0;
+          } else {
+            f2 = c[h2 + 8 >> 2] | 0;
+            c[f2 + 12 >> 2] = a2;
+            c[a2 + 8 >> 2] = f2;
+          }
+        while (0);
+        if (g2) {
+          d2 = c[h2 + 28 >> 2] | 0;
+          e2 = 70680 + (d2 << 2) | 0;
+          if ((c[e2 >> 2] | 0) == (h2 | 0)) {
+            c[e2 >> 2] = a2;
+            if (!a2) {
+              c[17595] = c[17595] & ~(1 << d2);
+              break;
+            }
+          } else {
+            f2 = g2 + 16 | 0;
+            c[((c[f2 >> 2] | 0) == (h2 | 0) ? f2 : g2 + 20 | 0) >> 2] = a2;
+            if (!a2)
+              break;
+          }
+          c[a2 + 24 >> 2] = g2;
+          d2 = h2 + 16 | 0;
+          e2 = c[d2 >> 2] | 0;
+          if (e2 | 0) {
+            c[a2 + 16 >> 2] = e2;
+            c[e2 + 24 >> 2] = a2;
+          }
+          d2 = c[d2 + 4 >> 2] | 0;
+          if (d2) {
+            c[a2 + 20 >> 2] = d2;
+            c[d2 + 24 >> 2] = a2;
+          }
+        }
+      } else
+        h2 = a2;
+    while (0);
+    a2 = i2 + 4 | 0;
+    e2 = c[a2 >> 2] | 0;
+    if (!(e2 & 2)) {
+      if ((c[17600] | 0) == (i2 | 0)) {
+        i2 = (c[17597] | 0) + b2 | 0;
+        c[17597] = i2;
+        c[17600] = h2;
+        c[h2 + 4 >> 2] = i2 | 1;
+        if ((h2 | 0) != (c[17599] | 0))
+          return;
+        c[17599] = 0;
+        c[17596] = 0;
+        return;
+      }
+      if ((c[17599] | 0) == (i2 | 0)) {
+        i2 = (c[17596] | 0) + b2 | 0;
+        c[17596] = i2;
+        c[17599] = h2;
+        c[h2 + 4 >> 2] = i2 | 1;
+        c[h2 + i2 >> 2] = i2;
+        return;
+      }
+      f2 = (e2 & -8) + b2 | 0;
+      d2 = e2 >>> 3;
+      do
+        if (e2 >>> 0 < 256) {
+          a2 = c[i2 + 8 >> 2] | 0;
+          b2 = c[i2 + 12 >> 2] | 0;
+          if ((b2 | 0) == (a2 | 0)) {
+            c[17594] = c[17594] & ~(1 << d2);
+            break;
+          } else {
+            c[a2 + 12 >> 2] = b2;
+            c[b2 + 8 >> 2] = a2;
+            break;
+          }
+        } else {
+          g2 = c[i2 + 24 >> 2] | 0;
+          b2 = c[i2 + 12 >> 2] | 0;
+          do
+            if ((b2 | 0) == (i2 | 0)) {
+              a2 = i2 + 16 | 0;
+              d2 = a2 + 4 | 0;
+              b2 = c[d2 >> 2] | 0;
+              if (!b2) {
+                b2 = c[a2 >> 2] | 0;
+                if (!b2) {
+                  d2 = 0;
+                  break;
+                }
+              } else
+                a2 = d2;
+              while (1) {
+                e2 = b2 + 20 | 0;
+                d2 = c[e2 >> 2] | 0;
+                if (!d2) {
+                  e2 = b2 + 16 | 0;
+                  d2 = c[e2 >> 2] | 0;
+                  if (!d2)
+                    break;
+                  else {
+                    b2 = d2;
+                    a2 = e2;
+                  }
+                } else {
+                  b2 = d2;
+                  a2 = e2;
+                }
+              }
+              c[a2 >> 2] = 0;
+              d2 = b2;
+            } else {
+              d2 = c[i2 + 8 >> 2] | 0;
+              c[d2 + 12 >> 2] = b2;
+              c[b2 + 8 >> 2] = d2;
+              d2 = b2;
+            }
+          while (0);
+          if (g2 | 0) {
+            b2 = c[i2 + 28 >> 2] | 0;
+            a2 = 70680 + (b2 << 2) | 0;
+            if ((c[a2 >> 2] | 0) == (i2 | 0)) {
+              c[a2 >> 2] = d2;
+              if (!d2) {
+                c[17595] = c[17595] & ~(1 << b2);
+                break;
+              }
+            } else {
+              e2 = g2 + 16 | 0;
+              c[((c[e2 >> 2] | 0) == (i2 | 0) ? e2 : g2 + 20 | 0) >> 2] = d2;
+              if (!d2)
+                break;
+            }
+            c[d2 + 24 >> 2] = g2;
+            b2 = i2 + 16 | 0;
+            a2 = c[b2 >> 2] | 0;
+            if (a2 | 0) {
+              c[d2 + 16 >> 2] = a2;
+              c[a2 + 24 >> 2] = d2;
+            }
+            b2 = c[b2 + 4 >> 2] | 0;
+            if (b2 | 0) {
+              c[d2 + 20 >> 2] = b2;
+              c[b2 + 24 >> 2] = d2;
+            }
+          }
+        }
+      while (0);
+      c[h2 + 4 >> 2] = f2 | 1;
+      c[h2 + f2 >> 2] = f2;
+      if ((h2 | 0) == (c[17599] | 0)) {
+        c[17596] = f2;
+        return;
+      }
+    } else {
+      c[a2 >> 2] = e2 & -2;
+      c[h2 + 4 >> 2] = b2 | 1;
+      c[h2 + b2 >> 2] = b2;
+      f2 = b2;
+    }
+    b2 = f2 >>> 3;
+    if (f2 >>> 0 < 256) {
+      d2 = 70416 + (b2 << 1 << 2) | 0;
+      a2 = c[17594] | 0;
+      b2 = 1 << b2;
+      if (!(a2 & b2)) {
+        c[17594] = a2 | b2;
+        b2 = d2;
+        a2 = d2 + 8 | 0;
+      } else {
+        a2 = d2 + 8 | 0;
+        b2 = c[a2 >> 2] | 0;
+      }
+      c[a2 >> 2] = h2;
+      c[b2 + 12 >> 2] = h2;
+      c[h2 + 8 >> 2] = b2;
+      c[h2 + 12 >> 2] = d2;
+      return;
+    }
+    b2 = f2 >>> 8;
+    if (b2)
+      if (f2 >>> 0 > 16777215)
+        e2 = 31;
+      else {
+        g2 = (b2 + 1048320 | 0) >>> 16 & 8;
+        i2 = b2 << g2;
+        d2 = (i2 + 520192 | 0) >>> 16 & 4;
+        i2 = i2 << d2;
+        e2 = (i2 + 245760 | 0) >>> 16 & 2;
+        e2 = 14 - (d2 | g2 | e2) + (i2 << e2 >>> 15) | 0;
+        e2 = f2 >>> (e2 + 7 | 0) & 1 | e2 << 1;
+      }
+    else
+      e2 = 0;
+    b2 = 70680 + (e2 << 2) | 0;
+    c[h2 + 28 >> 2] = e2;
+    c[h2 + 20 >> 2] = 0;
+    c[h2 + 16 >> 2] = 0;
+    a2 = c[17595] | 0;
+    d2 = 1 << e2;
+    if (!(a2 & d2)) {
+      c[17595] = a2 | d2;
+      c[b2 >> 2] = h2;
+      c[h2 + 24 >> 2] = b2;
+      c[h2 + 12 >> 2] = h2;
+      c[h2 + 8 >> 2] = h2;
+      return;
+    }
+    b2 = c[b2 >> 2] | 0;
+    a:
+      do
+        if ((c[b2 + 4 >> 2] & -8 | 0) != (f2 | 0)) {
+          e2 = f2 << ((e2 | 0) == 31 ? 0 : 25 - (e2 >>> 1) | 0);
+          while (1) {
+            d2 = b2 + 16 + (e2 >>> 31 << 2) | 0;
+            a2 = c[d2 >> 2] | 0;
+            if (!a2)
+              break;
+            if ((c[a2 + 4 >> 2] & -8 | 0) == (f2 | 0)) {
+              b2 = a2;
+              break a;
+            } else {
+              e2 = e2 << 1;
+              b2 = a2;
+            }
+          }
+          c[d2 >> 2] = h2;
+          c[h2 + 24 >> 2] = b2;
+          c[h2 + 12 >> 2] = h2;
+          c[h2 + 8 >> 2] = h2;
+          return;
+        }
+      while (0);
+    g2 = b2 + 8 | 0;
+    i2 = c[g2 >> 2] | 0;
+    c[i2 + 12 >> 2] = h2;
+    c[g2 >> 2] = h2;
+    c[h2 + 8 >> 2] = i2;
+    c[h2 + 12 >> 2] = b2;
+    c[h2 + 24 >> 2] = 0;
+    return;
+  }
+  function Fb(a2, b2) {
+    a2 = a2 | 0;
+    b2 = b2 | 0;
+    if (a2 >>> 0 < 9) {
+      b2 = Ab(b2) | 0;
+      return b2 | 0;
+    } else {
+      b2 = Gb(a2, b2) | 0;
+      return b2 | 0;
+    }
+    return 0;
+  }
+  function Gb(a2, b2) {
+    a2 = a2 | 0;
+    b2 = b2 | 0;
+    var d2 = 0, e2 = 0, f2 = 0, g2 = 0, h2 = 0, i2 = 0;
+    d2 = a2 >>> 0 > 16 ? a2 : 16;
+    if (!(d2 + -1 & d2))
+      a2 = d2;
+    else {
+      a2 = 16;
+      while (1)
+        if (a2 >>> 0 < d2 >>> 0)
+          a2 = a2 << 1;
+        else
+          break;
+    }
+    if ((-64 - a2 | 0) >>> 0 <= b2 >>> 0) {
+      h2 = 0;
+      return h2 | 0;
+    }
+    g2 = b2 >>> 0 < 11 ? 16 : b2 + 11 & -8;
+    d2 = Ab(g2 + 12 + a2 | 0) | 0;
+    if (!d2) {
+      h2 = 0;
+      return h2 | 0;
+    }
+    f2 = d2 + -8 | 0;
+    do
+      if (a2 + -1 & d2) {
+        e2 = (d2 + a2 + -1 & 0 - a2) + -8 | 0;
+        b2 = f2;
+        e2 = (e2 - b2 | 0) >>> 0 > 15 ? e2 : e2 + a2 | 0;
+        b2 = e2 - b2 | 0;
+        a2 = d2 + -4 | 0;
+        i2 = c[a2 >> 2] | 0;
+        d2 = (i2 & -8) - b2 | 0;
+        if (!(i2 & 3)) {
+          c[e2 >> 2] = (c[f2 >> 2] | 0) + b2;
+          c[e2 + 4 >> 2] = d2;
+          a2 = e2;
+          b2 = e2;
+          break;
+        } else {
+          i2 = e2 + 4 | 0;
+          c[i2 >> 2] = d2 | c[i2 >> 2] & 1 | 2;
+          d2 = e2 + d2 + 4 | 0;
+          c[d2 >> 2] = c[d2 >> 2] | 1;
+          c[a2 >> 2] = b2 | c[a2 >> 2] & 1 | 2;
+          c[i2 >> 2] = c[i2 >> 2] | 1;
+          Eb(f2, b2);
+          a2 = e2;
+          b2 = e2;
+          break;
+        }
+      } else {
+        a2 = f2;
+        b2 = f2;
+      }
+    while (0);
+    a2 = a2 + 4 | 0;
+    d2 = c[a2 >> 2] | 0;
+    if (d2 & 3 | 0 ? (h2 = d2 & -8, h2 >>> 0 > (g2 + 16 | 0) >>> 0) : 0) {
+      i2 = h2 - g2 | 0;
+      f2 = b2 + g2 | 0;
+      c[a2 >> 2] = g2 | d2 & 1 | 2;
+      c[f2 + 4 >> 2] = i2 | 3;
+      h2 = b2 + h2 + 4 | 0;
+      c[h2 >> 2] = c[h2 >> 2] | 1;
+      Eb(f2, i2);
+    }
+    i2 = b2 + 8 | 0;
+    return i2 | 0;
+  }
+  function Hb() {
+    t(70888);
+    return;
+  }
+  function Ib() {
+    return 70872;
+  }
+  function Jb() {
+    return 70880;
+  }
+  function Kb() {
+    return 70884;
+  }
+  function Lb() {
+    return 70888;
+  }
+  function Mb(a2) {
+    a2 = a2 | 0;
+    return;
+  }
+  function Nb(a2) {
+    a2 = a2 | 0;
+    bc(a2);
+    return;
+  }
+  function Ob(a2) {
+    a2 = a2 | 0;
+    return;
+  }
+  function Pb(a2) {
+    a2 = a2 | 0;
+    return;
+  }
+  function Qb(a2, b2, d2) {
+    a2 = a2 | 0;
+    b2 = b2 | 0;
+    d2 = d2 | 0;
+    var e2 = 0, f2 = 0, g2 = 0, h2 = 0;
+    h2 = E;
+    E = E + 64 | 0;
+    f2 = h2;
+    if (!(Ub(a2, b2) | 0))
+      if ((b2 | 0) != 0 ? (g2 = Yb(b2, 69792) | 0, (g2 | 0) != 0) : 0) {
+        b2 = f2 + 4 | 0;
+        e2 = b2 + 52 | 0;
+        do {
+          c[b2 >> 2] = 0;
+          b2 = b2 + 4 | 0;
+        } while ((b2 | 0) < (e2 | 0));
+        c[f2 >> 2] = g2;
+        c[f2 + 8 >> 2] = a2;
+        c[f2 + 12 >> 2] = -1;
+        c[f2 + 48 >> 2] = 1;
+        L[c[(c[g2 >> 2] | 0) + 28 >> 2] & 3](g2, f2, c[d2 >> 2] | 0, 1);
+        if ((c[f2 + 24 >> 2] | 0) == 1) {
+          c[d2 >> 2] = c[f2 + 16 >> 2];
+          b2 = 1;
+        } else
+          b2 = 0;
+      } else
+        b2 = 0;
+    else
+      b2 = 1;
+    E = h2;
+    return b2 | 0;
+  }
+  function Rb(a2, b2, d2, e2, f2, g2) {
+    a2 = a2 | 0;
+    b2 = b2 | 0;
+    d2 = d2 | 0;
+    e2 = e2 | 0;
+    f2 = f2 | 0;
+    g2 = g2 | 0;
+    if (Ub(a2, c[b2 + 8 >> 2] | 0) | 0)
+      Xb(b2, d2, e2, f2);
+    return;
+  }
+  function Sb(b2, d2, e2, f2, g2) {
+    b2 = b2 | 0;
+    d2 = d2 | 0;
+    e2 = e2 | 0;
+    f2 = f2 | 0;
+    g2 = g2 | 0;
+    var h2 = 0;
+    do
+      if (!(Ub(b2, c[d2 + 8 >> 2] | 0) | 0)) {
+        if (Ub(b2, c[d2 >> 2] | 0) | 0) {
+          if ((c[d2 + 16 >> 2] | 0) != (e2 | 0) ? (h2 = d2 + 20 | 0, (c[h2 >> 2] | 0) != (e2 | 0)) : 0) {
+            c[d2 + 32 >> 2] = f2;
+            c[h2 >> 2] = e2;
+            g2 = d2 + 40 | 0;
+            c[g2 >> 2] = (c[g2 >> 2] | 0) + 1;
+            if ((c[d2 + 36 >> 2] | 0) == 1 ? (c[d2 + 24 >> 2] | 0) == 2 : 0)
+              a[d2 + 54 >> 0] = 1;
+            c[d2 + 44 >> 2] = 4;
+            break;
+          }
+          if ((f2 | 0) == 1)
+            c[d2 + 32 >> 2] = 1;
+        }
+      } else
+        Wb(d2, e2, f2);
+    while (0);
+    return;
+  }
+  function Tb(a2, b2, d2, e2) {
+    a2 = a2 | 0;
+    b2 = b2 | 0;
+    d2 = d2 | 0;
+    e2 = e2 | 0;
+    if (Ub(a2, c[b2 + 8 >> 2] | 0) | 0)
+      Vb(b2, d2, e2);
+    return;
+  }
+  function Ub(a2, b2) {
+    a2 = a2 | 0;
+    b2 = b2 | 0;
+    return (a2 | 0) == (b2 | 0) | 0;
+  }
+  function Vb(b2, d2, e2) {
+    b2 = b2 | 0;
+    d2 = d2 | 0;
+    e2 = e2 | 0;
+    var f2 = 0, g2 = 0;
+    f2 = b2 + 16 | 0;
+    g2 = c[f2 >> 2] | 0;
+    do
+      if (g2) {
+        if ((g2 | 0) != (d2 | 0)) {
+          e2 = b2 + 36 | 0;
+          c[e2 >> 2] = (c[e2 >> 2] | 0) + 1;
+          c[b2 + 24 >> 2] = 2;
+          a[b2 + 54 >> 0] = 1;
+          break;
+        }
+        b2 = b2 + 24 | 0;
+        if ((c[b2 >> 2] | 0) == 2)
+          c[b2 >> 2] = e2;
+      } else {
+        c[f2 >> 2] = d2;
+        c[b2 + 24 >> 2] = e2;
+        c[b2 + 36 >> 2] = 1;
+      }
+    while (0);
+    return;
+  }
+  function Wb(a2, b2, d2) {
+    a2 = a2 | 0;
+    b2 = b2 | 0;
+    d2 = d2 | 0;
+    var e2 = 0;
+    if ((c[a2 + 4 >> 2] | 0) == (b2 | 0) ? (e2 = a2 + 28 | 0, (c[e2 >> 2] | 0) != 1) : 0)
+      c[e2 >> 2] = d2;
+    return;
+  }
+  function Xb(b2, d2, e2, f2) {
+    b2 = b2 | 0;
+    d2 = d2 | 0;
+    e2 = e2 | 0;
+    f2 = f2 | 0;
+    var g2 = 0;
+    a[b2 + 53 >> 0] = 1;
+    do
+      if ((c[b2 + 4 >> 2] | 0) == (e2 | 0)) {
+        a[b2 + 52 >> 0] = 1;
+        g2 = b2 + 16 | 0;
+        e2 = c[g2 >> 2] | 0;
+        if (!e2) {
+          c[g2 >> 2] = d2;
+          c[b2 + 24 >> 2] = f2;
+          c[b2 + 36 >> 2] = 1;
+          if (!((f2 | 0) == 1 ? (c[b2 + 48 >> 2] | 0) == 1 : 0))
+            break;
+          a[b2 + 54 >> 0] = 1;
+          break;
+        }
+        if ((e2 | 0) != (d2 | 0)) {
+          f2 = b2 + 36 | 0;
+          c[f2 >> 2] = (c[f2 >> 2] | 0) + 1;
+          a[b2 + 54 >> 0] = 1;
+          break;
+        }
+        g2 = b2 + 24 | 0;
+        e2 = c[g2 >> 2] | 0;
+        if ((e2 | 0) == 2) {
+          c[g2 >> 2] = f2;
+          e2 = f2;
+        }
+        if ((e2 | 0) == 1 ? (c[b2 + 48 >> 2] | 0) == 1 : 0)
+          a[b2 + 54 >> 0] = 1;
+      }
+    while (0);
+    return;
+  }
+  function Yb(d2, e2) {
+    d2 = d2 | 0;
+    e2 = e2 | 0;
+    var f2 = 0, g2 = 0, h2 = 0, i2 = 0, j2 = 0, k2 = 0, l2 = 0, m2 = 0, n2 = 0, o2 = 0, p2 = 0, q2 = 0;
+    q2 = E;
+    E = E + 64 | 0;
+    n2 = q2;
+    p2 = c[d2 >> 2] | 0;
+    o2 = d2 + (c[p2 + -8 >> 2] | 0) | 0;
+    p2 = c[p2 + -4 >> 2] | 0;
+    c[n2 >> 2] = e2;
+    c[n2 + 4 >> 2] = d2;
+    c[n2 + 8 >> 2] = 69808;
+    g2 = n2 + 12 | 0;
+    h2 = n2 + 16 | 0;
+    i2 = n2 + 20 | 0;
+    j2 = n2 + 24 | 0;
+    k2 = n2 + 28 | 0;
+    l2 = n2 + 32 | 0;
+    m2 = n2 + 40 | 0;
+    d2 = Ub(p2, e2) | 0;
+    e2 = g2;
+    f2 = e2 + 40 | 0;
+    do {
+      c[e2 >> 2] = 0;
+      e2 = e2 + 4 | 0;
+    } while ((e2 | 0) < (f2 | 0));
+    b[g2 + 40 >> 1] = 0;
+    a[g2 + 42 >> 0] = 0;
+    a:
+      do
+        if (d2) {
+          c[n2 + 48 >> 2] = 1;
+          N[c[(c[p2 >> 2] | 0) + 20 >> 2] & 3](p2, n2, o2, o2, 1, 0);
+          d2 = (c[j2 >> 2] | 0) == 1 ? o2 : 0;
+        } else {
+          M[c[(c[p2 >> 2] | 0) + 24 >> 2] & 3](p2, n2, o2, 1, 0);
+          switch (c[n2 + 36 >> 2] | 0) {
+            case 0: {
+              d2 = (c[m2 >> 2] | 0) == 1 & (c[k2 >> 2] | 0) == 1 & (c[l2 >> 2] | 0) == 1 ? c[i2 >> 2] | 0 : 0;
+              break a;
+            }
+            case 1:
+              break;
+            default: {
+              d2 = 0;
+              break a;
+            }
+          }
+          if ((c[j2 >> 2] | 0) != 1 ? !((c[m2 >> 2] | 0) == 0 & (c[k2 >> 2] | 0) == 1 & (c[l2 >> 2] | 0) == 1) : 0) {
+            d2 = 0;
+            break;
+          }
+          d2 = c[h2 >> 2] | 0;
+        }
+      while (0);
+    E = q2;
+    return d2 | 0;
+  }
+  function Zb(a2) {
+    a2 = a2 | 0;
+    bc(a2);
+    return;
+  }
+  function _b(a2, b2, d2, e2, f2, g2) {
+    a2 = a2 | 0;
+    b2 = b2 | 0;
+    d2 = d2 | 0;
+    e2 = e2 | 0;
+    f2 = f2 | 0;
+    g2 = g2 | 0;
+    if (Ub(a2, c[b2 + 8 >> 2] | 0) | 0)
+      Xb(b2, d2, e2, f2);
+    else {
+      a2 = c[a2 + 8 >> 2] | 0;
+      N[c[(c[a2 >> 2] | 0) + 20 >> 2] & 3](a2, b2, d2, e2, f2, g2);
+    }
+    return;
+  }
+  function $b(b2, d2, e2, f2, g2) {
+    b2 = b2 | 0;
+    d2 = d2 | 0;
+    e2 = e2 | 0;
+    f2 = f2 | 0;
+    g2 = g2 | 0;
+    var h2 = 0, i2 = 0, j2 = 0;
+    do
+      if (!(Ub(b2, c[d2 + 8 >> 2] | 0) | 0)) {
+        if (!(Ub(b2, c[d2 >> 2] | 0) | 0)) {
+          i2 = c[b2 + 8 >> 2] | 0;
+          M[c[(c[i2 >> 2] | 0) + 24 >> 2] & 3](i2, d2, e2, f2, g2);
+          break;
+        }
+        if ((c[d2 + 16 >> 2] | 0) != (e2 | 0) ? (h2 = d2 + 20 | 0, (c[h2 >> 2] | 0) != (e2 | 0)) : 0) {
+          c[d2 + 32 >> 2] = f2;
+          i2 = d2 + 44 | 0;
+          if ((c[i2 >> 2] | 0) == 4)
+            break;
+          f2 = d2 + 52 | 0;
+          a[f2 >> 0] = 0;
+          j2 = d2 + 53 | 0;
+          a[j2 >> 0] = 0;
+          b2 = c[b2 + 8 >> 2] | 0;
+          N[c[(c[b2 >> 2] | 0) + 20 >> 2] & 3](b2, d2, e2, e2, 1, g2);
+          if (a[j2 >> 0] | 0)
+            if (!(a[f2 >> 0] | 0)) {
+              f2 = 1;
+              b2 = 11;
+            } else
+              b2 = 15;
+          else {
+            f2 = 0;
+            b2 = 11;
+          }
+          do
+            if ((b2 | 0) == 11) {
+              c[h2 >> 2] = e2;
+              j2 = d2 + 40 | 0;
+              c[j2 >> 2] = (c[j2 >> 2] | 0) + 1;
+              if ((c[d2 + 36 >> 2] | 0) == 1 ? (c[d2 + 24 >> 2] | 0) == 2 : 0) {
+                a[d2 + 54 >> 0] = 1;
+                if (f2) {
+                  b2 = 15;
+                  break;
+                } else {
+                  f2 = 4;
+                  break;
+                }
+              }
+              if (f2)
+                b2 = 15;
+              else
+                f2 = 4;
+            }
+          while (0);
+          if ((b2 | 0) == 15)
+            f2 = 3;
+          c[i2 >> 2] = f2;
+          break;
+        }
+        if ((f2 | 0) == 1)
+          c[d2 + 32 >> 2] = 1;
+      } else
+        Wb(d2, e2, f2);
+    while (0);
+    return;
+  }
+  function ac(a2, b2, d2, e2) {
+    a2 = a2 | 0;
+    b2 = b2 | 0;
+    d2 = d2 | 0;
+    e2 = e2 | 0;
+    if (Ub(a2, c[b2 + 8 >> 2] | 0) | 0)
+      Vb(b2, d2, e2);
+    else {
+      a2 = c[a2 + 8 >> 2] | 0;
+      L[c[(c[a2 >> 2] | 0) + 28 >> 2] & 3](a2, b2, d2, e2);
+    }
+    return;
+  }
+  function bc(a2) {
+    a2 = a2 | 0;
+    Bb(a2);
+    return;
+  }
+  function cc(a2, b2, d2) {
+    a2 = a2 | 0;
+    b2 = b2 | 0;
+    d2 = d2 | 0;
+    var e2 = 0, f2 = 0;
+    f2 = E;
+    E = E + 16 | 0;
+    e2 = f2;
+    c[e2 >> 2] = c[d2 >> 2];
+    a2 = J[c[(c[a2 >> 2] | 0) + 16 >> 2] & 1](a2, b2, e2) | 0;
+    if (a2)
+      c[d2 >> 2] = c[e2 >> 2];
+    E = f2;
+    return a2 & 1 | 0;
+  }
+  function dc(a2) {
+    a2 = a2 | 0;
+    if (!a2)
+      a2 = 0;
+    else
+      a2 = (Yb(a2, 69864) | 0) != 0 & 1;
+    return a2 | 0;
+  }
+  function ec(b2, d2, e2) {
+    b2 = b2 | 0;
+    d2 = d2 | 0;
+    e2 = e2 | 0;
+    var f2 = 0, g2 = 0, h2 = 0;
+    if ((e2 | 0) >= 8192) {
+      A(b2 | 0, d2 | 0, e2 | 0) | 0;
+      return b2 | 0;
+    }
+    h2 = b2 | 0;
+    g2 = b2 + e2 | 0;
+    if ((b2 & 3) == (d2 & 3)) {
+      while (b2 & 3) {
+        if (!e2)
+          return h2 | 0;
+        a[b2 >> 0] = a[d2 >> 0] | 0;
+        b2 = b2 + 1 | 0;
+        d2 = d2 + 1 | 0;
+        e2 = e2 - 1 | 0;
+      }
+      e2 = g2 & -4 | 0;
+      f2 = e2 - 64 | 0;
+      while ((b2 | 0) <= (f2 | 0)) {
+        c[b2 >> 2] = c[d2 >> 2];
+        c[b2 + 4 >> 2] = c[d2 + 4 >> 2];
+        c[b2 + 8 >> 2] = c[d2 + 8 >> 2];
+        c[b2 + 12 >> 2] = c[d2 + 12 >> 2];
+        c[b2 + 16 >> 2] = c[d2 + 16 >> 2];
+        c[b2 + 20 >> 2] = c[d2 + 20 >> 2];
+        c[b2 + 24 >> 2] = c[d2 + 24 >> 2];
+        c[b2 + 28 >> 2] = c[d2 + 28 >> 2];
+        c[b2 + 32 >> 2] = c[d2 + 32 >> 2];
+        c[b2 + 36 >> 2] = c[d2 + 36 >> 2];
+        c[b2 + 40 >> 2] = c[d2 + 40 >> 2];
+        c[b2 + 44 >> 2] = c[d2 + 44 >> 2];
+        c[b2 + 48 >> 2] = c[d2 + 48 >> 2];
+        c[b2 + 52 >> 2] = c[d2 + 52 >> 2];
+        c[b2 + 56 >> 2] = c[d2 + 56 >> 2];
+        c[b2 + 60 >> 2] = c[d2 + 60 >> 2];
+        b2 = b2 + 64 | 0;
+        d2 = d2 + 64 | 0;
+      }
+      while ((b2 | 0) < (e2 | 0)) {
+        c[b2 >> 2] = c[d2 >> 2];
+        b2 = b2 + 4 | 0;
+        d2 = d2 + 4 | 0;
+      }
+    } else {
+      e2 = g2 - 4 | 0;
+      while ((b2 | 0) < (e2 | 0)) {
+        a[b2 >> 0] = a[d2 >> 0] | 0;
+        a[b2 + 1 >> 0] = a[d2 + 1 >> 0] | 0;
+        a[b2 + 2 >> 0] = a[d2 + 2 >> 0] | 0;
+        a[b2 + 3 >> 0] = a[d2 + 3 >> 0] | 0;
+        b2 = b2 + 4 | 0;
+        d2 = d2 + 4 | 0;
+      }
+    }
+    while ((b2 | 0) < (g2 | 0)) {
+      a[b2 >> 0] = a[d2 >> 0] | 0;
+      b2 = b2 + 1 | 0;
+      d2 = d2 + 1 | 0;
+    }
+    return h2 | 0;
+  }
+  function fc(b2, d2, e2) {
+    b2 = b2 | 0;
+    d2 = d2 | 0;
+    e2 = e2 | 0;
+    var f2 = 0, g2 = 0, h2 = 0, i2 = 0;
+    h2 = b2 + e2 | 0;
+    d2 = d2 & 255;
+    if ((e2 | 0) >= 67) {
+      while (b2 & 3) {
+        a[b2 >> 0] = d2;
+        b2 = b2 + 1 | 0;
+      }
+      f2 = h2 & -4 | 0;
+      i2 = d2 | d2 << 8 | d2 << 16 | d2 << 24;
+      g2 = f2 - 64 | 0;
+      while ((b2 | 0) <= (g2 | 0)) {
+        c[b2 >> 2] = i2;
+        c[b2 + 4 >> 2] = i2;
+        c[b2 + 8 >> 2] = i2;
+        c[b2 + 12 >> 2] = i2;
+        c[b2 + 16 >> 2] = i2;
+        c[b2 + 20 >> 2] = i2;
+        c[b2 + 24 >> 2] = i2;
+        c[b2 + 28 >> 2] = i2;
+        c[b2 + 32 >> 2] = i2;
+        c[b2 + 36 >> 2] = i2;
+        c[b2 + 40 >> 2] = i2;
+        c[b2 + 44 >> 2] = i2;
+        c[b2 + 48 >> 2] = i2;
+        c[b2 + 52 >> 2] = i2;
+        c[b2 + 56 >> 2] = i2;
+        c[b2 + 60 >> 2] = i2;
+        b2 = b2 + 64 | 0;
+      }
+      while ((b2 | 0) < (f2 | 0)) {
+        c[b2 >> 2] = i2;
+        b2 = b2 + 4 | 0;
+      }
+    }
+    while ((b2 | 0) < (h2 | 0)) {
+      a[b2 >> 0] = d2;
+      b2 = b2 + 1 | 0;
+    }
+    return h2 - e2 | 0;
+  }
+  function gc(a2) {
+    a2 = a2 | 0;
+    var b2 = 0, d2 = 0, e2 = 0;
+    e2 = z() | 0;
+    d2 = c[g >> 2] | 0;
+    b2 = d2 + a2 | 0;
+    if ((a2 | 0) > 0 & (b2 | 0) < (d2 | 0) | (b2 | 0) < 0) {
+      C(b2 | 0) | 0;
+      y(12);
+      return -1;
+    }
+    if ((b2 | 0) > (e2 | 0)) {
+      if (!(B(b2 | 0) | 0)) {
+        y(12);
+        return -1;
+      }
+    }
+    c[g >> 2] = b2;
+    return d2 | 0;
+  }
+  function hc(a2, b2, c2) {
+    a2 = a2 | 0;
+    b2 = b2 | 0;
+    c2 = c2 | 0;
+    return I[a2 & 0](b2 | 0, c2 | 0) | 0;
+  }
+  function ic(a2, b2, c2, d2) {
+    a2 = a2 | 0;
+    b2 = b2 | 0;
+    c2 = c2 | 0;
+    d2 = d2 | 0;
+    return J[a2 & 1](b2 | 0, c2 | 0, d2 | 0) | 0;
+  }
+  function jc(a2, b2) {
+    a2 = a2 | 0;
+    b2 = b2 | 0;
+    K[a2 & 7](b2 | 0);
+  }
+  function kc(a2, b2, c2, d2, e2) {
+    a2 = a2 | 0;
+    b2 = b2 | 0;
+    c2 = c2 | 0;
+    d2 = d2 | 0;
+    e2 = e2 | 0;
+    L[a2 & 3](b2 | 0, c2 | 0, d2 | 0, e2 | 0);
+  }
+  function lc(a2, b2, c2, d2, e2, f2) {
+    a2 = a2 | 0;
+    b2 = b2 | 0;
+    c2 = c2 | 0;
+    d2 = d2 | 0;
+    e2 = e2 | 0;
+    f2 = f2 | 0;
+    M[a2 & 3](b2 | 0, c2 | 0, d2 | 0, e2 | 0, f2 | 0);
+  }
+  function mc(a2, b2, c2, d2, e2, f2, g2) {
+    a2 = a2 | 0;
+    b2 = b2 | 0;
+    c2 = c2 | 0;
+    d2 = d2 | 0;
+    e2 = e2 | 0;
+    f2 = f2 | 0;
+    g2 = g2 | 0;
+    N[a2 & 3](b2 | 0, c2 | 0, d2 | 0, e2 | 0, f2 | 0, g2 | 0);
+  }
+  function nc(a2, b2) {
+    a2 = a2 | 0;
+    b2 = b2 | 0;
+    p(0);
+    return 0;
+  }
+  function oc(a2, b2, c2) {
+    a2 = a2 | 0;
+    b2 = b2 | 0;
+    c2 = c2 | 0;
+    p(1);
+    return 0;
+  }
+  function pc(a2) {
+    a2 = a2 | 0;
+    p(2);
+  }
+  function qc(a2, b2, c2, d2) {
+    a2 = a2 | 0;
+    b2 = b2 | 0;
+    c2 = c2 | 0;
+    d2 = d2 | 0;
+    p(3);
+  }
+  function rc(a2, b2, c2, d2, e2) {
+    a2 = a2 | 0;
+    b2 = b2 | 0;
+    c2 = c2 | 0;
+    d2 = d2 | 0;
+    e2 = e2 | 0;
+    p(4);
+  }
+  function sc(a2, b2, c2, d2, e2, f2) {
+    a2 = a2 | 0;
+    b2 = b2 | 0;
+    c2 = c2 | 0;
+    d2 = d2 | 0;
+    e2 = e2 | 0;
+    f2 = f2 | 0;
+    p(5);
+  }
+  var I = [nc];
+  var J = [
+    oc,
+    Qb
+  ];
+  var K = [
+    pc,
+    Mb,
+    Nb,
+    Ob,
+    Pb,
+    Zb,
+    pc,
+    pc
+  ];
+  var L = [
+    qc,
+    Tb,
+    ac,
+    qc
+  ];
+  var M = [
+    rc,
+    Sb,
+    $b,
+    rc
+  ];
+  var N = [
+    sc,
+    Rb,
+    _b,
+    sc
+  ];
+  return {
+    ___cxa_can_catch: cc,
+    ___cxa_is_pointer_type: dc,
+    ___emscripten_environ_constructor: Hb,
+    __get_daylight: Jb,
+    __get_environ: Lb,
+    __get_timezone: Kb,
+    __get_tzname: Ib,
+    _bidi_getLine: Y,
+    _bidi_getParagraphEndIndex: U,
+    _bidi_getVisualRun: V,
+    _bidi_processText: T,
+    _bidi_setLine: W,
+    _bidi_writeReverse: X,
+    _emscripten_replace_memory: H,
+    _free: Bb,
+    _malloc: Ab,
+    _memalign: Fb,
+    _memcpy: ec,
+    _memset: fc,
+    _sbrk: gc,
+    _ushape_arabic: S,
+    dynCall_iii: hc,
+    dynCall_iiii: ic,
+    dynCall_vi: jc,
+    dynCall_viiii: kc,
+    dynCall_viiiii: lc,
+    dynCall_viiiiii: mc,
+    establishStackSpace: R,
+    stackAlloc: O,
+    stackRestore: Q,
+    stackSave: P
+  };
+}(asmGlobalArg, asmLibraryArg, buffer);
+var ___cxa_can_catch = Module["___cxa_can_catch"] = asm["___cxa_can_catch"];
+var ___cxa_is_pointer_type = Module["___cxa_is_pointer_type"] = asm["___cxa_is_pointer_type"];
+var ___emscripten_environ_constructor = Module["___emscripten_environ_constructor"] = asm["___emscripten_environ_constructor"];
+var __get_daylight = Module["__get_daylight"] = asm["__get_daylight"];
+var __get_environ = Module["__get_environ"] = asm["__get_environ"];
+var __get_timezone = Module["__get_timezone"] = asm["__get_timezone"];
+var __get_tzname = Module["__get_tzname"] = asm["__get_tzname"];
+var _bidi_getLine = Module["_bidi_getLine"] = asm["_bidi_getLine"];
+var _bidi_getParagraphEndIndex = Module["_bidi_getParagraphEndIndex"] = asm["_bidi_getParagraphEndIndex"];
+var _bidi_getVisualRun = Module["_bidi_getVisualRun"] = asm["_bidi_getVisualRun"];
+var _bidi_processText = Module["_bidi_processText"] = asm["_bidi_processText"];
+var _bidi_setLine = Module["_bidi_setLine"] = asm["_bidi_setLine"];
+var _bidi_writeReverse = Module["_bidi_writeReverse"] = asm["_bidi_writeReverse"];
+var _emscripten_replace_memory = Module["_emscripten_replace_memory"] = asm["_emscripten_replace_memory"];
+var _free = Module["_free"] = asm["_free"];
+var _malloc = Module["_malloc"] = asm["_malloc"];
+var _memalign = Module["_memalign"] = asm["_memalign"];
+var _memcpy = Module["_memcpy"] = asm["_memcpy"];
+var _memset = Module["_memset"] = asm["_memset"];
+var _sbrk = Module["_sbrk"] = asm["_sbrk"];
+var _ushape_arabic = Module["_ushape_arabic"] = asm["_ushape_arabic"];
+var establishStackSpace = Module["establishStackSpace"] = asm["establishStackSpace"];
+var stackAlloc = Module["stackAlloc"] = asm["stackAlloc"];
+var stackRestore = Module["stackRestore"] = asm["stackRestore"];
+var stackSave = Module["stackSave"] = asm["stackSave"];
+var dynCall_iii = Module["dynCall_iii"] = asm["dynCall_iii"];
+var dynCall_iiii = Module["dynCall_iiii"] = asm["dynCall_iiii"];
+var dynCall_vi = Module["dynCall_vi"] = asm["dynCall_vi"];
+var dynCall_viiii = Module["dynCall_viiii"] = asm["dynCall_viiii"];
+var dynCall_viiiii = Module["dynCall_viiiii"] = asm["dynCall_viiiii"];
+var dynCall_viiiiii = Module["dynCall_viiiiii"] = asm["dynCall_viiiiii"];
+Module["asm"] = asm;
+Module["ccall"] = ccall;
+Module["UTF16ToString"] = UTF16ToString;
+Module["stringToUTF16"] = stringToUTF16;
+if (memoryInitializer) {
+  if (!isDataURI(memoryInitializer)) {
+    memoryInitializer = locateFile(memoryInitializer);
+  }
+  if (ENVIRONMENT_IS_NODE || ENVIRONMENT_IS_SHELL) {
+    data = Module["readBinary"](memoryInitializer);
+    HEAPU8.set(data, GLOBAL_BASE);
+  } else {
+    addRunDependency("memory initializer");
+    applyMemoryInitializer = function(data) {
+      if (data.byteLength)
+        data = new Uint8Array(data);
+      HEAPU8.set(data, GLOBAL_BASE);
+      if (Module["memoryInitializerRequest"])
+        delete Module["memoryInitializerRequest"].response;
+      removeRunDependency("memory initializer");
+    };
+    doBrowserLoad = function() {
+      Module["readAsync"](memoryInitializer, applyMemoryInitializer, function() {
+        throw "could not load memory initializer " + memoryInitializer;
+      });
+    };
+    memoryInitializerBytes = tryParseAsDataURI(memoryInitializer);
+    if (memoryInitializerBytes) {
+      applyMemoryInitializer(memoryInitializerBytes.buffer);
+    } else if (Module["memoryInitializerRequest"]) {
+      useRequest = function() {
+        var request = Module["memoryInitializerRequest"];
+        var response = request.response;
+        if (request.status !== 200 && request.status !== 0) {
+          var data = tryParseAsDataURI(Module["memoryInitializerRequestURL"]);
+          if (data) {
+            response = data.buffer;
+          } else {
+            console.warn("a problem seems to have happened with Module.memoryInitializerRequest, status: " + request.status + ", retrying " + memoryInitializer);
+            doBrowserLoad();
+            return;
+          }
+        }
+        applyMemoryInitializer(response);
+      };
+      if (Module["memoryInitializerRequest"].response) {
+        setTimeout(useRequest, 0);
+      } else {
+        Module["memoryInitializerRequest"].addEventListener("load", useRequest);
+      }
+    } else {
+      doBrowserLoad();
+    }
+  }
+}
+var data;
+var applyMemoryInitializer;
+var doBrowserLoad;
+var memoryInitializerBytes;
+var useRequest;
+function ExitStatus(status) {
+  this.name = "ExitStatus";
+  this.message = "Program terminated with exit(" + status + ")";
+  this.status = status;
+}
+ExitStatus.prototype = new Error();
+ExitStatus.prototype.constructor = ExitStatus;
+dependenciesFulfilled = function runCaller() {
+  if (!Module["calledRun"])
+    run();
+  if (!Module["calledRun"])
+    dependenciesFulfilled = runCaller;
+};
+function run(args) {
+  args = args || Module["arguments"];
+  if (runDependencies > 0) {
+    return;
+  }
+  preRun();
+  if (runDependencies > 0)
+    return;
+  if (Module["calledRun"])
+    return;
+  function doRun() {
+    if (Module["calledRun"])
+      return;
+    Module["calledRun"] = true;
+    if (ABORT)
+      return;
+    ensureInitRuntime();
+    preMain();
+    if (Module["onRuntimeInitialized"])
+      Module["onRuntimeInitialized"]();
+    postRun();
+  }
+  if (Module["setStatus"]) {
+    Module["setStatus"]("Running...");
+    setTimeout(function() {
+      setTimeout(function() {
+        Module["setStatus"]("");
+      }, 1);
+      doRun();
+    }, 1);
+  } else {
+    doRun();
+  }
+}
+Module["run"] = run;
+function abort(what) {
+  if (Module["onAbort"]) {
+    Module["onAbort"](what);
+  }
+  if (what !== void 0) {
+    out(what);
+    err(what);
+    what = JSON.stringify(what);
+  } else {
+    what = "";
+  }
+  ABORT = true;
+  EXITSTATUS = 1;
+  throw "abort(" + what + "). Build with -s ASSERTIONS=1 for more info.";
+}
+Module["abort"] = abort;
+if (Module["preInit"]) {
+  if (typeof Module["preInit"] == "function")
+    Module["preInit"] = [Module["preInit"]];
+  while (Module["preInit"].length > 0) {
+    Module["preInit"].pop()();
+  }
+}
+Module["noExitRuntime"] = true;
+run();
+function applyArabicShaping(input) {
+  if (!input) {
+    return input;
+  }
+  var nDataBytes = (input.length + 1) * 2;
+  var stringInputPtr = Module._malloc(nDataBytes);
+  Module.stringToUTF16(input, stringInputPtr, nDataBytes);
+  var returnStringPtr = Module.ccall("ushape_arabic", "number", ["number", "number"], [stringInputPtr, input.length]);
+  Module._free(stringInputPtr);
+  if (returnStringPtr === 0) {
+    return input;
+  }
+  var result = Module.UTF16ToString(returnStringPtr);
+  Module._free(returnStringPtr);
+  return result;
+}
+function mergeParagraphLineBreakPoints(lineBreakPoints, paragraphCount) {
+  var mergedParagraphLineBreakPoints = [];
+  for (var i = 0; i < paragraphCount; i++) {
+    var paragraphEndIndex = Module.ccall("bidi_getParagraphEndIndex", "number", ["number"], [i]);
+    for (var i$1 = 0, list = lineBreakPoints; i$1 < list.length; i$1 += 1) {
+      var lineBreakPoint = list[i$1];
+      if (lineBreakPoint < paragraphEndIndex && (!mergedParagraphLineBreakPoints[mergedParagraphLineBreakPoints.length - 1] || lineBreakPoint > mergedParagraphLineBreakPoints[mergedParagraphLineBreakPoints.length - 1])) {
+        mergedParagraphLineBreakPoints.push(lineBreakPoint);
+      }
+    }
+    mergedParagraphLineBreakPoints.push(paragraphEndIndex);
+  }
+  for (var i$2 = 0, list$1 = lineBreakPoints; i$2 < list$1.length; i$2 += 1) {
+    var lineBreakPoint$1 = list$1[i$2];
+    if (lineBreakPoint$1 > mergedParagraphLineBreakPoints[mergedParagraphLineBreakPoints.length - 1]) {
+      mergedParagraphLineBreakPoints.push(lineBreakPoint$1);
+    }
+  }
+  return mergedParagraphLineBreakPoints;
+}
+function setParagraph(input, stringInputPtr, nDataBytes) {
+  if (!input) {
+    return null;
+  }
+  Module.stringToUTF16(input, stringInputPtr, nDataBytes);
+  var paragraphCount = Module.ccall("bidi_processText", "number", ["number", "number"], [stringInputPtr, input.length]);
+  if (paragraphCount === 0) {
+    Module._free(stringInputPtr);
+    return null;
+  }
+  return paragraphCount;
+}
+function processBidirectionalText(input, lineBreakPoints) {
+  var nDataBytes = (input.length + 1) * 2;
+  var stringInputPtr = Module._malloc(nDataBytes);
+  var paragraphCount = setParagraph(input, stringInputPtr, nDataBytes);
+  if (!paragraphCount) {
+    return [input];
+  }
+  var mergedParagraphLineBreakPoints = mergeParagraphLineBreakPoints(lineBreakPoints, paragraphCount);
+  var lineStartIndex = 0;
+  var lines = [];
+  for (var i = 0, list = mergedParagraphLineBreakPoints; i < list.length; i += 1) {
+    var lineBreakPoint = list[i];
+    var returnStringPtr = Module.ccall("bidi_getLine", "number", ["number", "number"], [lineStartIndex, lineBreakPoint]);
+    if (returnStringPtr === 0) {
+      Module._free(stringInputPtr);
+      return [];
+    }
+    lines.push(Module.UTF16ToString(returnStringPtr));
+    Module._free(returnStringPtr);
+    lineStartIndex = lineBreakPoint;
+  }
+  Module._free(stringInputPtr);
+  return lines;
+}
+
 // src/graph/labels/LabelAtlas.ts
 var kLabelMappings = {
   id: (entry, i) => "id" in entry ? entry.id : i,
@@ -17920,68 +26918,102 @@ var kLabelMappings = {
   fontSize: (entry) => "fontSize" in entry ? entry.fontSize : 18,
   padding: (entry) => "padding" in entry ? entry.padding : [8, 5]
 };
+var kOffsetDataTypes = {
+  offset: picogl_default.UNSIGNED_SHORT
+};
 var LabelAtlas = class extends TextureAtlas {
-  constructor(context, data, mappings2, font, bold = false) {
+  constructor(context, data, mappings2, font, bold = false, charSpacing = 0) {
     super(context);
+    this.letterSpacing = 5;
     this.fontSizeStep = 25;
     this.spaceSizeMap = new Map();
     this.labelMap = new Map();
     if (data.length) {
-      this.processData(context, data, Object.assign({}, kLabelMappings, mappings2), font, bold);
+      this.processData(context, data, Object.assign({}, kLabelMappings, mappings2), font, bold, charSpacing);
     }
   }
-  async processData(context, data, mappings2, font, bold) {
+  get offsetsTexture() {
+    return this._offsetsTexture;
+  }
+  processRtlText(str6) {
+    return processBidirectionalText(applyArabicShaping(str6), []).join(" ");
+  }
+  async processData(context, data, mappings2, font, bold, charSpacing) {
     const canvas = document.createElement("canvas");
     canvas.setAttribute("style", "font-smooth: never;-webkit-font-smoothing : none;");
     const ctx = canvas.getContext("2d");
     const boxMap = new Map();
     const labels = [];
+    const offsets = [];
+    const charNegMargin = (1 - charSpacing) * this.letterSpacing;
     for (const [, entry] of dataIterator(data, mappings2)) {
       if (typeof entry.label === "string") {
         const renderSize = Math.max(entry.fontSize, Math.floor(entry.fontSize / this.fontSizeStep) * this.fontSizeStep);
         const renderScale = entry.fontSize / renderSize;
         const labelInfo = {
           index: labels.length,
-          length: entry.label.length,
+          length: 0,
           width: 0,
           height: 0
         };
         this.labelMap.set(entry.id, labelInfo);
-        for (let i = 0, n = entry.label.length; i < n; ++i) {
-          const char = entry.label.charAt(i);
+        let rtlProcessed = false;
+        let labelString = entry.label;
+        for (let i = 0, n = labelString.length; i < n; ++i) {
+          let char;
+          const charCode = labelString.charCodeAt(i);
+          if (charCode >= 1425 && !rtlProcessed) {
+            labelString = this.processRtlText(entry.label);
+            rtlProcessed = true;
+          }
+          if (charCode >= 55296 && charCode <= 56319) {
+            char = labelString.charAt(i++) + labelString.charAt(i);
+          } else if (charCode >= 65136 && charCode <= 65151) {
+            continue;
+          } else {
+            char = labelString.charAt(i);
+          }
           const charKey = `${char}-${renderSize}`;
           if (!this.textureKeyMap.has(charKey)) {
-            const image = TextureAtlas.computeDistanceField(this.renderCharTexture(char, renderSize, ctx, canvas, font, bold), renderSize);
+            const image = TextureAtlas.computeDistanceField(this.renderCharTexture(char, renderSize, ctx, canvas, font, bold), renderSize * this.labelPixelRatio);
             const box3 = { id: charKey, w: image.width, h: image.height, image };
             boxMap.set(charKey, box3);
             this.addTexture(charKey, box3);
           }
           const box2 = boxMap.get(charKey);
-          labelInfo.width += (box2.image.width - kImageMargin * 2) * renderScale;
-          labelInfo.height = Math.max(labelInfo.height, (box2.image.height - kImageMargin * 2) * renderScale);
+          offsets.push(labelInfo.width);
+          const margin = kImageMargin * 2 + charNegMargin * 2;
+          labelInfo.width += (box2.w - margin) * renderScale;
+          labelInfo.height = Math.max(labelInfo.height, (box2.h - margin) * renderScale);
+          labelInfo.length++;
           labels.push(charKey);
         }
       }
     }
-    this.exportTextures(labels);
+    this.exportTextures(labels, charNegMargin, charNegMargin);
+    const offsetDataMappings = {
+      offset: (offset) => offset
+    };
+    const offsetBuffer = packData(offsets, offsetDataMappings, kOffsetDataTypes, true);
+    this._offsetsTexture = this.createTextureForBuffer(context, new Uint16Array(offsetBuffer), offsets.length, picogl_default.R16UI);
   }
   renderCharTexture(char, size, context, canvas, font, bold) {
     const pixelRatio = this.labelPixelRatio;
     const fontString = `${bold ? "bold " : ""}${size * pixelRatio}px ${font}`;
-    if (!this.spaceSizeMap.has(size)) {
+    if (!this.spaceSizeMap.has(size + char)) {
       context.font = fontString;
       context.imageSmoothingEnabled = false;
       context.fillStyle = "white";
       context.textAlign = "center";
       context.textBaseline = "middle";
-      const spaceMetrics = context.measureText(" ");
-      this.spaceSizeMap.set(size, Math.abs(spaceMetrics.actualBoundingBoxLeft) + Math.abs(spaceMetrics.actualBoundingBoxRight));
+      const spaceMetrics = context.measureText(char);
+      this.spaceSizeMap.set(String(size) + char, Math.abs(spaceMetrics.actualBoundingBoxLeft) + Math.abs(spaceMetrics.actualBoundingBoxRight));
     }
-    const textWidth = this.spaceSizeMap.get(size);
+    const textWidth = this.spaceSizeMap.get(size + char);
     const textHeight = size * pixelRatio;
     const textPadding = Math.min(textWidth, textHeight) * 0.15;
-    canvas.width = textWidth + textPadding + kImageMargin * 2;
-    canvas.height = size * pixelRatio + textPadding + kImageMargin * 2;
+    canvas.width = Math.ceil(textWidth + textPadding + this.letterSpacing * 2 + kImageMargin * 2);
+    canvas.height = size * pixelRatio + textPadding + this.letterSpacing * 2 + kImageMargin * 2;
     context.font = fontString;
     context.imageSmoothingEnabled = false;
     context.fillStyle = "white";
@@ -18061,11 +27093,17 @@ var PointLabel = class extends Nodes {
   set padding(value) {
     this.localUniforms.uPadding = value;
   }
-  initialize(context, points2, data, mappings2, pickingManager, font = "monospace", bold = false, labelAtlas) {
+  get halo() {
+    return this.localUniforms.uHalo;
+  }
+  set halo(value) {
+    this.localUniforms.uHalo = Math.min(1, Math.max(0, value));
+  }
+  initialize(context, points2, data, mappings2, pickingManager, font = "monospace", bold = false, charSpacing = 0, labelAtlas) {
     if (labelAtlas) {
       this.labelAtlas = labelAtlas;
     } else {
-      this.labelAtlas = new LabelAtlas(context, data, mappings2, font, bold);
+      this.labelAtlas = new LabelAtlas(context, data, mappings2, font, bold, charSpacing);
     }
     super.initialize(context, points2, data, mappings2, pickingManager);
     this.verticesVBO = context.createVertexBuffer(picogl_default.FLOAT, 2, new Float32Array([
@@ -18090,6 +27128,7 @@ var PointLabel = class extends Nodes {
     this.localUniforms.uLabelIndices = this.labelAtlas.indicesTexture;
     this.localUniforms.uCharBoxes = this.labelAtlas.boxesTexture;
     this.localUniforms.uCharTexture = this.labelAtlas.atlasTexture;
+    this.localUniforms.uLabelOffsets = this.labelAtlas.offsetsTexture;
     this.localUniforms.uVisibilityThreshold = 15;
     this.localUniforms.uLabelPlacement = [0, 0];
     this.localUniforms.uPadding = 4;
@@ -18185,6 +27224,7 @@ uniform float uPadding;
 
 flat out vec4 fBackgroundColor;
 flat out vec4 fTextColor;
+flat out vec4 fHaloColor;
 flat out float fPixelRadius;
 flat out float fLabelStep;
 flat out vec2 fCharTextureSize;
@@ -18325,6 +27365,7 @@ void main() {
         fBackgroundColor = vec4(color.rgb, 0.0);
         fTextColor = vec4(color.rgb, 1.0);
     }
+    fHaloColor = mix(vec4(1.), vec4(0., 0., 0., 1.), float(length(fTextColor.rgb) > 0.866));
 
     // send thelabel info to the fragment shader
     fLabelInfo = vec4(iLabel);
@@ -18367,7 +27408,7 @@ void main() {
 `;
 
 // src/graph/labels/circular/CircularLabel.fs.glsl
-var CircularLabel_fs_default = "#version 300 es\nprecision highp float;\nprecision lowp usampler2D;\n\n#define M_PI 3.14159265359\n#define M_2PI 6.28318530718\n\nprecision lowp usampler2D;\n#define GLSLIFY 1\n\nvec4 valueForIndex(sampler2D tex, int index) {\n    int texWidth = textureSize(tex, 0).x;\n    int col = index % texWidth;\n    int row = index / texWidth;\n    return texelFetch(tex, ivec2(col, row), 0);\n}\n\nuvec4 uvalueForIndex(usampler2D tex, int index) {\n    int texWidth = textureSize(tex, 0).x;\n    int col = index % texWidth;\n    int row = index / texWidth;\n    return texelFetch(tex, ivec2(col, row), 0);\n}\n\nuint uivalueForIndex(usampler2D tex, int index) {\n    int texWidth = textureSize(tex, 0).x;\n    int col = index % texWidth;\n    int row = index / texWidth;\n    return texelFetch(tex, ivec2(col, row), 0)[0];\n}\n\n// from https://en.wikipedia.org/wiki/SRGB#The_reverse_transformation\nfloat luminance_x(float x) {\n    return x <= 0.04045 ? x / 12.92 : pow((x + 0.055) / 1.055, 2.4);\n}\nfloat color_l(float l) {\n    return min(1.0, max(0.0, l <= 0.0031308 ? l * 12.92 : pow(l * 1.055, 1.0 / 2.4) - 0.055));\n}\n\n// from https://en.wikipedia.org/wiki/Relative_luminance\nfloat rgb2luminance(vec3 color) {\n    // relative luminance\n    // see http://www.w3.org/TR/2008/REC-WCAG20-20081211/#relativeluminancedef\n    float r = luminance_x(color.r);\n    float g = luminance_x(color.g);\n    float b = luminance_x(color.b);\n    return 0.2126 * r + 0.7152 * g + 0.0722 * b;\n}\n\nvec3 setLuminance(vec3 color, float luminance) {\n    float r = luminance_x(color.r) * 0.2126;\n    float g = luminance_x(color.g) * 0.7152;\n    float b = luminance_x(color.b) * 0.0722;\n    float colorLuminance = r + g + b;\n\n    float tr = luminance * (r / colorLuminance);\n    float tg = luminance * (g / colorLuminance);\n    float tb = luminance * (b / colorLuminance);\n\n    float rr = color_l(tr / 0.2126);\n    float rg = color_l(tg / 0.7152);\n    float rb = color_l(tb / 0.0722);\n\n    return vec3(rr, rg, rb );\n}\n\n// https://www.w3.org/TR/WCAG20/#contrast-ratiodef\n// (L1 + 0.05) / (L2 + 0.05), where\n// - L1 is the relative luminance of the lighter of the colors, and\n// - L2 is the relative luminance of the darker of the colors.\nfloat findDarker(float luminance, float contrast) {\n    return (contrast * luminance) + (0.05 * contrast) - 0.05;\n}\nfloat findLighter(float luminance, float contrast) {\n    return (luminance + 0.05 - (0.05 * contrast)) / contrast;\n}\n\nvec3 contrastingColor(vec3 color, float contrast) {\n    float luminance = rgb2luminance(color);\n    float darker = findDarker(luminance, contrast);\n    float lighter = findLighter(luminance, contrast);\n\n    float targetLuminance;\n    if (darker < 0.0 || darker > 1.0) {\n        targetLuminance = lighter;\n    } else if (lighter < 0.0 || lighter > 1.0) {\n        targetLuminance = darker;\n    } else {\n        targetLuminance = abs(luminance - lighter) < abs(darker - luminance) ? lighter : darker;\n    }\n\n    return setLuminance(color, targetLuminance);\n}\n\nvec3 desaturateColor(vec3 color, float amount) {\n    float l = rgb2luminance(color);\n    vec3 gray = vec3(l, l, l);\n    return mix(color, gray, amount);\n}\n\nuniform vec4 uClearColor;\nuniform float uDesaturate;\nuniform float uBrightness;\nuniform float uFade;\nuniform float uAlpha;\n\nvec4 outputColor(vec4 color) {\n    // desaturate => fade => alpha\n    vec3 ret = mix(color.rgb, vec3(uBrightness + 1.0 / 2.0), abs(uBrightness));\n    ret = vec3(desaturateColor(ret, uDesaturate));\n    ret = mix(ret, uClearColor.rgb, uFade);\n    return vec4(ret, color.a * uAlpha);\n}\n\n#define MODE_DRAFT 0u\n#define MODE_MEDIUM 1u\n#define MODE_HIGH 2u\n#define MODE_HIGH_PASS_1 3u\n#define MODE_HIGH_PASS_2 4u\n#define MODE_PICKING 5u\n\n// most of these come from this excellent post:\n// https://iquilezles.org/www/articles/distfunctions2d/distfunctions2d.htm\n\nfloat opRound(in float d, in float r) {\n    return d - r;\n}\n\nfloat opOnion(in float d, in float r) {\n    return abs(d) - r;\n}\n\nfloat sdCircle(in vec2 p, in float r ) {\n    return length(p) - r;\n}\n\nfloat sdEquilateralTriangle(in vec2 p, in float r) {\n    const float k = sqrt(3.0);\n    p.x = abs(p.x) - r;\n    p.y = p.y + (r) / k;\n    if (p.x + k * p.y > 0.0) {\n        p = vec2(p.x-k*p.y,-k*p.x-p.y) / 2.0;\n    }\n    p.x -= clamp(p.x, -2.0 * r, 0.0);\n    return -length(p) * sign(p.y);\n}\n\nfloat sdPentagon(in vec2 p, in float r) {\n    const vec3 k = vec3(0.809016994, 0.587785252, 0.726542528);\n    p.y = -(p.y) * 1.25;\n    p.x = abs(p.x) * 1.25;\n    p -= 2.0 * min(dot(vec2(-k.x, k.y), p), 0.0) * vec2(-k.x, k.y);\n    p -= 2.0 * min(dot(vec2(k.x, k.y), p), 0.0) * vec2(k.x, k.y);\n    p -= vec2(clamp(p.x, -r*k.z, r*k.z), r);\n    return length(p) * sign(p.y);\n}\n\nfloat sdOctagon(in vec2 p, in float r) {\n    // pi/8: cos, sin, tan.\n    const vec3 k = vec3(\n        -0.9238795325,   // sqrt(2+sqrt(2))/2\n        0.3826834323,   // sqrt(2-sqrt(2))/2\n        0.4142135623\n    ); // sqrt(2)-1\n    // reflections\n    p = abs(p) * 1.1;\n    p -= 2.0 * min(dot(vec2(k.x,k.y), p), 0.0) * vec2(k.x,k.y);\n    p -= 2.0 * min(dot(vec2(-k.x,k.y), p), 0.0) * vec2(-k.x,k.y);\n    // Polygon side.\n    p -= vec2(clamp(p.x, -k.z*r, k.z*r), r);\n    return length(p) * sign(p.y);\n}\n\nfloat sdStar(in vec2 p, in float r, in uint n, in float m) { // m=[2,n]\n    // these 4 lines can be precomputed for a given shape\n    float an = 3.141593 / float(n);\n    float en = 3.141593 / m;\n    vec2  acs = vec2(cos(an), sin(an));\n    vec2  ecs = vec2(cos(en), sin(en)); // ecs=vec2(0,1) and simplify, for regular polygon,\n\n    // reduce to first sector\n    float bn = mod(atan(p.x, p.y), 2.0 * an) - an;\n    p = length(p) * vec2(cos(bn), abs(sin(bn)));\n\n    // line sdf\n    p -= r * acs;\n    p += ecs * clamp(-dot(p, ecs), 0.0, r * acs.y / ecs.y);\n    return length(p) * sign(p.x);\n}\n\nfloat sdCross(in vec2 p, in float w, in float r) {\n    p = abs(p);\n    return length(p - min(p.x + p.y, w) * 0.5) - r;\n}\n\n// TODO: Precompute this, we always pass the same parameters tot his function (v, vec2(1.0, 0.3), 0.0)\nfloat sdPlus( in vec2 p, in vec2 b, float r ) {\n    p = abs(p);\n    p = (p.y > p.x) ? p.yx : p.xy;\n\n    vec2  q = p - b;\n    float k = max(q.y, q.x);\n    vec2  w = (k > 0.0) ? q : vec2(b.y - p.x, -k);\n\n    return sign(k)*length(max(w, 0.0)) + r;\n}\n\nfloat sdBox( in vec2 p, in vec2 b ) {\n    vec2 d = abs(p) - b;\n    return length(max(d,0.0)) + min(max(d.x,d.y),0.0);\n}\n\nuniform usampler2D uLabelIndices;\nuniform usampler2D uCharBoxes;\nuniform sampler2D uCharTexture;\nuniform float uPixelRatio;\nuniform uint uRenderMode;\nuniform vec2 uLabelDirection;\nuniform bool uMirror;\nuniform float uPadding;\n\nflat in vec4 fBackgroundColor;\nflat in vec4 fTextColor;\nflat in float fPixelRadius;\nflat in float fLabelStep;\nflat in vec2 fCharTextureSize;\nflat in vec4 fLabelInfo;\nflat in float fPixelLength;\nin vec2 vFromCenter;\n\nout vec4 fragColor;\n\nfloat cross_ish(vec2 a, vec2 b)\n{\n    return a.x * b.y - a.y * b.x;\n}\n\nvoid main() {\n    float padding = uPadding * uPixelRatio;\n    float fromCenter = length(vFromCenter);\n    float halfLabelWidth = fLabelInfo[2] * 0.5;\n    float halfLabelHeight = fLabelInfo[3] * 0.5;\n    float normalizedHeight = (halfLabelHeight + padding) / fPixelRadius;\n    float circle = fromCenter - (1.0 - normalizedHeight);\n    float ring = opOnion(circle, normalizedHeight);\n\n    vec2 positionVector = uLabelDirection;\n    float angle = atan(cross_ish(vFromCenter, positionVector), dot(vFromCenter, positionVector));\n    float angleDistance = angle * fPixelRadius;\n    float paddedLabelWidth = fLabelInfo[2] + padding * 2.0;\n    float offsetAngleDistance = angleDistance + halfLabelWidth + padding;\n\n    if (ring > 0.0 || fract(offsetAngleDistance / fLabelStep) >= paddedLabelWidth / fLabelStep) {\n        discard;\n    }\n\n    float width = fract(offsetAngleDistance / fLabelStep) * fLabelStep;\n    float height = (1.0 - fromCenter) * fPixelRadius - padding;\n    vec4 finalColor;\n\n    if (height < 0.0 || height > fLabelInfo[3] || width < padding || width > fLabelInfo[2] + padding) {\n        finalColor = fBackgroundColor;\n    } else {\n        float uProgress = (width - padding) / fLabelInfo[2];\n        if (uMirror) {\n            uProgress = 1.0 - uProgress;\n        }\n        float stringProgress = fLabelInfo[0] + fLabelInfo[1] * uProgress;\n        float stringIndex = floor(stringProgress);\n        int charIndex = int(uivalueForIndex(uLabelIndices, int(stringIndex)));\n        vec4 charBox = vec4(uvalueForIndex(uCharBoxes, charIndex));\n        float charMult = stringProgress - stringIndex;\n\n        vec4 charBoxUV = charBox / vec4(fCharTextureSize, fCharTextureSize);\n\n        vec2 uv = vec2(charBoxUV[0] + charBoxUV[2] * charMult, charBoxUV[1] + charBoxUV[3] * fLabelInfo[1]);\n        if (uMirror) {\n            uv = vec2(charBoxUV[0] + charBoxUV[2] * charMult, charBoxUV[1] + charBoxUV[3] * (height / fLabelInfo[3]));\n        } else {\n            uv = vec2(charBoxUV[0] + charBoxUV[2] * charMult, charBoxUV[1] + charBoxUV[3] * (1.0 - height / fLabelInfo[3]));\n        }\n\n        vec4 texPixel = texture(uCharTexture, uv);\n\n        float smoothing = 7.0 / fLabelInfo[3];\n        float distance = texPixel.a;\n        float textEdge = smoothstep(0.5 - smoothing, 0.5 + smoothing, distance);\n        finalColor = mix(fBackgroundColor, fTextColor, textEdge);\n    }\n\n    finalColor.a *= smoothstep(0.0, fPixelLength * 1.5, abs(ring));\n\n    float threshold = uRenderMode == MODE_HIGH_PASS_1 ? 0.75 : 0.5;\n\n    if (uRenderMode != MODE_HIGH_PASS_2) {\n        if (finalColor.a < threshold) {\n            discard;\n        }\n        fragColor = outputColor(vec4(finalColor.rgb, 1.0));\n    } else {\n        if (finalColor.a == 1.0) {\n            discard;\n        }\n        fragColor = outputColor(finalColor);\n    }\n}\n";
+var CircularLabel_fs_default = "#version 300 es\nprecision highp float;\nprecision lowp usampler2D;\n\n#define M_PI 3.14159265359\n#define M_2PI 6.28318530718\n\nprecision lowp usampler2D;\n#define GLSLIFY 1\n\nvec4 valueForIndex(sampler2D tex, int index) {\n    int texWidth = textureSize(tex, 0).x;\n    int col = index % texWidth;\n    int row = index / texWidth;\n    return texelFetch(tex, ivec2(col, row), 0);\n}\n\nuvec4 uvalueForIndex(usampler2D tex, int index) {\n    int texWidth = textureSize(tex, 0).x;\n    int col = index % texWidth;\n    int row = index / texWidth;\n    return texelFetch(tex, ivec2(col, row), 0);\n}\n\nuint uivalueForIndex(usampler2D tex, int index) {\n    int texWidth = textureSize(tex, 0).x;\n    int col = index % texWidth;\n    int row = index / texWidth;\n    return texelFetch(tex, ivec2(col, row), 0)[0];\n}\n\n// from https://en.wikipedia.org/wiki/SRGB#The_reverse_transformation\nfloat luminance_x(float x) {\n    return x <= 0.04045 ? x / 12.92 : pow((x + 0.055) / 1.055, 2.4);\n}\nfloat color_l(float l) {\n    return min(1.0, max(0.0, l <= 0.0031308 ? l * 12.92 : pow(l * 1.055, 1.0 / 2.4) - 0.055));\n}\n\n// from https://en.wikipedia.org/wiki/Relative_luminance\nfloat rgb2luminance(vec3 color) {\n    // relative luminance\n    // see http://www.w3.org/TR/2008/REC-WCAG20-20081211/#relativeluminancedef\n    float r = luminance_x(color.r);\n    float g = luminance_x(color.g);\n    float b = luminance_x(color.b);\n    return 0.2126 * r + 0.7152 * g + 0.0722 * b;\n}\n\nvec3 setLuminance(vec3 color, float luminance) {\n    float r = luminance_x(color.r) * 0.2126;\n    float g = luminance_x(color.g) * 0.7152;\n    float b = luminance_x(color.b) * 0.0722;\n    float colorLuminance = r + g + b;\n\n    float tr = luminance * (r / colorLuminance);\n    float tg = luminance * (g / colorLuminance);\n    float tb = luminance * (b / colorLuminance);\n\n    float rr = color_l(tr / 0.2126);\n    float rg = color_l(tg / 0.7152);\n    float rb = color_l(tb / 0.0722);\n\n    return vec3(rr, rg, rb );\n}\n\n// https://www.w3.org/TR/WCAG20/#contrast-ratiodef\n// (L1 + 0.05) / (L2 + 0.05), where\n// - L1 is the relative luminance of the lighter of the colors, and\n// - L2 is the relative luminance of the darker of the colors.\nfloat findDarker(float luminance, float contrast) {\n    return (contrast * luminance) + (0.05 * contrast) - 0.05;\n}\nfloat findLighter(float luminance, float contrast) {\n    return (luminance + 0.05 - (0.05 * contrast)) / contrast;\n}\n\nvec3 contrastingColor(vec3 color, float contrast) {\n    float luminance = rgb2luminance(color);\n    float darker = findDarker(luminance, contrast);\n    float lighter = findLighter(luminance, contrast);\n\n    float targetLuminance;\n    if (darker < 0.0 || darker > 1.0) {\n        targetLuminance = lighter;\n    } else if (lighter < 0.0 || lighter > 1.0) {\n        targetLuminance = darker;\n    } else {\n        targetLuminance = abs(luminance - lighter) < abs(darker - luminance) ? lighter : darker;\n    }\n\n    return setLuminance(color, targetLuminance);\n}\n\nvec3 desaturateColor(vec3 color, float amount) {\n    float l = rgb2luminance(color);\n    vec3 gray = vec3(l, l, l);\n    return mix(color, gray, amount);\n}\n\nuniform vec4 uClearColor;\nuniform float uDesaturate;\nuniform float uBrightness;\nuniform float uFade;\nuniform float uAlpha;\n\nvec4 outputColor(vec4 color) {\n    // desaturate => fade => alpha\n    vec3 ret = mix(color.rgb, vec3(uBrightness + 1.0 / 2.0), abs(uBrightness));\n    ret = vec3(desaturateColor(ret, uDesaturate));\n    ret = mix(ret, uClearColor.rgb, uFade);\n    return vec4(ret, color.a * uAlpha);\n}\n\n#define MODE_DRAFT 0u\n#define MODE_MEDIUM 1u\n#define MODE_HIGH 2u\n#define MODE_HIGH_PASS_1 3u\n#define MODE_HIGH_PASS_2 4u\n#define MODE_PICKING 5u\n\n// most of these come from this excellent post:\n// https://iquilezles.org/www/articles/distfunctions2d/distfunctions2d.htm\n\nfloat opRound(in float d, in float r) {\n    return d - r;\n}\n\nfloat opOnion(in float d, in float r) {\n    return abs(d) - r;\n}\n\nfloat sdCircle(in vec2 p, in float r ) {\n    return length(p) - r;\n}\n\nfloat sdEquilateralTriangle(in vec2 p, in float r) {\n    const float k = sqrt(3.0);\n    p.x = abs(p.x) - r;\n    p.y = p.y + (r) / k;\n    if (p.x + k * p.y > 0.0) {\n        p = vec2(p.x-k*p.y,-k*p.x-p.y) / 2.0;\n    }\n    p.x -= clamp(p.x, -2.0 * r, 0.0);\n    return -length(p) * sign(p.y);\n}\n\nfloat sdPentagon(in vec2 p, in float r) {\n    const vec3 k = vec3(0.809016994, 0.587785252, 0.726542528);\n    p.y = -(p.y) * 1.25;\n    p.x = abs(p.x) * 1.25;\n    p -= 2.0 * min(dot(vec2(-k.x, k.y), p), 0.0) * vec2(-k.x, k.y);\n    p -= 2.0 * min(dot(vec2(k.x, k.y), p), 0.0) * vec2(k.x, k.y);\n    p -= vec2(clamp(p.x, -r*k.z, r*k.z), r);\n    return length(p) * sign(p.y);\n}\n\nfloat sdOctagon(in vec2 p, in float r) {\n    // pi/8: cos, sin, tan.\n    const vec3 k = vec3(\n        -0.9238795325,   // sqrt(2+sqrt(2))/2\n        0.3826834323,   // sqrt(2-sqrt(2))/2\n        0.4142135623\n    ); // sqrt(2)-1\n    // reflections\n    p = abs(p) * 1.1;\n    p -= 2.0 * min(dot(vec2(k.x,k.y), p), 0.0) * vec2(k.x,k.y);\n    p -= 2.0 * min(dot(vec2(-k.x,k.y), p), 0.0) * vec2(-k.x,k.y);\n    // Polygon side.\n    p -= vec2(clamp(p.x, -k.z*r, k.z*r), r);\n    return length(p) * sign(p.y);\n}\n\nfloat sdStar(in vec2 p, in float r, in uint n, in float m) { // m=[2,n]\n    // these 4 lines can be precomputed for a given shape\n    float an = 3.141593 / float(n);\n    float en = 3.141593 / m;\n    vec2  acs = vec2(cos(an), sin(an));\n    vec2  ecs = vec2(cos(en), sin(en)); // ecs=vec2(0,1) and simplify, for regular polygon,\n\n    // reduce to first sector\n    float bn = mod(atan(p.x, p.y), 2.0 * an) - an;\n    p = length(p) * vec2(cos(bn), abs(sin(bn)));\n\n    // line sdf\n    p -= r * acs;\n    p += ecs * clamp(-dot(p, ecs), 0.0, r * acs.y / ecs.y);\n    return length(p) * sign(p.x);\n}\n\nfloat sdCross(in vec2 p, in float w, in float r) {\n    p = abs(p);\n    return length(p - min(p.x + p.y, w) * 0.5) - r;\n}\n\n// TODO: Precompute this, we always pass the same parameters tot his function (v, vec2(1.0, 0.3), 0.0)\nfloat sdPlus( in vec2 p, in vec2 b, float r ) {\n    p = abs(p);\n    p = (p.y > p.x) ? p.yx : p.xy;\n\n    vec2  q = p - b;\n    float k = max(q.y, q.x);\n    vec2  w = (k > 0.0) ? q : vec2(b.y - p.x, -k);\n\n    return sign(k)*length(max(w, 0.0)) + r;\n}\n\nfloat sdBox( in vec2 p, in vec2 b ) {\n    vec2 d = abs(p) - b;\n    return length(max(d,0.0)) + min(max(d.x,d.y),0.0);\n}\n\nvec4 renderChar(float charWidth, vec4 texPixel, vec4 backgroundColor, vec4 haloColor, vec4 textColor, float halo) {\n    float edgeThreshold = 0.49;\n    float haloThreshold = 0.18; // sets max halo threshold\n    float smoothing = 1.0 / charWidth;\n    float distance = texPixel.a;\n\n    vec4 finalColor = backgroundColor;\n    if (distance > edgeThreshold - smoothing) { // text fill\n        float textEdge = smoothstep(edgeThreshold - smoothing, edgeThreshold + smoothing, distance);\n        vec4 textEdgeBlendColor = mix(haloColor, backgroundColor, float(halo == 0.));\n        finalColor = mix(textEdgeBlendColor, textColor, textEdge);\n    }\n    else if (distance > edgeThreshold - haloThreshold * halo - smoothing) { // outline\n        float haloEdge = smoothstep(edgeThreshold - haloThreshold * halo - smoothing, edgeThreshold - haloThreshold * halo + smoothing, distance);\n        finalColor = mix(backgroundColor, haloColor, haloEdge);\n    }\n\n    return finalColor;\n}\n\nuniform usampler2D uLabelIndices;\nuniform usampler2D uCharBoxes;\nuniform sampler2D uCharTexture;\nuniform float uPixelRatio;\nuniform uint uRenderMode;\nuniform vec2 uLabelDirection;\nuniform bool uMirror;\nuniform float uPadding;\nuniform float uHalo;\n\nflat in vec4 fBackgroundColor;\nflat in vec4 fTextColor;\nflat in vec4 fHaloColor;\nflat in float fPixelRadius;\nflat in float fLabelStep;\nflat in vec2 fCharTextureSize;\nflat in vec4 fLabelInfo;\nflat in float fPixelLength;\nin vec2 vFromCenter;\n\nout vec4 fragColor;\n\nfloat cross_ish(vec2 a, vec2 b)\n{\n    return a.x * b.y - a.y * b.x;\n}\n\nvoid main() {\n    float padding = uPadding * uPixelRatio;\n    float fromCenter = length(vFromCenter);\n    float halfLabelWidth = fLabelInfo[2] * 0.5;\n    float halfLabelHeight = fLabelInfo[3] * 0.5;\n    float normalizedHeight = (halfLabelHeight + padding) / fPixelRadius;\n    float circle = fromCenter - (1.0 - normalizedHeight);\n    float ring = opOnion(circle, normalizedHeight);\n\n    vec2 positionVector = uLabelDirection;\n    float angle = atan(cross_ish(vFromCenter, positionVector), dot(vFromCenter, positionVector));\n    float angleDistance = angle * fPixelRadius;\n    float paddedLabelWidth = fLabelInfo[2] + padding * 2.0;\n    float offsetAngleDistance = angleDistance + halfLabelWidth + padding;\n\n    if (ring > 0.0 || fract(offsetAngleDistance / fLabelStep) >= paddedLabelWidth / fLabelStep) {\n        discard;\n    }\n\n    float width = fract(offsetAngleDistance / fLabelStep) * fLabelStep;\n    float height = (1.0 - fromCenter) * fPixelRadius - padding;\n    vec4 finalColor;\n\n    if (height < 0.0 || height > fLabelInfo[3] || width < padding || width > fLabelInfo[2] + padding) {\n        finalColor = fBackgroundColor;\n    } else {\n        float uProgress = (width - padding) / fLabelInfo[2];\n        if (uMirror) {\n            uProgress = 1.0 - uProgress;\n        }\n        float stringProgress = fLabelInfo[0] + fLabelInfo[1] * uProgress;\n        float stringIndex = floor(stringProgress);\n        int charIndex = int(uivalueForIndex(uLabelIndices, int(stringIndex)));\n        vec4 charBox = vec4(uvalueForIndex(uCharBoxes, charIndex));\n        float charMult = stringProgress - stringIndex;\n\n        vec4 charBoxUV = charBox / vec4(fCharTextureSize, fCharTextureSize);\n\n        vec2 uv = vec2(charBoxUV[0] + charBoxUV[2] * charMult, charBoxUV[1] + charBoxUV[3] * fLabelInfo[1]);\n        if (uMirror) {\n            uv = vec2(charBoxUV[0] + charBoxUV[2] * charMult, charBoxUV[1] + charBoxUV[3] * (height / fLabelInfo[3]));\n        } else {\n            uv = vec2(charBoxUV[0] + charBoxUV[2] * charMult, charBoxUV[1] + charBoxUV[3] * (1.0 - height / fLabelInfo[3]));\n        }\n\n        vec4 texPixel = texture(uCharTexture, uv);\n\n        finalColor = renderChar(fLabelInfo[3], texPixel, fBackgroundColor, fHaloColor, fTextColor, uHalo);\n    }\n\n    finalColor.a *= smoothstep(0.0, fPixelLength * 1.5, abs(ring));\n\n    float threshold = uRenderMode == MODE_HIGH_PASS_1 ? 0.75 : 0.5;\n\n    if (uRenderMode != MODE_HIGH_PASS_2) {\n        if (finalColor.a < threshold) {\n            discard;\n        }\n        fragColor = outputColor(vec4(finalColor.rgb, 1.0));\n    } else {\n        if (finalColor.a == 1.0) {\n            discard;\n        }\n        fragColor = outputColor(finalColor);\n    }\n}\n";
 
 // src/graph/labels/circular/CircularLabel.ts
 var CircularLabelPlacement;
@@ -18413,8 +27454,8 @@ var CircularLabel = class extends PointLabel {
     const rad = value * 0.0174533;
     this.localUniforms.uLabelDirection = [Math.cos(rad), Math.sin(rad)];
   }
-  initialize(context, points2, data, mappings2, pickingManager, font = "monospace", bold = false, labelAtlas) {
-    super.initialize(context, points2, data, mappings2, pickingManager, font, bold, labelAtlas);
+  initialize(context, points2, data, mappings2, pickingManager, font = "monospace", bold = false, charSpacing = 0, labelAtlas) {
+    super.initialize(context, points2, data, mappings2, pickingManager, font, bold, charSpacing, labelAtlas);
     this.localUniforms.uRepeatLabel = -1;
     this.localUniforms.uRepeatGap = 5;
     this.localUniforms.uPlacementMargin = 0;
@@ -18431,15 +27472,15 @@ var CircularLabel = class extends PointLabel {
 };
 
 // src/graph/labels/ring/RingLabel.vs.glsl
-var RingLabel_vs_default = '#version 300 es\n\nprecision lowp usampler2D;\n\n#define M_PI 3.14159265359\n#define M_2PI 6.28318530718\n\nlayout(location=0) in vec3 aVertex;\nlayout(location=1) in uint iPoint;\nlayout(location=2) in uint iColor;\nlayout(location=3) in uvec4 iLabel;\n\n//layout(std140) uniform RenderUniforms {\n    uniform mat4 uViewMatrix;\n    uniform mat4 uSceneMatrix;\n    uniform mat4 uProjectionMatrix;\n    uniform vec2 uViewportSize;\n    uniform float uPixelRatio;\n    uniform sampler2D uGraphPoints;\n    uniform sampler2D uColorPalette;\n    uniform uint uCameraMode; // 0 = 2D; 1 = 3D;\n//};\nuniform sampler2D uCharTexture;\nuniform float uVisibilityThreshold;\nuniform vec2 uLabelPositioning;\nuniform int uRepeatLabel;\nuniform float uRepeatGap;\nuniform float uPlacementMargin;\nuniform float uLabelPlacement;\nuniform vec2 uLabelDirection;\nuniform bool uBackground;\nuniform float uPadding;\n\nflat out vec4 fBackgroundColor;\nflat out vec4 fTextColor;\nflat out vec4 fLabelInfo;\nflat out float fPixelRadius;\nflat out float fPixelLength;\nflat out float fThickness;\nflat out float fLabelStep;\nflat out vec2 fCharTextureSize;\n\nout vec2 vFromCenter;\n\nprecision lowp usampler2D;\n#define GLSLIFY 1\n\nvec4 valueForIndex(sampler2D tex, int index) {\n    int texWidth = textureSize(tex, 0).x;\n    int col = index % texWidth;\n    int row = index / texWidth;\n    return texelFetch(tex, ivec2(col, row), 0);\n}\n\nuvec4 uvalueForIndex(usampler2D tex, int index) {\n    int texWidth = textureSize(tex, 0).x;\n    int col = index % texWidth;\n    int row = index / texWidth;\n    return texelFetch(tex, ivec2(col, row), 0);\n}\n\nuint uivalueForIndex(usampler2D tex, int index) {\n    int texWidth = textureSize(tex, 0).x;\n    int col = index % texWidth;\n    int row = index / texWidth;\n    return texelFetch(tex, ivec2(col, row), 0)[0];\n}\n\n// from https://en.wikipedia.org/wiki/SRGB#The_reverse_transformation\nfloat luminance_x(float x) {\n    return x <= 0.04045 ? x / 12.92 : pow((x + 0.055) / 1.055, 2.4);\n}\nfloat color_l(float l) {\n    return min(1.0, max(0.0, l <= 0.0031308 ? l * 12.92 : pow(l * 1.055, 1.0 / 2.4) - 0.055));\n}\n\n// from https://en.wikipedia.org/wiki/Relative_luminance\nfloat rgb2luminance(vec3 color) {\n    // relative luminance\n    // see http://www.w3.org/TR/2008/REC-WCAG20-20081211/#relativeluminancedef\n    float r = luminance_x(color.r);\n    float g = luminance_x(color.g);\n    float b = luminance_x(color.b);\n    return 0.2126 * r + 0.7152 * g + 0.0722 * b;\n}\n\nvec3 setLuminance(vec3 color, float luminance) {\n    float r = luminance_x(color.r) * 0.2126;\n    float g = luminance_x(color.g) * 0.7152;\n    float b = luminance_x(color.b) * 0.0722;\n    float colorLuminance = r + g + b;\n\n    float tr = luminance * (r / colorLuminance);\n    float tg = luminance * (g / colorLuminance);\n    float tb = luminance * (b / colorLuminance);\n\n    float rr = color_l(tr / 0.2126);\n    float rg = color_l(tg / 0.7152);\n    float rb = color_l(tb / 0.0722);\n\n    return vec3(rr, rg, rb );\n}\n\n// https://www.w3.org/TR/WCAG20/#contrast-ratiodef\n// (L1 + 0.05) / (L2 + 0.05), where\n// - L1 is the relative luminance of the lighter of the colors, and\n// - L2 is the relative luminance of the darker of the colors.\nfloat findDarker(float luminance, float contrast) {\n    return (contrast * luminance) + (0.05 * contrast) - 0.05;\n}\nfloat findLighter(float luminance, float contrast) {\n    return (luminance + 0.05 - (0.05 * contrast)) / contrast;\n}\n\nvec3 contrastingColor(vec3 color, float contrast) {\n    float luminance = rgb2luminance(color);\n    float darker = findDarker(luminance, contrast);\n    float lighter = findLighter(luminance, contrast);\n\n    float targetLuminance;\n    if (darker < 0.0 || darker > 1.0) {\n        targetLuminance = lighter;\n    } else if (lighter < 0.0 || lighter > 1.0) {\n        targetLuminance = darker;\n    } else {\n        targetLuminance = abs(luminance - lighter) < abs(darker - luminance) ? lighter : darker;\n    }\n\n    return setLuminance(color, targetLuminance);\n}\n\nvec3 desaturateColor(vec3 color, float amount) {\n    float l = rgb2luminance(color);\n    vec3 gray = vec3(l, l, l);\n    return mix(color, gray, amount);\n}\n\nvoid main() {\n    vec4 point = valueForIndex(uGraphPoints, int(iPoint));\n    vec3 position = point.xyz;\n    float radius = point.w;\n    // claculate the offset matrix, done as a matrix to be able to compute "billboard" vertices in the shader\n    mat4 offsetMatrix = mat4(1.0);\n    offsetMatrix[3] = vec4(position, 1.0);\n\n    // reset the rotation of the model-view matrix\n    mat4 modelMatrix = uViewMatrix * uSceneMatrix * offsetMatrix;\n    mat4 lookAtMatrix = mat4(modelMatrix);\n    if (uCameraMode == 1u) {\n        lookAtMatrix[0] = vec4(1.0, 0.0, 0.0, lookAtMatrix[0][3]);\n        lookAtMatrix[1] = vec4(0.0, 1.0, 0.0, lookAtMatrix[1][3]);\n        lookAtMatrix[2] = vec4(0.0, 0.0, 1.0, lookAtMatrix[2][3]);\n    }\n\n    // the on-screen center of this point\n    vec4 quadCenter = uProjectionMatrix * lookAtMatrix * vec4(0.0, 0.0, 0.0, 1.0);\n    vec2 screenQuadCenter = quadCenter.xy / quadCenter.w;\n\n    // the on-screen position of a side of this quad\n    vec4 quadSide = uProjectionMatrix * lookAtMatrix * vec4(radius, 0.0, 0.0, 1.0);\n    vec2 screenQuadSide = quadSide.xy / quadSide.w;\n\n    // compute the pixel radius of this point for a size of 1 in world coordinates\n    float pixelRadius = length((screenQuadSide - screenQuadCenter) * uViewportSize * 0.5);\n\n    // send the size of the char texture to the fragment shader\n    fCharTextureSize = vec2(textureSize(uCharTexture, 0));\n\n    // send the render color to the fragment shader\n    vec4 color = valueForIndex(uColorPalette, int(iColor));\n    fBackgroundColor = vec4(color.rgb, 1.0);\n    fTextColor = vec4(contrastingColor(color.rgb, 7.0), 1.0);\n\n    // send thelabel info to the fragment shader\n    fLabelInfo = vec4(iLabel);\n\n    // calculate the label visibility\n    float visibilityThreshold = uVisibilityThreshold * uPixelRatio;\n    float visibilityMultiplier = smoothstep(visibilityThreshold * 0.5 - fLabelInfo[3], visibilityThreshold * 0.5, pixelRadius * 0.5);\n\n    // send the pixel radius of this label to the fragment shader\n    float padding = uPadding * uPixelRatio;\n    float minThickness = max(2.0, min(pixelRadius * 0.1, 3.0 * uPixelRatio));\n    fThickness = (minThickness + (fLabelInfo[3] + padding * 2.0 - minThickness) * visibilityMultiplier) * 0.5;\n    fPixelRadius = pixelRadius + fThickness;\n\n    // send the normalized length of a single pixel\n    fPixelLength = 1.0 / fPixelRadius;\n\n    // calculate the render matrix\n    mat4 renderMatrix = uProjectionMatrix * lookAtMatrix;\n\n    // send the normalized distance from the center to the fragment shader\n    vFromCenter = aVertex.xy;\n\n    // compute the vertex position and its screen position\n    float pixelLength = radius / pixelRadius;\n    float textRadius = radius + pixelLength * fThickness;\n    vec4 worldVertex = renderMatrix * vec4(aVertex * textRadius, 1.0);\n\n    // find the number of label repetitions\n    float repeatLabels = float(uint(uRepeatLabel));\n    float repeatGap = uRepeatGap * uPixelRatio;\n    float circumference = fPixelRadius * M_2PI;\n    float maxLabels = min(repeatLabels, floor(circumference / (fLabelInfo[2] + repeatGap + padding * 2.0)));\n    float maxLabelsLength = (fLabelInfo[2] + padding * 2.0) * maxLabels;\n    float labelGap = (circumference - maxLabelsLength) / maxLabels;\n    fLabelStep = fLabelInfo[2] + labelGap + padding * 2.0;\n\n    // set the render vertex location\n    gl_Position = worldVertex;\n}\n';
+var RingLabel_vs_default = '#version 300 es\n\nprecision lowp usampler2D;\n\n#define M_PI 3.14159265359\n#define M_2PI 6.28318530718\n\nlayout(location=0) in vec3 aVertex;\nlayout(location=1) in uint iPoint;\nlayout(location=2) in uint iColor;\nlayout(location=3) in uvec4 iLabel;\n\n//layout(std140) uniform RenderUniforms {\n    uniform mat4 uViewMatrix;\n    uniform mat4 uSceneMatrix;\n    uniform mat4 uProjectionMatrix;\n    uniform vec2 uViewportSize;\n    uniform float uPixelRatio;\n    uniform sampler2D uGraphPoints;\n    uniform sampler2D uColorPalette;\n    uniform uint uCameraMode; // 0 = 2D; 1 = 3D;\n//};\nuniform sampler2D uCharTexture;\nuniform float uVisibilityThreshold;\nuniform vec2 uLabelPositioning;\nuniform int uRepeatLabel;\nuniform float uRepeatGap;\nuniform float uPlacementMargin;\nuniform float uLabelPlacement;\nuniform vec2 uLabelDirection;\nuniform bool uBackground;\nuniform float uPadding;\n\nflat out vec4 fBackgroundColor;\nflat out vec4 fTextColor;\nflat out vec4 fHaloColor;\nflat out vec4 fLabelInfo;\nflat out float fPixelRadius;\nflat out float fPixelLength;\nflat out float fThickness;\nflat out float fLabelStep;\nflat out vec2 fCharTextureSize;\n\nout vec2 vFromCenter;\n\nprecision lowp usampler2D;\n#define GLSLIFY 1\n\nvec4 valueForIndex(sampler2D tex, int index) {\n    int texWidth = textureSize(tex, 0).x;\n    int col = index % texWidth;\n    int row = index / texWidth;\n    return texelFetch(tex, ivec2(col, row), 0);\n}\n\nuvec4 uvalueForIndex(usampler2D tex, int index) {\n    int texWidth = textureSize(tex, 0).x;\n    int col = index % texWidth;\n    int row = index / texWidth;\n    return texelFetch(tex, ivec2(col, row), 0);\n}\n\nuint uivalueForIndex(usampler2D tex, int index) {\n    int texWidth = textureSize(tex, 0).x;\n    int col = index % texWidth;\n    int row = index / texWidth;\n    return texelFetch(tex, ivec2(col, row), 0)[0];\n}\n\n// from https://en.wikipedia.org/wiki/SRGB#The_reverse_transformation\nfloat luminance_x(float x) {\n    return x <= 0.04045 ? x / 12.92 : pow((x + 0.055) / 1.055, 2.4);\n}\nfloat color_l(float l) {\n    return min(1.0, max(0.0, l <= 0.0031308 ? l * 12.92 : pow(l * 1.055, 1.0 / 2.4) - 0.055));\n}\n\n// from https://en.wikipedia.org/wiki/Relative_luminance\nfloat rgb2luminance(vec3 color) {\n    // relative luminance\n    // see http://www.w3.org/TR/2008/REC-WCAG20-20081211/#relativeluminancedef\n    float r = luminance_x(color.r);\n    float g = luminance_x(color.g);\n    float b = luminance_x(color.b);\n    return 0.2126 * r + 0.7152 * g + 0.0722 * b;\n}\n\nvec3 setLuminance(vec3 color, float luminance) {\n    float r = luminance_x(color.r) * 0.2126;\n    float g = luminance_x(color.g) * 0.7152;\n    float b = luminance_x(color.b) * 0.0722;\n    float colorLuminance = r + g + b;\n\n    float tr = luminance * (r / colorLuminance);\n    float tg = luminance * (g / colorLuminance);\n    float tb = luminance * (b / colorLuminance);\n\n    float rr = color_l(tr / 0.2126);\n    float rg = color_l(tg / 0.7152);\n    float rb = color_l(tb / 0.0722);\n\n    return vec3(rr, rg, rb );\n}\n\n// https://www.w3.org/TR/WCAG20/#contrast-ratiodef\n// (L1 + 0.05) / (L2 + 0.05), where\n// - L1 is the relative luminance of the lighter of the colors, and\n// - L2 is the relative luminance of the darker of the colors.\nfloat findDarker(float luminance, float contrast) {\n    return (contrast * luminance) + (0.05 * contrast) - 0.05;\n}\nfloat findLighter(float luminance, float contrast) {\n    return (luminance + 0.05 - (0.05 * contrast)) / contrast;\n}\n\nvec3 contrastingColor(vec3 color, float contrast) {\n    float luminance = rgb2luminance(color);\n    float darker = findDarker(luminance, contrast);\n    float lighter = findLighter(luminance, contrast);\n\n    float targetLuminance;\n    if (darker < 0.0 || darker > 1.0) {\n        targetLuminance = lighter;\n    } else if (lighter < 0.0 || lighter > 1.0) {\n        targetLuminance = darker;\n    } else {\n        targetLuminance = abs(luminance - lighter) < abs(darker - luminance) ? lighter : darker;\n    }\n\n    return setLuminance(color, targetLuminance);\n}\n\nvec3 desaturateColor(vec3 color, float amount) {\n    float l = rgb2luminance(color);\n    vec3 gray = vec3(l, l, l);\n    return mix(color, gray, amount);\n}\n\nvoid main() {\n    vec4 point = valueForIndex(uGraphPoints, int(iPoint));\n    vec3 position = point.xyz;\n    float radius = point.w;\n    // claculate the offset matrix, done as a matrix to be able to compute "billboard" vertices in the shader\n    mat4 offsetMatrix = mat4(1.0);\n    offsetMatrix[3] = vec4(position, 1.0);\n\n    // reset the rotation of the model-view matrix\n    mat4 modelMatrix = uViewMatrix * uSceneMatrix * offsetMatrix;\n    mat4 lookAtMatrix = mat4(modelMatrix);\n    if (uCameraMode == 1u) {\n        lookAtMatrix[0] = vec4(1.0, 0.0, 0.0, lookAtMatrix[0][3]);\n        lookAtMatrix[1] = vec4(0.0, 1.0, 0.0, lookAtMatrix[1][3]);\n        lookAtMatrix[2] = vec4(0.0, 0.0, 1.0, lookAtMatrix[2][3]);\n    }\n\n    // the on-screen center of this point\n    vec4 quadCenter = uProjectionMatrix * lookAtMatrix * vec4(0.0, 0.0, 0.0, 1.0);\n    vec2 screenQuadCenter = quadCenter.xy / quadCenter.w;\n\n    // the on-screen position of a side of this quad\n    vec4 quadSide = uProjectionMatrix * lookAtMatrix * vec4(radius, 0.0, 0.0, 1.0);\n    vec2 screenQuadSide = quadSide.xy / quadSide.w;\n\n    // compute the pixel radius of this point for a size of 1 in world coordinates\n    float pixelRadius = length((screenQuadSide - screenQuadCenter) * uViewportSize * 0.5);\n\n    // send the size of the char texture to the fragment shader\n    fCharTextureSize = vec2(textureSize(uCharTexture, 0));\n\n    // send the render color to the fragment shader\n    vec4 color = valueForIndex(uColorPalette, int(iColor));\n    fBackgroundColor = vec4(color.rgb, 1.0);\n    fTextColor = vec4(contrastingColor(color.rgb, 7.0), 1.0);\n    fHaloColor = mix(vec4(1.), vec4(0., 0., 0., 1.), float(length(fTextColor.rgb) > 0.866));\n\n    // send thelabel info to the fragment shader\n    fLabelInfo = vec4(iLabel);\n\n    // calculate the label visibility\n    float visibilityThreshold = uVisibilityThreshold * uPixelRatio;\n    float visibilityMultiplier = smoothstep(visibilityThreshold * 0.5 - fLabelInfo[3], visibilityThreshold * 0.5, pixelRadius * 0.5);\n\n    // send the pixel radius of this label to the fragment shader\n    float padding = uPadding * uPixelRatio;\n    float minThickness = max(2.0, min(pixelRadius * 0.1, 3.0 * uPixelRatio));\n    fThickness = (minThickness + (fLabelInfo[3] + padding * 2.0 - minThickness) * visibilityMultiplier) * 0.5;\n    fPixelRadius = pixelRadius + fThickness;\n\n    // send the normalized length of a single pixel\n    fPixelLength = 1.0 / fPixelRadius;\n\n    // calculate the render matrix\n    mat4 renderMatrix = uProjectionMatrix * lookAtMatrix;\n\n    // send the normalized distance from the center to the fragment shader\n    vFromCenter = aVertex.xy;\n\n    // compute the vertex position and its screen position\n    float pixelLength = radius / pixelRadius;\n    float textRadius = radius + pixelLength * fThickness;\n    vec4 worldVertex = renderMatrix * vec4(aVertex * textRadius, 1.0);\n\n    // find the number of label repetitions\n    float repeatLabels = float(uint(uRepeatLabel));\n    float repeatGap = uRepeatGap * uPixelRatio;\n    float circumference = fPixelRadius * M_2PI;\n    float maxLabels = min(repeatLabels, floor(circumference / (fLabelInfo[2] + repeatGap + padding * 2.0)));\n    float maxLabelsLength = (fLabelInfo[2] + padding * 2.0) * maxLabels;\n    float labelGap = (circumference - maxLabelsLength) / maxLabels;\n    fLabelStep = fLabelInfo[2] + labelGap + padding * 2.0;\n\n    // set the render vertex location\n    gl_Position = worldVertex;\n}\n';
 
 // src/graph/labels/ring/RingLabel.fs.glsl
-var RingLabel_fs_default = "#version 300 es\nprecision highp float;\nprecision lowp usampler2D;\n\n#define M_PI 3.14159265359\n#define M_2PI 6.28318530718\n\nprecision lowp usampler2D;\n#define GLSLIFY 1\n\nvec4 valueForIndex(sampler2D tex, int index) {\n    int texWidth = textureSize(tex, 0).x;\n    int col = index % texWidth;\n    int row = index / texWidth;\n    return texelFetch(tex, ivec2(col, row), 0);\n}\n\nuvec4 uvalueForIndex(usampler2D tex, int index) {\n    int texWidth = textureSize(tex, 0).x;\n    int col = index % texWidth;\n    int row = index / texWidth;\n    return texelFetch(tex, ivec2(col, row), 0);\n}\n\nuint uivalueForIndex(usampler2D tex, int index) {\n    int texWidth = textureSize(tex, 0).x;\n    int col = index % texWidth;\n    int row = index / texWidth;\n    return texelFetch(tex, ivec2(col, row), 0)[0];\n}\n\n// from https://en.wikipedia.org/wiki/SRGB#The_reverse_transformation\nfloat luminance_x(float x) {\n    return x <= 0.04045 ? x / 12.92 : pow((x + 0.055) / 1.055, 2.4);\n}\nfloat color_l(float l) {\n    return min(1.0, max(0.0, l <= 0.0031308 ? l * 12.92 : pow(l * 1.055, 1.0 / 2.4) - 0.055));\n}\n\n// from https://en.wikipedia.org/wiki/Relative_luminance\nfloat rgb2luminance(vec3 color) {\n    // relative luminance\n    // see http://www.w3.org/TR/2008/REC-WCAG20-20081211/#relativeluminancedef\n    float r = luminance_x(color.r);\n    float g = luminance_x(color.g);\n    float b = luminance_x(color.b);\n    return 0.2126 * r + 0.7152 * g + 0.0722 * b;\n}\n\nvec3 setLuminance(vec3 color, float luminance) {\n    float r = luminance_x(color.r) * 0.2126;\n    float g = luminance_x(color.g) * 0.7152;\n    float b = luminance_x(color.b) * 0.0722;\n    float colorLuminance = r + g + b;\n\n    float tr = luminance * (r / colorLuminance);\n    float tg = luminance * (g / colorLuminance);\n    float tb = luminance * (b / colorLuminance);\n\n    float rr = color_l(tr / 0.2126);\n    float rg = color_l(tg / 0.7152);\n    float rb = color_l(tb / 0.0722);\n\n    return vec3(rr, rg, rb );\n}\n\n// https://www.w3.org/TR/WCAG20/#contrast-ratiodef\n// (L1 + 0.05) / (L2 + 0.05), where\n// - L1 is the relative luminance of the lighter of the colors, and\n// - L2 is the relative luminance of the darker of the colors.\nfloat findDarker(float luminance, float contrast) {\n    return (contrast * luminance) + (0.05 * contrast) - 0.05;\n}\nfloat findLighter(float luminance, float contrast) {\n    return (luminance + 0.05 - (0.05 * contrast)) / contrast;\n}\n\nvec3 contrastingColor(vec3 color, float contrast) {\n    float luminance = rgb2luminance(color);\n    float darker = findDarker(luminance, contrast);\n    float lighter = findLighter(luminance, contrast);\n\n    float targetLuminance;\n    if (darker < 0.0 || darker > 1.0) {\n        targetLuminance = lighter;\n    } else if (lighter < 0.0 || lighter > 1.0) {\n        targetLuminance = darker;\n    } else {\n        targetLuminance = abs(luminance - lighter) < abs(darker - luminance) ? lighter : darker;\n    }\n\n    return setLuminance(color, targetLuminance);\n}\n\nvec3 desaturateColor(vec3 color, float amount) {\n    float l = rgb2luminance(color);\n    vec3 gray = vec3(l, l, l);\n    return mix(color, gray, amount);\n}\n\nuniform vec4 uClearColor;\nuniform float uDesaturate;\nuniform float uBrightness;\nuniform float uFade;\nuniform float uAlpha;\n\nvec4 outputColor(vec4 color) {\n    // desaturate => fade => alpha\n    vec3 ret = mix(color.rgb, vec3(uBrightness + 1.0 / 2.0), abs(uBrightness));\n    ret = vec3(desaturateColor(ret, uDesaturate));\n    ret = mix(ret, uClearColor.rgb, uFade);\n    return vec4(ret, color.a * uAlpha);\n}\n\n#define MODE_DRAFT 0u\n#define MODE_MEDIUM 1u\n#define MODE_HIGH 2u\n#define MODE_HIGH_PASS_1 3u\n#define MODE_HIGH_PASS_2 4u\n#define MODE_PICKING 5u\n\n// most of these come from this excellent post:\n// https://iquilezles.org/www/articles/distfunctions2d/distfunctions2d.htm\n\nfloat opRound(in float d, in float r) {\n    return d - r;\n}\n\nfloat opOnion(in float d, in float r) {\n    return abs(d) - r;\n}\n\nfloat sdCircle(in vec2 p, in float r ) {\n    return length(p) - r;\n}\n\nfloat sdEquilateralTriangle(in vec2 p, in float r) {\n    const float k = sqrt(3.0);\n    p.x = abs(p.x) - r;\n    p.y = p.y + (r) / k;\n    if (p.x + k * p.y > 0.0) {\n        p = vec2(p.x-k*p.y,-k*p.x-p.y) / 2.0;\n    }\n    p.x -= clamp(p.x, -2.0 * r, 0.0);\n    return -length(p) * sign(p.y);\n}\n\nfloat sdPentagon(in vec2 p, in float r) {\n    const vec3 k = vec3(0.809016994, 0.587785252, 0.726542528);\n    p.y = -(p.y) * 1.25;\n    p.x = abs(p.x) * 1.25;\n    p -= 2.0 * min(dot(vec2(-k.x, k.y), p), 0.0) * vec2(-k.x, k.y);\n    p -= 2.0 * min(dot(vec2(k.x, k.y), p), 0.0) * vec2(k.x, k.y);\n    p -= vec2(clamp(p.x, -r*k.z, r*k.z), r);\n    return length(p) * sign(p.y);\n}\n\nfloat sdOctagon(in vec2 p, in float r) {\n    // pi/8: cos, sin, tan.\n    const vec3 k = vec3(\n        -0.9238795325,   // sqrt(2+sqrt(2))/2\n        0.3826834323,   // sqrt(2-sqrt(2))/2\n        0.4142135623\n    ); // sqrt(2)-1\n    // reflections\n    p = abs(p) * 1.1;\n    p -= 2.0 * min(dot(vec2(k.x,k.y), p), 0.0) * vec2(k.x,k.y);\n    p -= 2.0 * min(dot(vec2(-k.x,k.y), p), 0.0) * vec2(-k.x,k.y);\n    // Polygon side.\n    p -= vec2(clamp(p.x, -k.z*r, k.z*r), r);\n    return length(p) * sign(p.y);\n}\n\nfloat sdStar(in vec2 p, in float r, in uint n, in float m) { // m=[2,n]\n    // these 4 lines can be precomputed for a given shape\n    float an = 3.141593 / float(n);\n    float en = 3.141593 / m;\n    vec2  acs = vec2(cos(an), sin(an));\n    vec2  ecs = vec2(cos(en), sin(en)); // ecs=vec2(0,1) and simplify, for regular polygon,\n\n    // reduce to first sector\n    float bn = mod(atan(p.x, p.y), 2.0 * an) - an;\n    p = length(p) * vec2(cos(bn), abs(sin(bn)));\n\n    // line sdf\n    p -= r * acs;\n    p += ecs * clamp(-dot(p, ecs), 0.0, r * acs.y / ecs.y);\n    return length(p) * sign(p.x);\n}\n\nfloat sdCross(in vec2 p, in float w, in float r) {\n    p = abs(p);\n    return length(p - min(p.x + p.y, w) * 0.5) - r;\n}\n\n// TODO: Precompute this, we always pass the same parameters tot his function (v, vec2(1.0, 0.3), 0.0)\nfloat sdPlus( in vec2 p, in vec2 b, float r ) {\n    p = abs(p);\n    p = (p.y > p.x) ? p.yx : p.xy;\n\n    vec2  q = p - b;\n    float k = max(q.y, q.x);\n    vec2  w = (k > 0.0) ? q : vec2(b.y - p.x, -k);\n\n    return sign(k)*length(max(w, 0.0)) + r;\n}\n\nfloat sdBox( in vec2 p, in vec2 b ) {\n    vec2 d = abs(p) - b;\n    return length(max(d,0.0)) + min(max(d.x,d.y),0.0);\n}\n\nuniform usampler2D uLabelIndices;\nuniform usampler2D uCharBoxes;\nuniform sampler2D uCharTexture;\nuniform float uPixelRatio;\nuniform uint uRenderMode;\nuniform vec2 uLabelDirection;\nuniform bool uMirror;\nuniform float uPadding;\n\nflat in vec4 fBackgroundColor;\nflat in vec4 fTextColor;\nflat in float fPixelRadius;\nflat in float fLabelStep;\nflat in vec2 fCharTextureSize;\nflat in vec4 fLabelInfo;\nflat in float fPixelLength;\nflat in float fThickness;\nin vec2 vFromCenter;\n\nout vec4 fragColor;\n\nfloat cross_ish(vec2 a, vec2 b)\n{\n    return a.x * b.y - a.y * b.x;\n}\n\nvoid main() {\n    float padding = uPadding * uPixelRatio;\n    float fromCenter = length(vFromCenter);\n    float thickness = fThickness * fPixelLength;\n    float antialias = min(thickness, fPixelLength * 1.5);\n    float radius = 1.0 - thickness;\n    float circle = fromCenter - (1.0 - thickness);\n    float ring = opOnion(circle, thickness);\n    float modeDistance = uRenderMode == MODE_HIGH_PASS_1 ? -antialias : -antialias * 0.5;\n    float ringThreshold = uRenderMode == MODE_HIGH_PASS_2 ? 0.0 : modeDistance;\n\n    if (ring > ringThreshold) {\n        discard;\n    }\n\n    float halfLabelWidth = fLabelInfo[2] * 0.5;\n    float halfLabelHeight = fLabelInfo[3] * 0.5;\n    float normalizedHeight = (halfLabelHeight + padding) / fPixelRadius;\n\n    vec2 positionVector = uLabelDirection;\n    float angle = atan(cross_ish(vFromCenter, positionVector), dot(vFromCenter, positionVector));\n    float angleDistance = angle * fPixelRadius;\n    float paddedLabelWidth = fLabelInfo[2] + padding * 2.0;\n    float offsetAngleDistance = angleDistance + halfLabelWidth + padding;\n\n    float width = fract(offsetAngleDistance / fLabelStep) * fLabelStep;\n    float height = (1.0 - fromCenter) * fPixelRadius - padding;\n    vec4 finalColor;\n\n    if (height < 0.0 || height > fLabelInfo[3] || width < padding || width > fLabelInfo[2] + padding) {\n        finalColor = fBackgroundColor;\n    } else {\n        float uProgress = (width - padding) / fLabelInfo[2];\n        if (uMirror) {\n            uProgress = 1.0 - uProgress;\n        }\n        float stringProgress = fLabelInfo[0] + fLabelInfo[1] * uProgress;\n        float stringIndex = floor(stringProgress);\n        int charIndex = int(uivalueForIndex(uLabelIndices, int(stringIndex)));\n        vec4 charBox = vec4(uvalueForIndex(uCharBoxes, charIndex));\n        float charMult = stringProgress - stringIndex;\n\n        vec4 charBoxUV = charBox / vec4(fCharTextureSize, fCharTextureSize);\n\n        vec2 uv = vec2(charBoxUV[0] + charBoxUV[2] * charMult, charBoxUV[1] + charBoxUV[3] * fLabelInfo[1]);\n        if (uMirror) {\n            uv = vec2(charBoxUV[0] + charBoxUV[2] * charMult, charBoxUV[1] + charBoxUV[3] * (height / fLabelInfo[3]));\n        } else {\n            uv = vec2(charBoxUV[0] + charBoxUV[2] * charMult, charBoxUV[1] + charBoxUV[3] * (1.0 - height / fLabelInfo[3]));\n        }\n\n        vec4 texPixel = texture(uCharTexture, uv);\n\n        float smoothing = 7.0 / fLabelInfo[3];\n        float distance = texPixel.a;\n        float textEdge = smoothstep(0.5 - smoothing, 0.5 + smoothing, distance);\n        finalColor = mix(fBackgroundColor, fTextColor, textEdge);\n    }\n\n    if (uRenderMode == MODE_HIGH_PASS_2) {\n        if (ring < -antialias) {\n            discard;\n        }\n        fragColor = outputColor(vec4(finalColor.rgb, smoothstep(0.0, antialias, abs(ring))));\n    } else {\n        fragColor = outputColor(vec4(finalColor.rgb, 1.0));\n    }\n\n//    fragColor = vec4(1.0,0.0,1.0,1.0);\n}\n";
+var RingLabel_fs_default = "#version 300 es\nprecision highp float;\nprecision lowp usampler2D;\n\n#define M_PI 3.14159265359\n#define M_2PI 6.28318530718\n\nprecision lowp usampler2D;\n#define GLSLIFY 1\n\nvec4 valueForIndex(sampler2D tex, int index) {\n    int texWidth = textureSize(tex, 0).x;\n    int col = index % texWidth;\n    int row = index / texWidth;\n    return texelFetch(tex, ivec2(col, row), 0);\n}\n\nuvec4 uvalueForIndex(usampler2D tex, int index) {\n    int texWidth = textureSize(tex, 0).x;\n    int col = index % texWidth;\n    int row = index / texWidth;\n    return texelFetch(tex, ivec2(col, row), 0);\n}\n\nuint uivalueForIndex(usampler2D tex, int index) {\n    int texWidth = textureSize(tex, 0).x;\n    int col = index % texWidth;\n    int row = index / texWidth;\n    return texelFetch(tex, ivec2(col, row), 0)[0];\n}\n\n// from https://en.wikipedia.org/wiki/SRGB#The_reverse_transformation\nfloat luminance_x(float x) {\n    return x <= 0.04045 ? x / 12.92 : pow((x + 0.055) / 1.055, 2.4);\n}\nfloat color_l(float l) {\n    return min(1.0, max(0.0, l <= 0.0031308 ? l * 12.92 : pow(l * 1.055, 1.0 / 2.4) - 0.055));\n}\n\n// from https://en.wikipedia.org/wiki/Relative_luminance\nfloat rgb2luminance(vec3 color) {\n    // relative luminance\n    // see http://www.w3.org/TR/2008/REC-WCAG20-20081211/#relativeluminancedef\n    float r = luminance_x(color.r);\n    float g = luminance_x(color.g);\n    float b = luminance_x(color.b);\n    return 0.2126 * r + 0.7152 * g + 0.0722 * b;\n}\n\nvec3 setLuminance(vec3 color, float luminance) {\n    float r = luminance_x(color.r) * 0.2126;\n    float g = luminance_x(color.g) * 0.7152;\n    float b = luminance_x(color.b) * 0.0722;\n    float colorLuminance = r + g + b;\n\n    float tr = luminance * (r / colorLuminance);\n    float tg = luminance * (g / colorLuminance);\n    float tb = luminance * (b / colorLuminance);\n\n    float rr = color_l(tr / 0.2126);\n    float rg = color_l(tg / 0.7152);\n    float rb = color_l(tb / 0.0722);\n\n    return vec3(rr, rg, rb );\n}\n\n// https://www.w3.org/TR/WCAG20/#contrast-ratiodef\n// (L1 + 0.05) / (L2 + 0.05), where\n// - L1 is the relative luminance of the lighter of the colors, and\n// - L2 is the relative luminance of the darker of the colors.\nfloat findDarker(float luminance, float contrast) {\n    return (contrast * luminance) + (0.05 * contrast) - 0.05;\n}\nfloat findLighter(float luminance, float contrast) {\n    return (luminance + 0.05 - (0.05 * contrast)) / contrast;\n}\n\nvec3 contrastingColor(vec3 color, float contrast) {\n    float luminance = rgb2luminance(color);\n    float darker = findDarker(luminance, contrast);\n    float lighter = findLighter(luminance, contrast);\n\n    float targetLuminance;\n    if (darker < 0.0 || darker > 1.0) {\n        targetLuminance = lighter;\n    } else if (lighter < 0.0 || lighter > 1.0) {\n        targetLuminance = darker;\n    } else {\n        targetLuminance = abs(luminance - lighter) < abs(darker - luminance) ? lighter : darker;\n    }\n\n    return setLuminance(color, targetLuminance);\n}\n\nvec3 desaturateColor(vec3 color, float amount) {\n    float l = rgb2luminance(color);\n    vec3 gray = vec3(l, l, l);\n    return mix(color, gray, amount);\n}\n\nuniform vec4 uClearColor;\nuniform float uDesaturate;\nuniform float uBrightness;\nuniform float uFade;\nuniform float uAlpha;\n\nvec4 outputColor(vec4 color) {\n    // desaturate => fade => alpha\n    vec3 ret = mix(color.rgb, vec3(uBrightness + 1.0 / 2.0), abs(uBrightness));\n    ret = vec3(desaturateColor(ret, uDesaturate));\n    ret = mix(ret, uClearColor.rgb, uFade);\n    return vec4(ret, color.a * uAlpha);\n}\n\n#define MODE_DRAFT 0u\n#define MODE_MEDIUM 1u\n#define MODE_HIGH 2u\n#define MODE_HIGH_PASS_1 3u\n#define MODE_HIGH_PASS_2 4u\n#define MODE_PICKING 5u\n\n// most of these come from this excellent post:\n// https://iquilezles.org/www/articles/distfunctions2d/distfunctions2d.htm\n\nfloat opRound(in float d, in float r) {\n    return d - r;\n}\n\nfloat opOnion(in float d, in float r) {\n    return abs(d) - r;\n}\n\nfloat sdCircle(in vec2 p, in float r ) {\n    return length(p) - r;\n}\n\nfloat sdEquilateralTriangle(in vec2 p, in float r) {\n    const float k = sqrt(3.0);\n    p.x = abs(p.x) - r;\n    p.y = p.y + (r) / k;\n    if (p.x + k * p.y > 0.0) {\n        p = vec2(p.x-k*p.y,-k*p.x-p.y) / 2.0;\n    }\n    p.x -= clamp(p.x, -2.0 * r, 0.0);\n    return -length(p) * sign(p.y);\n}\n\nfloat sdPentagon(in vec2 p, in float r) {\n    const vec3 k = vec3(0.809016994, 0.587785252, 0.726542528);\n    p.y = -(p.y) * 1.25;\n    p.x = abs(p.x) * 1.25;\n    p -= 2.0 * min(dot(vec2(-k.x, k.y), p), 0.0) * vec2(-k.x, k.y);\n    p -= 2.0 * min(dot(vec2(k.x, k.y), p), 0.0) * vec2(k.x, k.y);\n    p -= vec2(clamp(p.x, -r*k.z, r*k.z), r);\n    return length(p) * sign(p.y);\n}\n\nfloat sdOctagon(in vec2 p, in float r) {\n    // pi/8: cos, sin, tan.\n    const vec3 k = vec3(\n        -0.9238795325,   // sqrt(2+sqrt(2))/2\n        0.3826834323,   // sqrt(2-sqrt(2))/2\n        0.4142135623\n    ); // sqrt(2)-1\n    // reflections\n    p = abs(p) * 1.1;\n    p -= 2.0 * min(dot(vec2(k.x,k.y), p), 0.0) * vec2(k.x,k.y);\n    p -= 2.0 * min(dot(vec2(-k.x,k.y), p), 0.0) * vec2(-k.x,k.y);\n    // Polygon side.\n    p -= vec2(clamp(p.x, -k.z*r, k.z*r), r);\n    return length(p) * sign(p.y);\n}\n\nfloat sdStar(in vec2 p, in float r, in uint n, in float m) { // m=[2,n]\n    // these 4 lines can be precomputed for a given shape\n    float an = 3.141593 / float(n);\n    float en = 3.141593 / m;\n    vec2  acs = vec2(cos(an), sin(an));\n    vec2  ecs = vec2(cos(en), sin(en)); // ecs=vec2(0,1) and simplify, for regular polygon,\n\n    // reduce to first sector\n    float bn = mod(atan(p.x, p.y), 2.0 * an) - an;\n    p = length(p) * vec2(cos(bn), abs(sin(bn)));\n\n    // line sdf\n    p -= r * acs;\n    p += ecs * clamp(-dot(p, ecs), 0.0, r * acs.y / ecs.y);\n    return length(p) * sign(p.x);\n}\n\nfloat sdCross(in vec2 p, in float w, in float r) {\n    p = abs(p);\n    return length(p - min(p.x + p.y, w) * 0.5) - r;\n}\n\n// TODO: Precompute this, we always pass the same parameters tot his function (v, vec2(1.0, 0.3), 0.0)\nfloat sdPlus( in vec2 p, in vec2 b, float r ) {\n    p = abs(p);\n    p = (p.y > p.x) ? p.yx : p.xy;\n\n    vec2  q = p - b;\n    float k = max(q.y, q.x);\n    vec2  w = (k > 0.0) ? q : vec2(b.y - p.x, -k);\n\n    return sign(k)*length(max(w, 0.0)) + r;\n}\n\nfloat sdBox( in vec2 p, in vec2 b ) {\n    vec2 d = abs(p) - b;\n    return length(max(d,0.0)) + min(max(d.x,d.y),0.0);\n}\n\nvec4 renderChar(float charWidth, vec4 texPixel, vec4 backgroundColor, vec4 haloColor, vec4 textColor, float halo) {\n    float edgeThreshold = 0.49;\n    float haloThreshold = 0.18; // sets max halo threshold\n    float smoothing = 1.0 / charWidth;\n    float distance = texPixel.a;\n\n    vec4 finalColor = backgroundColor;\n    if (distance > edgeThreshold - smoothing) { // text fill\n        float textEdge = smoothstep(edgeThreshold - smoothing, edgeThreshold + smoothing, distance);\n        vec4 textEdgeBlendColor = mix(haloColor, backgroundColor, float(halo == 0.));\n        finalColor = mix(textEdgeBlendColor, textColor, textEdge);\n    }\n    else if (distance > edgeThreshold - haloThreshold * halo - smoothing) { // outline\n        float haloEdge = smoothstep(edgeThreshold - haloThreshold * halo - smoothing, edgeThreshold - haloThreshold * halo + smoothing, distance);\n        finalColor = mix(backgroundColor, haloColor, haloEdge);\n    }\n\n    return finalColor;\n}\n\nuniform usampler2D uLabelIndices;\nuniform usampler2D uCharBoxes;\nuniform sampler2D uCharTexture;\nuniform float uPixelRatio;\nuniform uint uRenderMode;\nuniform vec2 uLabelDirection;\nuniform bool uMirror;\nuniform float uPadding;\nuniform float uHalo;\n\nflat in vec4 fBackgroundColor;\nflat in vec4 fTextColor;\nflat in vec4 fHaloColor;\nflat in float fPixelRadius;\nflat in float fLabelStep;\nflat in vec2 fCharTextureSize;\nflat in vec4 fLabelInfo;\nflat in float fPixelLength;\nflat in float fThickness;\nin vec2 vFromCenter;\n\nout vec4 fragColor;\n\nfloat cross_ish(vec2 a, vec2 b)\n{\n    return a.x * b.y - a.y * b.x;\n}\n\nvoid main() {\n    float padding = uPadding * uPixelRatio;\n    float fromCenter = length(vFromCenter);\n    float thickness = fThickness * fPixelLength;\n    float antialias = min(thickness, fPixelLength * 1.5);\n    float radius = 1.0 - thickness;\n    float circle = fromCenter - (1.0 - thickness);\n    float ring = opOnion(circle, thickness);\n    float modeDistance = uRenderMode == MODE_HIGH_PASS_1 ? -antialias : -antialias * 0.5;\n    float ringThreshold = uRenderMode == MODE_HIGH_PASS_2 ? 0.0 : modeDistance;\n\n    if (ring > ringThreshold) {\n        discard;\n    }\n\n    float halfLabelWidth = fLabelInfo[2] * 0.5;\n    float halfLabelHeight = fLabelInfo[3] * 0.5;\n    float normalizedHeight = (halfLabelHeight + padding) / fPixelRadius;\n\n    vec2 positionVector = uLabelDirection;\n    float angle = atan(cross_ish(vFromCenter, positionVector), dot(vFromCenter, positionVector));\n    float angleDistance = angle * fPixelRadius;\n    float paddedLabelWidth = fLabelInfo[2] + padding * 2.0;\n    float offsetAngleDistance = angleDistance + halfLabelWidth + padding;\n\n    float width = fract(offsetAngleDistance / fLabelStep) * fLabelStep;\n    float height = (1.0 - fromCenter) * fPixelRadius - padding;\n    vec4 finalColor;\n\n    if (height < 0.0 || height > fLabelInfo[3] || width < padding || width > fLabelInfo[2] + padding) {\n        finalColor = fBackgroundColor;\n    } else {\n        float uProgress = (width - padding) / fLabelInfo[2];\n        if (uMirror) {\n            uProgress = 1.0 - uProgress;\n        }\n        float stringProgress = fLabelInfo[0] + fLabelInfo[1] * uProgress;\n        float stringIndex = floor(stringProgress);\n        int charIndex = int(uivalueForIndex(uLabelIndices, int(stringIndex)));\n        vec4 charBox = vec4(uvalueForIndex(uCharBoxes, charIndex));\n        float charMult = stringProgress - stringIndex;\n\n        vec4 charBoxUV = charBox / vec4(fCharTextureSize, fCharTextureSize);\n\n        vec2 uv = vec2(charBoxUV[0] + charBoxUV[2] * charMult, charBoxUV[1] + charBoxUV[3] * fLabelInfo[1]);\n        if (uMirror) {\n            uv = vec2(charBoxUV[0] + charBoxUV[2] * charMult, charBoxUV[1] + charBoxUV[3] * (height / fLabelInfo[3]));\n        } else {\n            uv = vec2(charBoxUV[0] + charBoxUV[2] * charMult, charBoxUV[1] + charBoxUV[3] * (1.0 - height / fLabelInfo[3]));\n        }\n\n        vec4 texPixel = texture(uCharTexture, uv);\n\n        finalColor = renderChar(fLabelInfo[3], texPixel, fBackgroundColor, fHaloColor, fTextColor, uHalo);\n    }\n\n    if (uRenderMode == MODE_HIGH_PASS_2) {\n        if (ring < -antialias) {\n            discard;\n        }\n        fragColor = outputColor(vec4(finalColor.rgb, smoothstep(0.0, antialias, abs(ring))));\n    } else {\n        fragColor = outputColor(vec4(finalColor.rgb, 1.0));\n    }\n\n//    fragColor = vec4(1.0,0.0,1.0,1.0);\n}\n";
 
 // src/graph/labels/ring/RingLabel.ts
 var RingLabel = class extends CircularLabel {
-  initialize(context, points2, data, mappings2, pickingManager, font = "monospace", bold = false, labelAtlas) {
-    super.initialize(context, points2, data, mappings2, pickingManager, font, bold, labelAtlas);
+  initialize(context, points2, data, mappings2, pickingManager, font = "monospace", bold = false, charSpacing = 0, labelAtlas) {
+    super.initialize(context, points2, data, mappings2, pickingManager, font, bold, charSpacing, labelAtlas);
     this.localUniforms.uPadding = 2;
   }
   getDrawShaders() {
@@ -18906,6 +27947,8 @@ var DebugMenu = class {
     this.viewport = viewport;
     const layers = viewport.graph.layers;
     this.pane = new import_tweakpane.default({ title: "Debug Menu", expanded: false });
+    this.pane.element.style.maxHeight = "calc(100vh - 8px)";
+    this.pane.element.style.overflowY = "auto";
     for (let i = 0, n = layers.length; i < n; ++i) {
       const layer = layers[i];
       const layerFolder = this.pane.addFolder({ title: layer.name, expanded: false });
@@ -18951,8 +27994,8 @@ var DebugMenu = class {
       this.addLayerElementOptions(edgesFolder, layer, "edges");
     }
   }
-  addLayerElementOptions(folder, layer, key) {
-    const element = layer[key];
+  addLayerElementOptions(folder, layer, key2) {
+    const element = layer[key2];
     const options = {
       enabled: [element, {}],
       blendMode: [element, {
@@ -18969,8 +28012,8 @@ var DebugMenu = class {
       fade: [element, { min: 0, max: 1 }],
       desaturate: [element, { min: 0, max: 1 }],
       brightness: [element, { min: -1, max: 1 }],
-      [`${key}NearDepth`]: [layer, { min: 0, max: 1, label: "near" }],
-      [`${key}FarDepth`]: [layer, { min: 0, max: 1, label: "far" }]
+      [`${key2}NearDepth`]: [layer, { min: 0, max: 1, label: "near" }],
+      [`${key2}FarDepth`]: [layer, { min: 0, max: 1, label: "far" }]
     };
     const keys = Object.keys(options);
     for (let i = 0, n = keys.length; i < n; ++i) {
@@ -19307,9 +28350,9 @@ var GraferController = class extends EventEmitter {
       if ("options" in layerData) {
         const options = layerData.options;
         const keys = Object.keys(options);
-        for (const key of keys) {
-          if (key in layer) {
-            layer[key] = options[key];
+        for (const key2 of keys) {
+          if (key2 in layer) {
+            layer[key2] = options[key2];
           }
         }
       }
@@ -19332,7 +28375,7 @@ var GraferController = class extends EventEmitter {
     }
   }
   addLabels(labelsData, hasColors) {
-    var _a2, _b;
+    var _a2, _b, _c;
     const pickingManager = this._viewport.graph.picking;
     const context = this.context;
     const graph = this._viewport.graph;
@@ -19351,13 +28394,13 @@ var GraferController = class extends EventEmitter {
           return value;
         };
       }
-      labels = new LabelsClass(context, graph, labelsData.data, labelsMappings, pickingManager, (_a2 = labelsData.options) == null ? void 0 : _a2.font, (_b = labelsData.options) == null ? void 0 : _b.bold);
+      labels = new LabelsClass(context, graph, labelsData.data, labelsMappings, pickingManager, (_a2 = labelsData.options) == null ? void 0 : _a2.font, (_b = labelsData.options) == null ? void 0 : _b.bold, (_c = labelsData.options) == null ? void 0 : _c.halo);
       if ("options" in labelsData) {
         const options = labelsData.options;
         const keys = Object.keys(options);
-        for (const key of keys) {
-          if (key in labels) {
-            labels[key] = options[key];
+        for (const key2 of keys) {
+          if (key2 in labels) {
+            labels[key2] = options[key2];
           }
         }
       }
@@ -19406,9 +28449,9 @@ var GraferController = class extends EventEmitter {
       if ("options" in edgesData) {
         const options = edgesData.options;
         const keys = Object.keys(options);
-        for (const key of keys) {
-          if (key in edges) {
-            edges[key] = options[key];
+        for (const key2 of keys) {
+          if (key2 in edges) {
+            edges[key2] = options[key2];
           }
         }
       }
@@ -19438,9 +28481,9 @@ var GraferController = class extends EventEmitter {
       if ("options" in nodesData) {
         const options = nodesData.options;
         const keys = Object.keys(options);
-        for (const key of keys) {
-          if (key in nodes) {
-            nodes[key] = options[key];
+        for (const key2 of keys) {
+          if (key2 in nodes) {
+            nodes[key2] = options[key2];
           }
         }
       }
@@ -20957,6 +30000,7 @@ async function bundling(container) {
 // examples/src/labels/mod.ts
 var mod_exports18 = {};
 __export(mod_exports18, {
+  benchmarkLabel: () => benchmarkLabel,
   circularLabel: () => circularLabel,
   pointLabel: () => pointLabel,
   ringLabel: () => ringLabel
@@ -21126,6 +30170,99 @@ async function ringLabel(container) {
   render(html`<canvas class="grafer_container"></canvas><mouse-interactions></mouse-interactions>`, container);
   const canvas = document.querySelector(".grafer_container");
   new GraferController(canvas, { colors: colors2, layers });
+}
+
+// examples/src/labels/benchmarkLabel.ts
+function createNodePoints14(count, radius = 10) {
+  const PI2 = Math.PI * 2;
+  const degStep = PI2 / count;
+  const result = [];
+  for (let angle3 = 0, i = 0; angle3 < PI2; angle3 += degStep, ++i) {
+    const pX = Math.cos(angle3) * radius;
+    const pY = Math.sin(angle3) * radius;
+    result.push({
+      id: `p${i}-${radius}`,
+      x: pX,
+      y: pY,
+      radius: 2,
+      label: `The quick brown fox jumped over the lazy dog`,
+      color: Math.round(Math.random() * 4),
+      fontSize: 16
+    });
+  }
+  return result;
+}
+var numNodes = 1e4;
+async function benchmarkLabel(container) {
+  const startingNodes = 2;
+  const addedNodesPerRing = 5;
+  let data = [];
+  let nodesToCreate = numNodes;
+  let nodesPerRing = startingNodes;
+  while (nodesToCreate > 0) {
+    data = data.concat(createNodePoints14(nodesToCreate - nodesPerRing >= 0 ? nodesPerRing : nodesToCreate, nodesPerRing));
+    nodesToCreate -= nodesPerRing;
+    nodesPerRing += addedNodesPerRing;
+  }
+  const nodes = {
+    type: "Circle",
+    data
+  };
+  const labels = {
+    type: "PointLabel",
+    data: nodes.data,
+    options: {
+      visibilityThreshold: 1,
+      labelPlacement: 1,
+      renderBackground: true,
+      padding: 6
+    }
+  };
+  const layers = [
+    { nodes, labels }
+  ];
+  const colors2 = [
+    "#bf616a",
+    "#d08770",
+    "#ebcb8b",
+    "#a3be8c",
+    "#b48ead"
+  ];
+  render(html`<canvas class="grafer_container"></canvas><mouse-interactions></mouse-interactions>`, container);
+  const canvas = document.querySelector(".grafer_container");
+  const controller = new GraferController(canvas, { colors: colors2, layers });
+  const gl = document.createElement("canvas").getContext("webgl");
+  const debugInfo = gl.getExtension("WEBGL_debug_renderer_info");
+  console.log(gl.getParameter(debugInfo.UNMASKED_VENDOR_WEBGL));
+  console.log(gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL));
+  const benchmarkDelay = 5 * 1e3;
+  const benchmarkLength = benchmarkDelay + 15 * 1e3;
+  let benchmark = true;
+  let numFrames = 0;
+  const frametimeList = [];
+  let frametimeOld = performance.now();
+  function step() {
+    numFrames++;
+    const frametimeNew = performance.now();
+    controller.render();
+    frametimeList.push(frametimeNew - frametimeOld);
+    frametimeOld = frametimeNew;
+    if (benchmark) {
+      window.requestAnimationFrame(step);
+    }
+  }
+  setTimeout(() => {
+    console.log("Benchmark Start: %d Nodes", numNodes);
+    window.requestAnimationFrame(step);
+  }, benchmarkDelay);
+  setTimeout(() => {
+    benchmark = false;
+    const frametimeAvg = frametimeList.reduce((acc, val) => val + acc) / numFrames;
+    console.log("Benchmark End");
+    console.log("Frames: %d", numFrames);
+    console.log("Avg. time between frames: %d", frametimeAvg);
+    console.log("Avg. FPS: %d", 1 / (frametimeAvg / 1e3));
+  }, benchmarkLength);
 }
 
 // examples/src/UX/mod.ts
@@ -22131,17 +31268,17 @@ function createFileInput3(cb) {
   input.addEventListener("change", cb);
   return input;
 }
-function createFileMenu(menu, result, key) {
+function createFileMenu(menu, result, key2) {
   const input = createFileInput3(() => {
     if (input.files.length) {
-      result[`${key}File`] = input.files[0];
-      result[key] = result[`${key}File`].name;
+      result[`${key2}File`] = input.files[0];
+      result[key2] = result[`${key2}File`].name;
     } else {
-      result[key] = "No file selected.";
-      result[`${key}File`] = null;
+      result[key2] = "No file selected.";
+      result[`${key2}File`] = null;
     }
   });
-  menu.addMonitor(result, key);
+  menu.addMonitor(result, key2);
   menu.addButton({ title: "browse..." }).on("click", () => input.click());
 }
 function renderMenu3(container, cb) {
@@ -22491,15 +31628,15 @@ var shadyTemplateFactory = (scopeName) => (result) => {
   if (template !== void 0) {
     return template;
   }
-  const key = result.strings.join(marker);
-  template = templateCache.keyString.get(key);
+  const key2 = result.strings.join(marker);
+  template = templateCache.keyString.get(key2);
   if (template === void 0) {
     const element = result.getTemplateElement();
     if (compatibleShadyCSSVersion) {
       window.ShadyCSS.prepareTemplateDom(element, scopeName);
     }
     template = new Template(result, element);
-    templateCache.keyString.set(key, template);
+    templateCache.keyString.set(key2, template);
   }
   templateCache.stringsArray.set(result.strings, template);
   return template;
@@ -22652,20 +31789,20 @@ var UpdatingElement = class extends HTMLElement {
     if (options.noAccessor || this.prototype.hasOwnProperty(name)) {
       return;
     }
-    const key = typeof name === "symbol" ? Symbol() : `__${name}`;
-    const descriptor = this.getPropertyDescriptor(name, key, options);
+    const key2 = typeof name === "symbol" ? Symbol() : `__${name}`;
+    const descriptor = this.getPropertyDescriptor(name, key2, options);
     if (descriptor !== void 0) {
       Object.defineProperty(this.prototype, name, descriptor);
     }
   }
-  static getPropertyDescriptor(name, key, options) {
+  static getPropertyDescriptor(name, key2, options) {
     return {
       get() {
-        return this[key];
+        return this[key2];
       },
       set(value) {
         const oldValue = this[name];
-        this[key] = value;
+        this[key2] = value;
         this.requestUpdateInternal(name, oldValue, options);
       },
       configurable: true,
