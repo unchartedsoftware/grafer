@@ -9,6 +9,7 @@ precision lowp usampler2D;
 #pragma glslify: import(../../../renderer/shaders/outputColor.glsl)
 #pragma glslify: import(../../../renderer/shaders/RenderMode.glsl)
 #pragma glslify: import(../../nodes/shaders/shapes.glsl)
+#pragma glslify: import(../shaders/renderChar.glsl)
 
 uniform usampler2D uLabelIndices;
 uniform usampler2D uCharBoxes;
@@ -18,9 +19,11 @@ uniform uint uRenderMode;
 uniform vec2 uLabelDirection;
 uniform bool uMirror;
 uniform float uPadding;
+uniform float uHalo;
 
 flat in vec4 fBackgroundColor;
 flat in vec4 fTextColor;
+flat in vec4 fHaloColor;
 flat in float fPixelRadius;
 flat in float fLabelStep;
 flat in vec2 fCharTextureSize;
@@ -89,10 +92,7 @@ void main() {
 
         vec4 texPixel = texture(uCharTexture, uv);
 
-        float smoothing = 7.0 / fLabelInfo[3];
-        float distance = texPixel.a;
-        float textEdge = smoothstep(0.5 - smoothing, 0.5 + smoothing, distance);
-        finalColor = mix(fBackgroundColor, fTextColor, textEdge);
+        finalColor = renderChar(fLabelInfo[3], texPixel, fBackgroundColor, fHaloColor, fTextColor, uHalo);
     }
 
     if (uRenderMode == MODE_HIGH_PASS_2) {

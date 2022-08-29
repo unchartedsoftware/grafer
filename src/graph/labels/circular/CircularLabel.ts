@@ -67,9 +67,10 @@ export class CircularLabel extends PointLabel {
         pickingManager: PickingManager,
         font: string = 'monospace',
         bold: boolean = false,
+        charSpacing: number = 0,
         labelAtlas?: LabelAtlas
     ): void {
-        super.initialize(context, points, data, mappings, pickingManager, font, bold, labelAtlas);
+        super.initialize(context, points, data, mappings, pickingManager, font, bold, charSpacing, labelAtlas);
         this.localUniforms.uRepeatLabel = -1;
         this.localUniforms.uRepeatGap = 5;
         this.localUniforms.uPlacementMargin = 0;

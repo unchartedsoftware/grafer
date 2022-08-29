@@ -33,6 +33,7 @@ uniform float uPadding;
 
 flat out vec4 fBackgroundColor;
 flat out vec4 fTextColor;
+flat out vec4 fHaloColor;
 flat out vec4 fLabelInfo;
 flat out float fPixelRadius;
 flat out float fPixelLength;
@@ -80,6 +81,7 @@ void main() {
     vec4 color = valueForIndex(uColorPalette, int(iColor));
     fBackgroundColor = vec4(color.rgb, 1.0);
     fTextColor = vec4(contrastingColor(color.rgb, 7.0), 1.0);
+    fHaloColor = mix(vec4(1.), vec4(0., 0., 0., 1.), float(length(fTextColor.rgb) > 0.866));
 
     // send thelabel info to the fragment shader
     fLabelInfo = vec4(iLabel);

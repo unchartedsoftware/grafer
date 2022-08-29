@@ -111,6 +111,13 @@ export class PointLabel extends Nodes<LabelNodeData, GLLabelNodeTypes> {
         this.localUniforms.uPadding = value;
     }
 
+    public get halo(): number {
+        return this.localUniforms.uHalo as number;
+    }
+    public set halo(value: number) {
+        this.localUniforms.uHalo = Math.min(1, Math.max(0, value));
+    }
+
     constructor(
         context: GraferContext,
         points: GraphPoints,
@@ -118,6 +125,8 @@ export class PointLabel extends Nodes<LabelNodeData, GLLabelNodeTypes> {
         mappings: Partial<DataMappings<LabelNodeData>>,
         pickingManager: PickingManager,
         font?: string,
+        bold?: boolean,
+        charSpacing?: number,
         labelAtlas?: LabelAtlas
     );
     constructor(...args: any[]) {
@@ -132,12 +141,13 @@ export class PointLabel extends Nodes<LabelNodeData, GLLabelNodeTypes> {
         pickingManager: PickingManager,
         font: string = 'monospace',
         bold: boolean = false,
+        charSpacing: number = 0,
         labelAtlas?: LabelAtlas
     ): void {
         if (labelAtlas) {
             this.labelAtlas = labelAtlas;
         } else {
-            this.labelAtlas = new LabelAtlas(context, data, mappings as Partial<DataMappings<LabelData>>, font, bold);
+            this.labelAtlas = new LabelAtlas(context, data, mappings as Partial<DataMappings<LabelData>>, font, bold, charSpacing);
         }
 
         super.initialize(context, points, data, mappings, pickingManager);
@@ -164,6 +174,7 @@ export class PointLabel extends Nodes<LabelNodeData, GLLabelNodeTypes> {
         this.localUniforms.uLabelIndices = this.labelAtlas.indicesTexture;
         this.localUniforms.uCharBoxes = this.labelAtlas.boxesTexture;
         this.localUniforms.uCharTexture = this.labelAtlas.atlasTexture;
+        this.localUniforms.uLabelOffsets = this.labelAtlas.offsetsTexture;
         this.localUniforms.uVisibilityThreshold = 15;
         this.localUniforms.uLabelPlacement = [0, 0];
         this.localUniforms.uPadding = 4.0;

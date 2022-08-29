@@ -65,7 +65,7 @@ export class TextureAtlas {
         return this._atlasTexture;
     }
 
-    public exportTextures(keyList?: string[]): Promise<void> {
+    public exportTextures(keyList?: string[], bufferX = 0, bufferY = 0): Promise<void> {
         if(!this.dirty) {
             return;
         }
@@ -83,11 +83,16 @@ export class TextureAtlas {
         }
         const finalImage = ctx.createImageData(pack.w, pack.h);
 
-        const boxesBuffer = packData(boxes, kCharBoxDataMappings, kCharBoxDataTypes, true, ((i) => {
-            const box = boxes[i];
+        boxes.forEach((box, i) => {
             this.textureKeyMap.set(box.id, i);
             TextureAtlas.blitImageData(box.image, finalImage, box.x, finalImage.height - box.y - box.h);
-        }));
+
+            box.x = box.x + bufferX;
+            box.y = box.y + bufferY;
+            box.w = box.w - bufferX * 2;
+            box.h = box.h - bufferY * 2;
+        });
+        const boxesBuffer = packData(boxes, kCharBoxDataMappings, kCharBoxDataTypes, true);
         this._boxesTexture = this.createTextureForBuffer(this.context, new Uint16Array(boxesBuffer), boxes.length, PicoGL.RGBA16UI);
         this._atlasTexture = this.context.createTexture2D(finalImage as unknown as HTMLImageElement, {
             flipY: true,
@@ -162,7 +167,7 @@ export class TextureAtlas {
         this.edt(gridOuter, imageData.width, imageData.height, f, v, z);
         this.edt(gridInner, imageData.width, imageData.height, f, v, z);
 
-        const radius = fontSize / 8;
+        const radius = fontSize;
         const data = imageData.data;
         for (let i = 0; i < dataLength; ++i) {
             const d = Math.sqrt(gridOuter[i]) - Math.sqrt(gridInner[i]);
