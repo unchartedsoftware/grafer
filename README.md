@@ -56,7 +56,6 @@ All documentaton, including API reference, is available [here](./docs/table-of-c
 
 ### Publishing Instructions
 
-1. Make sure `package.json` contains new version number
-2. `yarn run prepack` to run build and validation scripts
-3. `npm version <new_version_num>` to update the version number
-4. `npm publish @uncharted.software/grafer` to publish to NPM
+1. `yarn run prepack` to run build and validation scripts
+2. `npm version <new_version_num>` to update the version number
+3. `npm publish` to publish to NPM
