@@ -6436,17 +6436,17 @@ var require_chroma = __commonJS({
           }
         }
       });
-      var log = Math.log;
+      var log2 = Math.log;
       var temperature2rgb = function(kelvin) {
         var temp = kelvin / 100;
         var r, g, b;
         if (temp < 66) {
           r = 255;
-          g = -155.25485562709179 - 0.44596950469579133 * (g = temp - 2) + 104.49216199393888 * log(g);
-          b = temp < 20 ? 0 : -254.76935184120902 + 0.8274096064007395 * (b = temp - 10) + 115.67994401066147 * log(b);
+          g = -155.25485562709179 - 0.44596950469579133 * (g = temp - 2) + 104.49216199393888 * log2(g);
+          b = temp < 20 ? 0 : -254.76935184120902 + 0.8274096064007395 * (b = temp - 10) + 115.67994401066147 * log2(b);
         } else {
-          r = 351.97690566805693 + 0.114206453784165 * (r = temp - 55) - 40.25366309332127 * log(r);
-          g = 325.4494125711974 + 0.07943456536662342 * (g = temp - 50) - 28.0852963507957 * log(g);
+          r = 351.97690566805693 + 0.114206453784165 * (r = temp - 55) - 40.25366309332127 * log2(r);
+          g = 325.4494125711974 + 0.07943456536662342 * (g = temp - 50) - 28.0852963507957 * log2(g);
           b = 255;
         }
         return [r, g, b, 1];
@@ -30000,7 +30000,6 @@ async function bundling(container) {
 // examples/src/labels/mod.ts
 var mod_exports18 = {};
 __export(mod_exports18, {
-  benchmarkLabel: () => benchmarkLabel,
   circularLabel: () => circularLabel,
   pointLabel: () => pointLabel,
   ringLabel: () => ringLabel
@@ -30170,99 +30169,6 @@ async function ringLabel(container) {
   render(html`<canvas class="grafer_container"></canvas><mouse-interactions></mouse-interactions>`, container);
   const canvas = document.querySelector(".grafer_container");
   new GraferController(canvas, { colors: colors2, layers });
-}
-
-// examples/src/labels/benchmarkLabel.ts
-function createNodePoints14(count, radius = 10) {
-  const PI2 = Math.PI * 2;
-  const degStep = PI2 / count;
-  const result = [];
-  for (let angle3 = 0, i = 0; angle3 < PI2; angle3 += degStep, ++i) {
-    const pX = Math.cos(angle3) * radius;
-    const pY = Math.sin(angle3) * radius;
-    result.push({
-      id: `p${i}-${radius}`,
-      x: pX,
-      y: pY,
-      radius: 2,
-      label: `The quick brown fox jumped over the lazy dog`,
-      color: Math.round(Math.random() * 4),
-      fontSize: 16
-    });
-  }
-  return result;
-}
-var numNodes = 1e4;
-async function benchmarkLabel(container) {
-  const startingNodes = 2;
-  const addedNodesPerRing = 5;
-  let data = [];
-  let nodesToCreate = numNodes;
-  let nodesPerRing = startingNodes;
-  while (nodesToCreate > 0) {
-    data = data.concat(createNodePoints14(nodesToCreate - nodesPerRing >= 0 ? nodesPerRing : nodesToCreate, nodesPerRing));
-    nodesToCreate -= nodesPerRing;
-    nodesPerRing += addedNodesPerRing;
-  }
-  const nodes = {
-    type: "Circle",
-    data
-  };
-  const labels = {
-    type: "PointLabel",
-    data: nodes.data,
-    options: {
-      visibilityThreshold: 1,
-      labelPlacement: 1,
-      renderBackground: true,
-      padding: 6
-    }
-  };
-  const layers = [
-    { nodes, labels }
-  ];
-  const colors2 = [
-    "#bf616a",
-    "#d08770",
-    "#ebcb8b",
-    "#a3be8c",
-    "#b48ead"
-  ];
-  render(html`<canvas class="grafer_container"></canvas><mouse-interactions></mouse-interactions>`, container);
-  const canvas = document.querySelector(".grafer_container");
-  const controller = new GraferController(canvas, { colors: colors2, layers });
-  const gl = document.createElement("canvas").getContext("webgl");
-  const debugInfo = gl.getExtension("WEBGL_debug_renderer_info");
-  console.log(gl.getParameter(debugInfo.UNMASKED_VENDOR_WEBGL));
-  console.log(gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL));
-  const benchmarkDelay = 5 * 1e3;
-  const benchmarkLength = benchmarkDelay + 15 * 1e3;
-  let benchmark = true;
-  let numFrames = 0;
-  const frametimeList = [];
-  let frametimeOld = performance.now();
-  function step() {
-    numFrames++;
-    const frametimeNew = performance.now();
-    controller.render();
-    frametimeList.push(frametimeNew - frametimeOld);
-    frametimeOld = frametimeNew;
-    if (benchmark) {
-      window.requestAnimationFrame(step);
-    }
-  }
-  setTimeout(() => {
-    console.log("Benchmark Start: %d Nodes", numNodes);
-    window.requestAnimationFrame(step);
-  }, benchmarkDelay);
-  setTimeout(() => {
-    benchmark = false;
-    const frametimeAvg = frametimeList.reduce((acc, val) => val + acc) / numFrames;
-    console.log("Benchmark End");
-    console.log("Frames: %d", numFrames);
-    console.log("Avg. time between frames: %d", frametimeAvg);
-    console.log("Avg. FPS: %d", 1 / (frametimeAvg / 1e3));
-  }, benchmarkLength);
 }
 
 // examples/src/UX/mod.ts
@@ -30770,9 +30676,1096 @@ async function animation(container) {
   });
 }
 
-// examples/src/aske/mod.ts
+// examples/src/quickstart/mod.ts
 var mod_exports20 = {};
 __export(mod_exports20, {
+  quickstart1: () => quickstart1,
+  quickstart2: () => quickstart2,
+  quickstart3: () => quickstart3,
+  quickstart4: () => quickstart4
+});
+
+// examples/src/quickstart/nodes.json
+var nodes_default = [
+  {
+    name: "IAD",
+    x: 56.96899837777778,
+    y: -26.475494338172208,
+    departing_flights: 48132,
+    arriving_flights: 48053,
+    total_flights: 96185
+  },
+  {
+    name: "SEA",
+    x: 32.05055660671667,
+    y: -19.97793911240299,
+    departing_flights: 53180,
+    arriving_flights: 53105,
+    total_flights: 106285
+  },
+  {
+    name: "ORD",
+    x: 51.16399976666667,
+    y: -24.259402860653402,
+    departing_flights: 158496,
+    arriving_flights: 160054,
+    total_flights: 318550
+  },
+  {
+    name: "TUP",
+    x: 50.68339029947917,
+    y: -29.71375283992582,
+    departing_flights: 259,
+    arriving_flights: 307,
+    total_flights: 566
+  },
+  {
+    name: "SFO",
+    x: 32.01388888888889,
+    y: -27.413648060422037,
+    departing_flights: 57206,
+    arriving_flights: 57187,
+    total_flights: 114393
+  },
+  {
+    name: "IAH",
+    x: 47.03255547417533,
+    y: -32.52504912115283,
+    departing_flights: 81249,
+    arriving_flights: 83960,
+    total_flights: 165209
+  },
+  {
+    name: "MIA",
+    x: 55.39410909016928,
+    y: -35.16037906090966,
+    departing_flights: 48737,
+    arriving_flights: 47563,
+    total_flights: 96300
+  },
+  {
+    name: "GJT",
+    x: 39.707221985,
+    y: -26.348260450417,
+    departing_flights: 1385,
+    arriving_flights: 1854,
+    total_flights: 3239
+  },
+  {
+    name: "PWM",
+    x: 60.93927595555556,
+    y: -22.996379028850374,
+    departing_flights: 7836,
+    arriving_flights: 7468,
+    total_flights: 15304
+  },
+  {
+    name: "TUS",
+    x: 38.36611005995,
+    y: -31.14256423772302,
+    departing_flights: 11249,
+    arriving_flights: 10922,
+    total_flights: 22171
+  }
+];
+
+// examples/src/quickstart/edges.json
+var edges_default = [
+  {
+    name: "IAD_to_SEA",
+    departure_airport: "IAD",
+    arrival_airport: "SEA",
+    num_flights: 758
+  },
+  {
+    name: "IAD_to_ORD",
+    departure_airport: "IAD",
+    arrival_airport: "ORD",
+    num_flights: 2036
+  },
+  {
+    name: "IAD_to_TUP",
+    departure_airport: "IAD",
+    arrival_airport: "TUP",
+    num_flights: 0
+  },
+  {
+    name: "IAD_to_SFO",
+    departure_airport: "IAD",
+    arrival_airport: "SFO",
+    num_flights: 1458
+  },
+  {
+    name: "IAD_to_IAH",
+    departure_airport: "IAD",
+    arrival_airport: "IAH",
+    num_flights: 781
+  },
+  {
+    name: "IAD_to_MIA",
+    departure_airport: "IAD",
+    arrival_airport: "MIA",
+    num_flights: 1265
+  },
+  {
+    name: "IAD_to_GJT",
+    departure_airport: "IAD",
+    arrival_airport: "GJT",
+    num_flights: 6
+  },
+  {
+    name: "IAD_to_PWM",
+    departure_airport: "IAD",
+    arrival_airport: "PWM",
+    num_flights: 341
+  },
+  {
+    name: "IAD_to_TUS",
+    departure_airport: "IAD",
+    arrival_airport: "TUS",
+    num_flights: 47
+  },
+  {
+    name: "SEA_to_IAD",
+    departure_airport: "SEA",
+    arrival_airport: "IAD",
+    num_flights: 758
+  },
+  {
+    name: "SEA_to_ORD",
+    departure_airport: "SEA",
+    arrival_airport: "ORD",
+    num_flights: 2044
+  },
+  {
+    name: "SEA_to_TUP",
+    departure_airport: "SEA",
+    arrival_airport: "TUP",
+    num_flights: 0
+  },
+  {
+    name: "SEA_to_SFO",
+    departure_airport: "SEA",
+    arrival_airport: "SFO",
+    num_flights: 2712
+  },
+  {
+    name: "SEA_to_IAH",
+    departure_airport: "SEA",
+    arrival_airport: "IAH",
+    num_flights: 801
+  },
+  {
+    name: "SEA_to_MIA",
+    departure_airport: "SEA",
+    arrival_airport: "MIA",
+    num_flights: 314
+  },
+  {
+    name: "SEA_to_GJT",
+    departure_airport: "SEA",
+    arrival_airport: "GJT",
+    num_flights: 12
+  },
+  {
+    name: "SEA_to_PWM",
+    departure_airport: "SEA",
+    arrival_airport: "PWM",
+    num_flights: 1
+  },
+  {
+    name: "SEA_to_TUS",
+    departure_airport: "SEA",
+    arrival_airport: "TUS",
+    num_flights: 284
+  },
+  {
+    name: "ORD_to_IAD",
+    departure_airport: "ORD",
+    arrival_airport: "IAD",
+    num_flights: 2159
+  },
+  {
+    name: "ORD_to_SEA",
+    departure_airport: "ORD",
+    arrival_airport: "SEA",
+    num_flights: 2090
+  },
+  {
+    name: "ORD_to_TUP",
+    departure_airport: "ORD",
+    arrival_airport: "TUP",
+    num_flights: 1
+  },
+  {
+    name: "ORD_to_SFO",
+    departure_airport: "ORD",
+    arrival_airport: "SFO",
+    num_flights: 3152
+  },
+  {
+    name: "ORD_to_IAH",
+    departure_airport: "ORD",
+    arrival_airport: "IAH",
+    num_flights: 3101
+  },
+  {
+    name: "ORD_to_MIA",
+    departure_airport: "ORD",
+    arrival_airport: "MIA",
+    num_flights: 2364
+  },
+  {
+    name: "ORD_to_GJT",
+    departure_airport: "ORD",
+    arrival_airport: "GJT",
+    num_flights: 36
+  },
+  {
+    name: "ORD_to_PWM",
+    departure_airport: "ORD",
+    arrival_airport: "PWM",
+    num_flights: 622
+  },
+  {
+    name: "ORD_to_TUS",
+    departure_airport: "ORD",
+    arrival_airport: "TUS",
+    num_flights: 419
+  },
+  {
+    name: "TUP_to_IAD",
+    departure_airport: "TUP",
+    arrival_airport: "IAD",
+    num_flights: 0
+  },
+  {
+    name: "TUP_to_SEA",
+    departure_airport: "TUP",
+    arrival_airport: "SEA",
+    num_flights: 0
+  },
+  {
+    name: "TUP_to_ORD",
+    departure_airport: "TUP",
+    arrival_airport: "ORD",
+    num_flights: 0
+  },
+  {
+    name: "TUP_to_SFO",
+    departure_airport: "TUP",
+    arrival_airport: "SFO",
+    num_flights: 0
+  },
+  {
+    name: "TUP_to_IAH",
+    departure_airport: "TUP",
+    arrival_airport: "IAH",
+    num_flights: 0
+  },
+  {
+    name: "TUP_to_MIA",
+    departure_airport: "TUP",
+    arrival_airport: "MIA",
+    num_flights: 3
+  },
+  {
+    name: "TUP_to_GJT",
+    departure_airport: "TUP",
+    arrival_airport: "GJT",
+    num_flights: 0
+  },
+  {
+    name: "TUP_to_PWM",
+    departure_airport: "TUP",
+    arrival_airport: "PWM",
+    num_flights: 0
+  },
+  {
+    name: "TUP_to_TUS",
+    departure_airport: "TUP",
+    arrival_airport: "TUS",
+    num_flights: 0
+  },
+  {
+    name: "SFO_to_IAD",
+    departure_airport: "SFO",
+    arrival_airport: "IAD",
+    num_flights: 1487
+  },
+  {
+    name: "SFO_to_SEA",
+    departure_airport: "SFO",
+    arrival_airport: "SEA",
+    num_flights: 2657
+  },
+  {
+    name: "SFO_to_ORD",
+    departure_airport: "SFO",
+    arrival_airport: "ORD",
+    num_flights: 2994
+  },
+  {
+    name: "SFO_to_TUP",
+    departure_airport: "SFO",
+    arrival_airport: "TUP",
+    num_flights: 0
+  },
+  {
+    name: "SFO_to_IAH",
+    departure_airport: "SFO",
+    arrival_airport: "IAH",
+    num_flights: 1505
+  },
+  {
+    name: "SFO_to_MIA",
+    departure_airport: "SFO",
+    arrival_airport: "MIA",
+    num_flights: 757
+  },
+  {
+    name: "SFO_to_GJT",
+    departure_airport: "SFO",
+    arrival_airport: "GJT",
+    num_flights: 22
+  },
+  {
+    name: "SFO_to_PWM",
+    departure_airport: "SFO",
+    arrival_airport: "PWM",
+    num_flights: 0
+  },
+  {
+    name: "SFO_to_TUS",
+    departure_airport: "SFO",
+    arrival_airport: "TUS",
+    num_flights: 119
+  },
+  {
+    name: "IAH_to_IAD",
+    departure_airport: "IAH",
+    arrival_airport: "IAD",
+    num_flights: 849
+  },
+  {
+    name: "IAH_to_SEA",
+    departure_airport: "IAH",
+    arrival_airport: "SEA",
+    num_flights: 793
+  },
+  {
+    name: "IAH_to_ORD",
+    departure_airport: "IAH",
+    arrival_airport: "ORD",
+    num_flights: 2975
+  },
+  {
+    name: "IAH_to_TUP",
+    departure_airport: "IAH",
+    arrival_airport: "TUP",
+    num_flights: 0
+  },
+  {
+    name: "IAH_to_SFO",
+    departure_airport: "IAH",
+    arrival_airport: "SFO",
+    num_flights: 1574
+  },
+  {
+    name: "IAH_to_MIA",
+    departure_airport: "IAH",
+    arrival_airport: "MIA",
+    num_flights: 1524
+  },
+  {
+    name: "IAH_to_GJT",
+    departure_airport: "IAH",
+    arrival_airport: "GJT",
+    num_flights: 31
+  },
+  {
+    name: "IAH_to_PWM",
+    departure_airport: "IAH",
+    arrival_airport: "PWM",
+    num_flights: 4
+  },
+  {
+    name: "IAH_to_TUS",
+    departure_airport: "IAH",
+    arrival_airport: "TUS",
+    num_flights: 780
+  },
+  {
+    name: "MIA_to_IAD",
+    departure_airport: "MIA",
+    arrival_airport: "IAD",
+    num_flights: 1412
+  },
+  {
+    name: "MIA_to_SEA",
+    departure_airport: "MIA",
+    arrival_airport: "SEA",
+    num_flights: 366
+  },
+  {
+    name: "MIA_to_ORD",
+    departure_airport: "MIA",
+    arrival_airport: "ORD",
+    num_flights: 2308
+  },
+  {
+    name: "MIA_to_TUP",
+    departure_airport: "MIA",
+    arrival_airport: "TUP",
+    num_flights: 2
+  },
+  {
+    name: "MIA_to_SFO",
+    departure_airport: "MIA",
+    arrival_airport: "SFO",
+    num_flights: 797
+  },
+  {
+    name: "MIA_to_IAH",
+    departure_airport: "MIA",
+    arrival_airport: "IAH",
+    num_flights: 1643
+  },
+  {
+    name: "MIA_to_GJT",
+    departure_airport: "MIA",
+    arrival_airport: "GJT",
+    num_flights: 1
+  },
+  {
+    name: "MIA_to_PWM",
+    departure_airport: "MIA",
+    arrival_airport: "PWM",
+    num_flights: 2
+  },
+  {
+    name: "MIA_to_TUS",
+    departure_airport: "MIA",
+    arrival_airport: "TUS",
+    num_flights: 25
+  },
+  {
+    name: "GJT_to_IAD",
+    departure_airport: "GJT",
+    arrival_airport: "IAD",
+    num_flights: 1
+  },
+  {
+    name: "GJT_to_SEA",
+    departure_airport: "GJT",
+    arrival_airport: "SEA",
+    num_flights: 2
+  },
+  {
+    name: "GJT_to_ORD",
+    departure_airport: "GJT",
+    arrival_airport: "ORD",
+    num_flights: 8
+  },
+  {
+    name: "GJT_to_TUP",
+    departure_airport: "GJT",
+    arrival_airport: "TUP",
+    num_flights: 0
+  },
+  {
+    name: "GJT_to_SFO",
+    departure_airport: "GJT",
+    arrival_airport: "SFO",
+    num_flights: 13
+  },
+  {
+    name: "GJT_to_IAH",
+    departure_airport: "GJT",
+    arrival_airport: "IAH",
+    num_flights: 6
+  },
+  {
+    name: "GJT_to_MIA",
+    departure_airport: "GJT",
+    arrival_airport: "MIA",
+    num_flights: 0
+  },
+  {
+    name: "GJT_to_PWM",
+    departure_airport: "GJT",
+    arrival_airport: "PWM",
+    num_flights: 0
+  },
+  {
+    name: "GJT_to_TUS",
+    departure_airport: "GJT",
+    arrival_airport: "TUS",
+    num_flights: 4
+  },
+  {
+    name: "PWM_to_IAD",
+    departure_airport: "PWM",
+    arrival_airport: "IAD",
+    num_flights: 356
+  },
+  {
+    name: "PWM_to_SEA",
+    departure_airport: "PWM",
+    arrival_airport: "SEA",
+    num_flights: 0
+  },
+  {
+    name: "PWM_to_ORD",
+    departure_airport: "PWM",
+    arrival_airport: "ORD",
+    num_flights: 628
+  },
+  {
+    name: "PWM_to_TUP",
+    departure_airport: "PWM",
+    arrival_airport: "TUP",
+    num_flights: 0
+  },
+  {
+    name: "PWM_to_SFO",
+    departure_airport: "PWM",
+    arrival_airport: "SFO",
+    num_flights: 0
+  },
+  {
+    name: "PWM_to_IAH",
+    departure_airport: "PWM",
+    arrival_airport: "IAH",
+    num_flights: 2
+  },
+  {
+    name: "PWM_to_MIA",
+    departure_airport: "PWM",
+    arrival_airport: "MIA",
+    num_flights: 1
+  },
+  {
+    name: "PWM_to_GJT",
+    departure_airport: "PWM",
+    arrival_airport: "GJT",
+    num_flights: 0
+  },
+  {
+    name: "PWM_to_TUS",
+    departure_airport: "PWM",
+    arrival_airport: "TUS",
+    num_flights: 0
+  },
+  {
+    name: "TUS_to_IAD",
+    departure_airport: "TUS",
+    arrival_airport: "IAD",
+    num_flights: 42
+  },
+  {
+    name: "TUS_to_SEA",
+    departure_airport: "TUS",
+    arrival_airport: "SEA",
+    num_flights: 273
+  },
+  {
+    name: "TUS_to_ORD",
+    departure_airport: "TUS",
+    arrival_airport: "ORD",
+    num_flights: 396
+  },
+  {
+    name: "TUS_to_TUP",
+    departure_airport: "TUS",
+    arrival_airport: "TUP",
+    num_flights: 0
+  },
+  {
+    name: "TUS_to_SFO",
+    departure_airport: "TUS",
+    arrival_airport: "SFO",
+    num_flights: 123
+  },
+  {
+    name: "TUS_to_IAH",
+    departure_airport: "TUS",
+    arrival_airport: "IAH",
+    num_flights: 760
+  },
+  {
+    name: "TUS_to_MIA",
+    departure_airport: "TUS",
+    arrival_airport: "MIA",
+    num_flights: 17
+  },
+  {
+    name: "TUS_to_GJT",
+    departure_airport: "TUS",
+    arrival_airport: "GJT",
+    num_flights: 12
+  },
+  {
+    name: "TUS_to_PWM",
+    departure_airport: "TUS",
+    arrival_airport: "PWM",
+    num_flights: 0
+  }
+];
+
+// examples/src/quickstart/quickstart-1.ts
+async function quickstart1(container) {
+  render(html`<canvas class="grafer_container"></canvas>`, container);
+  const canvas = document.querySelector(".grafer_container");
+  const nodes = {
+    data: nodes_default
+  };
+  const edges = {
+    data: edges_default,
+    mappings: {
+      source: (datum) => nodes_default.findIndex((node) => node.name === datum.departure_airport),
+      target: (datum) => nodes_default.findIndex((node) => node.name === datum.arrival_airport)
+    }
+  };
+  const labels = {
+    data: nodes_default,
+    mappings: {
+      label: (datum) => datum.name
+    },
+    options: {
+      labelPlacement: mod_exports7.labels.PointLabelPlacement.TOP
+    }
+  };
+  const layers = [
+    { nodes, edges, labels }
+  ];
+  const controller = new GraferController(canvas, { layers });
+  new mod_exports13.DebugMenu(controller.viewport);
+}
+
+// examples/src/quickstart/quickstart-2.ts
+async function quickstart2(container) {
+  render(html`<canvas class="grafer_container"></canvas>`, container);
+  const canvas = document.querySelector(".grafer_container");
+  const points2 = {
+    data: nodes_default,
+    mappings: {
+      id: (datum) => datum.name
+    }
+  };
+  const nodes = {
+    data: nodes_default,
+    mappings: {
+      point: (datum) => datum.name
+    }
+  };
+  const edges = {
+    data: edges_default,
+    mappings: {
+      source: (datum) => datum.departure_airport,
+      target: (datum) => datum.arrival_airport
+    }
+  };
+  const labels = {
+    data: nodes_default,
+    mappings: {
+      point: (datum) => datum.name,
+      label: (datum) => datum.name
+    },
+    options: {
+      labelPlacement: mod_exports7.labels.PointLabelPlacement.TOP
+    }
+  };
+  const layers = [
+    { nodes, edges, labels }
+  ];
+  const controller = new GraferController(canvas, { points: points2, layers });
+  new mod_exports13.DebugMenu(controller.viewport);
+}
+
+// examples/src/quickstart/quickstart-3.ts
+async function quickstart3(container) {
+  render(html`<canvas class="grafer_container"></canvas>`, container);
+  const canvas = document.querySelector(".grafer_container");
+  const points2 = {
+    data: nodes_default,
+    mappings: {
+      id: (datum) => datum.name,
+      radius: (datum) => datum.total_flights && 0.25 * Math.log10(datum.total_flights) + 0.25
+    }
+  };
+  const nodes = {
+    type: "Ring",
+    data: nodes_default,
+    mappings: {
+      point: (datum) => datum.name
+    },
+    options: {
+      alpha: 0.3
+    }
+  };
+  const colors2 = [
+    "#ffffff",
+    "#3300cc",
+    "#660099",
+    "#990066",
+    "#cc0033"
+  ];
+  const edges = {
+    data: edges_default,
+    mappings: {
+      source: (datum) => datum.departure_airport,
+      sourceColor: (datum) => (datum.num_flights && Math.floor(Math.log10(datum.num_flights))) + 1,
+      target: (datum) => datum.arrival_airport,
+      targetColor: (datum) => (datum.num_flights && Math.floor(Math.log10(datum.num_flights))) + 1
+    },
+    options: {
+      alpha: 0.5,
+      lineWidth: 3
+    }
+  };
+  const labels = {
+    data: nodes_default,
+    mappings: {
+      point: (datum) => datum.name,
+      label: (datum) => datum.name,
+      fontSize: () => 14
+    },
+    options: {
+      font: "Arial",
+      halo: 0.2,
+      labelPlacement: mod_exports7.labels.PointLabelPlacement.TOP
+    }
+  };
+  const layers = [
+    { nodes, edges, labels }
+  ];
+  const controller = new GraferController(canvas, { colors: colors2, points: points2, layers });
+  new mod_exports13.DebugMenu(controller.viewport);
+}
+
+// examples/src/quickstart/quickstart-4.ts
+async function quickstart4(container) {
+  render(html`<canvas class="grafer_container"></canvas>`, container);
+  const canvas = document.querySelector(".grafer_container");
+  const points2 = {
+    data: nodes_default,
+    mappings: {
+      id: (datum) => datum.name,
+      radius: (datum) => datum.total_flights && 0.25 * Math.log10(datum.total_flights) + 0.25
+    }
+  };
+  const nodes = {
+    type: "Ring",
+    data: nodes_default,
+    mappings: {
+      point: (datum) => datum.name
+    },
+    options: {
+      alpha: 0.3
+    }
+  };
+  const colors2 = [
+    "#ffffff",
+    "#3300cc",
+    "#660099",
+    "#990066",
+    "#cc0033"
+  ];
+  const edges = {
+    data: edges_default,
+    mappings: {
+      source: (datum) => datum.departure_airport,
+      sourceColor: (datum) => (datum.num_flights && Math.floor(Math.log10(datum.num_flights))) + 1,
+      target: (datum) => datum.arrival_airport,
+      targetColor: (datum) => (datum.num_flights && Math.floor(Math.log10(datum.num_flights))) + 1
+    },
+    options: {
+      alpha: 0.5,
+      lineWidth: 3
+    }
+  };
+  const labels = {
+    data: nodes_default,
+    mappings: {
+      point: (datum) => datum.name,
+      label: (datum) => datum.name,
+      fontSize: () => 14
+    },
+    options: {
+      font: "Arial",
+      halo: 0.2,
+      labelPlacement: mod_exports7.labels.PointLabelPlacement.TOP
+    }
+  };
+  const layers = [
+    { nodes, edges, labels }
+  ];
+  const controller = new GraferController(canvas, { colors: colors2, points: points2, layers });
+  new mod_exports13.DebugMenu(controller.viewport);
+  controller.on(mod_exports13.picking.PickingManager.events.hoverOn, () => {
+    controller.viewport.graph.layers[0].nodes.fade = 0.7;
+    controller.viewport.graph.layers[0].edges.fade = 0.7;
+    controller.viewport.graph.layers[0].labels.fade = 0.7;
+    controller.render();
+  });
+  controller.on(mod_exports13.picking.PickingManager.events.hoverOff, () => {
+    controller.viewport.graph.layers[0].nodes.fade = 0;
+    controller.viewport.graph.layers[0].edges.fade = 0;
+    controller.viewport.graph.layers[0].labels.fade = 0;
+    controller.render();
+  });
+}
+
+// examples/src/benchmarks/mod.ts
+var mod_exports21 = {};
+__export(mod_exports21, {
+  benchmarkEdge: () => benchmarkEdge,
+  benchmarkLabel: () => benchmarkLabel,
+  benchmarkNode: () => benchmarkNode
+});
+
+// examples/src/benchmarks/helpers.ts
+function createNodePoints14(count, radius = 10) {
+  const PI2 = Math.PI * 2;
+  const degStep = PI2 / count;
+  const result = [];
+  for (let angle3 = 0, i = 0; angle3 < PI2; angle3 += degStep, ++i) {
+    const pX = Math.cos(angle3) * radius;
+    const pY = Math.sin(angle3) * radius;
+    result.push({
+      id: `p${i}-${radius}`,
+      x: pX,
+      y: pY,
+      radius: 2,
+      label: `The quick brown fox jumped over the lazy dog`,
+      color: Math.round(Math.random() * 4),
+      fontSize: 16
+    });
+  }
+  return result;
+}
+function log(logText) {
+  const logContainerEl = document.getElementsByClassName("log_output")[0];
+  if (logContainerEl) {
+    const logLineEl = document.createElement("p");
+    logLineEl.innerHTML = logText;
+    logContainerEl.append(logLineEl);
+    logContainerEl.scrollTo(0, logContainerEl.scrollHeight);
+  }
+}
+
+// examples/src/benchmarks/benchmarkNode.ts
+var numNodes = 3e6;
+async function benchmarkNode(container) {
+  const startingNodes = 2;
+  const addedNodesPerRing = 5;
+  let data = [];
+  let nodesToCreate = numNodes;
+  let nodesPerRing = startingNodes;
+  while (nodesToCreate > 0) {
+    data = data.concat(createNodePoints14(nodesToCreate - nodesPerRing >= 0 ? nodesPerRing : nodesToCreate, nodesPerRing));
+    nodesToCreate -= nodesPerRing;
+    nodesPerRing += addedNodesPerRing;
+  }
+  const nodes = {
+    type: "Circle",
+    data
+  };
+  const layers = [
+    { nodes }
+  ];
+  const colors2 = [
+    "#bf616a",
+    "#d08770",
+    "#ebcb8b",
+    "#a3be8c",
+    "#b48ead"
+  ];
+  render(html`<canvas class="grafer_container"></canvas><div class="log_output"></div><mouse-interactions></mouse-interactions>`, container);
+  const canvas = document.querySelector(".grafer_container");
+  const controller = new GraferController(canvas, { colors: colors2, layers });
+  const gl = document.createElement("canvas").getContext("webgl");
+  const debugInfo = gl.getExtension("WEBGL_debug_renderer_info");
+  log(gl.getParameter(debugInfo.UNMASKED_VENDOR_WEBGL));
+  log(gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL));
+  const benchmarkDelay = 5 * 1e3;
+  const benchmarkLength = benchmarkDelay + 15 * 1e3;
+  let benchmark = true;
+  let numFrames = 0;
+  const frametimeList = [];
+  let frametimeOld = performance.now();
+  function step() {
+    numFrames++;
+    const frametimeNew = performance.now();
+    controller.render();
+    frametimeList.push(frametimeNew - frametimeOld);
+    frametimeOld = frametimeNew;
+    if (benchmark) {
+      window.requestAnimationFrame(step);
+    }
+  }
+  setTimeout(() => {
+    log(`Benchmark Start: ${numNodes} Nodes`);
+    window.requestAnimationFrame(step);
+  }, benchmarkDelay);
+  setTimeout(() => {
+    benchmark = false;
+    const frametimeAvg = frametimeList.reduce((acc, val) => val + acc) / numFrames;
+    log("Benchmark End");
+    log(`Frames: ${numFrames}`);
+    log(`Avg. time between frames: ${frametimeAvg}`);
+    log(`Avg. FPS: ${1 / (frametimeAvg / 1e3)}`);
+  }, benchmarkLength);
+}
+
+// examples/src/benchmarks/benchmarkEdge.ts
+var numNodes2 = 3e6;
+async function benchmarkEdge(container) {
+  const startingNodes = 2;
+  const addedNodesPerRing = 5;
+  let data = [];
+  let nodesToCreate = numNodes2;
+  let nodesPerRing = startingNodes;
+  while (nodesToCreate > 0) {
+    data = data.concat(createNodePoints14(nodesToCreate - nodesPerRing >= 0 ? nodesPerRing : nodesToCreate, nodesPerRing));
+    nodesToCreate -= nodesPerRing;
+    nodesPerRing += addedNodesPerRing;
+  }
+  const edges = {
+    data: []
+  };
+  for (let i = 0; i < data.length; i++) {
+    edges.data.push({
+      source: data[i ? i - 1 : data.length - 1].id,
+      sourceColor: Math.round(Math.random() * 4),
+      target: data[i].id,
+      targetColor: Math.round(Math.random() * 4)
+    });
+  }
+  const points2 = {
+    data
+  };
+  const layers = [
+    { edges }
+  ];
+  const colors2 = [
+    "#bf616a",
+    "#d08770",
+    "#ebcb8b",
+    "#a3be8c",
+    "#b48ead"
+  ];
+  render(html`<canvas class="grafer_container"></canvas><div class="log_output"></div><mouse-interactions></mouse-interactions>`, container);
+  const canvas = document.querySelector(".grafer_container");
+  const controller = new GraferController(canvas, { points: points2, colors: colors2, layers });
+  const gl = document.createElement("canvas").getContext("webgl");
+  const debugInfo = gl.getExtension("WEBGL_debug_renderer_info");
+  log(gl.getParameter(debugInfo.UNMASKED_VENDOR_WEBGL));
+  log(gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL));
+  const benchmarkDelay = 5 * 1e3;
+  const benchmarkLength = benchmarkDelay + 15 * 1e3;
+  let benchmark = true;
+  let numFrames = 0;
+  const frametimeList = [];
+  let frametimeOld = performance.now();
+  function step() {
+    numFrames++;
+    const frametimeNew = performance.now();
+    controller.render();
+    frametimeList.push(frametimeNew - frametimeOld);
+    frametimeOld = frametimeNew;
+    if (benchmark) {
+      window.requestAnimationFrame(step);
+    }
+  }
+  setTimeout(() => {
+    log(`Benchmark Start: ${numNodes2} Edges`);
+    window.requestAnimationFrame(step);
+  }, benchmarkDelay);
+  setTimeout(() => {
+    benchmark = false;
+    const frametimeAvg = frametimeList.reduce((acc, val) => val + acc) / numFrames;
+    log("Benchmark End");
+    log(`Frames: ${numFrames}`);
+    log(`Avg. time between frames: ${frametimeAvg}`);
+    log(`Avg. FPS: ${1 / (frametimeAvg / 1e3)}`);
+  }, benchmarkLength);
+}
+
+// examples/src/benchmarks/benchmarkLabel.ts
+var numNodes3 = 1e4;
+async function benchmarkLabel(container) {
+  const startingNodes = 2;
+  const addedNodesPerRing = 5;
+  let data = [];
+  let nodesToCreate = numNodes3;
+  let nodesPerRing = startingNodes;
+  while (nodesToCreate > 0) {
+    data = data.concat(createNodePoints14(nodesToCreate - nodesPerRing >= 0 ? nodesPerRing : nodesToCreate, nodesPerRing));
+    nodesToCreate -= nodesPerRing;
+    nodesPerRing += addedNodesPerRing;
+  }
+  const labels = {
+    type: "PointLabel",
+    data,
+    options: {
+      visibilityThreshold: 1,
+      labelPlacement: 1,
+      renderBackground: true,
+      padding: 6
+    }
+  };
+  const layers = [
+    { labels }
+  ];
+  const colors2 = [
+    "#bf616a",
+    "#d08770",
+    "#ebcb8b",
+    "#a3be8c",
+    "#b48ead"
+  ];
+  render(html`<canvas class="grafer_container"></canvas><div class="log_output"></div><mouse-interactions></mouse-interactions>`, container);
+  const canvas = document.querySelector(".grafer_container");
+  const controller = new GraferController(canvas, { colors: colors2, layers });
+  const gl = document.createElement("canvas").getContext("webgl");
+  const debugInfo = gl.getExtension("WEBGL_debug_renderer_info");
+  log(gl.getParameter(debugInfo.UNMASKED_VENDOR_WEBGL));
+  log(gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL));
+  const benchmarkDelay = 5 * 1e3;
+  const benchmarkLength = benchmarkDelay + 15 * 1e3;
+  let benchmark = true;
+  let numFrames = 0;
+  const frametimeList = [];
+  let frametimeOld = performance.now();
+  function step() {
+    numFrames++;
+    const frametimeNew = performance.now();
+    controller.render();
+    frametimeList.push(frametimeNew - frametimeOld);
+    frametimeOld = frametimeNew;
+    if (benchmark) {
+      window.requestAnimationFrame(step);
+    }
+  }
+  setTimeout(() => {
+    log(`Benchmark Start: ${numNodes3} Labels`);
+    window.requestAnimationFrame(step);
+  }, benchmarkDelay);
+  setTimeout(() => {
+    benchmark = false;
+    const frametimeAvg = frametimeList.reduce((acc, val) => val + acc) / numFrames;
+    log("Benchmark End");
+    log(`Frames: ${numFrames}`);
+    log(`Avg. time between frames: ${frametimeAvg}`);
+    log(`Avg. FPS: ${1 / (frametimeAvg / 1e3)}`);
+  }, benchmarkLength);
+}
+
+// examples/src/aske/mod.ts
+var mod_exports22 = {};
+__export(mod_exports22, {
   bundledEdgesLoader: () => bundledEdgesLoader,
   knowledgeViewLoader: () => knowledgeViewLoader
 });
@@ -32210,7 +33203,9 @@ var examples = {
   edges: mod_exports17,
   labels: mod_exports18,
   UX: mod_exports19,
-  aske: mod_exports20,
+  quickstart: mod_exports20,
+  benchmarks: mod_exports21,
+  aske: mod_exports22,
   playground
 };
 function getExample(examples2, path) {
