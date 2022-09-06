@@ -46,16 +46,15 @@ All documentaton, including API reference, is available [here](./docs/table-of-c
 
 ## Build and Development
 
-1. `npm run install` to install all required dependencies
+1. `yarn run install` to install all required dependencies
 
 2. One of the following scripts depending on use case:
-- `npm run build` - to build the library from source
-- `npm run develop` - to build and start the hot-reload dev server (which also allows examples to be accessed at `http://localhost:8090/`)
-- `npm run lint` - to run linter
-- `npm run test` - to run tests
+- `yarn run build` - to build the library from source
+- `yarn run develop` - to build and start the hot-reload dev server (which also allows examples to be accessed at `http://localhost:8090/`)
+- `yarn run lint` - to run linter
+- `yarn run test` - to run tests
 
 ### Publishing Instructions
 
-`npm run prepack` to run build and validation scripts
-
-...
+`yarn run prepack` to run build and validation scripts
+`npm run publish` to publish to NPM
