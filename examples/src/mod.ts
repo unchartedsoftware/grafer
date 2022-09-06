@@ -7,6 +7,7 @@ import * as edges from './edges/mod';
 import * as labels from './labels/mod';
 import * as UX from './UX/mod';
 import * as quickstart from './quickstart/mod';
+import * as benchmarks from './benchmarks/mod';
 import * as aske from './aske/mod';
 import './HelpElements';
 
@@ -18,6 +19,7 @@ const examples = {
     labels,
     UX,
     quickstart,
+    benchmarks,
     aske,
     playground,
 };

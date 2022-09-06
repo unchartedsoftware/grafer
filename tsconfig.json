@@ -14,7 +14,8 @@
         "declarationMap": false,
         "baseUrl": ".",
         "paths": {},
-        "allowSyntheticDefaultImports": true
+        "allowSyntheticDefaultImports": true,
+        "resolveJsonModule": true
     },
 
     "watchOptions": {
