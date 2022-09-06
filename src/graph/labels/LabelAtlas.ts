@@ -3,7 +3,7 @@ import PicoGL, {Texture} from 'picogl';
 import {applyArabicShaping, processBidirectionalText} from './rtlText.js';
 import {packData, dataIterator, DataMappings} from '../../data/DataTools';
 import {GraferContext} from '../../renderer/GraferContext';
-import {TextureAtlas, kImageMargin} from '../../../src/renderer/TextureAtlas';
+import {TextureAtlas, kImageMargin} from '../../renderer/TextureAtlas';
 import { GLDataTypes } from '../../../src/renderer/Renderable';
 
 export interface LabelData {
