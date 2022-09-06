@@ -57,4 +57,4 @@ All documentaton, including API reference, is available [here](./docs/table-of-c
 ### Publishing Instructions
 
 `yarn run prepack` to run build and validation scripts
-`npm run publish` to publish to NPM
+`npm publish @uncharted.software/grafer` to publish to NPM
