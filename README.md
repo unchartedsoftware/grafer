@@ -44,15 +44,20 @@ See more examples available [here](./examples).
 
 All documentaton, including API reference, is available [here](./docs/table-of-contents.md).
 
-## Build and Development
+## Examples
 
-1. `yarn run install` to install all required dependencies
+1. `yarn install` to install all required dependencies
+2. `yarn run develop` to build and start the hot-reload dev server
+3. Access examples at [http://localhost:8090/](http://localhost:8090/)
 
+## Development
+
+1. `yarn install` to install all required dependencies
 2. One of the following scripts depending on use case:
-- `yarn run build` - to build the library from source
-- `yarn run develop` - to build and start the hot-reload dev server (which also allows examples to be accessed at `http://localhost:8090/`)
-- `yarn run lint` - to run linter
-- `yarn run test` - to run tests
+    - `yarn run build` to build the library from source
+    - `yarn run develop` to build and start the hot-reload dev server (which also allows examples to be accessed at `http://localhost:8090/`)
+    - `yarn run lint` to run linter
+    - `yarn run test` to run tests
 
 ### Publishing Instructions
 
