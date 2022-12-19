@@ -62,7 +62,7 @@ export class LabelAtlas extends TextureAtlas {
         const canvas = document.createElement('canvas');
         canvas.setAttribute('style', 'font-smooth: never;-webkit-font-smoothing : none;');
 
-        const ctx = canvas.getContext('2d');
+        const ctx = canvas.getContext('2d', { willReadFrequently: true });
         const boxMap = new Map<string, any>();
         const labels = [];
         const offsets = [];
