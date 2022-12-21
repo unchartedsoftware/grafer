@@ -42,4 +42,29 @@ export class Coordinate {
 
         return vec2.set(vec2.create(), x, y);
     }
+
+    public static relativePixelCoordinateToWorldPoint(controller: GraferController, point: vec2): vec4 {
+        const camera = controller.viewport.camera;
+        const projectionMatrixInverse = mat4.invert(mat4.create(), camera.projectionMatrix);
+        const viewMatrixInverse = mat4.invert(mat4.create(), camera.viewMatrix);
+        const graphMatrixInverse = mat4.invert(mat4.create(), controller.viewport.graph.matrix);
+
+        const size = controller.viewport.size;
+        const x = point[0];
+        const y = point[1];
+        const deviceSpaceCoord = vec4.set(
+            vec4.create(),
+            (x / (size[0] * 0.5) - 1) * 1,
+            (y / (size[1] * 0.5) - 1) * 1,
+            0, // TODO: allow z value of device space coord to be specified/determined
+            1
+        );
+
+        const worldSpaceCoord = vec4.create();
+        vec4.transformMat4(worldSpaceCoord, deviceSpaceCoord, projectionMatrixInverse);
+        vec4.transformMat4(worldSpaceCoord, worldSpaceCoord, viewMatrixInverse);
+        vec4.transformMat4(worldSpaceCoord, worldSpaceCoord, graphMatrixInverse);
+
+        return worldSpaceCoord;
+    }
 }
