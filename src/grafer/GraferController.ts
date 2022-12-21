@@ -15,6 +15,15 @@ import {DragTranslate} from '../UX/mouse/drag/DragTranslate';
 import {ScrollScale} from '../UX/mouse/scroll/ScrollScale';
 import {CameraMode} from '../renderer/Camera';
 
+export interface InteractionModules {
+    translate?: DragTranslate;
+    scale?: ScrollScale;
+    dolly?: ScrollDolly;
+    truck?: DragTruck;
+    rotation?:DragRotation;
+    pan?: DragPan;
+}
+
 export type GraferNodesType = keyof typeof GraphNodes.types;
 export type GraferEdgesType = keyof typeof GraphEdges.types;
 export type GraferLabelsType = keyof typeof GraphLabels.types;
@@ -78,6 +87,10 @@ export class GraferController extends EventEmitter {
         return this._hasColors;
     }
     private _generateIdPrev: number;
+    private _interactionModules: InteractionModules;
+    public get interactionModules(): InteractionModules {
+        return this._interactionModules;
+    }
 
     constructor(canvas: HTMLCanvasElement, data?: GraferControllerData, options?: GraferControllerOptions) {
         super();
@@ -87,27 +100,28 @@ export class GraferController extends EventEmitter {
         this._loadTexturesAsync = Boolean(opts.loadTexturesAsync);
         this._generateIdPrev = 0;
 
+        this._interactionModules = {};
         if (this._viewport.camera.mode === CameraMode['2D']) {
-            const translate = new DragTranslate(this._viewport);
-            translate.enabled = true;
+            this._interactionModules.translate = new DragTranslate(this._viewport);
+            this._interactionModules.translate.enabled = true;
 
-            const scale = new ScrollScale(this._viewport);
-            scale.enabled = true;
+            this._interactionModules.scale = new ScrollScale(this._viewport);
+            this._interactionModules.scale.enabled = true;
         } else {
-            const dolly = new ScrollDolly(this._viewport);
-            dolly.enabled = true;
+            this._interactionModules.dolly = new ScrollDolly(this._viewport);
+            this._interactionModules.dolly.enabled = true;
 
-            const truck = new DragTruck(this._viewport);
-            truck.button = 'primary';
-            truck.enabled = true;
+            this._interactionModules.truck = new DragTruck(this._viewport);
+            this._interactionModules.truck.button = 'primary';
+            this._interactionModules.truck.enabled = true;
 
-            const rotation = new DragRotation(this._viewport);
-            rotation.button = 'secondary';
-            rotation.enabled = true;
+            this._interactionModules.rotation = new DragRotation(this._viewport);
+            this._interactionModules.rotation.button = 'secondary';
+            this._interactionModules.rotation.enabled = true;
 
-            const pan = new DragPan(this._viewport);
-            pan.button = 'auxiliary';
-            pan.enabled = true;
+            this._interactionModules.pan = new DragPan(this._viewport);
+            this._interactionModules.pan.button = 'auxiliary';
+            this._interactionModules.pan.enabled = true;
         }
 
         if (data) {
