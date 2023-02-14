@@ -97,8 +97,8 @@ export class TextureAtlas {
         this._atlasTexture = this.context.createTexture2D(finalImage as unknown as HTMLImageElement, {
             flipY: true,
             // premultiplyAlpha: true,
-            // magFilter: PicoGL.NEAREST,
-            // minFilter: PicoGL.NEAREST,
+            magFilter: PicoGL.NEAREST,
+            minFilter: PicoGL.NEAREST,
         });
 
         const labelDataMappings: DataMappings<{ texture: number }> = {
