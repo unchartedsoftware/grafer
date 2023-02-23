@@ -6,6 +6,7 @@ layout(location=0) in vec3 aVertex;
 layout(location=1) in uint iPoint;
 layout(location=2) in uint iColor;
 layout(location=3) in uvec4 iLabel;
+layout(location=4) in uvec4 iPickingColor;
 
 //layout(std140) uniform RenderUniforms {
     uniform mat4 uViewMatrix;
@@ -23,11 +24,13 @@ uniform sampler2D uCharTexture;
 uniform float uVisibilityThreshold;
 uniform vec2 uLabelPlacement;
 uniform bool uBackground;
+uniform bool uPicking;
 uniform float uPadding;
 
 flat out vec4 fBackgroundColor;
 flat out vec4 fTextColor;
 flat out vec4 fHaloColor;
+flat out vec4 fPickingColor;
 flat out vec4 fLabelInfo;
 flat out float fPixelLength;
 flat out vec2 fCharTextureSize;
@@ -80,6 +83,7 @@ void main() {
         fTextColor = vec4(color.rgb, 1.0);
     }
     fHaloColor = mix(vec4(1.), vec4(0., 0., 0., 1.), float(length(fTextColor.rgb) > 0.866));
+    fPickingColor = uPicking ? vec4(iPickingColor) / 255.0 : vec4(0.0);
 
     // send the normalized length of a single pixel to the fragment shader
     fPixelLength = 1.0 / max(1.0, pixelRadius);

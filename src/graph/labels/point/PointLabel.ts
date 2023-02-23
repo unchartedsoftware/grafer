@@ -1,4 +1,5 @@
 import nodeFS from './PointLabel.fs.glsl';
+import pickingFS from './PointLabel.picking.fs.glsl';
 import nodeVS from './PointLabel.vs.glsl';
 import dataVS from './PointLabel.data.vs.glsl';
 
@@ -13,7 +14,8 @@ import {Nodes} from '../../nodes/Nodes';
 import {DataMappings, DataShader} from '../../../data/DataTools';
 import PicoGL, {App, DrawCall, Program, VertexArray, VertexBuffer} from 'picogl';
 import {GraphPoints} from '../../../data/GraphPoints';
-import {PickingManager} from '../../../UX/picking/PickingManager';
+import {PickingColors, PickingEvent, PickingManager} from '../../../UX/picking/PickingManager';
+import {MouseCallback} from '../../../UX/mouse/MouseHandler';
 import {GLCircleNodeTypes} from '../../nodes/circle/Circle';
 import {GraferContext} from '../../../renderer/GraferContext';
 import {kLabelMappings, LabelAtlas, LabelData} from '../LabelAtlas';
@@ -55,6 +57,12 @@ export enum PointLabelPlacement {
 export class PointLabel extends Nodes<LabelNodeData, GLLabelNodeTypes> {
     protected program: Program;
     protected drawCall: DrawCall;
+
+    protected pickingProgram: Program;
+    protected pickingDrawCall: DrawCall;
+    protected pickingColors: PickingColors;
+    protected pickingVBO: VertexBuffer;
+    protected pickingHandler: MouseCallback;
 
     protected verticesVBO: VertexBuffer;
     protected nodesVAO: VertexArray;
@@ -178,16 +186,29 @@ export class PointLabel extends Nodes<LabelNodeData, GLLabelNodeTypes> {
             1, 1,
         ]));
 
+        this.pickingHandler = this.handlePickingEvent.bind(this);
+        this.pickingColors = this.pickingManager.allocatePickingColors(data.length);
+        this.pickingVBO = context.createVertexBuffer(PicoGL.UNSIGNED_BYTE, 4, this.pickingColors.colors);
+
         this.nodesVAO = context.createVertexArray().vertexAttributeBuffer(0, this.verticesVBO);
         this.configureTargetVAO(this.nodesVAO);
+        this.nodesVAO.instanceAttributeBuffer(4, this.pickingVBO);
 
         const shaders = this.getDrawShaders();
         this.program = context.createProgram(shaders.vs, shaders.fs);
         this.drawCall = context.createDrawCall(this.program, this.nodesVAO).primitive(PicoGL.TRIANGLE_STRIP);
 
+        const pickingShaders = this.getPickingShaders();
+        this.pickingProgram = context.createProgram(pickingShaders.vs, pickingShaders.fs);
+        this.pickingDrawCall = context.createDrawCall(this.pickingProgram, this.nodesVAO).primitive(PicoGL.TRIANGLE_STRIP);
+
         this.compute(context, {
             uGraphPoints: this.dataTexture,
         });
+
+        this.pickingManager.on(PickingManager.events.hoverOn, this.pickingHandler);
+        this.pickingManager.on(PickingManager.events.hoverOff, this.pickingHandler);
+        this.pickingManager.on(PickingManager.events.click, this.pickingHandler);
 
         this.localUniforms.uBackground = false;
         this.localUniforms.uLabelIndices = this.labelAtlas.indicesTexture;
@@ -207,11 +228,20 @@ export class PointLabel extends Nodes<LabelNodeData, GLLabelNodeTypes> {
         this.configureRenderContext(context, mode);
 
         switch (mode) {
+            case RenderMode.PICKING:
+                if (this.picking) {
+                    setDrawCallUniforms(this.pickingDrawCall, uniforms);
+                    setDrawCallUniforms(this.pickingDrawCall, this.localUniforms);
+                    this.pickingDrawCall.uniform('uPicking', true);
+                    this.pickingDrawCall.draw();
+                }
+                break;
             case RenderMode.DRAFT:
             case RenderMode.MEDIUM:
             case RenderMode.HIGH_PASS_1:
                 setDrawCallUniforms(this.drawCall, uniforms);
                 setDrawCallUniforms(this.drawCall, this.localUniforms);
+                this.drawCall.uniform('uPicking', false);
                 this.drawCall.draw();
                 break;
 
@@ -220,6 +250,7 @@ export class PointLabel extends Nodes<LabelNodeData, GLLabelNodeTypes> {
 
                 setDrawCallUniforms(this.drawCall, uniforms);
                 setDrawCallUniforms(this.drawCall, this.localUniforms);
+                this.drawCall.uniform('uPicking', false);
                 this.drawCall.draw();
 
                 // context.depthFunc(PicoGL.LESS);
@@ -234,6 +265,13 @@ export class PointLabel extends Nodes<LabelNodeData, GLLabelNodeTypes> {
         return {
             vs: nodeVS,
             fs: nodeFS,
+        };
+    }
+
+    protected getPickingShaders(): RenderableShaders {
+        return {
+            vs: nodeVS,
+            fs: pickingFS,
         };
     }
 
@@ -266,5 +304,12 @@ export class PointLabel extends Nodes<LabelNodeData, GLLabelNodeTypes> {
         };
 
         return dataMappings;
+    }
+
+    protected handlePickingEvent(event: PickingEvent, colorID: number): void {
+        if (this.picking && this.pickingColors.map.has(colorID)) {
+            const id = this.idArray[this.pickingColors.map.get(colorID)];
+            this.emit(event, id);
+        }
     }
 }
