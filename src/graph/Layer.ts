@@ -127,6 +127,16 @@ export class Layer extends EventEmitter implements GraphRenderable {
                 });
             });
         }
+
+        if (this._labels) {
+            this._labels.on(EventEmitter.omniEvent, (event, id: string | number): void => {
+                this.emit(event, {
+                    layer: this.name,
+                    type: 'label',
+                    id,
+                });
+            });
+        }
     }
 
     public render(context: App, mode: RenderMode, uniforms: RenderUniforms | RenderUniforms[], index: number = 0): void {

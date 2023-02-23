@@ -1,5 +1,6 @@
 import nodeVS from './RingLabel.vs.glsl';
 import nodeFS from './RingLabel.fs.glsl';
+import pickingFS from './RingLabel.picking.fs.glsl';
 import {CircularLabel} from '../circular/CircularLabel';
 import {RenderableShaders} from '../../../renderer/Renderable';
 import {GraferContext} from '../../../renderer/GraferContext';
@@ -28,6 +29,12 @@ export class RingLabel extends CircularLabel {
         return {
             vs: nodeVS,
             fs: nodeFS,
+        };
+    }
+    protected getPickingShaders(): RenderableShaders {
+        return {
+            vs: nodeVS,
+            fs: pickingFS,
         };
     }
 }
