@@ -1,7 +1,7 @@
-import PicoGL from 'picogl';
+import PicoGL, {App} from 'picogl';
 import {LayerRenderable} from '../LayerRenderable';
 import {GraphPoints} from '../../data/GraphPoints';
-import {DataMappings} from '../../data/DataTools';
+import {DataMappings, PackDataCB} from '../../data/DataTools';
 import {PickingManager} from '../../UX/picking/PickingManager';
 import {GLDataTypes} from '../../renderer/Renderable';
 import {GraferInputColor} from '../../renderer/colors/ColorRegistry';
@@ -31,6 +31,8 @@ export const kBasicEdgeDataTypes: GLDataTypes<BasicEdgeData> = {
 };
 
 export abstract class Edges<T_SRC extends BasicEdgeData, T_TGT> extends LayerRenderable<T_SRC, T_TGT> {
+    protected idArray: (number | string)[];
+
     public static get defaultMappings(): DataMappings<BasicEdgeData> {
         return kBasicEdgeMappings;
     }
@@ -77,5 +79,18 @@ export abstract class Edges<T_SRC extends BasicEdgeData, T_TGT> extends LayerRen
         };
 
         return edgesMappings as DataMappings<T_SRC>;
+    }
+
+    protected ingestData(context: App, data: unknown[], mappings: Partial<DataMappings<T_SRC>>): void {
+        // this.map = new Map();
+        this.idArray = [];
+        super.ingestData(context, data, mappings);
+    }
+
+    protected packDataCB(): PackDataCB<T_SRC> | PackDataCB<T_SRC>[] {
+        return (i, entry): void => {
+            // this.map.set(entry.id, entry.point);
+            this.idArray.push(entry.id);
+        };
     }
 }
