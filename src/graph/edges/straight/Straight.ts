@@ -1,11 +1,13 @@
 import edgeVS from './Straight.vs.glsl';
 import edgeFS from './Straight.fs.glsl';
+import pickingFS from './Straight.picking.fs.glsl';
 import dataVS from './Straight.data.vs.glsl';
 import {App, DrawCall, PicoGL, Program, VertexArray, VertexBuffer} from 'picogl';
 import {BasicEdgeData, Edges, kBasicEdgeDataTypes} from '../Edges';
 import {GraphPoints} from '../../../data/GraphPoints';
 import {DataMappings, DataShader} from '../../../data/DataTools';
-import {PickingManager} from '../../../UX/picking/PickingManager';
+import {PickingColors, PickingEvent, PickingManager} from '../../../UX/picking/PickingManager';
+import {MouseCallback} from '../../../UX/mouse/MouseHandler';
 import {GraferContext} from '../../../renderer/GraferContext';
 import {
     GLDataTypes,
@@ -27,6 +29,12 @@ export class Straight extends Edges<BasicEdgeData, GLStraightEdgeTypes> {
     protected program: Program;
     protected drawCall: DrawCall;
 
+    protected pickingProgram: Program;
+    protected pickingDrawCall: DrawCall;
+    protected pickingColors: PickingColors;
+    protected pickingVBO: VertexBuffer;
+    protected pickingHandler: MouseCallback;
+
     protected verticesVBO: VertexBuffer;
     protected edgesVAO: VertexArray;
 
@@ -46,14 +54,27 @@ export class Straight extends Edges<BasicEdgeData, GLStraightEdgeTypes> {
             1, 1,
         ]));
 
+        this.pickingHandler = this.handlePickingEvent.bind(this);
+        this.pickingColors = this.pickingManager.allocatePickingColors(data.length);
+        this.pickingVBO = context.createVertexBuffer(PicoGL.UNSIGNED_BYTE, 4, this.pickingColors.colors);
+
         this.edgesVAO = context.createVertexArray().vertexAttributeBuffer(0, this.verticesVBO);
         this.configureTargetVAO(this.edgesVAO);
+        this.edgesVAO.instanceAttributeBuffer(5, this.pickingVBO);
 
         const shaders = this.getDrawShaders();
         this.program = context.createProgram(shaders.vs, shaders.fs);
         this.drawCall = context.createDrawCall(this.program, this.edgesVAO).primitive(PicoGL.TRIANGLE_STRIP);
 
+        const pickingShaders = this.getPickingShaders();
+        this.pickingProgram = context.createProgram(pickingShaders.vs, pickingShaders.fs);
+        this.pickingDrawCall = context.createDrawCall(this.pickingProgram, this.edgesVAO).primitive(PicoGL.TRIANGLE_STRIP);
+
         this.compute(context, {});
+
+        this.pickingManager.on(PickingManager.events.hoverOn, this.pickingHandler);
+        this.pickingManager.on(PickingManager.events.hoverOff, this.pickingHandler);
+        this.pickingManager.on(PickingManager.events.click, this.pickingHandler);
 
         // printDataGL(context, this.targetVBO, data.length, kGLStraightEdgeTypes);
     }
@@ -65,15 +86,18 @@ export class Straight extends Edges<BasicEdgeData, GLStraightEdgeTypes> {
     public render(context:App, mode: RenderMode, uniforms: RenderUniforms): void {
         this.configureRenderContext(context, mode);
 
-        setDrawCallUniforms(this.drawCall, uniforms);
-        setDrawCallUniforms(this.drawCall, this.localUniforms);
-
         switch (mode) {
             case RenderMode.PICKING:
-                // this.pickingDrawCall.draw();
+                setDrawCallUniforms(this.pickingDrawCall, uniforms);
+                setDrawCallUniforms(this.pickingDrawCall, this.localUniforms);
+                this.pickingDrawCall.uniform('uPicking', true);
+                this.pickingDrawCall.draw();
                 break;
 
             default:
+                setDrawCallUniforms(this.drawCall, uniforms);
+                setDrawCallUniforms(this.drawCall, this.localUniforms);
+                this.drawCall.uniform('uPicking', false);
                 this.drawCall.draw();
                 break;
         }
@@ -89,7 +113,7 @@ export class Straight extends Edges<BasicEdgeData, GLStraightEdgeTypes> {
     protected getPickingShaders(): RenderableShaders {
         return {
             vs: edgeVS,
-            fs: null, // pickingFS,
+            fs: pickingFS,
         };
     }
 
@@ -106,5 +130,12 @@ export class Straight extends Edges<BasicEdgeData, GLStraightEdgeTypes> {
             vs: dataVS,
             varyings: [ 'fSource', 'fTarget', 'fSourceColor', 'fTargetColor' ],
         };
+    }
+
+    protected handlePickingEvent(event: PickingEvent, colorID: number): void {
+        if (this.picking && this.pickingColors.map.has(colorID)) {
+            const id = this.idArray[this.pickingColors.map.get(colorID)];
+            this.emit(event, id);
+        }
     }
 }
