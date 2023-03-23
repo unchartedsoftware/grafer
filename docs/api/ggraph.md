@@ -164,6 +164,28 @@ Returns point data, looking up the point by ID. The output array numbers corresp
 | :--- | :--- | :--- |
 |  id  | string \| number | ID of the point. |
 
+### `setPointByIndex`
+###### void
+
+Modifies existing point data, looking up the point by index.
+
+| Parameter  | Type | Description |
+| :--- | :--- | :--- |
+|  index  | number | Index of the point. |
+|  data  | PointData[] | List of points to be added to the graph. See [GraferPointsData](./grafer-points-data.md#data) for more information on the PointData type. |
+|  mappings  | PointDataMappings | See [PointDataMappings](./grafer-points-data.md#mappings) for more information on PointDataMappings type. |
+
+### `setPointByID`
+###### void
+
+Returns point data, looking up the point by ID.
+
+| Parameter  | Type | Description |
+| :--- | :--- | :--- |
+|  id  | string \| number | ID of the point. |
+|  data  | PointData[] | List of points to be added to the graph. See [GraferPointsData](./grafer-points-data.md#data) for more information on the PointData type. |
+|  mappings  | PointDataMappings | See [PointDataMappings](./grafer-points-data.md#mappings) for more information on PointDataMappings type. |
+
 ### `addPoints`
 ###### void
 
