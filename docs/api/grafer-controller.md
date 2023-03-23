@@ -43,6 +43,11 @@ Instance of the PicoGL renderer used by Grafer for rendering.
 
 Indication of whether a colors array was provided to the grafer controller during initialization.
 
+### `interactionModules`
+###### InteractionModules - *read only*
+
+Contains references to instances of all interaction modules active on the graph. Interaction modules are the classes responsible for moving the camera. A 2D camera requires different interaction modules compared to a 3D camera. See [InteractionModules](./interaction-modules.md) for more information.
+
 <br>
 
 ## Methods
