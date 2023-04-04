@@ -45,11 +45,6 @@
         "postinstall": "husky install",
         "postpack": "pinst --enable"
     },
-    "husky": {
-        "hooks": {
-            "pre-push": "yarn pre-push"
-        }
-    },
     "devDependencies": {
         "@types/chai": "4.2.18",
         "@types/chroma-js": "2.1.3",
