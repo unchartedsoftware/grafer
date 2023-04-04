@@ -16,6 +16,10 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 
+# yarn
+.yarn/cache**
+.yarn/install-state.gz
+
 # Editor directories and files
 .idea
 .vscode
