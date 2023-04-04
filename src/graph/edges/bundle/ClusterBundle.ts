@@ -4,7 +4,7 @@ import dataVS from './ClusterBundle.data.vs.glsl';
 
 import {App, DrawCall, PicoGL, Program, VertexArray, VertexBuffer} from 'picogl';
 import {GraferInputColor} from '../../../renderer/colors/ColorRegistry';
-import {DataMappings, DataShader, PackDataCB, printDataGL} from '../../../data/DataTools';
+import {DataMappings, DataShader, PackDataCB} from '../../../data/DataTools';
 import {
     GLDataTypes,
     RenderableShaders,

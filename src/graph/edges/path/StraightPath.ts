@@ -11,7 +11,7 @@ import {
     setDrawCallUniforms,
 } from '../../../renderer/Renderable';
 import {App, DrawCall, PicoGL, Program, VertexArray, VertexBuffer} from 'picogl';
-import {DataMappings, DataShader, kDataMappingFlatten, printDataGL} from '../../../data/DataTools';
+import {DataMappings, DataShader, kDataMappingFlatten} from '../../../data/DataTools';
 import {BasicEdgeData, Edges} from '../Edges';
 import {GraferContext} from '../../../renderer/GraferContext';
 import {GraphPoints} from '../../../data/GraphPoints';
