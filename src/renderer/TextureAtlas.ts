@@ -1,39 +1,27 @@
-import { DataMappings, packData } from "../data/DataTools";
-import { GraferContext } from "./GraferContext";
-import potpack from "potpack";
-import { GLDataTypes } from "./Renderable";
-import PicoGL, { Texture } from "picogl";
+import {DataMappings, packData} from '../data/DataTools';
+import {GraferContext} from './GraferContext';
+import potpack from 'potpack';
+import {GLDataTypes} from './Renderable';
+import PicoGL, { Texture} from 'picogl';
 
 export const kImageMargin = 12;
 const INF = 1e20;
 
 export interface BoxObject {
-    id: string;
-    w: number;
-    h: number;
-    x?: number;
-    y?: number;
-    image: ImageData;
+    id: string,
+    w: number,
+    h: number,
+    x?: number,
+    y?: number,
+    image: ImageData
 }
 
-export const kCharBoxDataMappings: DataMappings<{
-    box: [number, number, number, number];
-}> = {
-    box: (entry: any) => [
-        entry.x + kImageMargin,
-        entry.y + kImageMargin,
-        entry.w - kImageMargin * 2,
-        entry.h - kImageMargin * 2,
-    ],
+export const kCharBoxDataMappings: DataMappings<{ box: [number, number, number, number] }> = {
+    box: (entry: any) => [ entry.x + kImageMargin, entry.y + kImageMargin, entry.w - kImageMargin * 2, entry.h - kImageMargin * 2 ],
 };
 
 export const kCharBoxDataTypes: GLDataTypes<typeof kCharBoxDataMappings> = {
-    box: [
-        PicoGL.UNSIGNED_SHORT,
-        PicoGL.UNSIGNED_SHORT,
-        PicoGL.UNSIGNED_SHORT,
-        PicoGL.UNSIGNED_SHORT,
-    ],
+    box: [PicoGL.UNSIGNED_SHORT, PicoGL.UNSIGNED_SHORT, PicoGL.UNSIGNED_SHORT, PicoGL.UNSIGNED_SHORT],
 };
 
 export const kLabelDataTypes: GLDataTypes<DataMappings<{ texture: number }>> = {
@@ -46,7 +34,7 @@ export class TextureAtlas {
     public readonly labelPixelRatio: number = window.devicePixelRatio;
     public readonly textureKeyMap: Map<string, number> = new Map();
     private readonly boxes: Map<string, BoxObject> = new Map();
-    private boxesKeys: { [key: string]: number } = {};
+    private boxesKeys: {[key: string]: number} = {};
 
     constructor(context: GraferContext) {
         this.context = context;
@@ -75,84 +63,49 @@ export class TextureAtlas {
         return this._atlasTexture;
     }
 
-    public exportTextures(
-        keyList?: string[],
-        bufferX = 0,
-        bufferY = 0
-    ): Promise<void> {
-        if (!this.dirty) {
+    public exportTextures(keyList?: string[], bufferX = 0, bufferY = 0): Promise<void> {
+        if(!this.dirty) {
             return;
         }
         this.dirty = false;
 
-        const canvas = document.createElement("canvas");
-        canvas.setAttribute(
-            "style",
-            "font-smooth: never;-webkit-font-smoothing : none;"
-        );
+        const canvas = document.createElement('canvas');
+        canvas.setAttribute('style', 'font-smooth: never;-webkit-font-smoothing : none;');
 
-        const ctx = canvas.getContext("2d");
+        const ctx = canvas.getContext('2d');
 
         const boxes = Array.from(this.boxes.values());
         const pack = potpack(boxes);
-        if (!keyList) {
+        if(!keyList) {
             boxes.sort((a, b) => this.boxesKeys[a.id] - this.boxesKeys[b.id]);
         }
         const finalImage = ctx.createImageData(pack.w, pack.h);
 
         boxes.forEach((box, i) => {
             this.textureKeyMap.set(box.id, i);
-            TextureAtlas.blitImageData(
-                box.image,
-                finalImage,
-                box.x,
-                finalImage.height - box.y - box.h
-            );
+            TextureAtlas.blitImageData(box.image, finalImage, box.x, finalImage.height - box.y - box.h);
 
             box.x = box.x + bufferX;
             box.y = box.y + bufferY;
             box.w = box.w - bufferX * 2;
             box.h = box.h - bufferY * 2;
         });
-        const boxesBuffer = packData(
-            boxes,
-            kCharBoxDataMappings,
-            kCharBoxDataTypes,
-            true
-        );
-        this._boxesTexture = this.createTextureForBuffer(
-            this.context,
-            new Uint16Array(boxesBuffer),
-            boxes.length,
-            PicoGL.RGBA16UI
-        );
-        this._atlasTexture = this.context.createTexture2D(
-            finalImage as unknown as HTMLImageElement,
-            {
-                flipY: true,
-                // premultiplyAlpha: true,
-                // magFilter: PicoGL.NEAREST,
-                // minFilter: PicoGL.NEAREST,
-            }
-        );
+        const boxesBuffer = packData(boxes, kCharBoxDataMappings, kCharBoxDataTypes, true);
+        this._boxesTexture = this.createTextureForBuffer(this.context, new Uint16Array(boxesBuffer), boxes.length, PicoGL.RGBA16UI);
+        this._atlasTexture = this.context.createTexture2D(finalImage as unknown as HTMLImageElement, {
+            flipY: true,
+            // premultiplyAlpha: true,
+            // magFilter: PicoGL.NEAREST,
+            // minFilter: PicoGL.NEAREST,
+        });
 
         const labelDataMappings: DataMappings<{ texture: number }> = {
             texture: (entry: any) => this.textureKeyMap.get(entry),
         };
 
-        if (keyList) {
-            const labelBuffer = packData(
-                keyList,
-                labelDataMappings,
-                kLabelDataTypes,
-                true
-            );
-            this._indicesTexture = this.createTextureForBuffer(
-                this.context,
-                new Uint16Array(labelBuffer),
-                keyList.length,
-                PicoGL.R16UI
-            );
+        if(keyList) {
+            const labelBuffer = packData(keyList, labelDataMappings, kLabelDataTypes, true);
+            this._indicesTexture = this.createTextureForBuffer(this.context, new Uint16Array(labelBuffer), keyList.length, PicoGL.R16UI);
         }
         // this.testFeedback(context);
     }
@@ -161,31 +114,17 @@ export class TextureAtlas {
         // const image = this.renderCharTexture(char, renderSize, ctx, canvas);
         this.dirty = true;
         this.boxes.set(charKey, box);
-        this.boxesKeys = Array.from(this.boxes.keys()).reduce(
-            (acc, val, index) => {
-                acc[val] = index;
-                return acc;
-            },
-            {}
-        );
+        this.boxesKeys = Array.from(this.boxes.keys()).reduce((acc, val, index) => {
+            acc[val] = index;
+            return acc;
+        }, {});
         this.textureKeyMap.set(charKey, 0);
         this._numTextures = this.boxes.size;
     }
 
-    protected createTextureForBuffer(
-        context: GraferContext,
-        data: ArrayBufferView,
-        dataLength: number,
-        format: GLenum
-    ): Texture {
-        const textureWidth = Math.pow(
-            2,
-            Math.ceil(Math.log2(Math.ceil(Math.sqrt(dataLength))))
-        );
-        const textureHeight = Math.pow(
-            2,
-            Math.ceil(Math.log2(Math.ceil(dataLength / textureWidth)))
-        );
+    protected createTextureForBuffer(context: GraferContext, data: ArrayBufferView, dataLength:number, format: GLenum): Texture {
+        const textureWidth = Math.pow(2 , Math.ceil(Math.log2(Math.ceil(Math.sqrt(dataLength)))));
+        const textureHeight = Math.pow(2 , Math.ceil(Math.log2(Math.ceil(dataLength / textureWidth))));
         const texture = context.createTexture2D(textureWidth, textureHeight, {
             internalFormat: format,
         });
@@ -193,12 +132,7 @@ export class TextureAtlas {
         return texture;
     }
 
-    static blitImageData(
-        src: ImageData,
-        dst: ImageData,
-        x: number,
-        y: number
-    ): void {
+    static blitImageData(src: ImageData, dst: ImageData, x: number, y: number): void {
         for (let yy = 0; yy < src.height; ++yy) {
             const srcStart = src.width * yy * 4;
             const srcEnd = srcStart + src.width * 4;
@@ -208,10 +142,7 @@ export class TextureAtlas {
     }
 
     /* implementation based on: https://github.com/mapbox/tiny-sdf */
-    static computeDistanceField(
-        imageData: ImageData,
-        fontSize: number
-    ): ImageData {
+    static computeDistanceField(imageData: ImageData, fontSize: number): ImageData {
         const dataLength = imageData.width * imageData.height;
 
         // temporary arrays for the distance transform
@@ -227,10 +158,8 @@ export class TextureAtlas {
 
         for (let i = 0; i < dataLength; ++i) {
             const a = imageData.data[i * 4 + 3] / 255; // alpha value
-            gridOuter[i] =
-                a === 1 ? 0 : a === 0 ? INF : Math.pow(Math.max(0, 0.5 - a), 2);
-            gridInner[i] =
-                a === 1 ? INF : a === 0 ? 0 : Math.pow(Math.max(0, a - 0.5), 2);
+            gridOuter[i] = a === 1 ? 0 : a === 0 ? INF : Math.pow(Math.max(0, 0.5 - a), 2);
+            gridInner[i] = a === 1 ? INF : a === 0 ? 0 : Math.pow(Math.max(0, a - 0.5), 2);
         }
 
         this.edt(gridOuter, imageData.width, imageData.height, f, v, z);
@@ -252,14 +181,7 @@ export class TextureAtlas {
     }
 
     // 2D Euclidean squared distance transform by Felzenszwalb & Huttenlocher https://cs.brown.edu/~pff/papers/dt-final.pdf
-    static edt(
-        data: Float64Array,
-        width: number,
-        height: number,
-        f: Float64Array,
-        v: Uint16Array,
-        z: Float64Array
-    ): void {
+    static edt(data: Float64Array, width: number, height: number, f: Float64Array, v: Uint16Array, z: Float64Array): void {
         for (let x = 0; x < width; ++x) {
             this.edt1d(data, x, width, height, f, v, z);
         }
@@ -270,15 +192,7 @@ export class TextureAtlas {
     }
 
     // 1D squared distance transform
-    static edt1d(
-        grid: Float64Array,
-        offset: number,
-        stride: number,
-        length: number,
-        f: Float64Array,
-        v: Uint16Array,
-        z: Float64Array
-    ): void {
+    static edt1d(grid: Float64Array, offset: number, stride: number, length: number, f: Float64Array, v: Uint16Array, z: Float64Array): void {
         let q, k, s, r;
 
         v[0] = 0;
@@ -337,3 +251,5 @@ export class TextureAtlas {
     //     });
     // }
 }
+
+
