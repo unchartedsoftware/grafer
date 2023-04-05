@@ -119,9 +119,7 @@ export abstract class LayerRenderable<T_SRC, T_TGT> extends PointsReaderEmitter<
                     context.depthMask(true);
                 } else {
                     context.enable(PicoGL.BLEND);
-                    if(renderMode !== RenderMode.DRAFT) {
-                        context.depthMask(false);
-                    }
+                    context.depthMask(false);
                     if (this.blendMode === LayerRenderableBlendMode.ADDITIVE) {
                         context.blendFuncSeparate(PicoGL.SRC_ALPHA, PicoGL.ONE, PicoGL.ONE, PicoGL.ONE);
                     } else { // NORMAL
