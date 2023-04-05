@@ -42,3488 +42,1095 @@ var __decorateClass = (decorators, target, key2, kind) => {
 // node_modules/tweakpane/dist/tweakpane.js
 var require_tweakpane = __commonJS({
   "node_modules/tweakpane/dist/tweakpane.js"(exports, module) {
-    (function(global, factory) {
-      typeof exports === "object" && typeof module !== "undefined" ? module.exports = factory() : typeof define === "function" && define.amd ? define(factory) : (global = typeof globalThis !== "undefined" ? globalThis : global || self, global.Tweakpane = factory());
-    })(exports, function() {
-      "use strict";
-      var extendStatics = function(d, b) {
-        extendStatics = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(d2, b2) {
-          d2.__proto__ = b2;
-        } || function(d2, b2) {
-          for (var p in b2)
-            if (Object.prototype.hasOwnProperty.call(b2, p))
-              d2[p] = b2[p];
-        };
-        return extendStatics(d, b);
-      };
-      function __extends(d, b) {
-        if (typeof b !== "function" && b !== null)
-          throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
-        extendStatics(d, b);
-        function __() {
-          this.constructor = d;
-        }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-      }
-      var __assign = function() {
-        __assign = Object.assign || function __assign2(t) {
-          for (var s, i = 1, n = arguments.length; i < n; i++) {
-            s = arguments[i];
-            for (var p in s)
-              if (Object.prototype.hasOwnProperty.call(s, p))
-                t[p] = s[p];
+    (function webpackUniversalModuleDefinition(root, factory) {
+      if (typeof exports === "object" && typeof module === "object")
+        module.exports = factory();
+      else if (typeof define === "function" && define.amd)
+        define([], factory);
+      else if (typeof exports === "object")
+        exports["tweakpane"] = factory();
+      else
+        root["Tweakpane"] = factory();
+    })(typeof self !== "undefined" ? self : exports, function() {
+      return function(modules) {
+        var installedModules = {};
+        function __webpack_require__(moduleId) {
+          if (installedModules[moduleId]) {
+            return installedModules[moduleId].exports;
           }
-          return t;
-        };
-        return __assign.apply(this, arguments);
-      };
-      function __spreadArrays() {
-        for (var s = 0, i = 0, il = arguments.length; i < il; i++)
-          s += arguments[i].length;
-        for (var r = Array(s), k = 0, i = 0; i < il; i++)
-          for (var a = arguments[i], j = 0, jl = a.length; j < jl; j++, k++)
-            r[k] = a[j];
-        return r;
-      }
-      var Plugins = {
-        inputs: [],
-        monitors: []
-      };
-      function getAllPlugins() {
-        return __spreadArrays(Plugins.inputs, Plugins.monitors);
-      }
-      function forceCast(v) {
-        return v;
-      }
-      function isEmpty(value) {
-        return value === null || value === void 0;
-      }
-      function deepEqualsArray(a1, a2) {
-        if (a1.length !== a2.length) {
-          return false;
-        }
-        for (var i = 0; i < a1.length; i++) {
-          if (a1[i] !== a2[i]) {
-            return false;
-          }
-        }
-        return true;
-      }
-      function disposeElement(elem) {
-        if (elem && elem.parentElement) {
-          elem.parentElement.removeChild(elem);
-        }
-        return null;
-      }
-      var PREFIX = "tp";
-      function ClassName(viewName) {
-        return function(opt_elementName, opt_modifier) {
-          return [
-            PREFIX,
-            "-",
-            viewName,
-            "v",
-            opt_elementName ? "_" + opt_elementName : "",
-            opt_modifier ? "-" + opt_modifier : ""
-          ].join("");
-        };
-      }
-      function getAllBladePositions() {
-        return ["first", "last"];
-      }
-      var className = ClassName("");
-      function setUpBladeView(view, model) {
-        var elem = view.element;
-        model.emitter.on("change", function(ev) {
-          if (ev.propertyName === "hidden") {
-            var hiddenClass = className(void 0, "hidden");
-            if (model.hidden) {
-              elem.classList.add(hiddenClass);
-            } else {
-              elem.classList.remove(hiddenClass);
-            }
-          } else if (ev.propertyName === "positions") {
-            getAllBladePositions().forEach(function(pos) {
-              elem.classList.remove(className(void 0, pos));
-            });
-            model.positions.forEach(function(pos) {
-              elem.classList.add(className(void 0, pos));
-            });
-          }
-        });
-        model.emitter.on("dispose", function() {
-          if (view.onDispose) {
-            view.onDispose();
-          }
-          disposeElement(elem);
-        });
-      }
-      var Emitter = function() {
-        function Emitter2() {
-          this.observers_ = {};
-        }
-        Emitter2.prototype.on = function(eventName, handler) {
-          var observers = this.observers_[eventName];
-          if (!observers) {
-            observers = this.observers_[eventName] = [];
-          }
-          observers.push({
-            handler
-          });
-          return this;
-        };
-        Emitter2.prototype.off = function(eventName, handler) {
-          var observers = this.observers_[eventName];
-          if (observers) {
-            this.observers_[eventName] = observers.filter(function(observer) {
-              return observer.handler !== handler;
-            });
-          }
-          return this;
-        };
-        Emitter2.prototype.emit = function(eventName, event) {
-          var observers = this.observers_[eventName];
-          if (!observers) {
-            return;
-          }
-          observers.forEach(function(observer) {
-            observer.handler(event);
-          });
-        };
-        return Emitter2;
-      }();
-      var Button = function() {
-        function Button2(title) {
-          this.emitter = new Emitter();
-          this.title = title;
-        }
-        Button2.prototype.click = function() {
-          this.emitter.emit("click", {
-            sender: this
-          });
-        };
-        return Button2;
-      }();
-      var className$1 = ClassName("btn");
-      var ButtonView = function() {
-        function ButtonView2(doc, config) {
-          this.button = config.button;
-          this.element = doc.createElement("div");
-          this.element.classList.add(className$1());
-          var buttonElem = doc.createElement("button");
-          buttonElem.classList.add(className$1("b"));
-          buttonElem.textContent = this.button.title;
-          this.element.appendChild(buttonElem);
-          this.buttonElement = buttonElem;
-        }
-        return ButtonView2;
-      }();
-      var ButtonController = function() {
-        function ButtonController2(doc, config) {
-          this.onButtonClick_ = this.onButtonClick_.bind(this);
-          this.button = new Button(config.title);
-          this.blade = config.blade;
-          this.view = new ButtonView(doc, {
-            button: this.button
-          });
-          this.view.buttonElement.addEventListener("click", this.onButtonClick_);
-          setUpBladeView(this.view, this.blade);
-        }
-        ButtonController2.prototype.onButtonClick_ = function() {
-          this.button.click();
-        };
-        return ButtonController2;
-      }();
-      var className$2 = ClassName("lbl");
-      function createLabelNode(doc, label) {
-        var frag = doc.createDocumentFragment();
-        var lineNodes = label.split("\n").map(function(line) {
-          return doc.createTextNode(line);
-        });
-        lineNodes.forEach(function(lineNode, index) {
-          if (index > 0) {
-            frag.appendChild(doc.createElement("br"));
-          }
-          frag.appendChild(lineNode);
-        });
-        return frag;
-      }
-      var LabeledView = function() {
-        function LabeledView2(doc, config) {
-          this.label = config.label;
-          this.elem_ = doc.createElement("div");
-          this.elem_.classList.add(className$2());
-          var labelElem = doc.createElement("div");
-          labelElem.classList.add(className$2("l"));
-          labelElem.appendChild(createLabelNode(doc, this.label));
-          this.elem_.appendChild(labelElem);
-          var viewElem = doc.createElement("div");
-          viewElem.classList.add(className$2("v"));
-          viewElem.appendChild(config.view.element);
-          this.elem_.appendChild(viewElem);
-        }
-        Object.defineProperty(LabeledView2.prototype, "element", {
-          get: function() {
-            return this.elem_;
-          },
-          enumerable: false,
-          configurable: true
-        });
-        return LabeledView2;
-      }();
-      var InputBindingController = function() {
-        function InputBindingController2(doc, config) {
-          this.binding = config.binding;
-          this.controller = config.controller;
-          this.view = new LabeledView(doc, {
-            label: config.label,
-            view: this.controller.view
-          });
-          this.blade = config.blade;
-          setUpBladeView(this.view, this.blade);
-        }
-        return InputBindingController2;
-      }();
-      var MonitorBindingController = function() {
-        function MonitorBindingController2(doc, config) {
-          var _this = this;
-          this.binding = config.binding;
-          this.controller = config.controller;
-          this.view = new LabeledView(doc, {
-            label: config.label,
-            view: this.controller.view
-          });
-          this.blade = config.blade;
-          this.blade.emitter.on("dispose", function() {
-            _this.binding.dispose();
-          });
-          setUpBladeView(this.view, this.blade);
-        }
-        return MonitorBindingController2;
-      }();
-      var Disposable = function() {
-        function Disposable2() {
-          this.emitter = new Emitter();
-          this.disposed_ = false;
-        }
-        Object.defineProperty(Disposable2.prototype, "disposed", {
-          get: function() {
-            return this.disposed_;
-          },
-          enumerable: false,
-          configurable: true
-        });
-        Disposable2.prototype.dispose = function() {
-          if (this.disposed_) {
-            return false;
-          }
-          this.disposed_ = true;
-          this.emitter.emit("dispose", {
-            sender: this
-          });
-          return true;
-        };
-        return Disposable2;
-      }();
-      var Blade = function() {
-        function Blade2() {
-          this.onDispose_ = this.onDispose_.bind(this);
-          this.emitter = new Emitter();
-          this.positions_ = [];
-          this.hidden_ = false;
-          this.disposable_ = new Disposable();
-          this.disposable_.emitter.on("dispose", this.onDispose_);
-        }
-        Object.defineProperty(Blade2.prototype, "hidden", {
-          get: function() {
-            return this.hidden_;
-          },
-          set: function(hidden) {
-            if (this.hidden_ === hidden) {
-              return;
-            }
-            this.hidden_ = hidden;
-            this.emitter.emit("change", {
-              propertyName: "hidden",
-              sender: this
-            });
-          },
-          enumerable: false,
-          configurable: true
-        });
-        Object.defineProperty(Blade2.prototype, "positions", {
-          get: function() {
-            return this.positions_;
-          },
-          set: function(positions) {
-            if (deepEqualsArray(positions, this.positions_)) {
-              return;
-            }
-            this.positions_ = positions;
-            this.emitter.emit("change", {
-              propertyName: "positions",
-              sender: this
-            });
-          },
-          enumerable: false,
-          configurable: true
-        });
-        Object.defineProperty(Blade2.prototype, "disposed", {
-          get: function() {
-            return this.disposable_.disposed;
-          },
-          enumerable: false,
-          configurable: true
-        });
-        Blade2.prototype.dispose = function() {
-          this.disposable_.dispose();
-        };
-        Blade2.prototype.onDispose_ = function() {
-          this.emitter.emit("dispose", {
-            sender: this
-          });
-        };
-        return Blade2;
-      }();
-      var SVG_NS = "http://www.w3.org/2000/svg";
-      function forceReflow(element) {
-        element.offsetHeight;
-      }
-      function disableTransitionTemporarily(element, callback) {
-        var t = element.style.transition;
-        element.style.transition = "none";
-        callback();
-        element.style.transition = t;
-      }
-      function supportsTouch(doc) {
-        return doc.ontouchstart !== void 0;
-      }
-      function getGlobalObject() {
-        return new Function("return this")();
-      }
-      function getWindowDocument() {
-        var globalObj = forceCast(getGlobalObject());
-        return globalObj.document;
-      }
-      function isBrowser() {
-        return "document" in getGlobalObject();
-      }
-      function getCanvasContext(canvasElement) {
-        return isBrowser() ? canvasElement.getContext("2d") : null;
-      }
-      var ICON_ID_TO_INNER_HTML_MAP = {
-        p2dpad: '<path d="M8 2V14" stroke="currentColor" stroke-width="1.5"/><path d="M2 8H14" stroke="currentColor" stroke-width="1.5"/><circle cx="8" cy="8" r="2" fill="currentColor"/>'
-      };
-      function createSvgIconElement(document2, iconId) {
-        var elem = document2.createElementNS(SVG_NS, "svg");
-        elem.innerHTML = ICON_ID_TO_INNER_HTML_MAP[iconId];
-        return elem;
-      }
-      function insertElementAt(parentElement, element, index) {
-        parentElement.insertBefore(element, parentElement.children[index]);
-      }
-      function findNextTarget(ev) {
-        if (ev.relatedTarget) {
-          return forceCast(ev.relatedTarget);
-        }
-        if ("explicitOriginalTarget" in ev) {
-          return ev.explicitOriginalTarget;
-        }
-        return null;
-      }
-      function updateAllItemsPositions(bladeRack) {
-        var visibleItems = bladeRack.items.filter(function(bc) {
-          return !bc.blade.hidden;
-        });
-        var firstVisibleItem = visibleItems[0];
-        var lastVisibleItem = visibleItems[visibleItems.length - 1];
-        bladeRack.items.forEach(function(bc) {
-          var ps = [];
-          if (bc === firstVisibleItem) {
-            ps.push("first");
-          }
-          if (bc === lastVisibleItem) {
-            ps.push("last");
-          }
-          bc.blade.positions = ps;
-        });
-      }
-      function computeExpandedFolderHeight(folder, containerElement) {
-        var height = 0;
-        disableTransitionTemporarily(containerElement, function() {
-          folder.expandedHeight = null;
-          folder.temporaryExpanded = true;
-          forceReflow(containerElement);
-          height = containerElement.clientHeight;
-          folder.temporaryExpanded = null;
-          forceReflow(containerElement);
-        });
-        return height;
-      }
-      var List = function() {
-        function List2() {
-          this.emitter = new Emitter();
-          this.items_ = [];
-        }
-        Object.defineProperty(List2.prototype, "items", {
-          get: function() {
-            return this.items_;
-          },
-          enumerable: false,
-          configurable: true
-        });
-        List2.prototype.add = function(item, opt_index) {
-          var index = opt_index !== void 0 ? opt_index : this.items_.length;
-          this.items_.splice(index, 0, item);
-          this.emitter.emit("add", {
-            index,
-            item,
-            sender: this
-          });
-        };
-        List2.prototype.remove = function(item) {
-          var index = this.items_.indexOf(item);
-          if (index < 0) {
-            return;
-          }
-          this.items_.splice(index, 1);
-          this.emitter.emit("remove", {
-            sender: this
-          });
-        };
-        return List2;
-      }();
-      var BladeRack = function() {
-        function BladeRack2() {
-          this.onItemFolderFold_ = this.onItemFolderFold_.bind(this);
-          this.onListItemLayout_ = this.onListItemLayout_.bind(this);
-          this.onSubitemLayout_ = this.onSubitemLayout_.bind(this);
-          this.onSubitemFolderFold_ = this.onSubitemFolderFold_.bind(this);
-          this.onSubitemInputChange_ = this.onSubitemInputChange_.bind(this);
-          this.onSubitemMonitorUpdate_ = this.onSubitemMonitorUpdate_.bind(this);
-          this.onItemInputChange_ = this.onItemInputChange_.bind(this);
-          this.onListAdd_ = this.onListAdd_.bind(this);
-          this.onListItemDispose_ = this.onListItemDispose_.bind(this);
-          this.onListRemove_ = this.onListRemove_.bind(this);
-          this.onItemMonitorUpdate_ = this.onItemMonitorUpdate_.bind(this);
-          this.blades_ = new List();
-          this.emitter = new Emitter();
-          this.blades_.emitter.on("add", this.onListAdd_);
-          this.blades_.emitter.on("remove", this.onListRemove_);
-        }
-        Object.defineProperty(BladeRack2.prototype, "items", {
-          get: function() {
-            return this.blades_.items;
-          },
-          enumerable: false,
-          configurable: true
-        });
-        BladeRack2.prototype.add = function(bc, opt_index) {
-          this.blades_.add(bc, opt_index);
-        };
-        BladeRack2.prototype.find = function(controllerClass) {
-          return this.items.reduce(function(results, bc) {
-            if (bc instanceof FolderController) {
-              results.push.apply(results, bc.bladeRack.find(controllerClass));
-            }
-            if (bc instanceof controllerClass) {
-              results.push(bc);
-            }
-            return results;
-          }, []);
-        };
-        BladeRack2.prototype.onListAdd_ = function(ev) {
-          var bc = ev.item;
-          this.emitter.emit("add", {
-            blade: bc,
-            index: ev.index,
-            sender: this
-          });
-          bc.blade.emitter.on("dispose", this.onListItemDispose_);
-          bc.blade.emitter.on("change", this.onListItemLayout_);
-          if (bc instanceof InputBindingController) {
-            bc.binding.emitter.on("change", this.onItemInputChange_);
-          } else if (bc instanceof MonitorBindingController) {
-            bc.binding.emitter.on("update", this.onItemMonitorUpdate_);
-          } else if (bc instanceof FolderController) {
-            bc.folder.emitter.on("change", this.onItemFolderFold_);
-            var emitter = bc.bladeRack.emitter;
-            emitter.on("itemfold", this.onSubitemFolderFold_);
-            emitter.on("itemlayout", this.onSubitemLayout_);
-            emitter.on("inputchange", this.onSubitemInputChange_);
-            emitter.on("monitorupdate", this.onSubitemMonitorUpdate_);
-          }
-        };
-        BladeRack2.prototype.onListRemove_ = function(_) {
-          this.emitter.emit("remove", {
-            sender: this
-          });
-        };
-        BladeRack2.prototype.onListItemLayout_ = function(ev) {
-          if (ev.propertyName === "hidden" || ev.propertyName === "positions") {
-            this.emitter.emit("itemlayout", {
-              sender: this
-            });
-          }
-        };
-        BladeRack2.prototype.onListItemDispose_ = function(_) {
-          var _this = this;
-          var disposedUcs = this.blades_.items.filter(function(bc) {
-            return bc.blade.disposed;
-          });
-          disposedUcs.forEach(function(bc) {
-            _this.blades_.remove(bc);
-          });
-        };
-        BladeRack2.prototype.onItemInputChange_ = function(ev) {
-          this.emitter.emit("inputchange", {
-            inputBinding: ev.sender,
-            sender: this,
-            value: ev.rawValue
-          });
-        };
-        BladeRack2.prototype.onItemMonitorUpdate_ = function(ev) {
-          this.emitter.emit("monitorupdate", {
-            monitorBinding: ev.sender,
-            sender: this,
-            value: ev.rawValue
-          });
-        };
-        BladeRack2.prototype.onItemFolderFold_ = function(ev) {
-          if (ev.propertyName !== "expanded") {
-            return;
-          }
-          this.emitter.emit("itemfold", {
-            expanded: ev.sender.expanded,
-            sender: this
-          });
-        };
-        BladeRack2.prototype.onSubitemLayout_ = function(_) {
-          this.emitter.emit("itemlayout", {
-            sender: this
-          });
-        };
-        BladeRack2.prototype.onSubitemInputChange_ = function(ev) {
-          this.emitter.emit("inputchange", {
-            inputBinding: ev.inputBinding,
-            sender: this,
-            value: ev.value
-          });
-        };
-        BladeRack2.prototype.onSubitemMonitorUpdate_ = function(ev) {
-          this.emitter.emit("monitorupdate", {
-            monitorBinding: ev.monitorBinding,
-            sender: this,
-            value: ev.value
-          });
-        };
-        BladeRack2.prototype.onSubitemFolderFold_ = function(ev) {
-          this.emitter.emit("itemfold", {
-            expanded: ev.expanded,
-            sender: this
-          });
-        };
-        return BladeRack2;
-      }();
-      var Folder = function() {
-        function Folder2(title, expanded) {
-          this.emitter = new Emitter();
-          this.expanded_ = expanded;
-          this.expandedHeight_ = null;
-          this.temporaryExpanded_ = null;
-          this.shouldFixHeight_ = false;
-          this.title = title;
-        }
-        Object.defineProperty(Folder2.prototype, "expanded", {
-          get: function() {
-            return this.expanded_;
-          },
-          set: function(expanded) {
-            var changed = this.expanded_ !== expanded;
-            if (!changed) {
-              return;
-            }
-            this.emitter.emit("beforechange", {
-              propertyName: "expanded",
-              sender: this
-            });
-            this.expanded_ = expanded;
-            this.emitter.emit("change", {
-              propertyName: "expanded",
-              sender: this
-            });
-          },
-          enumerable: false,
-          configurable: true
-        });
-        Object.defineProperty(Folder2.prototype, "temporaryExpanded", {
-          get: function() {
-            return this.temporaryExpanded_;
-          },
-          set: function(expanded) {
-            var changed = this.temporaryExpanded_ !== expanded;
-            if (!changed) {
-              return;
-            }
-            this.emitter.emit("beforechange", {
-              propertyName: "temporaryExpanded",
-              sender: this
-            });
-            this.temporaryExpanded_ = expanded;
-            this.emitter.emit("change", {
-              propertyName: "temporaryExpanded",
-              sender: this
-            });
-          },
-          enumerable: false,
-          configurable: true
-        });
-        Object.defineProperty(Folder2.prototype, "expandedHeight", {
-          get: function() {
-            return this.expandedHeight_;
-          },
-          set: function(expandedHeight) {
-            var changed = this.expandedHeight_ !== expandedHeight;
-            if (!changed) {
-              return;
-            }
-            this.emitter.emit("beforechange", {
-              propertyName: "expandedHeight",
-              sender: this
-            });
-            this.expandedHeight_ = expandedHeight;
-            this.emitter.emit("change", {
-              propertyName: "expandedHeight",
-              sender: this
-            });
-          },
-          enumerable: false,
-          configurable: true
-        });
-        Object.defineProperty(Folder2.prototype, "shouldFixHeight", {
-          get: function() {
-            return this.shouldFixHeight_;
-          },
-          set: function(shouldFixHeight) {
-            var changed = this.shouldFixHeight_ !== shouldFixHeight;
-            if (!changed) {
-              return;
-            }
-            this.emitter.emit("beforechange", {
-              propertyName: "shouldFixHeight",
-              sender: this
-            });
-            this.shouldFixHeight_ = shouldFixHeight;
-            this.emitter.emit("change", {
-              propertyName: "shouldFixHeight",
-              sender: this
-            });
-          },
-          enumerable: false,
-          configurable: true
-        });
-        Object.defineProperty(Folder2.prototype, "styleExpanded", {
-          get: function() {
-            var _a2;
-            return (_a2 = this.temporaryExpanded) !== null && _a2 !== void 0 ? _a2 : this.expanded;
-          },
-          enumerable: false,
-          configurable: true
-        });
-        Object.defineProperty(Folder2.prototype, "styleHeight", {
-          get: function() {
-            if (!this.styleExpanded) {
-              return "0";
-            }
-            if (this.shouldFixHeight && !isEmpty(this.expandedHeight)) {
-              return this.expandedHeight + "px";
-            }
-            return "auto";
-          },
-          enumerable: false,
-          configurable: true
-        });
-        return Folder2;
-      }();
-      var className$3 = ClassName("fld");
-      var FolderView = function() {
-        function FolderView2(doc, config) {
-          this.onFolderChange_ = this.onFolderChange_.bind(this);
-          this.folder_ = config.folder;
-          this.folder_.emitter.on("change", this.onFolderChange_);
-          this.element = doc.createElement("div");
-          this.element.classList.add(className$3());
-          var titleElem = doc.createElement("button");
-          titleElem.classList.add(className$3("t"));
-          titleElem.textContent = this.folder_.title;
-          this.element.appendChild(titleElem);
-          this.titleElement = titleElem;
-          var markElem = doc.createElement("div");
-          markElem.classList.add(className$3("m"));
-          this.titleElement.appendChild(markElem);
-          var containerElem = doc.createElement("div");
-          containerElem.classList.add(className$3("c"));
-          this.element.appendChild(containerElem);
-          this.containerElement = containerElem;
-          this.applyModel_();
-        }
-        FolderView2.prototype.applyModel_ = function() {
-          var expanded = this.folder_.styleExpanded;
-          var expandedClass = className$3(void 0, "expanded");
-          if (expanded) {
-            this.element.classList.add(expandedClass);
-          } else {
-            this.element.classList.remove(expandedClass);
-          }
-          this.containerElement.style.height = this.folder_.styleHeight;
-        };
-        FolderView2.prototype.onFolderChange_ = function() {
-          this.applyModel_();
-        };
-        return FolderView2;
-      }();
-      var FolderController = function() {
-        function FolderController2(doc, config) {
-          var _a2;
-          this.onContainerTransitionEnd_ = this.onContainerTransitionEnd_.bind(this);
-          this.onFolderBeforeChange_ = this.onFolderBeforeChange_.bind(this);
-          this.onTitleClick_ = this.onTitleClick_.bind(this);
-          this.onRackAdd_ = this.onRackAdd_.bind(this);
-          this.onRackItemLayout_ = this.onRackItemLayout_.bind(this);
-          this.onRackRemove_ = this.onRackRemove_.bind(this);
-          this.blade = config.blade;
-          this.folder = new Folder(config.title, (_a2 = config.expanded) !== null && _a2 !== void 0 ? _a2 : true);
-          this.folder.emitter.on("beforechange", this.onFolderBeforeChange_);
-          this.rack_ = new BladeRack();
-          this.rack_.emitter.on("add", this.onRackAdd_);
-          this.rack_.emitter.on("itemlayout", this.onRackItemLayout_);
-          this.rack_.emitter.on("remove", this.onRackRemove_);
-          this.doc_ = doc;
-          this.view = new FolderView(this.doc_, {
-            folder: this.folder
-          });
-          this.view.titleElement.addEventListener("click", this.onTitleClick_);
-          this.view.containerElement.addEventListener("transitionend", this.onContainerTransitionEnd_);
-          setUpBladeView(this.view, this.blade);
-        }
-        Object.defineProperty(FolderController2.prototype, "document", {
-          get: function() {
-            return this.doc_;
-          },
-          enumerable: false,
-          configurable: true
-        });
-        Object.defineProperty(FolderController2.prototype, "bladeRack", {
-          get: function() {
-            return this.rack_;
-          },
-          enumerable: false,
-          configurable: true
-        });
-        FolderController2.prototype.onFolderBeforeChange_ = function(ev) {
-          if (ev.propertyName !== "expanded") {
-            return;
-          }
-          if (isEmpty(this.folder.expandedHeight)) {
-            this.folder.expandedHeight = computeExpandedFolderHeight(this.folder, this.view.containerElement);
-          }
-          this.folder.shouldFixHeight = true;
-          forceReflow(this.view.containerElement);
-        };
-        FolderController2.prototype.onTitleClick_ = function() {
-          this.folder.expanded = !this.folder.expanded;
-        };
-        FolderController2.prototype.applyRackChange_ = function() {
-          updateAllItemsPositions(this.bladeRack);
-        };
-        FolderController2.prototype.onRackAdd_ = function(ev) {
-          insertElementAt(this.view.containerElement, ev.blade.view.element, ev.index);
-          this.applyRackChange_();
-        };
-        FolderController2.prototype.onRackRemove_ = function(_) {
-          this.applyRackChange_();
-        };
-        FolderController2.prototype.onRackItemLayout_ = function(_) {
-          this.applyRackChange_();
-        };
-        FolderController2.prototype.onContainerTransitionEnd_ = function(ev) {
-          if (ev.propertyName !== "height") {
-            return;
-          }
-          this.folder.shouldFixHeight = false;
-          this.folder.expandedHeight = null;
-        };
-        return FolderController2;
-      }();
-      var className$4 = ClassName("spt");
-      var SeparatorView = function() {
-        function SeparatorView2(doc) {
-          this.element = doc.createElement("div");
-          this.element.classList.add(className$4());
-          var hrElem = doc.createElement("hr");
-          hrElem.classList.add(className$4("r"));
-          this.element.appendChild(hrElem);
-        }
-        return SeparatorView2;
-      }();
-      var SeparatorController = function() {
-        function SeparatorController2(doc, config) {
-          this.blade = config.blade;
-          this.view = new SeparatorView(doc);
-          setUpBladeView(this.view, this.blade);
-        }
-        return SeparatorController2;
-      }();
-      var ButtonApi = function() {
-        function ButtonApi2(buttonController) {
-          this.controller = buttonController;
-        }
-        Object.defineProperty(ButtonApi2.prototype, "hidden", {
-          get: function() {
-            return this.controller.blade.hidden;
-          },
-          set: function(hidden) {
-            this.controller.blade.hidden = hidden;
-          },
-          enumerable: false,
-          configurable: true
-        });
-        ButtonApi2.prototype.dispose = function() {
-          this.controller.blade.dispose();
-        };
-        ButtonApi2.prototype.on = function(eventName, handler) {
-          var emitter = this.controller.button.emitter;
-          emitter.on(eventName, forceCast(handler.bind(this)));
-          return this;
-        };
-        return ButtonApi2;
-      }();
-      function handleInputBinding(_a2) {
-        var binding = _a2.binding, eventName = _a2.eventName, handler = _a2.handler;
-        if (eventName === "change") {
-          var emitter = binding.emitter;
-          emitter.on("change", function(ev) {
-            handler(forceCast(ev.sender.target.read()));
-          });
-        }
-      }
-      function handleMonitorBinding(_a2) {
-        var binding = _a2.binding, eventName = _a2.eventName, handler = _a2.handler;
-        if (eventName === "update") {
-          var emitter = binding.emitter;
-          emitter.on("update", function(ev) {
-            handler(ev.sender.target.read());
-          });
-        }
-      }
-      function handleFolder(_a2) {
-        var bladeRack = _a2.bladeRack, eventName = _a2.eventName, folder = _a2.folder, handler = _a2.handler;
-        if (eventName === "change") {
-          var emitter = bladeRack.emitter;
-          emitter.on("inputchange", function(ev) {
-            handler(ev.inputBinding.target.read());
-          });
-        }
-        if (eventName === "update") {
-          var emitter = bladeRack.emitter;
-          emitter.on("monitorupdate", function(ev) {
-            handler(ev.monitorBinding.target.read());
-          });
-        }
-        if (eventName === "fold") {
-          bladeRack.emitter.on("itemfold", function(ev) {
-            handler(ev.expanded);
-          });
-          folder === null || folder === void 0 ? void 0 : folder.emitter.on("change", function(ev) {
-            if (ev.propertyName !== "expanded") {
-              return;
-            }
-            handler(ev.sender.expanded);
-          });
-        }
-      }
-      var InputBindingApi = function() {
-        function InputBindingApi2(bindingController) {
-          this.controller = bindingController;
-        }
-        Object.defineProperty(InputBindingApi2.prototype, "hidden", {
-          get: function() {
-            return this.controller.blade.hidden;
-          },
-          set: function(hidden) {
-            this.controller.blade.hidden = hidden;
-          },
-          enumerable: false,
-          configurable: true
-        });
-        InputBindingApi2.prototype.dispose = function() {
-          this.controller.blade.dispose();
-        };
-        InputBindingApi2.prototype.on = function(eventName, handler) {
-          handleInputBinding({
-            binding: this.controller.binding,
-            eventName,
-            handler: handler.bind(this)
-          });
-          return this;
-        };
-        InputBindingApi2.prototype.refresh = function() {
-          this.controller.binding.read();
-        };
-        return InputBindingApi2;
-      }();
-      var CREATE_MESSAGE_MAP = {
-        alreadydisposed: function() {
-          return "View has been already disposed";
-        },
-        invalidparams: function(context) {
-          return "Invalid parameters for '" + context.name + "'";
-        },
-        nomatchingcontroller: function(context) {
-          return "No matching controller for '" + context.key + "'";
-        },
-        notbindable: function() {
-          return "Value is not bindable";
-        },
-        propertynotfound: function(context) {
-          return "Property '" + context.name + "' not found";
-        },
-        shouldneverhappen: function() {
-          return "This error should never happen";
-        }
-      };
-      var TpError = function() {
-        function TpError2(config) {
-          var _a2;
-          this.message = (_a2 = CREATE_MESSAGE_MAP[config.type](forceCast(config.context))) !== null && _a2 !== void 0 ? _a2 : "Unexpected error";
-          this.name = this.constructor.name;
-          this.stack = new Error(this.message).stack;
-          this.type = config.type;
-        }
-        TpError2.alreadyDisposed = function() {
-          return new TpError2({ context: {}, type: "alreadydisposed" });
-        };
-        TpError2.notBindable = function() {
-          return new TpError2({
-            context: {},
-            type: "notbindable"
-          });
-        };
-        TpError2.propertyNotFound = function(name) {
-          return new TpError2({
-            type: "propertynotfound",
-            context: {
-              name
-            }
-          });
-        };
-        TpError2.shouldNeverHappen = function() {
-          return new TpError2({ context: {}, type: "shouldneverhappen" });
-        };
-        return TpError2;
-      }();
-      TpError.prototype = Object.create(Error.prototype);
-      TpError.prototype.constructor = TpError;
-      var InputBinding = function() {
-        function InputBinding2(config) {
-          this.onValueChange_ = this.onValueChange_.bind(this);
-          this.reader = config.reader;
-          this.writer = config.writer;
-          this.emitter = new Emitter();
-          this.value = config.value;
-          this.value.emitter.on("change", this.onValueChange_);
-          this.target = config.target;
-          this.read();
-        }
-        InputBinding2.prototype.read = function() {
-          var targetValue = this.target.read();
-          if (targetValue !== void 0) {
-            this.value.rawValue = this.reader(targetValue);
-          }
-        };
-        InputBinding2.prototype.write_ = function(rawValue) {
-          this.writer(this.target, rawValue);
-        };
-        InputBinding2.prototype.onValueChange_ = function(ev) {
-          this.write_(ev.rawValue);
-          this.emitter.emit("change", {
-            rawValue: ev.rawValue,
-            sender: this
-          });
-        };
-        return InputBinding2;
-      }();
-      var Value = function() {
-        function Value2(initialValue, config) {
-          var _a2;
-          this.constraint_ = config === null || config === void 0 ? void 0 : config.constraint;
-          this.equals_ = (_a2 = config === null || config === void 0 ? void 0 : config.equals) !== null && _a2 !== void 0 ? _a2 : function(v1, v2) {
-            return v1 === v2;
+          var module2 = installedModules[moduleId] = {
+            i: moduleId,
+            l: false,
+            exports: {}
           };
-          this.emitter = new Emitter();
-          this.rawValue_ = initialValue;
+          modules[moduleId].call(module2.exports, module2, module2.exports, __webpack_require__);
+          module2.l = true;
+          return module2.exports;
         }
-        Object.defineProperty(Value2.prototype, "constraint", {
-          get: function() {
-            return this.constraint_;
-          },
-          enumerable: false,
-          configurable: true
-        });
-        Object.defineProperty(Value2.prototype, "rawValue", {
-          get: function() {
-            return this.rawValue_;
-          },
-          set: function(rawValue) {
-            var constrainedValue = this.constraint_ ? this.constraint_.constrain(rawValue) : rawValue;
-            var changed = !this.equals_(this.rawValue_, constrainedValue);
-            if (changed) {
-              this.rawValue_ = constrainedValue;
-              this.emitter.emit("change", {
-                rawValue: constrainedValue,
-                sender: this
-              });
-            }
-          },
-          enumerable: false,
-          configurable: true
-        });
-        return Value2;
-      }();
-      function createController(plugin, args) {
-        var initialValue = plugin.binding.accept(args.target.read(), args.params);
-        if (initialValue === null) {
-          return null;
-        }
-        var valueArgs = {
-          target: args.target,
-          initialValue,
-          params: args.params
-        };
-        var reader = plugin.binding.reader(valueArgs);
-        var constraint = plugin.binding.constraint ? plugin.binding.constraint(valueArgs) : void 0;
-        var value = new Value(reader(initialValue), {
-          constraint,
-          equals: plugin.binding.equals
-        });
-        var binding = new InputBinding({
-          reader,
-          target: args.target,
-          value,
-          writer: plugin.binding.writer(valueArgs)
-        });
-        var controller = plugin.controller({
-          binding,
-          document: args.document,
-          initialValue,
-          params: args.params
-        });
-        return new InputBindingController(args.document, {
-          binding,
-          controller,
-          label: args.params.label || args.target.key,
-          blade: new Blade()
-        });
-      }
-      function createInputBindingController(document2, target, params) {
-        var initialValue = target.read();
-        if (isEmpty(initialValue)) {
-          throw new TpError({
-            context: {
-              key: target.key
-            },
-            type: "nomatchingcontroller"
-          });
-        }
-        var bc = Plugins.inputs.reduce(function(result, plugin) {
-          return result || createController(plugin, {
-            document: document2,
-            target,
-            params
-          });
-        }, null);
-        if (bc) {
-          return bc;
-        }
-        throw new TpError({
-          context: {
-            key: target.key
-          },
-          type: "nomatchingcontroller"
-        });
-      }
-      var MonitorBindingApi = function() {
-        function MonitorBindingApi2(bindingController) {
-          this.controller = bindingController;
-        }
-        Object.defineProperty(MonitorBindingApi2.prototype, "hidden", {
-          get: function() {
-            return this.controller.blade.hidden;
-          },
-          set: function(hidden) {
-            this.controller.blade.hidden = hidden;
-          },
-          enumerable: false,
-          configurable: true
-        });
-        MonitorBindingApi2.prototype.dispose = function() {
-          this.controller.blade.dispose();
-        };
-        MonitorBindingApi2.prototype.on = function(eventName, handler) {
-          handleMonitorBinding({
-            binding: this.controller.binding,
-            eventName,
-            handler: forceCast(handler.bind(this))
-          });
-          return this;
-        };
-        MonitorBindingApi2.prototype.refresh = function() {
-          this.controller.binding.read();
-        };
-        return MonitorBindingApi2;
-      }();
-      var Constants = {
-        monitor: {
-          defaultInterval: 200,
-          defaultLineCount: 3
-        }
-      };
-      function fillBuffer(buffer2, bufferSize) {
-        while (buffer2.length < bufferSize) {
-          buffer2.push(void 0);
-        }
-      }
-      function initializeBuffer(initialValue, bufferSize) {
-        var buffer2 = [initialValue];
-        fillBuffer(buffer2, bufferSize);
-        return new Value(buffer2);
-      }
-      function createTrimmedBuffer(buffer2) {
-        var index = buffer2.indexOf(void 0);
-        return forceCast(index < 0 ? buffer2 : buffer2.slice(0, index));
-      }
-      function createPushedBuffer(buffer2, newValue) {
-        var newBuffer = __spreadArrays(createTrimmedBuffer(buffer2), [newValue]);
-        if (newBuffer.length > buffer2.length) {
-          newBuffer.splice(0, newBuffer.length - buffer2.length);
-        } else {
-          fillBuffer(newBuffer, buffer2.length);
-        }
-        return newBuffer;
-      }
-      var MonitorBinding = function() {
-        function MonitorBinding2(config) {
-          this.onTick_ = this.onTick_.bind(this);
-          this.reader_ = config.reader;
-          this.target = config.target;
-          this.emitter = new Emitter();
-          this.value = config.value;
-          this.ticker = config.ticker;
-          this.ticker.emitter.on("tick", this.onTick_);
-          this.read();
-        }
-        MonitorBinding2.prototype.dispose = function() {
-          this.ticker.disposable.dispose();
-        };
-        MonitorBinding2.prototype.read = function() {
-          var targetValue = this.target.read();
-          if (targetValue === void 0) {
-            return;
-          }
-          var buffer2 = this.value.rawValue;
-          var newValue = this.reader_(targetValue);
-          this.value.rawValue = createPushedBuffer(buffer2, newValue);
-          this.emitter.emit("update", {
-            rawValue: newValue,
-            sender: this
-          });
-        };
-        MonitorBinding2.prototype.onTick_ = function(_) {
-          this.read();
-        };
-        return MonitorBinding2;
-      }();
-      var IntervalTicker = function() {
-        function IntervalTicker2(doc, interval) {
-          var _this = this;
-          this.id_ = null;
-          this.onTick_ = this.onTick_.bind(this);
-          this.doc_ = doc;
-          this.emitter = new Emitter();
-          if (interval <= 0) {
-            this.id_ = null;
-          } else {
-            var win = this.doc_.defaultView;
-            if (win) {
-              this.id_ = win.setInterval(this.onTick_, interval);
-            }
-          }
-          this.disposable = new Disposable();
-          this.disposable.emitter.on("dispose", function() {
-            if (_this.id_ !== null) {
-              var win2 = _this.doc_.defaultView;
-              if (win2) {
-                win2.clearInterval(_this.id_);
-              }
-            }
-            _this.id_ = null;
-          });
-        }
-        IntervalTicker2.prototype.onTick_ = function() {
-          this.emitter.emit("tick", {
-            sender: this
-          });
-        };
-        return IntervalTicker2;
-      }();
-      var ManualTicker = function() {
-        function ManualTicker2() {
-          this.disposable = new Disposable();
-          this.emitter = new Emitter();
-        }
-        ManualTicker2.prototype.tick = function() {
-          this.emitter.emit("tick", {
-            sender: this
-          });
-        };
-        return ManualTicker2;
-      }();
-      function createTicker(document2, interval) {
-        return interval === 0 ? new ManualTicker() : new IntervalTicker(document2, interval !== null && interval !== void 0 ? interval : Constants.monitor.defaultInterval);
-      }
-      function createController$1(plugin, args) {
-        var _a2, _b, _c;
-        var initialValue = plugin.binding.accept(args.target.read(), args.params);
-        if (initialValue === null) {
-          return null;
-        }
-        var valueArgs = {
-          target: args.target,
-          initialValue,
-          params: args.params
-        };
-        var reader = plugin.binding.reader(valueArgs);
-        var bufferSize = (_c = (_b = (_a2 = args.params.bufferSize) !== null && _a2 !== void 0 ? _a2 : args.params.count) !== null && _b !== void 0 ? _b : plugin.binding.defaultBufferSize && plugin.binding.defaultBufferSize(args.params)) !== null && _c !== void 0 ? _c : 1;
-        var binding = new MonitorBinding({
-          reader,
-          target: args.target,
-          ticker: createTicker(args.document, args.params.interval),
-          value: initializeBuffer(reader(initialValue), bufferSize)
-        });
-        return new MonitorBindingController(args.document, {
-          binding,
-          controller: plugin.controller({
-            binding,
-            document: args.document,
-            params: args.params
-          }),
-          label: args.params.label || args.target.key,
-          blade: new Blade()
-        });
-      }
-      function createMonitorBindingController(document2, target, params) {
-        var bc = Plugins.monitors.reduce(function(result, plugin) {
-          return result || createController$1(plugin, {
-            document: document2,
-            params,
-            target
-          });
-        }, null);
-        if (bc) {
-          return bc;
-        }
-        throw new TpError({
-          context: {
-            key: target.key
-          },
-          type: "nomatchingcontroller"
-        });
-      }
-      var SeparatorApi = function() {
-        function SeparatorApi2(controller) {
-          this.controller = controller;
-        }
-        Object.defineProperty(SeparatorApi2.prototype, "hidden", {
-          get: function() {
-            return this.controller.blade.hidden;
-          },
-          set: function(hidden) {
-            this.controller.blade.hidden = hidden;
-          },
-          enumerable: false,
-          configurable: true
-        });
-        SeparatorApi2.prototype.dispose = function() {
-          this.controller.blade.dispose();
-        };
-        return SeparatorApi2;
-      }();
-      var BindingTarget = function() {
-        function BindingTarget2(obj, key2, opt_id) {
-          this.obj_ = obj;
-          this.key_ = key2;
-          this.presetKey_ = opt_id !== null && opt_id !== void 0 ? opt_id : key2;
-        }
-        BindingTarget2.isBindable = function(obj) {
-          if (obj === null) {
-            return false;
-          }
-          if (typeof obj !== "object") {
-            return false;
-          }
-          return true;
-        };
-        Object.defineProperty(BindingTarget2.prototype, "key", {
-          get: function() {
-            return this.key_;
-          },
-          enumerable: false,
-          configurable: true
-        });
-        Object.defineProperty(BindingTarget2.prototype, "presetKey", {
-          get: function() {
-            return this.presetKey_;
-          },
-          enumerable: false,
-          configurable: true
-        });
-        BindingTarget2.prototype.read = function() {
-          return this.obj_[this.key_];
-        };
-        BindingTarget2.prototype.write = function(value) {
-          this.obj_[this.key_] = value;
-        };
-        BindingTarget2.prototype.writeProperty = function(name, value) {
-          var valueObj = this.read();
-          if (!BindingTarget2.isBindable(valueObj)) {
-            throw TpError.notBindable();
-          }
-          if (!(name in valueObj)) {
-            throw TpError.propertyNotFound(name);
-          }
-          valueObj[name] = value;
-        };
-        return BindingTarget2;
-      }();
-      function createBindingTarget(obj, key2, opt_id) {
-        if (!BindingTarget.isBindable(obj)) {
-          throw TpError.notBindable();
-        }
-        return new BindingTarget(obj, key2, opt_id);
-      }
-      var FolderApi = function() {
-        function FolderApi2(folderController) {
-          this.controller = folderController;
-        }
-        Object.defineProperty(FolderApi2.prototype, "expanded", {
-          get: function() {
-            return this.controller.folder.expanded;
-          },
-          set: function(expanded) {
-            this.controller.folder.expanded = expanded;
-          },
-          enumerable: false,
-          configurable: true
-        });
-        Object.defineProperty(FolderApi2.prototype, "hidden", {
-          get: function() {
-            return this.controller.blade.hidden;
-          },
-          set: function(hidden) {
-            this.controller.blade.hidden = hidden;
-          },
-          enumerable: false,
-          configurable: true
-        });
-        FolderApi2.prototype.dispose = function() {
-          this.controller.blade.dispose();
-        };
-        FolderApi2.prototype.addInput = function(object, key2, opt_params) {
-          var params = opt_params || {};
-          var bc = createInputBindingController(this.controller.document, createBindingTarget(object, key2, params.presetKey), params);
-          this.controller.bladeRack.add(bc, params.index);
-          return new InputBindingApi(forceCast(bc));
-        };
-        FolderApi2.prototype.addMonitor = function(object, key2, opt_params) {
-          var params = opt_params || {};
-          var bc = createMonitorBindingController(this.controller.document, createBindingTarget(object, key2), params);
-          this.controller.bladeRack.add(bc, params.index);
-          return new MonitorBindingApi(forceCast(bc));
-        };
-        FolderApi2.prototype.addFolder = function(params) {
-          var bc = new FolderController(this.controller.document, __assign(__assign({}, params), { blade: new Blade() }));
-          this.controller.bladeRack.add(bc, params.index);
-          return new FolderApi2(bc);
-        };
-        FolderApi2.prototype.addButton = function(params) {
-          var bc = new ButtonController(this.controller.document, __assign(__assign({}, params), { blade: new Blade() }));
-          this.controller.bladeRack.add(bc, params.index);
-          return new ButtonApi(bc);
-        };
-        FolderApi2.prototype.addSeparator = function(opt_params) {
-          var params = opt_params || {};
-          var bc = new SeparatorController(this.controller.document, {
-            blade: new Blade()
-          });
-          this.controller.bladeRack.add(bc, params.index);
-          return new SeparatorApi(bc);
-        };
-        FolderApi2.prototype.on = function(eventName, handler) {
-          handleFolder({
-            eventName,
-            folder: this.controller.folder,
-            handler: forceCast(handler.bind(this)),
-            bladeRack: this.controller.bladeRack
-          });
-          return this;
-        };
-        return FolderApi2;
-      }();
-      function exportPresetJson(targets) {
-        return targets.reduce(function(result, target) {
-          var _a2;
-          return Object.assign(result, (_a2 = {}, _a2[target.presetKey] = target.read(), _a2));
-        }, {});
-      }
-      function importPresetJson(targets, preset) {
-        targets.forEach(function(target) {
-          var value = preset[target.presetKey];
-          if (value !== void 0) {
-            target.write(value);
-          }
-        });
-      }
-      var RootApi = function() {
-        function RootApi2(rootController) {
-          this.controller = rootController;
-        }
-        RootApi2.registerPlugin = function(r) {
-          if (r.type === "input") {
-            Plugins.inputs.unshift(r.plugin);
-          } else if (r.type === "monitor") {
-            Plugins.monitors.unshift(r.plugin);
+        __webpack_require__.m = modules;
+        __webpack_require__.c = installedModules;
+        __webpack_require__.d = function(exports2, name, getter) {
+          if (!__webpack_require__.o(exports2, name)) {
+            Object.defineProperty(exports2, name, { enumerable: true, get: getter });
           }
         };
-        Object.defineProperty(RootApi2.prototype, "element", {
-          get: function() {
-            return this.controller.view.element;
-          },
-          enumerable: false,
-          configurable: true
-        });
-        Object.defineProperty(RootApi2.prototype, "expanded", {
-          get: function() {
-            var folder = this.controller.folder;
-            return folder ? folder.expanded : true;
-          },
-          set: function(expanded) {
-            var folder = this.controller.folder;
-            if (folder) {
-              folder.expanded = expanded;
-            }
-          },
-          enumerable: false,
-          configurable: true
-        });
-        Object.defineProperty(RootApi2.prototype, "hidden", {
-          get: function() {
-            return this.controller.blade.hidden;
-          },
-          set: function(hidden) {
-            this.controller.blade.hidden = hidden;
-          },
-          enumerable: false,
-          configurable: true
-        });
-        RootApi2.prototype.dispose = function() {
-          this.controller.blade.dispose();
-        };
-        RootApi2.prototype.addInput = function(object, key2, opt_params) {
-          var params = opt_params || {};
-          var bc = createInputBindingController(this.controller.document, createBindingTarget(object, key2, params.presetKey), params);
-          this.controller.bladeRack.add(bc, params.index);
-          return new InputBindingApi(forceCast(bc));
-        };
-        RootApi2.prototype.addMonitor = function(object, key2, opt_params) {
-          var params = opt_params || {};
-          var bc = createMonitorBindingController(this.controller.document, createBindingTarget(object, key2), params);
-          this.controller.bladeRack.add(bc, params.index);
-          return new MonitorBindingApi(forceCast(bc));
-        };
-        RootApi2.prototype.addButton = function(params) {
-          var bc = new ButtonController(this.controller.document, __assign(__assign({}, params), { blade: new Blade() }));
-          this.controller.bladeRack.add(bc, params.index);
-          return new ButtonApi(bc);
-        };
-        RootApi2.prototype.addFolder = function(params) {
-          var bc = new FolderController(this.controller.document, __assign(__assign({}, params), { blade: new Blade() }));
-          this.controller.bladeRack.add(bc, params.index);
-          return new FolderApi(bc);
-        };
-        RootApi2.prototype.addSeparator = function(opt_params) {
-          var params = opt_params || {};
-          var bc = new SeparatorController(this.controller.document, {
-            blade: new Blade()
-          });
-          this.controller.bladeRack.add(bc, params.index);
-          return new SeparatorApi(bc);
-        };
-        RootApi2.prototype.importPreset = function(preset) {
-          var targets = this.controller.bladeRack.find(InputBindingController).map(function(ibc) {
-            return ibc.binding.target;
-          });
-          importPresetJson(targets, preset);
-          this.refresh();
-        };
-        RootApi2.prototype.exportPreset = function() {
-          var targets = this.controller.bladeRack.find(InputBindingController).map(function(ibc) {
-            return ibc.binding.target;
-          });
-          return exportPresetJson(targets);
-        };
-        RootApi2.prototype.on = function(eventName, handler) {
-          handleFolder({
-            eventName,
-            folder: this.controller.folder,
-            handler: forceCast(handler.bind(this)),
-            bladeRack: this.controller.bladeRack
-          });
-          return this;
-        };
-        RootApi2.prototype.refresh = function() {
-          this.controller.bladeRack.find(InputBindingController).forEach(function(ibc) {
-            ibc.binding.read();
-          });
-          this.controller.bladeRack.find(MonitorBindingController).forEach(function(mbc) {
-            mbc.binding.read();
-          });
-        };
-        return RootApi2;
-      }();
-      var className$5 = ClassName("rot");
-      var RootView = function() {
-        function RootView2(doc, config) {
-          this.titleElem_ = null;
-          this.onFolderChange_ = this.onFolderChange_.bind(this);
-          this.folder_ = config.folder;
-          if (this.folder_) {
-            this.folder_.emitter.on("change", this.onFolderChange_);
+        __webpack_require__.r = function(exports2) {
+          if (typeof Symbol !== "undefined" && Symbol.toStringTag) {
+            Object.defineProperty(exports2, Symbol.toStringTag, { value: "Module" });
           }
-          this.element = doc.createElement("div");
-          this.element.classList.add(className$5());
-          var folder = this.folder_;
-          if (folder) {
-            var titleElem = doc.createElement("button");
-            titleElem.classList.add(className$5("t"));
-            titleElem.textContent = folder.title;
-            this.element.appendChild(titleElem);
-            var markElem = doc.createElement("div");
-            markElem.classList.add(className$5("m"));
-            titleElem.appendChild(markElem);
-            this.titleElem_ = titleElem;
-          }
-          var containerElem = doc.createElement("div");
-          containerElem.classList.add(className$5("c"));
-          this.element.appendChild(containerElem);
-          this.containerElement = containerElem;
-          this.applyModel_();
-        }
-        Object.defineProperty(RootView2.prototype, "titleElement", {
-          get: function() {
-            return this.titleElem_;
-          },
-          enumerable: false,
-          configurable: true
-        });
-        RootView2.prototype.applyModel_ = function() {
-          var expanded = this.folder_ ? this.folder_.styleExpanded : true;
-          var expandedClass = className$5(void 0, "expanded");
-          if (expanded) {
-            this.element.classList.add(expandedClass);
-          } else {
-            this.element.classList.remove(expandedClass);
-          }
-          this.containerElement.style.height = this.folder_ ? this.folder_.styleHeight : "auto";
+          Object.defineProperty(exports2, "__esModule", { value: true });
         };
-        RootView2.prototype.onFolderChange_ = function() {
-          this.applyModel_();
-        };
-        return RootView2;
-      }();
-      function createFolder(config) {
-        var _a2;
-        if (!config.title) {
-          return null;
-        }
-        return new Folder(config.title, (_a2 = config.expanded) !== null && _a2 !== void 0 ? _a2 : true);
-      }
-      var RootController = function() {
-        function RootController2(doc, config) {
-          this.onContainerTransitionEnd_ = this.onContainerTransitionEnd_.bind(this);
-          this.onFolderBeforeChange_ = this.onFolderBeforeChange_.bind(this);
-          this.onTitleClick_ = this.onTitleClick_.bind(this);
-          this.onRackAdd_ = this.onRackAdd_.bind(this);
-          this.onRackItemLayout_ = this.onRackItemLayout_.bind(this);
-          this.onRackRemove_ = this.onRackRemove_.bind(this);
-          this.folder = createFolder(config);
-          if (this.folder) {
-            this.folder.emitter.on("beforechange", this.onFolderBeforeChange_);
-          }
-          this.bladeRack = new BladeRack();
-          this.bladeRack.emitter.on("add", this.onRackAdd_);
-          this.bladeRack.emitter.on("itemlayout", this.onRackItemLayout_);
-          this.bladeRack.emitter.on("remove", this.onRackRemove_);
-          this.doc_ = doc;
-          this.blade = config.blade;
-          this.view = new RootView(this.doc_, {
-            folder: this.folder
-          });
-          if (this.view.titleElement) {
-            this.view.titleElement.addEventListener("click", this.onTitleClick_);
-          }
-          this.view.containerElement.addEventListener("transitionend", this.onContainerTransitionEnd_);
-          setUpBladeView(this.view, this.blade);
-        }
-        Object.defineProperty(RootController2.prototype, "document", {
-          get: function() {
-            return this.doc_;
-          },
-          enumerable: false,
-          configurable: true
-        });
-        RootController2.prototype.onFolderBeforeChange_ = function(ev) {
-          if (ev.propertyName !== "expanded") {
-            return;
-          }
-          var folder = this.folder;
-          if (!folder) {
-            return;
-          }
-          if (isEmpty(folder.expandedHeight)) {
-            folder.expandedHeight = computeExpandedFolderHeight(folder, this.view.containerElement);
-          }
-          folder.shouldFixHeight = true;
-          forceReflow(this.view.containerElement);
-        };
-        RootController2.prototype.applyRackChange_ = function() {
-          updateAllItemsPositions(this.bladeRack);
-        };
-        RootController2.prototype.onRackAdd_ = function(ev) {
-          insertElementAt(this.view.containerElement, ev.blade.view.element, ev.index);
-          this.applyRackChange_();
-        };
-        RootController2.prototype.onRackRemove_ = function(_) {
-          this.applyRackChange_();
-        };
-        RootController2.prototype.onRackItemLayout_ = function(_) {
-          this.applyRackChange_();
-        };
-        RootController2.prototype.onTitleClick_ = function() {
-          if (this.folder) {
-            this.folder.expanded = !this.folder.expanded;
-          }
-        };
-        RootController2.prototype.onContainerTransitionEnd_ = function(ev) {
-          if (ev.propertyName !== "height") {
-            return;
-          }
-          if (this.folder) {
-            this.folder.shouldFixHeight = false;
-            this.folder.expandedHeight = null;
-          }
-        };
-        return RootController2;
-      }();
-      var CompositeConstraint = function() {
-        function CompositeConstraint2(config) {
-          this.constraints_ = config.constraints;
-        }
-        Object.defineProperty(CompositeConstraint2.prototype, "constraints", {
-          get: function() {
-            return this.constraints_;
-          },
-          enumerable: false,
-          configurable: true
-        });
-        CompositeConstraint2.prototype.constrain = function(value) {
-          return this.constraints_.reduce(function(result, c) {
-            return c.constrain(result);
-          }, value);
-        };
-        return CompositeConstraint2;
-      }();
-      function findConstraint(c, constraintClass) {
-        if (c instanceof constraintClass) {
-          return c;
-        }
-        if (c instanceof CompositeConstraint) {
-          var result = c.constraints.reduce(function(tmpResult, sc) {
-            if (tmpResult) {
-              return tmpResult;
-            }
-            return sc instanceof constraintClass ? sc : null;
-          }, null);
-          if (result) {
-            return result;
-          }
-        }
-        return null;
-      }
-      var ListConstraint = function() {
-        function ListConstraint2(config) {
-          this.opts_ = config.options;
-        }
-        Object.defineProperty(ListConstraint2.prototype, "options", {
-          get: function() {
-            return this.opts_;
-          },
-          enumerable: false,
-          configurable: true
-        });
-        ListConstraint2.prototype.constrain = function(value) {
-          var opts = this.opts_;
-          if (opts.length === 0) {
+        __webpack_require__.t = function(value, mode) {
+          if (mode & 1)
+            value = __webpack_require__(value);
+          if (mode & 8)
             return value;
-          }
-          var matched = opts.filter(function(item) {
-            return item.value === value;
-          }).length > 0;
-          return matched ? value : opts[0].value;
+          if (mode & 4 && typeof value === "object" && value && value.__esModule)
+            return value;
+          var ns = Object.create(null);
+          __webpack_require__.r(ns);
+          Object.defineProperty(ns, "default", { enumerable: true, value });
+          if (mode & 2 && typeof value != "string")
+            for (var key2 in value)
+              __webpack_require__.d(ns, key2, function(key3) {
+                return value[key3];
+              }.bind(null, key2));
+          return ns;
         };
-        return ListConstraint2;
-      }();
-      function boolToString(value) {
-        return String(value);
-      }
-      function boolFromUnknown(value) {
-        if (value === "false") {
-          return false;
-        }
-        return !!value;
-      }
-      function BooleanFormatter(value) {
-        return boolToString(value);
-      }
-      function writePrimitive(target, value) {
-        target.write(value);
-      }
-      var StepConstraint = function() {
-        function StepConstraint2(config) {
-          this.step = config.step;
-        }
-        StepConstraint2.prototype.constrain = function(value) {
-          var r = value < 0 ? -Math.round(-value / this.step) : Math.round(value / this.step);
-          return r * this.step;
+        __webpack_require__.n = function(module2) {
+          var getter = module2 && module2.__esModule ? function getDefault() {
+            return module2["default"];
+          } : function getModuleExports() {
+            return module2;
+          };
+          __webpack_require__.d(getter, "a", getter);
+          return getter;
         };
-        return StepConstraint2;
-      }();
-      function mapRange(value, start1, end1, start2, end2) {
-        var p = (value - start1) / (end1 - start1);
-        return start2 + p * (end2 - start2);
-      }
-      function getDecimalDigits(value) {
-        var text = String(value.toFixed(10));
-        var frac = text.split(".")[1];
-        return frac.replace(/0+$/, "").length;
-      }
-      function constrainRange(value, min4, max4) {
-        return Math.min(Math.max(value, min4), max4);
-      }
-      function loopRange(value, max4) {
-        return (value % max4 + max4) % max4;
-      }
-      function normalizeInputParamsOptions(options, convert) {
-        if (Array.isArray(options)) {
-          return options.map(function(item) {
-            return {
-              text: item.text,
-              value: convert(item.value)
+        __webpack_require__.o = function(object, property) {
+          return Object.prototype.hasOwnProperty.call(object, property);
+        };
+        __webpack_require__.p = "";
+        return __webpack_require__(__webpack_require__.s = "./src/main/js/index.ts");
+      }({
+        "./node_modules/css-loader/lib/css-base.js": function(module2, exports2) {
+          module2.exports = function(useSourceMap) {
+            var list = [];
+            list.toString = function toString() {
+              return this.map(function(item) {
+                var content = cssWithMappingToString(item, useSourceMap);
+                if (item[2]) {
+                  return "@media " + item[2] + "{" + content + "}";
+                } else {
+                  return content;
+                }
+              }).join("");
             };
-          });
-        }
-        var textToValueMap = options;
-        var texts = Object.keys(textToValueMap);
-        return texts.reduce(function(result, text) {
-          return result.concat({
-            text,
-            value: convert(textToValueMap[text])
-          });
-        }, []);
-      }
-      function findListItems(constraint) {
-        var c = constraint ? findConstraint(constraint, ListConstraint) : null;
-        if (!c) {
-          return null;
-        }
-        return c.options;
-      }
-      function findStep(constraint) {
-        var c = constraint ? findConstraint(constraint, StepConstraint) : null;
-        if (!c) {
-          return null;
-        }
-        return c.step;
-      }
-      function getSuitableDecimalDigits(constraint, rawValue) {
-        var sc = constraint && findConstraint(constraint, StepConstraint);
-        if (sc) {
-          return getDecimalDigits(sc.step);
-        }
-        return Math.max(getDecimalDigits(rawValue), 2);
-      }
-      function getBaseStep(constraint) {
-        var step = findStep(constraint);
-        return step !== null && step !== void 0 ? step : 1;
-      }
-      var className$6 = ClassName("lst");
-      var ListView = function() {
-        function ListView2(doc, config) {
-          var _this = this;
-          this.onValueChange_ = this.onValueChange_.bind(this);
-          this.element = doc.createElement("div");
-          this.element.classList.add(className$6());
-          this.stringifyValue_ = config.stringifyValue;
-          var selectElem = doc.createElement("select");
-          selectElem.classList.add(className$6("s"));
-          config.options.forEach(function(item, index) {
-            var optionElem = doc.createElement("option");
-            optionElem.dataset.index = String(index);
-            optionElem.textContent = item.text;
-            optionElem.value = _this.stringifyValue_(item.value);
-            selectElem.appendChild(optionElem);
-          });
-          this.element.appendChild(selectElem);
-          this.selectElement = selectElem;
-          var markElem = doc.createElement("div");
-          markElem.classList.add(className$6("m"));
-          this.element.appendChild(markElem);
-          config.value.emitter.on("change", this.onValueChange_);
-          this.value = config.value;
-          this.update();
-        }
-        ListView2.prototype.update = function() {
-          this.selectElement.value = this.stringifyValue_(this.value.rawValue);
-        };
-        ListView2.prototype.onValueChange_ = function() {
-          this.update();
-        };
-        return ListView2;
-      }();
-      var ListController = function() {
-        function ListController2(doc, config) {
-          this.onSelectChange_ = this.onSelectChange_.bind(this);
-          this.value = config.value;
-          this.listItems_ = config.listItems;
-          this.view = new ListView(doc, {
-            options: this.listItems_,
-            stringifyValue: config.stringifyValue,
-            value: this.value
-          });
-          this.view.selectElement.addEventListener("change", this.onSelectChange_);
-        }
-        ListController2.prototype.onSelectChange_ = function(e) {
-          var selectElem = forceCast(e.currentTarget);
-          var optElem = selectElem.selectedOptions.item(0);
-          if (!optElem) {
-            return;
+            list.i = function(modules, mediaQuery) {
+              if (typeof modules === "string")
+                modules = [[null, modules, ""]];
+              var alreadyImportedModules = {};
+              for (var i = 0; i < this.length; i++) {
+                var id = this[i][0];
+                if (typeof id === "number")
+                  alreadyImportedModules[id] = true;
+              }
+              for (i = 0; i < modules.length; i++) {
+                var item = modules[i];
+                if (typeof item[0] !== "number" || !alreadyImportedModules[item[0]]) {
+                  if (mediaQuery && !item[2]) {
+                    item[2] = mediaQuery;
+                  } else if (mediaQuery) {
+                    item[2] = "(" + item[2] + ") and (" + mediaQuery + ")";
+                  }
+                  list.push(item);
+                }
+              }
+            };
+            return list;
+          };
+          function cssWithMappingToString(item, useSourceMap) {
+            var content = item[1] || "";
+            var cssMapping = item[3];
+            if (!cssMapping) {
+              return content;
+            }
+            if (useSourceMap && typeof btoa === "function") {
+              var sourceMapping = toComment(cssMapping);
+              var sourceURLs = cssMapping.sources.map(function(source) {
+                return "/*# sourceURL=" + cssMapping.sourceRoot + source + " */";
+              });
+              return [content].concat(sourceURLs).concat([sourceMapping]).join("\n");
+            }
+            return [content].join("\n");
           }
-          var itemIndex = Number(optElem.dataset.index);
-          this.value.rawValue = this.listItems_[itemIndex].value;
-          this.view.update();
-        };
-        return ListController2;
-      }();
-      var className$7 = ClassName("ckb");
-      var CheckboxView = function() {
-        function CheckboxView2(doc, config) {
-          this.onValueChange_ = this.onValueChange_.bind(this);
-          this.element = doc.createElement("div");
-          this.element.classList.add(className$7());
-          var labelElem = doc.createElement("label");
-          labelElem.classList.add(className$7("l"));
-          this.element.appendChild(labelElem);
-          var inputElem = doc.createElement("input");
-          inputElem.classList.add(className$7("i"));
-          inputElem.type = "checkbox";
-          labelElem.appendChild(inputElem);
-          this.inputElement = inputElem;
-          var markElem = doc.createElement("div");
-          markElem.classList.add(className$7("m"));
-          labelElem.appendChild(markElem);
-          config.value.emitter.on("change", this.onValueChange_);
-          this.value = config.value;
-          this.update();
-        }
-        CheckboxView2.prototype.update = function() {
-          this.inputElement.checked = this.value.rawValue;
-        };
-        CheckboxView2.prototype.onValueChange_ = function() {
-          this.update();
-        };
-        return CheckboxView2;
-      }();
-      var CheckboxController = function() {
-        function CheckboxController2(doc, config) {
-          this.onInputChange_ = this.onInputChange_.bind(this);
-          this.value = config.value;
-          this.view = new CheckboxView(doc, {
-            value: this.value
-          });
-          this.view.inputElement.addEventListener("change", this.onInputChange_);
-        }
-        CheckboxController2.prototype.onInputChange_ = function(e) {
-          var inputElem = forceCast(e.currentTarget);
-          this.value.rawValue = inputElem.checked;
-          this.view.update();
-        };
-        return CheckboxController2;
-      }();
-      function createConstraint(params) {
-        var constraints = [];
-        if ("options" in params && params.options !== void 0) {
-          constraints.push(new ListConstraint({
-            options: normalizeInputParamsOptions(params.options, boolFromUnknown)
-          }));
-        }
-        return new CompositeConstraint({
-          constraints
-        });
-      }
-      function createController$2(doc, value) {
-        var _a2;
-        var c = value.constraint;
-        if (c && findConstraint(c, ListConstraint)) {
-          return new ListController(doc, {
-            listItems: (_a2 = findListItems(c)) !== null && _a2 !== void 0 ? _a2 : [],
-            stringifyValue: boolToString,
-            value
-          });
-        }
-        return new CheckboxController(doc, {
-          value
-        });
-      }
-      var BooleanInputPlugin = {
-        id: "input-bool",
-        binding: {
-          accept: function(value) {
-            return typeof value === "boolean" ? value : null;
-          },
-          constraint: function(args) {
-            return createConstraint(args.params);
-          },
-          reader: function(_args) {
-            return boolFromUnknown;
-          },
-          writer: function(_args) {
-            return writePrimitive;
+          function toComment(sourceMap) {
+            var base64 = btoa(unescape(encodeURIComponent(JSON.stringify(sourceMap))));
+            var data = "sourceMappingURL=data:application/json;charset=utf-8;base64," + base64;
+            return "/*# " + data + " */";
           }
         },
-        controller: function(args) {
-          return createController$2(args.document, args.binding.value);
-        }
-      };
-      var className$8 = ClassName("txt");
-      var TextView = function() {
-        function TextView2(doc, config) {
-          this.onValueChange_ = this.onValueChange_.bind(this);
-          this.formatter_ = config.formatter;
-          this.element = doc.createElement("div");
-          this.element.classList.add(className$8());
-          var inputElem = doc.createElement("input");
-          inputElem.classList.add(className$8("i"));
-          inputElem.type = "text";
-          this.element.appendChild(inputElem);
-          this.inputElement = inputElem;
-          config.value.emitter.on("change", this.onValueChange_);
-          this.value = config.value;
-          this.update();
-        }
-        TextView2.prototype.update = function() {
-          this.inputElement.value = this.formatter_(this.value.rawValue);
-        };
-        TextView2.prototype.onValueChange_ = function() {
-          this.update();
-        };
-        return TextView2;
-      }();
-      var TextController = function() {
-        function TextController2(doc, config) {
-          this.onInputChange_ = this.onInputChange_.bind(this);
-          this.parser_ = config.parser;
-          this.value = config.value;
-          this.view = new TextView(doc, {
-            formatter: config.formatter,
-            value: this.value
-          });
-          this.view.inputElement.addEventListener("change", this.onInputChange_);
-        }
-        TextController2.prototype.onInputChange_ = function(e) {
-          var inputElem = forceCast(e.currentTarget);
-          var value = inputElem.value;
-          var parsedValue = this.parser_(value);
-          if (!isEmpty(parsedValue)) {
-            this.value.rawValue = parsedValue;
+        "./node_modules/process/browser.js": function(module2, exports2) {
+          var process2 = module2.exports = {};
+          var cachedSetTimeout;
+          var cachedClearTimeout;
+          function defaultSetTimout() {
+            throw new Error("setTimeout has not been defined");
           }
-          this.view.update();
-        };
-        return TextController2;
-      }();
-      var className$9 = ClassName("cswtxt");
-      var ColorSwatchTextView = function() {
-        function ColorSwatchTextView2(doc, config) {
-          this.element = doc.createElement("div");
-          this.element.classList.add(className$9());
-          var swatchElem = doc.createElement("div");
-          swatchElem.classList.add(className$9("s"));
-          this.swatchView_ = config.swatchView;
-          swatchElem.appendChild(this.swatchView_.element);
-          this.element.appendChild(swatchElem);
-          var textElem = doc.createElement("div");
-          textElem.classList.add(className$9("t"));
-          this.textView = config.textView;
-          textElem.appendChild(this.textView.element);
-          this.element.appendChild(textElem);
-        }
-        Object.defineProperty(ColorSwatchTextView2.prototype, "value", {
-          get: function() {
-            return this.textView.value;
-          },
-          enumerable: false,
-          configurable: true
-        });
-        ColorSwatchTextView2.prototype.update = function() {
-          this.swatchView_.update();
-          this.textView.update();
-        };
-        return ColorSwatchTextView2;
-      }();
-      var PickedColor = function() {
-        function PickedColor2(value) {
-          this.onValueChange_ = this.onValueChange_.bind(this);
-          this.mode_ = value.rawValue.mode;
-          this.value = value;
-          this.value.emitter.on("change", this.onValueChange_);
-          this.emitter = new Emitter();
-        }
-        Object.defineProperty(PickedColor2.prototype, "mode", {
-          get: function() {
-            return this.mode_;
-          },
-          set: function(mode) {
-            if (this.mode_ === mode) {
+          function defaultClearTimeout() {
+            throw new Error("clearTimeout has not been defined");
+          }
+          (function() {
+            try {
+              if (typeof setTimeout === "function") {
+                cachedSetTimeout = setTimeout;
+              } else {
+                cachedSetTimeout = defaultSetTimout;
+              }
+            } catch (e) {
+              cachedSetTimeout = defaultSetTimout;
+            }
+            try {
+              if (typeof clearTimeout === "function") {
+                cachedClearTimeout = clearTimeout;
+              } else {
+                cachedClearTimeout = defaultClearTimeout;
+              }
+            } catch (e) {
+              cachedClearTimeout = defaultClearTimeout;
+            }
+          })();
+          function runTimeout(fun) {
+            if (cachedSetTimeout === setTimeout) {
+              return setTimeout(fun, 0);
+            }
+            if ((cachedSetTimeout === defaultSetTimout || !cachedSetTimeout) && setTimeout) {
+              cachedSetTimeout = setTimeout;
+              return setTimeout(fun, 0);
+            }
+            try {
+              return cachedSetTimeout(fun, 0);
+            } catch (e) {
+              try {
+                return cachedSetTimeout.call(null, fun, 0);
+              } catch (e2) {
+                return cachedSetTimeout.call(this, fun, 0);
+              }
+            }
+          }
+          function runClearTimeout(marker2) {
+            if (cachedClearTimeout === clearTimeout) {
+              return clearTimeout(marker2);
+            }
+            if ((cachedClearTimeout === defaultClearTimeout || !cachedClearTimeout) && clearTimeout) {
+              cachedClearTimeout = clearTimeout;
+              return clearTimeout(marker2);
+            }
+            try {
+              return cachedClearTimeout(marker2);
+            } catch (e) {
+              try {
+                return cachedClearTimeout.call(null, marker2);
+              } catch (e2) {
+                return cachedClearTimeout.call(this, marker2);
+              }
+            }
+          }
+          var queue = [];
+          var draining = false;
+          var currentQueue;
+          var queueIndex = -1;
+          function cleanUpNextTick() {
+            if (!draining || !currentQueue) {
               return;
             }
-            this.mode_ = mode;
-            this.emitter.emit("change", {
-              propertyName: "mode",
-              sender: this
-            });
-          },
-          enumerable: false,
-          configurable: true
-        });
-        PickedColor2.prototype.onValueChange_ = function() {
-          this.emitter.emit("change", {
-            propertyName: "value",
-            sender: this
-          });
-        };
-        return PickedColor2;
-      }();
-      function parseNumber(text) {
-        var num = parseFloat(text);
-        if (isNaN(num)) {
-          return null;
-        }
-        return num;
-      }
-      function numberFromUnknown(value) {
-        if (typeof value === "number") {
-          return value;
-        }
-        if (typeof value === "string") {
-          var pv = parseNumber(value);
-          if (!isEmpty(pv)) {
-            return pv;
-          }
-        }
-        return 0;
-      }
-      function numberToString(value) {
-        return String(value);
-      }
-      function createNumberFormatter(digits) {
-        return function(value) {
-          return value.toFixed(Math.max(Math.min(digits, 20), 0));
-        };
-      }
-      var innerFormatter = createNumberFormatter(0);
-      function formatPercentage(value) {
-        return innerFormatter(value) + "%";
-      }
-      function rgbToHsl(r, g, b) {
-        var rp = constrainRange(r / 255, 0, 1);
-        var gp = constrainRange(g / 255, 0, 1);
-        var bp = constrainRange(b / 255, 0, 1);
-        var cmax = Math.max(rp, gp, bp);
-        var cmin = Math.min(rp, gp, bp);
-        var c = cmax - cmin;
-        var h = 0;
-        var s = 0;
-        var l = (cmin + cmax) / 2;
-        if (c !== 0) {
-          s = l > 0.5 ? c / (2 - cmin - cmax) : c / (cmax + cmin);
-          if (rp === cmax) {
-            h = (gp - bp) / c;
-          } else if (gp === cmax) {
-            h = 2 + (bp - rp) / c;
-          } else {
-            h = 4 + (rp - gp) / c;
-          }
-          h = h / 6 + (h < 0 ? 1 : 0);
-        }
-        return [h * 360, s * 100, l * 100];
-      }
-      function hslToRgb(h, s, l) {
-        var _a2, _b, _c, _d, _e, _f;
-        var hp = (h % 360 + 360) % 360;
-        var sp = constrainRange(s / 100, 0, 1);
-        var lp = constrainRange(l / 100, 0, 1);
-        var c = (1 - Math.abs(2 * lp - 1)) * sp;
-        var x = c * (1 - Math.abs(hp / 60 % 2 - 1));
-        var m = lp - c / 2;
-        var rp, gp, bp;
-        if (hp >= 0 && hp < 60) {
-          _a2 = [c, x, 0], rp = _a2[0], gp = _a2[1], bp = _a2[2];
-        } else if (hp >= 60 && hp < 120) {
-          _b = [x, c, 0], rp = _b[0], gp = _b[1], bp = _b[2];
-        } else if (hp >= 120 && hp < 180) {
-          _c = [0, c, x], rp = _c[0], gp = _c[1], bp = _c[2];
-        } else if (hp >= 180 && hp < 240) {
-          _d = [0, x, c], rp = _d[0], gp = _d[1], bp = _d[2];
-        } else if (hp >= 240 && hp < 300) {
-          _e = [x, 0, c], rp = _e[0], gp = _e[1], bp = _e[2];
-        } else {
-          _f = [c, 0, x], rp = _f[0], gp = _f[1], bp = _f[2];
-        }
-        return [(rp + m) * 255, (gp + m) * 255, (bp + m) * 255];
-      }
-      function rgbToHsv(r, g, b) {
-        var rp = constrainRange(r / 255, 0, 1);
-        var gp = constrainRange(g / 255, 0, 1);
-        var bp = constrainRange(b / 255, 0, 1);
-        var cmax = Math.max(rp, gp, bp);
-        var cmin = Math.min(rp, gp, bp);
-        var d = cmax - cmin;
-        var h;
-        if (d === 0) {
-          h = 0;
-        } else if (cmax === rp) {
-          h = 60 * (((gp - bp) / d % 6 + 6) % 6);
-        } else if (cmax === gp) {
-          h = 60 * ((bp - rp) / d + 2);
-        } else {
-          h = 60 * ((rp - gp) / d + 4);
-        }
-        var s = cmax === 0 ? 0 : d / cmax;
-        var v = cmax;
-        return [h, s * 100, v * 100];
-      }
-      function hsvToRgb(h, s, v) {
-        var _a2, _b, _c, _d, _e, _f;
-        var hp = loopRange(h, 360);
-        var sp = constrainRange(s / 100, 0, 1);
-        var vp = constrainRange(v / 100, 0, 1);
-        var c = vp * sp;
-        var x = c * (1 - Math.abs(hp / 60 % 2 - 1));
-        var m = vp - c;
-        var rp, gp, bp;
-        if (hp >= 0 && hp < 60) {
-          _a2 = [c, x, 0], rp = _a2[0], gp = _a2[1], bp = _a2[2];
-        } else if (hp >= 60 && hp < 120) {
-          _b = [x, c, 0], rp = _b[0], gp = _b[1], bp = _b[2];
-        } else if (hp >= 120 && hp < 180) {
-          _c = [0, c, x], rp = _c[0], gp = _c[1], bp = _c[2];
-        } else if (hp >= 180 && hp < 240) {
-          _d = [0, x, c], rp = _d[0], gp = _d[1], bp = _d[2];
-        } else if (hp >= 240 && hp < 300) {
-          _e = [x, 0, c], rp = _e[0], gp = _e[1], bp = _e[2];
-        } else {
-          _f = [c, 0, x], rp = _f[0], gp = _f[1], bp = _f[2];
-        }
-        return [(rp + m) * 255, (gp + m) * 255, (bp + m) * 255];
-      }
-      function removeAlphaComponent(comps) {
-        return [comps[0], comps[1], comps[2]];
-      }
-      function appendAlphaComponent(comps, alpha) {
-        return [comps[0], comps[1], comps[2], alpha];
-      }
-      var MODE_CONVERTER_MAP = {
-        hsl: {
-          hsl: function(h, s, l) {
-            return [h, s, l];
-          },
-          hsv: function(h, s, l) {
-            var _a2 = hslToRgb(h, s, l), r = _a2[0], g = _a2[1], b = _a2[2];
-            return rgbToHsv(r, g, b);
-          },
-          rgb: hslToRgb
-        },
-        hsv: {
-          hsl: function(h, s, v) {
-            var _a2 = hsvToRgb(h, s, v), r = _a2[0], g = _a2[1], b = _a2[2];
-            return rgbToHsl(r, g, b);
-          },
-          hsv: function(h, s, v) {
-            return [h, s, v];
-          },
-          rgb: hsvToRgb
-        },
-        rgb: {
-          hsl: rgbToHsl,
-          hsv: rgbToHsv,
-          rgb: function(r, g, b) {
-            return [r, g, b];
-          }
-        }
-      };
-      function convertColorMode(components, fromMode, toMode) {
-        var _a2;
-        return (_a2 = MODE_CONVERTER_MAP[fromMode])[toMode].apply(_a2, components);
-      }
-      var CONSTRAINT_MAP = {
-        hsl: function(comps) {
-          var _a2;
-          return [
-            loopRange(comps[0], 360),
-            constrainRange(comps[1], 0, 100),
-            constrainRange(comps[2], 0, 100),
-            constrainRange((_a2 = comps[3]) !== null && _a2 !== void 0 ? _a2 : 1, 0, 1)
-          ];
-        },
-        hsv: function(comps) {
-          var _a2;
-          return [
-            loopRange(comps[0], 360),
-            constrainRange(comps[1], 0, 100),
-            constrainRange(comps[2], 0, 100),
-            constrainRange((_a2 = comps[3]) !== null && _a2 !== void 0 ? _a2 : 1, 0, 1)
-          ];
-        },
-        rgb: function(comps) {
-          var _a2;
-          return [
-            constrainRange(comps[0], 0, 255),
-            constrainRange(comps[1], 0, 255),
-            constrainRange(comps[2], 0, 255),
-            constrainRange((_a2 = comps[3]) !== null && _a2 !== void 0 ? _a2 : 1, 0, 1)
-          ];
-        }
-      };
-      function isRgbColorComponent(obj, key2) {
-        if (typeof obj !== "object" || isEmpty(obj)) {
-          return false;
-        }
-        return key2 in obj && typeof obj[key2] === "number";
-      }
-      var Color = function() {
-        function Color2(comps, mode) {
-          this.mode_ = mode;
-          this.comps_ = CONSTRAINT_MAP[mode](comps);
-        }
-        Color2.black = function() {
-          return new Color2([0, 0, 0], "rgb");
-        };
-        Color2.fromObject = function(obj) {
-          var comps = "a" in obj ? [obj.r, obj.g, obj.b, obj.a] : [obj.r, obj.g, obj.b];
-          return new Color2(comps, "rgb");
-        };
-        Color2.toRgbaObject = function(color) {
-          return color.toRgbaObject();
-        };
-        Color2.isRgbColorObject = function(obj) {
-          return isRgbColorComponent(obj, "r") && isRgbColorComponent(obj, "g") && isRgbColorComponent(obj, "b");
-        };
-        Color2.isRgbaColorObject = function(obj) {
-          return this.isRgbColorObject(obj) && isRgbColorComponent(obj, "a");
-        };
-        Color2.isColorObject = function(obj) {
-          return this.isRgbColorObject(obj);
-        };
-        Color2.equals = function(v1, v2) {
-          if (v1.mode_ !== v2.mode_) {
-            return false;
-          }
-          var comps1 = v1.comps_;
-          var comps2 = v2.comps_;
-          for (var i = 0; i < comps1.length; i++) {
-            if (comps1[i] !== comps2[i]) {
-              return false;
+            draining = false;
+            if (currentQueue.length) {
+              queue = currentQueue.concat(queue);
+            } else {
+              queueIndex = -1;
+            }
+            if (queue.length) {
+              drainQueue();
             }
           }
-          return true;
-        };
-        Object.defineProperty(Color2.prototype, "mode", {
-          get: function() {
-            return this.mode_;
-          },
-          enumerable: false,
-          configurable: true
-        });
-        Color2.prototype.getComponents = function(opt_mode) {
-          return appendAlphaComponent(convertColorMode(removeAlphaComponent(this.comps_), this.mode_, opt_mode || this.mode_), this.comps_[3]);
-        };
-        Color2.prototype.toRgbaObject = function() {
-          var rgbComps = this.getComponents("rgb");
-          return {
-            r: rgbComps[0],
-            g: rgbComps[1],
-            b: rgbComps[2],
-            a: rgbComps[3]
+          function drainQueue() {
+            if (draining) {
+              return;
+            }
+            var timeout = runTimeout(cleanUpNextTick);
+            draining = true;
+            var len5 = queue.length;
+            while (len5) {
+              currentQueue = queue;
+              queue = [];
+              while (++queueIndex < len5) {
+                if (currentQueue) {
+                  currentQueue[queueIndex].run();
+                }
+              }
+              queueIndex = -1;
+              len5 = queue.length;
+            }
+            currentQueue = null;
+            draining = false;
+            runClearTimeout(timeout);
+          }
+          process2.nextTick = function(fun) {
+            var args = new Array(arguments.length - 1);
+            if (arguments.length > 1) {
+              for (var i = 1; i < arguments.length; i++) {
+                args[i - 1] = arguments[i];
+              }
+            }
+            queue.push(new Item(fun, args));
+            if (queue.length === 1 && !draining) {
+              runTimeout(drainQueue);
+            }
           };
-        };
-        return Color2;
-      }();
-      function parseCssNumberOrPercentage(text, maxValue) {
-        var m = text.match(/^(.+)%$/);
-        if (!m) {
-          return Math.min(parseFloat(text), maxValue);
-        }
-        return Math.min(parseFloat(m[1]) * 0.01 * maxValue, maxValue);
-      }
-      var ANGLE_TO_DEG_MAP = {
-        deg: function(angle3) {
-          return angle3;
+          function Item(fun, array) {
+            this.fun = fun;
+            this.array = array;
+          }
+          Item.prototype.run = function() {
+            this.fun.apply(null, this.array);
+          };
+          process2.title = "browser";
+          process2.browser = true;
+          process2.env = {};
+          process2.argv = [];
+          process2.version = "";
+          process2.versions = {};
+          function noop() {
+          }
+          process2.on = noop;
+          process2.addListener = noop;
+          process2.once = noop;
+          process2.off = noop;
+          process2.removeListener = noop;
+          process2.removeAllListeners = noop;
+          process2.emit = noop;
+          process2.prependListener = noop;
+          process2.prependOnceListener = noop;
+          process2.listeners = function(name) {
+            return [];
+          };
+          process2.binding = function(name) {
+            throw new Error("process.binding is not supported");
+          };
+          process2.cwd = function() {
+            return "/";
+          };
+          process2.chdir = function(dir) {
+            throw new Error("process.chdir is not supported");
+          };
+          process2.umask = function() {
+            return 0;
+          };
         },
-        grad: function(angle3) {
-          return angle3 * 360 / 400;
+        "./src/main/js/api/button.ts": function(module2, exports2, __webpack_require__) {
+          "use strict";
+          Object.defineProperty(exports2, "__esModule", { value: true });
+          exports2.ButtonApi = void 0;
+          var ButtonApi = function() {
+            function ButtonApi2(buttonController) {
+              this.controller = buttonController;
+            }
+            Object.defineProperty(ButtonApi2.prototype, "hidden", {
+              get: function() {
+                return this.controller.viewModel.hidden;
+              },
+              set: function(hidden) {
+                this.controller.viewModel.hidden = hidden;
+              },
+              enumerable: false,
+              configurable: true
+            });
+            ButtonApi2.prototype.dispose = function() {
+              this.controller.viewModel.dispose();
+            };
+            ButtonApi2.prototype.on = function(eventName, handler) {
+              var emitter = this.controller.button.emitter;
+              emitter.on(eventName, handler.bind(this));
+              return this;
+            };
+            return ButtonApi2;
+          }();
+          exports2.ButtonApi = ButtonApi;
         },
-        rad: function(angle3) {
-          return angle3 * 360 / (2 * Math.PI);
-        },
-        turn: function(angle3) {
-          return angle3 * 360;
-        }
-      };
-      function parseCssNumberOrAngle(text) {
-        var m = text.match(/^([0-9.]+?)(deg|grad|rad|turn)$/);
-        if (!m) {
-          return parseFloat(text);
-        }
-        var angle3 = parseFloat(m[1]);
-        var unit = m[2];
-        return ANGLE_TO_DEG_MAP[unit](angle3);
-      }
-      var NOTATION_TO_PARSER_MAP = {
-        "func.rgb": function(text) {
-          var m = text.match(/^rgb\(\s*([0-9A-Fa-f.]+%?)\s*,\s*([0-9A-Fa-f.]+%?)\s*,\s*([0-9A-Fa-f.]+%?)\s*\)$/);
-          if (!m) {
-            return null;
-          }
-          var comps = [
-            parseCssNumberOrPercentage(m[1], 255),
-            parseCssNumberOrPercentage(m[2], 255),
-            parseCssNumberOrPercentage(m[3], 255)
-          ];
-          if (isNaN(comps[0]) || isNaN(comps[1]) || isNaN(comps[2])) {
-            return null;
-          }
-          return new Color(comps, "rgb");
-        },
-        "func.rgba": function(text) {
-          var m = text.match(/^rgba\(\s*([0-9A-Fa-f.]+%?)\s*,\s*([0-9A-Fa-f.]+%?)\s*,\s*([0-9A-Fa-f.]+%?)\s*,\s*([0-9A-Fa-f.]+%?)\s*\)$/);
-          if (!m) {
-            return null;
-          }
-          var comps = [
-            parseCssNumberOrPercentage(m[1], 255),
-            parseCssNumberOrPercentage(m[2], 255),
-            parseCssNumberOrPercentage(m[3], 255),
-            parseCssNumberOrPercentage(m[4], 1)
-          ];
-          if (isNaN(comps[0]) || isNaN(comps[1]) || isNaN(comps[2]) || isNaN(comps[3])) {
-            return null;
-          }
-          return new Color(comps, "rgb");
-        },
-        "func.hsl": function(text) {
-          var m = text.match(/^hsl\(\s*([0-9A-Fa-f.]+(?:deg|grad|rad|turn)?)\s*,\s*([0-9A-Fa-f.]+%?)\s*,\s*([0-9A-Fa-f.]+%?)\s*\)$/);
-          if (!m) {
-            return null;
-          }
-          var comps = [
-            parseCssNumberOrAngle(m[1]),
-            parseCssNumberOrPercentage(m[2], 100),
-            parseCssNumberOrPercentage(m[3], 100)
-          ];
-          if (isNaN(comps[0]) || isNaN(comps[1]) || isNaN(comps[2])) {
-            return null;
-          }
-          return new Color(comps, "hsl");
-        },
-        "func.hsla": function(text) {
-          var m = text.match(/^hsla\(\s*([0-9A-Fa-f.]+(?:deg|grad|rad|turn)?)\s*,\s*([0-9A-Fa-f.]+%?)\s*,\s*([0-9A-Fa-f.]+%?)\s*,\s*([0-9A-Fa-f.]+%?)\s*\)$/);
-          if (!m) {
-            return null;
-          }
-          var comps = [
-            parseCssNumberOrAngle(m[1]),
-            parseCssNumberOrPercentage(m[2], 100),
-            parseCssNumberOrPercentage(m[3], 100),
-            parseCssNumberOrPercentage(m[4], 1)
-          ];
-          if (isNaN(comps[0]) || isNaN(comps[1]) || isNaN(comps[2]) || isNaN(comps[3])) {
-            return null;
-          }
-          return new Color(comps, "hsl");
-        },
-        "hex.rgb": function(text) {
-          var mRrggbb = text.match(/^#([0-9A-Fa-f])([0-9A-Fa-f])([0-9A-Fa-f])$/);
-          if (mRrggbb) {
-            return new Color([
-              parseInt(mRrggbb[1] + mRrggbb[1], 16),
-              parseInt(mRrggbb[2] + mRrggbb[2], 16),
-              parseInt(mRrggbb[3] + mRrggbb[3], 16)
-            ], "rgb");
-          }
-          var mRgb = text.match(/^#([0-9A-Fa-f]{2})([0-9A-Fa-f]{2})([0-9A-Fa-f]{2})$/);
-          if (mRgb) {
-            return new Color([parseInt(mRgb[1], 16), parseInt(mRgb[2], 16), parseInt(mRgb[3], 16)], "rgb");
-          }
-          return null;
-        },
-        "hex.rgba": function(text) {
-          var mRrggbb = text.match(/^#?([0-9A-Fa-f])([0-9A-Fa-f])([0-9A-Fa-f])([0-9A-Fa-f])$/);
-          if (mRrggbb) {
-            return new Color([
-              parseInt(mRrggbb[1] + mRrggbb[1], 16),
-              parseInt(mRrggbb[2] + mRrggbb[2], 16),
-              parseInt(mRrggbb[3] + mRrggbb[3], 16),
-              mapRange(parseInt(mRrggbb[4] + mRrggbb[4], 16), 0, 255, 0, 1)
-            ], "rgb");
-          }
-          var mRgb = text.match(/^#?([0-9A-Fa-f]{2})([0-9A-Fa-f]{2})([0-9A-Fa-f]{2})([0-9A-Fa-f]{2})$/);
-          if (mRgb) {
-            return new Color([
-              parseInt(mRgb[1], 16),
-              parseInt(mRgb[2], 16),
-              parseInt(mRgb[3], 16),
-              mapRange(parseInt(mRgb[4], 16), 0, 255, 0, 1)
-            ], "rgb");
-          }
-          return null;
-        }
-      };
-      function getColorNotation(text) {
-        var notations = Object.keys(NOTATION_TO_PARSER_MAP);
-        return notations.reduce(function(result, notation) {
-          if (result) {
-            return result;
-          }
-          var subparser = NOTATION_TO_PARSER_MAP[notation];
-          return subparser(text) ? notation : null;
-        }, null);
-      }
-      var CompositeColorParser = function(text) {
-        var notation = getColorNotation(text);
-        return notation ? NOTATION_TO_PARSER_MAP[notation](text) : null;
-      };
-      function hasAlphaComponent(notation) {
-        return notation === "func.hsla" || notation === "func.rgba" || notation === "hex.rgba";
-      }
-      function colorFromString(value) {
-        if (typeof value === "string") {
-          var cv = CompositeColorParser(value);
-          if (cv) {
-            return cv;
-          }
-        }
-        return Color.black();
-      }
-      function zerofill(comp) {
-        var hex = constrainRange(Math.floor(comp), 0, 255).toString(16);
-        return hex.length === 1 ? "0" + hex : hex;
-      }
-      function colorToHexRgbString(value) {
-        var hexes = removeAlphaComponent(value.getComponents("rgb")).map(zerofill).join("");
-        return "#" + hexes;
-      }
-      function colorToHexRgbaString(value) {
-        var rgbaComps = value.getComponents("rgb");
-        var hexes = [rgbaComps[0], rgbaComps[1], rgbaComps[2], rgbaComps[3] * 255].map(zerofill).join("");
-        return "#" + hexes;
-      }
-      function colorToFunctionalRgbString(value) {
-        var formatter = createNumberFormatter(0);
-        var comps = removeAlphaComponent(value.getComponents("rgb")).map(function(comp) {
-          return formatter(comp);
-        });
-        return "rgb(" + comps.join(", ") + ")";
-      }
-      function colorToFunctionalRgbaString(value) {
-        var aFormatter = createNumberFormatter(2);
-        var rgbFormatter = createNumberFormatter(0);
-        var comps = value.getComponents("rgb").map(function(comp, index) {
-          var formatter = index === 3 ? aFormatter : rgbFormatter;
-          return formatter(comp);
-        });
-        return "rgba(" + comps.join(", ") + ")";
-      }
-      function colorToFunctionalHslString(value) {
-        var formatters = [
-          createNumberFormatter(0),
-          formatPercentage,
-          formatPercentage
-        ];
-        var comps = removeAlphaComponent(value.getComponents("hsl")).map(function(comp, index) {
-          return formatters[index](comp);
-        });
-        return "hsl(" + comps.join(", ") + ")";
-      }
-      function colorToFunctionalHslaString(value) {
-        var formatters = [
-          createNumberFormatter(0),
-          formatPercentage,
-          formatPercentage,
-          createNumberFormatter(2)
-        ];
-        var comps = value.getComponents("hsl").map(function(comp, index) {
-          return formatters[index](comp);
-        });
-        return "hsla(" + comps.join(", ") + ")";
-      }
-      var NOTATION_TO_STRINGIFIER_MAP = {
-        "func.hsl": colorToFunctionalHslString,
-        "func.hsla": colorToFunctionalHslaString,
-        "func.rgb": colorToFunctionalRgbString,
-        "func.rgba": colorToFunctionalRgbaString,
-        "hex.rgb": colorToHexRgbString,
-        "hex.rgba": colorToHexRgbaString
-      };
-      function getColorStringifier(notation) {
-        return NOTATION_TO_STRINGIFIER_MAP[notation];
-      }
-      var className$a = ClassName("csw");
-      var ColorSwatchView = function() {
-        function ColorSwatchView2(doc, config) {
-          this.onValueChange_ = this.onValueChange_.bind(this);
-          config.value.emitter.on("change", this.onValueChange_);
-          this.value = config.value;
-          this.element = doc.createElement("div");
-          this.element.classList.add(className$a());
-          var swatchElem = doc.createElement("div");
-          swatchElem.classList.add(className$a("sw"));
-          this.element.appendChild(swatchElem);
-          this.swatchElem_ = swatchElem;
-          var buttonElem = doc.createElement("button");
-          buttonElem.classList.add(className$a("b"));
-          this.element.appendChild(buttonElem);
-          this.buttonElement = buttonElem;
-          var pickerElem = doc.createElement("div");
-          pickerElem.classList.add(className$a("p"));
-          this.pickerView_ = config.pickerView;
-          pickerElem.appendChild(this.pickerView_.element);
-          this.element.appendChild(pickerElem);
-          this.update();
-        }
-        ColorSwatchView2.prototype.update = function() {
-          var value = this.value.rawValue;
-          this.swatchElem_.style.backgroundColor = colorToHexRgbaString(value);
-        };
-        ColorSwatchView2.prototype.onValueChange_ = function() {
-          this.update();
-        };
-        return ColorSwatchView2;
-      }();
-      var Foldable = function() {
-        function Foldable2() {
-          this.emitter = new Emitter();
-          this.expanded_ = false;
-        }
-        Object.defineProperty(Foldable2.prototype, "expanded", {
-          get: function() {
-            return this.expanded_;
-          },
-          set: function(expanded) {
-            var changed = this.expanded_ !== expanded;
-            if (changed) {
-              this.expanded_ = expanded;
-              this.emitter.emit("change", {
-                sender: this
+        "./src/main/js/api/event-handler-adapters.ts": function(module2, exports2, __webpack_require__) {
+          "use strict";
+          Object.defineProperty(exports2, "__esModule", { value: true });
+          exports2.folder = exports2.monitor = exports2.input = void 0;
+          function input(_a2) {
+            var binding = _a2.binding, eventName = _a2.eventName, handler = _a2.handler;
+            if (eventName === "change") {
+              var emitter = binding.emitter;
+              emitter.on("change", function(ev) {
+                handler(ev.sender.getValueToWrite(ev.rawValue));
               });
             }
-          },
-          enumerable: false,
-          configurable: true
-        });
-        return Foldable2;
-      }();
-      function connect(_a2) {
-        var primary = _a2.primary, secondary = _a2.secondary, forward = _a2.forward, backward = _a2.backward;
-        primary.emitter.on("change", function() {
-          secondary.rawValue = forward(primary, secondary);
-        });
-        secondary.emitter.on("change", function() {
-          primary.rawValue = backward(primary, secondary);
-        });
-        secondary.rawValue = forward(primary, secondary);
-      }
-      function getStepForKey(baseStep, keys) {
-        var step = baseStep * (keys.altKey ? 0.1 : 1) * (keys.shiftKey ? 10 : 1);
-        if (keys.upKey) {
-          return +step;
-        } else if (keys.downKey) {
-          return -step;
-        }
-        return 0;
-      }
-      function getVerticalStepKeys(ev) {
-        return {
-          altKey: ev.altKey,
-          downKey: ev.keyCode === 40,
-          shiftKey: ev.shiftKey,
-          upKey: ev.keyCode === 38
-        };
-      }
-      function getHorizontalStepKeys(ev) {
-        return {
-          altKey: ev.altKey,
-          downKey: ev.keyCode === 37,
-          shiftKey: ev.shiftKey,
-          upKey: ev.keyCode === 39
-        };
-      }
-      function isVerticalArrowKey(keyCode) {
-        return keyCode === 38 || keyCode === 40;
-      }
-      function isArrowKey(keyCode) {
-        return isVerticalArrowKey(keyCode) || keyCode === 37 || keyCode === 39;
-      }
-      var NumberTextController = function(_super) {
-        __extends(NumberTextController2, _super);
-        function NumberTextController2(doc, config) {
-          var _this = _super.call(this, doc, config) || this;
-          _this.onInputKeyDown_ = _this.onInputKeyDown_.bind(_this);
-          _this.baseStep_ = config.baseStep;
-          _this.view.inputElement.addEventListener("keydown", _this.onInputKeyDown_);
-          return _this;
-        }
-        NumberTextController2.prototype.onInputKeyDown_ = function(e) {
-          var step = getStepForKey(this.baseStep_, getVerticalStepKeys(e));
-          if (step !== 0) {
-            this.value.rawValue += step;
-            this.view.update();
           }
-        };
-        return NumberTextController2;
-      }(TextController);
-      var className$b = ClassName("clp");
-      var ColorPickerView = function() {
-        function ColorPickerView2(doc, config) {
-          this.alphaViews_ = null;
-          this.onFoldableChange_ = this.onFoldableChange_.bind(this);
-          this.onValueChange_ = this.onValueChange_.bind(this);
-          this.pickedColor = config.pickedColor;
-          this.pickedColor.value.emitter.on("change", this.onValueChange_);
-          this.foldable = config.foldable;
-          this.foldable.emitter.on("change", this.onFoldableChange_);
-          this.element = doc.createElement("div");
-          this.element.classList.add(className$b());
-          var hsvElem = doc.createElement("div");
-          hsvElem.classList.add(className$b("hsv"));
-          var svElem = doc.createElement("div");
-          svElem.classList.add(className$b("sv"));
-          this.svPaletteView_ = config.svPaletteView;
-          svElem.appendChild(this.svPaletteView_.element);
-          hsvElem.appendChild(svElem);
-          var hElem = doc.createElement("div");
-          hElem.classList.add(className$b("h"));
-          this.hPaletteView_ = config.hPaletteView;
-          hElem.appendChild(this.hPaletteView_.element);
-          hsvElem.appendChild(hElem);
-          this.element.appendChild(hsvElem);
-          var rgbElem = doc.createElement("div");
-          rgbElem.classList.add(className$b("rgb"));
-          this.compTextsView_ = config.componentTextsView;
-          rgbElem.appendChild(this.compTextsView_.element);
-          this.element.appendChild(rgbElem);
-          if (config.alphaViews) {
-            this.alphaViews_ = {
-              palette: config.alphaViews.palette,
-              text: config.alphaViews.text
+          exports2.input = input;
+          function monitor(_a2) {
+            var binding = _a2.binding, eventName = _a2.eventName, handler = _a2.handler;
+            if (eventName === "update") {
+              var emitter = binding.emitter;
+              emitter.on("update", function(ev) {
+                handler(ev.sender.target.read());
+              });
+            }
+          }
+          exports2.monitor = monitor;
+          function folder(_a2) {
+            var eventName = _a2.eventName, folder2 = _a2.folder, handler = _a2.handler, uiContainer = _a2.uiContainer;
+            if (eventName === "change") {
+              var emitter = uiContainer.emitter;
+              emitter.on("inputchange", function(ev) {
+                handler(ev.inputBinding.getValueToWrite(ev.value));
+              });
+            }
+            if (eventName === "update") {
+              var emitter = uiContainer.emitter;
+              emitter.on("monitorupdate", function(ev) {
+                handler(ev.monitorBinding.target.read());
+              });
+            }
+            if (eventName === "fold") {
+              uiContainer.emitter.on("itemfold", function(ev) {
+                handler(ev.expanded);
+              });
+              folder2 === null || folder2 === void 0 ? void 0 : folder2.emitter.on("change", function(ev) {
+                if (ev.propertyName !== "expanded") {
+                  return;
+                }
+                handler(ev.sender.expanded);
+              });
+            }
+          }
+          exports2.folder = folder;
+        },
+        "./src/main/js/api/folder.ts": function(module2, exports2, __webpack_require__) {
+          "use strict";
+          var __assign = this && this.__assign || function() {
+            __assign = Object.assign || function(t) {
+              for (var s, i = 1, n = arguments.length; i < n; i++) {
+                s = arguments[i];
+                for (var p in s)
+                  if (Object.prototype.hasOwnProperty.call(s, p))
+                    t[p] = s[p];
+              }
+              return t;
             };
-            var aElem = doc.createElement("div");
-            aElem.classList.add(className$b("a"));
-            var apElem = doc.createElement("div");
-            apElem.classList.add(className$b("ap"));
-            apElem.appendChild(this.alphaViews_.palette.element);
-            aElem.appendChild(apElem);
-            var atElem = doc.createElement("div");
-            atElem.classList.add(className$b("at"));
-            atElem.appendChild(this.alphaViews_.text.element);
-            aElem.appendChild(atElem);
-            this.element.appendChild(aElem);
-          }
-          this.update();
-        }
-        Object.defineProperty(ColorPickerView2.prototype, "allFocusableElements", {
-          get: function() {
-            var elems = __spreadArrays([
-              this.svPaletteView_.element,
-              this.hPaletteView_.element
-            ], this.compTextsView_.inputElements);
-            if (this.alphaViews_) {
-              elems.push(this.alphaViews_.palette.element, this.alphaViews_.text.inputElement);
-            }
-            return forceCast(elems);
-          },
-          enumerable: false,
-          configurable: true
-        });
-        Object.defineProperty(ColorPickerView2.prototype, "value", {
-          get: function() {
-            return this.pickedColor.value;
-          },
-          enumerable: false,
-          configurable: true
-        });
-        ColorPickerView2.prototype.update = function() {
-          if (this.foldable.expanded) {
-            this.element.classList.add(className$b(void 0, "expanded"));
-          } else {
-            this.element.classList.remove(className$b(void 0, "expanded"));
-          }
-        };
-        ColorPickerView2.prototype.onValueChange_ = function() {
-          this.update();
-        };
-        ColorPickerView2.prototype.onFoldableChange_ = function() {
-          this.update();
-        };
-        return ColorPickerView2;
-      }();
-      function computeOffset(ev, elem) {
-        var win = elem.ownerDocument.defaultView;
-        var rect = elem.getBoundingClientRect();
-        return [
-          ev.pageX - ((win && win.scrollX || 0) + rect.left),
-          ev.pageY - ((win && win.scrollY || 0) + rect.top)
-        ];
-      }
-      var PointerHandler = function() {
-        function PointerHandler2(doc, element) {
-          this.onDocumentMouseMove_ = this.onDocumentMouseMove_.bind(this);
-          this.onDocumentMouseUp_ = this.onDocumentMouseUp_.bind(this);
-          this.onMouseDown_ = this.onMouseDown_.bind(this);
-          this.onTouchMove_ = this.onTouchMove_.bind(this);
-          this.onTouchStart_ = this.onTouchStart_.bind(this);
-          this.document = doc;
-          this.element = element;
-          this.emitter = new Emitter();
-          this.pressed_ = false;
-          if (supportsTouch(this.document)) {
-            element.addEventListener("touchstart", this.onTouchStart_);
-            element.addEventListener("touchmove", this.onTouchMove_);
-          } else {
-            element.addEventListener("mousedown", this.onMouseDown_);
-            this.document.addEventListener("mousemove", this.onDocumentMouseMove_);
-            this.document.addEventListener("mouseup", this.onDocumentMouseUp_);
-          }
-        }
-        PointerHandler2.prototype.computePosition_ = function(offsetX, offsetY) {
-          var rect = this.element.getBoundingClientRect();
-          return {
-            px: offsetX / rect.width,
-            py: offsetY / rect.height
+            return __assign.apply(this, arguments);
           };
-        };
-        PointerHandler2.prototype.onMouseDown_ = function(e) {
-          var _a2;
-          e.preventDefault();
-          (_a2 = e.currentTarget) === null || _a2 === void 0 ? void 0 : _a2.focus();
-          this.pressed_ = true;
-          this.emitter.emit("down", {
-            data: this.computePosition_.apply(this, computeOffset(e, this.element)),
-            sender: this
-          });
-        };
-        PointerHandler2.prototype.onDocumentMouseMove_ = function(e) {
-          if (!this.pressed_) {
-            return;
-          }
-          this.emitter.emit("move", {
-            data: this.computePosition_.apply(this, computeOffset(e, this.element)),
-            sender: this
-          });
-        };
-        PointerHandler2.prototype.onDocumentMouseUp_ = function(e) {
-          if (!this.pressed_) {
-            return;
-          }
-          this.pressed_ = false;
-          this.emitter.emit("up", {
-            data: this.computePosition_.apply(this, computeOffset(e, this.element)),
-            sender: this
-          });
-        };
-        PointerHandler2.prototype.onTouchStart_ = function(e) {
-          e.preventDefault();
-          var touch = e.targetTouches[0];
-          var rect = this.element.getBoundingClientRect();
-          this.emitter.emit("down", {
-            data: this.computePosition_(touch.clientX - rect.left, touch.clientY - rect.top),
-            sender: this
-          });
-        };
-        PointerHandler2.prototype.onTouchMove_ = function(e) {
-          var touch = e.targetTouches[0];
-          var rect = this.element.getBoundingClientRect();
-          this.emitter.emit("move", {
-            data: this.computePosition_(touch.clientX - rect.left, touch.clientY - rect.top),
-            sender: this
-          });
-        };
-        return PointerHandler2;
-      }();
-      function getBaseStepForColor(forAlpha) {
-        return forAlpha ? 0.1 : 1;
-      }
-      var className$c = ClassName("apl");
-      var APaletteView = function() {
-        function APaletteView2(doc, config) {
-          this.onValueChange_ = this.onValueChange_.bind(this);
-          this.value = config.value;
-          this.value.emitter.on("change", this.onValueChange_);
-          this.element = doc.createElement("div");
-          this.element.classList.add(className$c());
-          this.element.tabIndex = 0;
-          var barElem = doc.createElement("div");
-          barElem.classList.add(className$c("b"));
-          this.element.appendChild(barElem);
-          var colorElem = doc.createElement("div");
-          colorElem.classList.add(className$c("c"));
-          barElem.appendChild(colorElem);
-          this.colorElem_ = colorElem;
-          var markerElem = doc.createElement("div");
-          markerElem.classList.add(className$c("m"));
-          this.element.appendChild(markerElem);
-          this.markerElem_ = markerElem;
-          var previewElem = doc.createElement("div");
-          previewElem.classList.add(className$c("p"));
-          this.markerElem_.appendChild(previewElem);
-          this.previewElem_ = previewElem;
-          this.update();
-        }
-        APaletteView2.prototype.update = function() {
-          var c = this.value.rawValue;
-          var rgbaComps = c.getComponents("rgb");
-          var leftColor = new Color([rgbaComps[0], rgbaComps[1], rgbaComps[2], 0], "rgb");
-          var rightColor = new Color([rgbaComps[0], rgbaComps[1], rgbaComps[2], 255], "rgb");
-          var gradientComps = [
-            "to right",
-            colorToFunctionalRgbaString(leftColor),
-            colorToFunctionalRgbaString(rightColor)
-          ];
-          this.colorElem_.style.background = "linear-gradient(" + gradientComps.join(",") + ")";
-          this.previewElem_.style.backgroundColor = colorToFunctionalRgbaString(c);
-          var left = mapRange(rgbaComps[3], 0, 1, 0, 100);
-          this.markerElem_.style.left = left + "%";
-        };
-        APaletteView2.prototype.onValueChange_ = function() {
-          this.update();
-        };
-        return APaletteView2;
-      }();
-      var APaletteController = function() {
-        function APaletteController2(doc, config) {
-          this.onKeyDown_ = this.onKeyDown_.bind(this);
-          this.onPointerDown_ = this.onPointerDown_.bind(this);
-          this.onPointerMove_ = this.onPointerMove_.bind(this);
-          this.onPointerUp_ = this.onPointerUp_.bind(this);
-          this.value = config.value;
-          this.view = new APaletteView(doc, {
-            value: this.value
-          });
-          this.ptHandler_ = new PointerHandler(doc, this.view.element);
-          this.ptHandler_.emitter.on("down", this.onPointerDown_);
-          this.ptHandler_.emitter.on("move", this.onPointerMove_);
-          this.ptHandler_.emitter.on("up", this.onPointerUp_);
-          this.view.element.addEventListener("keydown", this.onKeyDown_);
-        }
-        APaletteController2.prototype.handlePointerEvent_ = function(d) {
-          var alpha = d.px;
-          var c = this.value.rawValue;
-          var _a2 = c.getComponents("hsv"), h = _a2[0], s = _a2[1], v = _a2[2];
-          this.value.rawValue = new Color([h, s, v, alpha], "hsv");
-          this.view.update();
-        };
-        APaletteController2.prototype.onPointerDown_ = function(ev) {
-          this.handlePointerEvent_(ev.data);
-        };
-        APaletteController2.prototype.onPointerMove_ = function(ev) {
-          this.handlePointerEvent_(ev.data);
-        };
-        APaletteController2.prototype.onPointerUp_ = function(ev) {
-          this.handlePointerEvent_(ev.data);
-        };
-        APaletteController2.prototype.onKeyDown_ = function(ev) {
-          var step = getStepForKey(getBaseStepForColor(true), getHorizontalStepKeys(ev));
-          var c = this.value.rawValue;
-          var _a2 = c.getComponents("hsv"), h = _a2[0], s = _a2[1], v = _a2[2], a = _a2[3];
-          this.value.rawValue = new Color([h, s, v, a + step], "hsv");
-        };
-        return APaletteController2;
-      }();
-      var className$d = ClassName("cctxts");
-      var FORMATTER = createNumberFormatter(0);
-      function createModeSelectElement(doc) {
-        var selectElem = doc.createElement("select");
-        var items = [
-          { text: "RGB", value: "rgb" },
-          { text: "HSL", value: "hsl" },
-          { text: "HSV", value: "hsv" }
-        ];
-        selectElem.appendChild(items.reduce(function(frag, item) {
-          var optElem = doc.createElement("option");
-          optElem.textContent = item.text;
-          optElem.value = item.value;
-          frag.appendChild(optElem);
-          return frag;
-        }, doc.createDocumentFragment()));
-        return selectElem;
-      }
-      var ColorComponentTextsView = function() {
-        function ColorComponentTextsView2(doc, config) {
-          this.onValueChange_ = this.onValueChange_.bind(this);
-          this.element = doc.createElement("div");
-          this.element.classList.add(className$d());
-          var modeElem = doc.createElement("div");
-          modeElem.classList.add(className$d("m"));
-          this.modeElem_ = createModeSelectElement(doc);
-          this.modeElem_.classList.add(className$d("ms"));
-          modeElem.appendChild(this.modeSelectElement);
-          var modeMarkerElem = doc.createElement("div");
-          modeMarkerElem.classList.add(className$d("mm"));
-          modeElem.appendChild(modeMarkerElem);
-          this.element.appendChild(modeElem);
-          var wrapperElem = doc.createElement("div");
-          wrapperElem.classList.add(className$d("w"));
-          this.element.appendChild(wrapperElem);
-          var inputElems = [0, 1, 2].map(function() {
-            var inputElem = doc.createElement("input");
-            inputElem.classList.add(className$d("i"));
-            inputElem.type = "text";
-            return inputElem;
-          });
-          inputElems.forEach(function(elem) {
-            wrapperElem.appendChild(elem);
-          });
-          this.inputElems_ = [inputElems[0], inputElems[1], inputElems[2]];
-          this.pickedColor = config.pickedColor;
-          this.pickedColor.emitter.on("change", this.onValueChange_);
-          this.update();
-        }
-        Object.defineProperty(ColorComponentTextsView2.prototype, "modeSelectElement", {
-          get: function() {
-            return this.modeElem_;
-          },
-          enumerable: false,
-          configurable: true
-        });
-        Object.defineProperty(ColorComponentTextsView2.prototype, "inputElements", {
-          get: function() {
-            return this.inputElems_;
-          },
-          enumerable: false,
-          configurable: true
-        });
-        Object.defineProperty(ColorComponentTextsView2.prototype, "value", {
-          get: function() {
-            return this.pickedColor.value;
-          },
-          enumerable: false,
-          configurable: true
-        });
-        ColorComponentTextsView2.prototype.update = function() {
-          var _this = this;
-          this.modeElem_.value = this.pickedColor.mode;
-          var comps = this.pickedColor.value.rawValue.getComponents(this.pickedColor.mode);
-          comps.forEach(function(comp, index) {
-            var inputElem = _this.inputElems_[index];
-            if (!inputElem) {
-              return;
+          Object.defineProperty(exports2, "__esModule", { value: true });
+          exports2.FolderApi = void 0;
+          var InputBindingControllerCreators = __webpack_require__("./src/main/js/controller/binding-creators/input.ts");
+          var MonitorBindingControllerCreators = __webpack_require__("./src/main/js/controller/binding-creators/monitor.ts");
+          var button_1 = __webpack_require__("./src/main/js/controller/button.ts");
+          var folder_1 = __webpack_require__("./src/main/js/controller/folder.ts");
+          var separator_1 = __webpack_require__("./src/main/js/controller/separator.ts");
+          var target_1 = __webpack_require__("./src/main/js/model/target.ts");
+          var view_model_1 = __webpack_require__("./src/main/js/model/view-model.ts");
+          var button_2 = __webpack_require__("./src/main/js/api/button.ts");
+          var EventHandlerAdapters = __webpack_require__("./src/main/js/api/event-handler-adapters.ts");
+          var input_binding_1 = __webpack_require__("./src/main/js/api/input-binding.ts");
+          var monitor_binding_1 = __webpack_require__("./src/main/js/api/monitor-binding.ts");
+          var separator_2 = __webpack_require__("./src/main/js/api/separator.ts");
+          var FolderApi = function() {
+            function FolderApi2(folderController) {
+              this.controller = folderController;
             }
-            inputElem.value = FORMATTER(comp);
-          });
-        };
-        ColorComponentTextsView2.prototype.onValueChange_ = function() {
-          this.update();
-        };
-        return ColorComponentTextsView2;
-      }();
-      var ColorComponentTextsController = function() {
-        function ColorComponentTextsController2(doc, config) {
-          var _this = this;
-          this.onModeSelectChange_ = this.onModeSelectChange_.bind(this);
-          this.onInputChange_ = this.onInputChange_.bind(this);
-          this.onInputKeyDown_ = this.onInputKeyDown_.bind(this);
-          this.parser_ = config.parser;
-          this.pickedColor = config.pickedColor;
-          this.view = new ColorComponentTextsView(doc, {
-            pickedColor: this.pickedColor
-          });
-          this.view.inputElements.forEach(function(inputElem) {
-            inputElem.addEventListener("change", _this.onInputChange_);
-            inputElem.addEventListener("keydown", _this.onInputKeyDown_);
-          });
-          this.view.modeSelectElement.addEventListener("change", this.onModeSelectChange_);
-        }
-        Object.defineProperty(ColorComponentTextsController2.prototype, "value", {
-          get: function() {
-            return this.pickedColor.value;
-          },
-          enumerable: false,
-          configurable: true
-        });
-        ColorComponentTextsController2.prototype.findIndexOfInputElem_ = function(inputElem) {
-          var inputElems = this.view.inputElements;
-          for (var i = 0; i < inputElems.length; i++) {
-            if (inputElems[i] === inputElem) {
-              return i;
-            }
-          }
-          return null;
-        };
-        ColorComponentTextsController2.prototype.updateComponent_ = function(index, newValue) {
-          var mode = this.pickedColor.mode;
-          var comps = this.value.rawValue.getComponents(mode);
-          var newComps = comps.map(function(comp, i) {
-            return i === index ? newValue : comp;
-          });
-          this.value.rawValue = new Color(newComps, mode);
-          this.view.update();
-        };
-        ColorComponentTextsController2.prototype.onInputChange_ = function(e) {
-          var inputElem = forceCast(e.currentTarget);
-          var parsedValue = this.parser_(inputElem.value);
-          if (isEmpty(parsedValue)) {
-            return;
-          }
-          var compIndex = this.findIndexOfInputElem_(inputElem);
-          if (isEmpty(compIndex)) {
-            return;
-          }
-          this.updateComponent_(compIndex, parsedValue);
-        };
-        ColorComponentTextsController2.prototype.onInputKeyDown_ = function(e) {
-          var compIndex = this.findIndexOfInputElem_(e.currentTarget);
-          var step = getStepForKey(getBaseStepForColor(compIndex === 3), getVerticalStepKeys(e));
-          if (step === 0) {
-            return;
-          }
-          var inputElem = forceCast(e.currentTarget);
-          var parsedValue = this.parser_(inputElem.value);
-          if (isEmpty(parsedValue)) {
-            return;
-          }
-          if (isEmpty(compIndex)) {
-            return;
-          }
-          this.updateComponent_(compIndex, parsedValue + step);
-        };
-        ColorComponentTextsController2.prototype.onModeSelectChange_ = function(ev) {
-          var selectElem = ev.currentTarget;
-          this.pickedColor.mode = selectElem.value;
-        };
-        return ColorComponentTextsController2;
-      }();
-      var className$e = ClassName("hpl");
-      var HPaletteView = function() {
-        function HPaletteView2(doc, config) {
-          this.onValueChange_ = this.onValueChange_.bind(this);
-          this.value = config.value;
-          this.value.emitter.on("change", this.onValueChange_);
-          this.element = doc.createElement("div");
-          this.element.classList.add(className$e());
-          this.element.tabIndex = 0;
-          var colorElem = doc.createElement("div");
-          colorElem.classList.add(className$e("c"));
-          this.element.appendChild(colorElem);
-          var markerElem = doc.createElement("div");
-          markerElem.classList.add(className$e("m"));
-          this.element.appendChild(markerElem);
-          this.markerElem_ = markerElem;
-          this.update();
-        }
-        HPaletteView2.prototype.update = function() {
-          var c = this.value.rawValue;
-          var h = c.getComponents("hsv")[0];
-          this.markerElem_.style.backgroundColor = colorToFunctionalRgbString(new Color([h, 100, 100], "hsv"));
-          var left = mapRange(h, 0, 360, 0, 100);
-          this.markerElem_.style.left = left + "%";
-        };
-        HPaletteView2.prototype.onValueChange_ = function() {
-          this.update();
-        };
-        return HPaletteView2;
-      }();
-      var HPaletteController = function() {
-        function HPaletteController2(doc, config) {
-          this.onKeyDown_ = this.onKeyDown_.bind(this);
-          this.onPointerDown_ = this.onPointerDown_.bind(this);
-          this.onPointerMove_ = this.onPointerMove_.bind(this);
-          this.onPointerUp_ = this.onPointerUp_.bind(this);
-          this.value = config.value;
-          this.view = new HPaletteView(doc, {
-            value: this.value
-          });
-          this.ptHandler_ = new PointerHandler(doc, this.view.element);
-          this.ptHandler_.emitter.on("down", this.onPointerDown_);
-          this.ptHandler_.emitter.on("move", this.onPointerMove_);
-          this.ptHandler_.emitter.on("up", this.onPointerUp_);
-          this.view.element.addEventListener("keydown", this.onKeyDown_);
-        }
-        HPaletteController2.prototype.handlePointerEvent_ = function(d) {
-          var hue = mapRange(d.px, 0, 1, 0, 360);
-          var c = this.value.rawValue;
-          var _a2 = c.getComponents("hsv"), s = _a2[1], v = _a2[2], a = _a2[3];
-          this.value.rawValue = new Color([hue, s, v, a], "hsv");
-          this.view.update();
-        };
-        HPaletteController2.prototype.onPointerDown_ = function(ev) {
-          this.handlePointerEvent_(ev.data);
-        };
-        HPaletteController2.prototype.onPointerMove_ = function(ev) {
-          this.handlePointerEvent_(ev.data);
-        };
-        HPaletteController2.prototype.onPointerUp_ = function(ev) {
-          this.handlePointerEvent_(ev.data);
-        };
-        HPaletteController2.prototype.onKeyDown_ = function(ev) {
-          var step = getStepForKey(getBaseStepForColor(false), getHorizontalStepKeys(ev));
-          var c = this.value.rawValue;
-          var _a2 = c.getComponents("hsv"), h = _a2[0], s = _a2[1], v = _a2[2], a = _a2[3];
-          this.value.rawValue = new Color([h + step, s, v, a], "hsv");
-        };
-        return HPaletteController2;
-      }();
-      var className$f = ClassName("svp");
-      var CANVAS_RESOL = 64;
-      var SvPaletteView = function() {
-        function SvPaletteView2(doc, config) {
-          this.onValueChange_ = this.onValueChange_.bind(this);
-          this.value = config.value;
-          this.value.emitter.on("change", this.onValueChange_);
-          this.element = doc.createElement("div");
-          this.element.classList.add(className$f());
-          this.element.tabIndex = 0;
-          var canvasElem = doc.createElement("canvas");
-          canvasElem.height = CANVAS_RESOL;
-          canvasElem.width = CANVAS_RESOL;
-          canvasElem.classList.add(className$f("c"));
-          this.element.appendChild(canvasElem);
-          this.canvasElement = canvasElem;
-          var markerElem = doc.createElement("div");
-          markerElem.classList.add(className$f("m"));
-          this.element.appendChild(markerElem);
-          this.markerElem_ = markerElem;
-          this.update();
-        }
-        SvPaletteView2.prototype.update = function() {
-          var ctx = getCanvasContext(this.canvasElement);
-          if (!ctx) {
-            return;
-          }
-          var c = this.value.rawValue;
-          var hsvComps = c.getComponents("hsv");
-          var width = this.canvasElement.width;
-          var height = this.canvasElement.height;
-          var imgData = ctx.getImageData(0, 0, width, height);
-          var data = imgData.data;
-          for (var iy = 0; iy < height; iy++) {
-            for (var ix = 0; ix < width; ix++) {
-              var s = mapRange(ix, 0, width, 0, 100);
-              var v = mapRange(iy, 0, height, 100, 0);
-              var rgbComps = hsvToRgb(hsvComps[0], s, v);
-              var i = (iy * width + ix) * 4;
-              data[i] = rgbComps[0];
-              data[i + 1] = rgbComps[1];
-              data[i + 2] = rgbComps[2];
-              data[i + 3] = 255;
-            }
-          }
-          ctx.putImageData(imgData, 0, 0);
-          var left = mapRange(hsvComps[1], 0, 100, 0, 100);
-          this.markerElem_.style.left = left + "%";
-          var top = mapRange(hsvComps[2], 0, 100, 100, 0);
-          this.markerElem_.style.top = top + "%";
-        };
-        SvPaletteView2.prototype.onValueChange_ = function() {
-          this.update();
-        };
-        return SvPaletteView2;
-      }();
-      var SvPaletteController = function() {
-        function SvPaletteController2(doc, config) {
-          this.onKeyDown_ = this.onKeyDown_.bind(this);
-          this.onPointerDown_ = this.onPointerDown_.bind(this);
-          this.onPointerMove_ = this.onPointerMove_.bind(this);
-          this.onPointerUp_ = this.onPointerUp_.bind(this);
-          this.value = config.value;
-          this.view = new SvPaletteView(doc, {
-            value: this.value
-          });
-          this.ptHandler_ = new PointerHandler(doc, this.view.element);
-          this.ptHandler_.emitter.on("down", this.onPointerDown_);
-          this.ptHandler_.emitter.on("move", this.onPointerMove_);
-          this.ptHandler_.emitter.on("up", this.onPointerUp_);
-          this.view.element.addEventListener("keydown", this.onKeyDown_);
-        }
-        SvPaletteController2.prototype.handlePointerEvent_ = function(d) {
-          var saturation = mapRange(d.px, 0, 1, 0, 100);
-          var value = mapRange(d.py, 0, 1, 100, 0);
-          var _a2 = this.value.rawValue.getComponents("hsv"), h = _a2[0], a = _a2[3];
-          this.value.rawValue = new Color([h, saturation, value, a], "hsv");
-          this.view.update();
-        };
-        SvPaletteController2.prototype.onPointerDown_ = function(ev) {
-          this.handlePointerEvent_(ev.data);
-        };
-        SvPaletteController2.prototype.onPointerMove_ = function(ev) {
-          this.handlePointerEvent_(ev.data);
-        };
-        SvPaletteController2.prototype.onPointerUp_ = function(ev) {
-          this.handlePointerEvent_(ev.data);
-        };
-        SvPaletteController2.prototype.onKeyDown_ = function(ev) {
-          if (isArrowKey(ev.keyCode)) {
-            ev.preventDefault();
-          }
-          var _a2 = this.value.rawValue.getComponents("hsv"), h = _a2[0], s = _a2[1], v = _a2[2], a = _a2[3];
-          var baseStep = getBaseStepForColor(false);
-          this.value.rawValue = new Color([
-            h,
-            s + getStepForKey(baseStep, getHorizontalStepKeys(ev)),
-            v + getStepForKey(baseStep, getVerticalStepKeys(ev)),
-            a
-          ], "hsv");
-        };
-        return SvPaletteController2;
-      }();
-      var ColorPickerController = function() {
-        function ColorPickerController2(doc, config) {
-          var _this = this;
-          this.triggerElement = null;
-          this.onFocusableElementBlur_ = this.onFocusableElementBlur_.bind(this);
-          this.onKeyDown_ = this.onKeyDown_.bind(this);
-          this.pickedColor = config.pickedColor;
-          this.foldable = new Foldable();
-          this.hPaletteIc_ = new HPaletteController(doc, {
-            value: this.pickedColor.value
-          });
-          this.svPaletteIc_ = new SvPaletteController(doc, {
-            value: this.pickedColor.value
-          });
-          this.alphaIcs_ = config.supportsAlpha ? {
-            palette: new APaletteController(doc, {
-              value: this.pickedColor.value
-            }),
-            text: new NumberTextController(doc, {
-              formatter: createNumberFormatter(2),
-              parser: parseNumber,
-              baseStep: 0.1,
-              value: new Value(0)
-            })
-          } : null;
-          if (this.alphaIcs_) {
-            connect({
-              primary: this.pickedColor.value,
-              secondary: this.alphaIcs_.text.value,
-              forward: function(p) {
-                return p.rawValue.getComponents()[3];
+            Object.defineProperty(FolderApi2.prototype, "expanded", {
+              get: function() {
+                return this.controller.folder.expanded;
               },
-              backward: function(p, s) {
-                var comps = p.rawValue.getComponents();
-                comps[3] = s.rawValue;
-                return new Color(comps, p.rawValue.mode);
+              set: function(expanded) {
+                this.controller.folder.expanded = expanded;
+              },
+              enumerable: false,
+              configurable: true
+            });
+            Object.defineProperty(FolderApi2.prototype, "hidden", {
+              get: function() {
+                return this.controller.viewModel.hidden;
+              },
+              set: function(hidden) {
+                this.controller.viewModel.hidden = hidden;
+              },
+              enumerable: false,
+              configurable: true
+            });
+            FolderApi2.prototype.dispose = function() {
+              this.controller.viewModel.dispose();
+            };
+            FolderApi2.prototype.addInput = function(object, key2, opt_params) {
+              var params = opt_params || {};
+              var uc = InputBindingControllerCreators.create(this.controller.document, new target_1.Target(object, key2, params.presetKey), params);
+              this.controller.uiContainer.add(uc, params.index);
+              return new input_binding_1.InputBindingApi(uc);
+            };
+            FolderApi2.prototype.addMonitor = function(object, key2, opt_params) {
+              var params = opt_params || {};
+              var uc = MonitorBindingControllerCreators.create(this.controller.document, new target_1.Target(object, key2), params);
+              this.controller.uiContainer.add(uc, params.index);
+              return new monitor_binding_1.MonitorBindingApi(uc);
+            };
+            FolderApi2.prototype.addFolder = function(params) {
+              var uc = new folder_1.FolderController(this.controller.document, __assign(__assign({}, params), { viewModel: new view_model_1.ViewModel() }));
+              this.controller.uiContainer.add(uc, params.index);
+              return new FolderApi2(uc);
+            };
+            FolderApi2.prototype.addButton = function(params) {
+              var uc = new button_1.ButtonController(this.controller.document, __assign(__assign({}, params), { viewModel: new view_model_1.ViewModel() }));
+              this.controller.uiContainer.add(uc, params.index);
+              return new button_2.ButtonApi(uc);
+            };
+            FolderApi2.prototype.addSeparator = function(opt_params) {
+              var params = opt_params || {};
+              var uc = new separator_1.SeparatorController(this.controller.document, {
+                viewModel: new view_model_1.ViewModel()
+              });
+              this.controller.uiContainer.add(uc, params.index);
+              return new separator_2.SeparatorApi(uc);
+            };
+            FolderApi2.prototype.on = function(eventName, handler) {
+              EventHandlerAdapters.folder({
+                eventName,
+                folder: this.controller.folder,
+                handler: handler.bind(this),
+                uiContainer: this.controller.uiContainer
+              });
+              return this;
+            };
+            return FolderApi2;
+          }();
+          exports2.FolderApi = FolderApi;
+        },
+        "./src/main/js/api/input-binding.ts": function(module2, exports2, __webpack_require__) {
+          "use strict";
+          Object.defineProperty(exports2, "__esModule", { value: true });
+          exports2.InputBindingApi = void 0;
+          var HandlerAdapters = __webpack_require__("./src/main/js/api/event-handler-adapters.ts");
+          var InputBindingApi = function() {
+            function InputBindingApi2(bindingController) {
+              this.controller = bindingController;
+            }
+            Object.defineProperty(InputBindingApi2.prototype, "hidden", {
+              get: function() {
+                return this.controller.viewModel.hidden;
+              },
+              set: function(hidden) {
+                this.controller.viewModel.hidden = hidden;
+              },
+              enumerable: false,
+              configurable: true
+            });
+            InputBindingApi2.prototype.dispose = function() {
+              this.controller.viewModel.dispose();
+            };
+            InputBindingApi2.prototype.on = function(eventName, handler) {
+              HandlerAdapters.input({
+                binding: this.controller.binding,
+                eventName,
+                handler: handler.bind(this)
+              });
+              return this;
+            };
+            InputBindingApi2.prototype.refresh = function() {
+              this.controller.binding.read();
+            };
+            return InputBindingApi2;
+          }();
+          exports2.InputBindingApi = InputBindingApi;
+        },
+        "./src/main/js/api/monitor-binding.ts": function(module2, exports2, __webpack_require__) {
+          "use strict";
+          Object.defineProperty(exports2, "__esModule", { value: true });
+          exports2.MonitorBindingApi = void 0;
+          var EventHandlerAdapters = __webpack_require__("./src/main/js/api/event-handler-adapters.ts");
+          var MonitorBindingApi = function() {
+            function MonitorBindingApi2(bindingController) {
+              this.controller = bindingController;
+            }
+            Object.defineProperty(MonitorBindingApi2.prototype, "hidden", {
+              get: function() {
+                return this.controller.viewModel.hidden;
+              },
+              set: function(hidden) {
+                this.controller.viewModel.hidden = hidden;
+              },
+              enumerable: false,
+              configurable: true
+            });
+            MonitorBindingApi2.prototype.dispose = function() {
+              this.controller.viewModel.dispose();
+            };
+            MonitorBindingApi2.prototype.on = function(eventName, handler) {
+              EventHandlerAdapters.monitor({
+                binding: this.controller.binding,
+                eventName,
+                handler: handler.bind(this)
+              });
+              return this;
+            };
+            MonitorBindingApi2.prototype.refresh = function() {
+              this.controller.binding.read();
+            };
+            return MonitorBindingApi2;
+          }();
+          exports2.MonitorBindingApi = MonitorBindingApi;
+        },
+        "./src/main/js/api/preset.ts": function(module2, exports2, __webpack_require__) {
+          "use strict";
+          Object.defineProperty(exports2, "__esModule", { value: true });
+          exports2.importJson = exports2.exportJson = void 0;
+          function exportJson(targets) {
+            return targets.reduce(function(result, target) {
+              var _a2;
+              return Object.assign(result, (_a2 = {}, _a2[target.presetKey] = target.read(), _a2));
+            }, {});
+          }
+          exports2.exportJson = exportJson;
+          function importJson(targets, preset) {
+            targets.forEach(function(target) {
+              var value = preset[target.presetKey];
+              if (value !== void 0) {
+                target.write(value);
               }
             });
           }
-          this.compTextsIc_ = new ColorComponentTextsController(doc, {
-            parser: parseNumber,
-            pickedColor: this.pickedColor
-          });
-          this.view = new ColorPickerView(doc, {
-            alphaViews: this.alphaIcs_ ? {
-              palette: this.alphaIcs_.palette.view,
-              text: this.alphaIcs_.text.view
-            } : null,
-            componentTextsView: this.compTextsIc_.view,
-            foldable: this.foldable,
-            hPaletteView: this.hPaletteIc_.view,
-            pickedColor: this.pickedColor,
-            supportsAlpha: config.supportsAlpha,
-            svPaletteView: this.svPaletteIc_.view
-          });
-          this.view.element.addEventListener("keydown", this.onKeyDown_);
-          this.view.allFocusableElements.forEach(function(elem) {
-            elem.addEventListener("blur", _this.onFocusableElementBlur_);
-          });
-        }
-        Object.defineProperty(ColorPickerController2.prototype, "value", {
-          get: function() {
-            return this.pickedColor.value;
-          },
-          enumerable: false,
-          configurable: true
-        });
-        ColorPickerController2.prototype.onFocusableElementBlur_ = function(ev) {
-          var elem = this.view.element;
-          var nextTarget = findNextTarget(ev);
-          if (nextTarget && elem.contains(nextTarget)) {
-            return;
+          exports2.importJson = importJson;
+        },
+        "./src/main/js/api/root.ts": function(module2, exports2, __webpack_require__) {
+          "use strict";
+          var __assign = this && this.__assign || function() {
+            __assign = Object.assign || function(t) {
+              for (var s, i = 1, n = arguments.length; i < n; i++) {
+                s = arguments[i];
+                for (var p in s)
+                  if (Object.prototype.hasOwnProperty.call(s, p))
+                    t[p] = s[p];
+              }
+              return t;
+            };
+            return __assign.apply(this, arguments);
+          };
+          Object.defineProperty(exports2, "__esModule", { value: true });
+          exports2.RootApi = void 0;
+          var InputBindingControllerCreators = __webpack_require__("./src/main/js/controller/binding-creators/input.ts");
+          var MonitorBindingControllerCreators = __webpack_require__("./src/main/js/controller/binding-creators/monitor.ts");
+          var button_1 = __webpack_require__("./src/main/js/controller/button.ts");
+          var folder_1 = __webpack_require__("./src/main/js/controller/folder.ts");
+          var input_binding_1 = __webpack_require__("./src/main/js/controller/input-binding.ts");
+          var monitor_binding_1 = __webpack_require__("./src/main/js/controller/monitor-binding.ts");
+          var separator_1 = __webpack_require__("./src/main/js/controller/separator.ts");
+          var UiUtil = __webpack_require__("./src/main/js/controller/ui-util.ts");
+          var target_1 = __webpack_require__("./src/main/js/model/target.ts");
+          var view_model_1 = __webpack_require__("./src/main/js/model/view-model.ts");
+          var button_2 = __webpack_require__("./src/main/js/api/button.ts");
+          var EventHandlerAdapters = __webpack_require__("./src/main/js/api/event-handler-adapters.ts");
+          var folder_2 = __webpack_require__("./src/main/js/api/folder.ts");
+          var input_binding_2 = __webpack_require__("./src/main/js/api/input-binding.ts");
+          var monitor_binding_2 = __webpack_require__("./src/main/js/api/monitor-binding.ts");
+          var Preset = __webpack_require__("./src/main/js/api/preset.ts");
+          var separator_2 = __webpack_require__("./src/main/js/api/separator.ts");
+          var RootApi = function() {
+            function RootApi2(rootController) {
+              this.controller = rootController;
+            }
+            Object.defineProperty(RootApi2.prototype, "element", {
+              get: function() {
+                return this.controller.view.element;
+              },
+              enumerable: false,
+              configurable: true
+            });
+            Object.defineProperty(RootApi2.prototype, "expanded", {
+              get: function() {
+                var folder = this.controller.folder;
+                return folder ? folder.expanded : true;
+              },
+              set: function(expanded) {
+                var folder = this.controller.folder;
+                if (folder) {
+                  folder.expanded = expanded;
+                }
+              },
+              enumerable: false,
+              configurable: true
+            });
+            Object.defineProperty(RootApi2.prototype, "hidden", {
+              get: function() {
+                return this.controller.viewModel.hidden;
+              },
+              set: function(hidden) {
+                this.controller.viewModel.hidden = hidden;
+              },
+              enumerable: false,
+              configurable: true
+            });
+            RootApi2.prototype.dispose = function() {
+              this.controller.viewModel.dispose();
+            };
+            RootApi2.prototype.addInput = function(object, key2, opt_params) {
+              var params = opt_params || {};
+              var uc = InputBindingControllerCreators.create(this.controller.document, new target_1.Target(object, key2, params.presetKey), params);
+              this.controller.uiContainer.add(uc, params.index);
+              return new input_binding_2.InputBindingApi(uc);
+            };
+            RootApi2.prototype.addMonitor = function(object, key2, opt_params) {
+              var params = opt_params || {};
+              var uc = MonitorBindingControllerCreators.create(this.controller.document, new target_1.Target(object, key2), params);
+              this.controller.uiContainer.add(uc, params.index);
+              return new monitor_binding_2.MonitorBindingApi(uc);
+            };
+            RootApi2.prototype.addButton = function(params) {
+              var uc = new button_1.ButtonController(this.controller.document, __assign(__assign({}, params), { viewModel: new view_model_1.ViewModel() }));
+              this.controller.uiContainer.add(uc, params.index);
+              return new button_2.ButtonApi(uc);
+            };
+            RootApi2.prototype.addFolder = function(params) {
+              var uc = new folder_1.FolderController(this.controller.document, __assign(__assign({}, params), { viewModel: new view_model_1.ViewModel() }));
+              this.controller.uiContainer.add(uc, params.index);
+              return new folder_2.FolderApi(uc);
+            };
+            RootApi2.prototype.addSeparator = function(opt_params) {
+              var params = opt_params || {};
+              var uc = new separator_1.SeparatorController(this.controller.document, {
+                viewModel: new view_model_1.ViewModel()
+              });
+              this.controller.uiContainer.add(uc, params.index);
+              return new separator_2.SeparatorApi(uc);
+            };
+            RootApi2.prototype.importPreset = function(preset) {
+              var targets = UiUtil.findControllers(this.controller.uiContainer.items, input_binding_1.InputBindingController).map(function(ibc) {
+                return ibc.binding.target;
+              });
+              Preset.importJson(targets, preset);
+              this.refresh();
+            };
+            RootApi2.prototype.exportPreset = function() {
+              var targets = UiUtil.findControllers(this.controller.uiContainer.items, input_binding_1.InputBindingController).map(function(ibc) {
+                return ibc.binding.target;
+              });
+              return Preset.exportJson(targets);
+            };
+            RootApi2.prototype.on = function(eventName, handler) {
+              EventHandlerAdapters.folder({
+                eventName,
+                folder: this.controller.folder,
+                handler: handler.bind(this),
+                uiContainer: this.controller.uiContainer
+              });
+              return this;
+            };
+            RootApi2.prototype.refresh = function() {
+              UiUtil.findControllers(this.controller.uiContainer.items, input_binding_1.InputBindingController).forEach(function(ibc) {
+                ibc.binding.read();
+              });
+              UiUtil.findControllers(this.controller.uiContainer.items, monitor_binding_1.MonitorBindingController).forEach(function(mbc) {
+                mbc.binding.read();
+              });
+            };
+            return RootApi2;
+          }();
+          exports2.RootApi = RootApi;
+        },
+        "./src/main/js/api/separator.ts": function(module2, exports2, __webpack_require__) {
+          "use strict";
+          Object.defineProperty(exports2, "__esModule", { value: true });
+          exports2.SeparatorApi = void 0;
+          var SeparatorApi = function() {
+            function SeparatorApi2(controller) {
+              this.controller = controller;
+            }
+            Object.defineProperty(SeparatorApi2.prototype, "hidden", {
+              get: function() {
+                return this.controller.viewModel.hidden;
+              },
+              set: function(hidden) {
+                this.controller.viewModel.hidden = hidden;
+              },
+              enumerable: false,
+              configurable: true
+            });
+            SeparatorApi2.prototype.dispose = function() {
+              this.controller.viewModel.dispose();
+            };
+            return SeparatorApi2;
+          }();
+          exports2.SeparatorApi = SeparatorApi;
+        },
+        "./src/main/js/binding/input.ts": function(module2, exports2, __webpack_require__) {
+          "use strict";
+          Object.defineProperty(exports2, "__esModule", { value: true });
+          exports2.InputBinding = void 0;
+          var emitter_1 = __webpack_require__("./src/main/js/misc/emitter.ts");
+          var InputBinding = function() {
+            function InputBinding2(config) {
+              this.onValueChange_ = this.onValueChange_.bind(this);
+              this.reader_ = config.reader;
+              this.writer_ = config.writer;
+              this.emitter = new emitter_1.Emitter();
+              this.value = config.value;
+              this.value.emitter.on("change", this.onValueChange_);
+              this.target = config.target;
+              this.read();
+            }
+            InputBinding2.prototype.read = function() {
+              var targetValue = this.target.read();
+              if (targetValue !== void 0) {
+                this.value.rawValue = this.reader_(targetValue);
+              }
+            };
+            InputBinding2.prototype.getValueToWrite = function(rawValue) {
+              return this.writer_(rawValue);
+            };
+            InputBinding2.prototype.write_ = function(rawValue) {
+              this.target.write(this.getValueToWrite(rawValue));
+            };
+            InputBinding2.prototype.onValueChange_ = function(ev) {
+              this.write_(ev.rawValue);
+              this.emitter.emit("change", {
+                rawValue: ev.rawValue,
+                sender: this
+              });
+            };
+            return InputBinding2;
+          }();
+          exports2.InputBinding = InputBinding;
+        },
+        "./src/main/js/binding/monitor.ts": function(module2, exports2, __webpack_require__) {
+          "use strict";
+          Object.defineProperty(exports2, "__esModule", { value: true });
+          exports2.MonitorBinding = void 0;
+          var emitter_1 = __webpack_require__("./src/main/js/misc/emitter.ts");
+          var MonitorBinding = function() {
+            function MonitorBinding2(config) {
+              this.onTick_ = this.onTick_.bind(this);
+              this.onValueUpdate_ = this.onValueUpdate_.bind(this);
+              this.reader_ = config.reader;
+              this.target = config.target;
+              this.emitter = new emitter_1.Emitter();
+              this.value = config.value;
+              this.value.emitter.on("update", this.onValueUpdate_);
+              this.ticker = config.ticker;
+              this.ticker.emitter.on("tick", this.onTick_);
+              this.read();
+            }
+            MonitorBinding2.prototype.dispose = function() {
+              this.ticker.disposable.dispose();
+            };
+            MonitorBinding2.prototype.read = function() {
+              var targetValue = this.target.read();
+              if (targetValue !== void 0) {
+                this.value.append(this.reader_(targetValue));
+              }
+            };
+            MonitorBinding2.prototype.onTick_ = function(_) {
+              this.read();
+            };
+            MonitorBinding2.prototype.onValueUpdate_ = function(ev) {
+              this.emitter.emit("update", {
+                rawValue: ev.rawValue,
+                sender: this
+              });
+            };
+            return MonitorBinding2;
+          }();
+          exports2.MonitorBinding = MonitorBinding;
+        },
+        "./src/main/js/constraint/composite.ts": function(module2, exports2, __webpack_require__) {
+          "use strict";
+          Object.defineProperty(exports2, "__esModule", { value: true });
+          exports2.CompositeConstraint = void 0;
+          var CompositeConstraint = function() {
+            function CompositeConstraint2(config) {
+              this.constraints_ = config.constraints;
+            }
+            Object.defineProperty(CompositeConstraint2.prototype, "constraints", {
+              get: function() {
+                return this.constraints_;
+              },
+              enumerable: false,
+              configurable: true
+            });
+            CompositeConstraint2.prototype.constrain = function(value) {
+              return this.constraints_.reduce(function(result, c) {
+                return c.constrain(result);
+              }, value);
+            };
+            return CompositeConstraint2;
+          }();
+          exports2.CompositeConstraint = CompositeConstraint;
+        },
+        "./src/main/js/constraint/list.ts": function(module2, exports2, __webpack_require__) {
+          "use strict";
+          Object.defineProperty(exports2, "__esModule", { value: true });
+          exports2.ListConstraint = void 0;
+          var ListConstraint = function() {
+            function ListConstraint2(config) {
+              this.opts_ = config.options;
+            }
+            Object.defineProperty(ListConstraint2.prototype, "options", {
+              get: function() {
+                return this.opts_;
+              },
+              enumerable: false,
+              configurable: true
+            });
+            ListConstraint2.prototype.constrain = function(value) {
+              var opts = this.opts_;
+              if (opts.length === 0) {
+                return value;
+              }
+              var matched = opts.filter(function(item) {
+                return item.value === value;
+              }).length > 0;
+              return matched ? value : opts[0].value;
+            };
+            return ListConstraint2;
+          }();
+          exports2.ListConstraint = ListConstraint;
+        },
+        "./src/main/js/constraint/point-2d.ts": function(module2, exports2, __webpack_require__) {
+          "use strict";
+          Object.defineProperty(exports2, "__esModule", { value: true });
+          exports2.Point2dConstraint = void 0;
+          var point_2d_1 = __webpack_require__("./src/main/js/model/point-2d.ts");
+          var Point2dConstraint = function() {
+            function Point2dConstraint2(config) {
+              this.xConstraint = config.x;
+              this.yConstraint = config.y;
+            }
+            Point2dConstraint2.prototype.constrain = function(value) {
+              return new point_2d_1.Point2d(this.xConstraint ? this.xConstraint.constrain(value.x) : value.x, this.yConstraint ? this.yConstraint.constrain(value.y) : value.y);
+            };
+            return Point2dConstraint2;
+          }();
+          exports2.Point2dConstraint = Point2dConstraint;
+        },
+        "./src/main/js/constraint/range.ts": function(module2, exports2, __webpack_require__) {
+          "use strict";
+          Object.defineProperty(exports2, "__esModule", { value: true });
+          exports2.RangeConstraint = void 0;
+          var type_util_1 = __webpack_require__("./src/main/js/misc/type-util.ts");
+          var RangeConstraint = function() {
+            function RangeConstraint2(config) {
+              this.maxValue = config.max;
+              this.minValue = config.min;
+            }
+            RangeConstraint2.prototype.constrain = function(value) {
+              var result = value;
+              if (!type_util_1.TypeUtil.isEmpty(this.minValue)) {
+                result = Math.max(result, this.minValue);
+              }
+              if (!type_util_1.TypeUtil.isEmpty(this.maxValue)) {
+                result = Math.min(result, this.maxValue);
+              }
+              return result;
+            };
+            return RangeConstraint2;
+          }();
+          exports2.RangeConstraint = RangeConstraint;
+        },
+        "./src/main/js/constraint/step.ts": function(module2, exports2, __webpack_require__) {
+          "use strict";
+          Object.defineProperty(exports2, "__esModule", { value: true });
+          exports2.StepConstraint = void 0;
+          var StepConstraint = function() {
+            function StepConstraint2(config) {
+              this.step = config.step;
+            }
+            StepConstraint2.prototype.constrain = function(value) {
+              var r = value < 0 ? -Math.round(-value / this.step) : Math.round(value / this.step);
+              return r * this.step;
+            };
+            return StepConstraint2;
+          }();
+          exports2.StepConstraint = StepConstraint;
+        },
+        "./src/main/js/constraint/util.ts": function(module2, exports2, __webpack_require__) {
+          "use strict";
+          Object.defineProperty(exports2, "__esModule", { value: true });
+          exports2.ConstraintUtil = void 0;
+          var composite_1 = __webpack_require__("./src/main/js/constraint/composite.ts");
+          exports2.ConstraintUtil = {
+            findConstraint: function(c, constraintClass) {
+              if (c instanceof constraintClass) {
+                return c;
+              }
+              if (c instanceof composite_1.CompositeConstraint) {
+                var result = c.constraints.reduce(function(tmpResult, sc) {
+                  if (tmpResult) {
+                    return tmpResult;
+                  }
+                  return sc instanceof constraintClass ? sc : null;
+                }, null);
+                if (result) {
+                  return result;
+                }
+              }
+              return null;
+            }
+          };
+        },
+        "./src/main/js/controller/binding-creators/boolean-input.ts": function(module2, exports2, __webpack_require__) {
+          "use strict";
+          Object.defineProperty(exports2, "__esModule", { value: true });
+          exports2.create = void 0;
+          var input_1 = __webpack_require__("./src/main/js/binding/input.ts");
+          var composite_1 = __webpack_require__("./src/main/js/constraint/composite.ts");
+          var list_1 = __webpack_require__("./src/main/js/constraint/list.ts");
+          var util_1 = __webpack_require__("./src/main/js/constraint/util.ts");
+          var BooleanConverter = __webpack_require__("./src/main/js/converter/boolean.ts");
+          var input_value_1 = __webpack_require__("./src/main/js/model/input-value.ts");
+          var view_model_1 = __webpack_require__("./src/main/js/model/view-model.ts");
+          var input_binding_1 = __webpack_require__("./src/main/js/controller/input-binding.ts");
+          var checkbox_1 = __webpack_require__("./src/main/js/controller/input/checkbox.ts");
+          var list_2 = __webpack_require__("./src/main/js/controller/input/list.ts");
+          var UiUtil = __webpack_require__("./src/main/js/controller/ui-util.ts");
+          function createConstraint(params) {
+            var constraints = [];
+            if ("options" in params && params.options !== void 0) {
+              constraints.push(new list_1.ListConstraint({
+                options: UiUtil.normalizeInputParamsOptions(params.options, BooleanConverter.fromMixed)
+              }));
+            }
+            return new composite_1.CompositeConstraint({
+              constraints
+            });
           }
-          if (nextTarget && nextTarget === this.triggerElement && !supportsTouch(elem.ownerDocument)) {
-            return;
+          function createController(document2, value) {
+            var c = value.constraint;
+            if (c && util_1.ConstraintUtil.findConstraint(c, list_1.ListConstraint)) {
+              return new list_2.ListInputController(document2, {
+                viewModel: new view_model_1.ViewModel(),
+                stringifyValue: BooleanConverter.toString,
+                value
+              });
+            }
+            return new checkbox_1.CheckboxInputController(document2, {
+              viewModel: new view_model_1.ViewModel(),
+              value
+            });
           }
-          this.foldable.expanded = false;
-        };
-        ColorPickerController2.prototype.onKeyDown_ = function(ev) {
-          if (ev.keyCode === 27) {
-            this.foldable.expanded = false;
+          function create7(document2, target, params) {
+            var initialValue = target.read();
+            if (typeof initialValue !== "boolean") {
+              return null;
+            }
+            var value = new input_value_1.InputValue(false, createConstraint(params));
+            var binding = new input_1.InputBinding({
+              reader: BooleanConverter.fromMixed,
+              target,
+              value,
+              writer: function(v) {
+                return v;
+              }
+            });
+            return new input_binding_1.InputBindingController(document2, {
+              binding,
+              controller: createController(document2, value),
+              label: params.label || target.key
+            });
           }
-        };
-        return ColorPickerController2;
-      }();
-      var ColorSwatchController = function() {
-        function ColorSwatchController2(doc, config) {
-          this.onButtonBlur_ = this.onButtonBlur_.bind(this);
-          this.onButtonClick_ = this.onButtonClick_.bind(this);
-          this.value = config.value;
-          this.pickerIc_ = new ColorPickerController(doc, {
-            pickedColor: new PickedColor(this.value),
-            supportsAlpha: config.supportsAlpha
-          });
-          this.view = new ColorSwatchView(doc, {
-            pickerView: this.pickerIc_.view,
-            value: this.value
-          });
-          this.view.buttonElement.addEventListener("blur", this.onButtonBlur_);
-          this.view.buttonElement.addEventListener("click", this.onButtonClick_);
-          this.pickerIc_.triggerElement = this.view.buttonElement;
-        }
-        ColorSwatchController2.prototype.onButtonBlur_ = function(e) {
-          var elem = this.view.element;
-          var nextTarget = forceCast(e.relatedTarget);
-          if (!nextTarget || !elem.contains(nextTarget)) {
-            this.pickerIc_.foldable.expanded = false;
+          exports2.create = create7;
+        },
+        "./src/main/js/controller/binding-creators/boolean-monitor.ts": function(module2, exports2, __webpack_require__) {
+          "use strict";
+          Object.defineProperty(exports2, "__esModule", { value: true });
+          exports2.create = void 0;
+          var monitor_1 = __webpack_require__("./src/main/js/binding/monitor.ts");
+          var BooleanConverter = __webpack_require__("./src/main/js/converter/boolean.ts");
+          var boolean_1 = __webpack_require__("./src/main/js/formatter/boolean.ts");
+          var type_util_1 = __webpack_require__("./src/main/js/misc/type-util.ts");
+          var monitor_value_1 = __webpack_require__("./src/main/js/model/monitor-value.ts");
+          var view_model_1 = __webpack_require__("./src/main/js/model/view-model.ts");
+          var monitor_binding_1 = __webpack_require__("./src/main/js/controller/monitor-binding.ts");
+          var multi_log_1 = __webpack_require__("./src/main/js/controller/monitor/multi-log.ts");
+          var single_log_1 = __webpack_require__("./src/main/js/controller/monitor/single-log.ts");
+          var util_1 = __webpack_require__("./src/main/js/controller/binding-creators/util.ts");
+          function create7(document2, target, params) {
+            var initialValue = target.read();
+            if (typeof initialValue !== "boolean") {
+              return null;
+            }
+            var value = new monitor_value_1.MonitorValue(type_util_1.TypeUtil.getOrDefault(params.count, 1));
+            var controller = value.totalCount === 1 ? new single_log_1.SingleLogMonitorController(document2, {
+              viewModel: new view_model_1.ViewModel(),
+              formatter: new boolean_1.BooleanFormatter(),
+              value
+            }) : new multi_log_1.MultiLogMonitorController(document2, {
+              viewModel: new view_model_1.ViewModel(),
+              formatter: new boolean_1.BooleanFormatter(),
+              value
+            });
+            return new monitor_binding_1.MonitorBindingController(document2, {
+              binding: new monitor_1.MonitorBinding({
+                reader: BooleanConverter.fromMixed,
+                target,
+                ticker: util_1.createTicker(document2, params.interval),
+                value
+              }),
+              controller,
+              label: params.label || target.key
+            });
           }
-        };
-        ColorSwatchController2.prototype.onButtonClick_ = function() {
-          this.pickerIc_.foldable.expanded = !this.pickerIc_.foldable.expanded;
-          if (this.pickerIc_.foldable.expanded) {
-            this.pickerIc_.view.allFocusableElements[0].focus();
+          exports2.create = create7;
+        },
+        "./src/main/js/controller/binding-creators/color-input.ts": function(module2, exports2, __webpack_require__) {
+          "use strict";
+          Object.defineProperty(exports2, "__esModule", { value: true });
+          exports2.createWithObject = exports2.createWithNumber = exports2.createWithString = void 0;
+          var input_1 = __webpack_require__("./src/main/js/binding/input.ts");
+          var ColorConverter = __webpack_require__("./src/main/js/converter/color.ts");
+          var color_1 = __webpack_require__("./src/main/js/formatter/color.ts");
+          var color_2 = __webpack_require__("./src/main/js/model/color.ts");
+          var input_value_1 = __webpack_require__("./src/main/js/model/input-value.ts");
+          var view_model_1 = __webpack_require__("./src/main/js/model/view-model.ts");
+          var NumberColorParser = __webpack_require__("./src/main/js/parser/number-color.ts");
+          var StringColorParser = __webpack_require__("./src/main/js/parser/string-color.ts");
+          var input_binding_1 = __webpack_require__("./src/main/js/controller/input-binding.ts");
+          var color_swatch_text_1 = __webpack_require__("./src/main/js/controller/input/color-swatch-text.ts");
+          function createWithString(document2, target, params) {
+            var initialValue = target.read();
+            if (typeof initialValue !== "string") {
+              return null;
+            }
+            if ("input" in params && params.input === "string") {
+              return null;
+            }
+            var notation = StringColorParser.getNotation(initialValue);
+            if (!notation) {
+              return null;
+            }
+            var converter = ColorConverter.fromString;
+            var color = converter(initialValue);
+            var value = new input_value_1.InputValue(color);
+            var writer = ColorConverter.getStringifier(notation);
+            return new input_binding_1.InputBindingController(document2, {
+              binding: new input_1.InputBinding({
+                reader: converter,
+                target,
+                value,
+                writer
+              }),
+              controller: new color_swatch_text_1.ColorSwatchTextInputController(document2, {
+                formatter: new color_1.ColorFormatter(writer),
+                parser: StringColorParser.CompositeParser,
+                supportsAlpha: StringColorParser.hasAlphaComponent(notation),
+                value,
+                viewModel: new view_model_1.ViewModel()
+              }),
+              label: params.label || target.key
+            });
           }
-        };
-        return ColorSwatchController2;
-      }();
-      var ColorSwatchTextController = function() {
-        function ColorSwatchTextController2(doc, config) {
-          this.value = config.value;
-          this.swatchIc_ = new ColorSwatchController(doc, {
-            supportsAlpha: config.supportsAlpha,
-            value: this.value
-          });
-          this.textIc_ = new TextController(doc, {
-            formatter: config.formatter,
-            parser: config.parser,
-            value: this.value
-          });
-          this.view = new ColorSwatchTextView(doc, {
-            swatchView: this.swatchIc_.view,
-            textView: this.textIc_.view
-          });
-        }
-        return ColorSwatchTextController2;
-      }();
-      function colorFromObject(value) {
-        if (Color.isColorObject(value)) {
-          return Color.fromObject(value);
-        }
-        return Color.black();
-      }
-      function colorToRgbNumber(value) {
-        return removeAlphaComponent(value.getComponents("rgb")).reduce(function(result, comp) {
-          return result << 8 | Math.floor(comp) & 255;
-        }, 0);
-      }
-      function colorToRgbaNumber(value) {
-        return value.getComponents("rgb").reduce(function(result, comp, index) {
-          var hex = Math.floor(index === 3 ? comp * 255 : comp) & 255;
-          return result << 8 | hex;
-        }, 0) >>> 0;
-      }
-      function numberToRgbColor(num) {
-        return new Color([num >> 16 & 255, num >> 8 & 255, num & 255], "rgb");
-      }
-      function numberToRgbaColor(num) {
-        return new Color([
-          num >> 24 & 255,
-          num >> 16 & 255,
-          num >> 8 & 255,
-          mapRange(num & 255, 0, 255, 0, 1)
-        ], "rgb");
-      }
-      function colorFromRgbNumber(value) {
-        if (typeof value !== "number") {
-          return Color.black();
-        }
-        return numberToRgbColor(value);
-      }
-      function colorFromRgbaNumber(value) {
-        if (typeof value !== "number") {
-          return Color.black();
-        }
-        return numberToRgbaColor(value);
-      }
-      function createColorStringWriter(notation) {
-        var stringify = getColorStringifier(notation);
-        return function(target, value) {
-          writePrimitive(target, stringify(value));
-        };
-      }
-      function createColorNumberWriter(supportsAlpha) {
-        var colorToNumber = supportsAlpha ? colorToRgbaNumber : colorToRgbNumber;
-        return function(target, value) {
-          writePrimitive(target, colorToNumber(value));
-        };
-      }
-      function writeRgbaColorObject(target, value) {
-        var obj = value.toRgbaObject();
-        target.writeProperty("r", obj.r);
-        target.writeProperty("g", obj.g);
-        target.writeProperty("b", obj.b);
-        target.writeProperty("a", obj.a);
-      }
-      function writeRgbColorObject(target, value) {
-        var obj = value.toRgbaObject();
-        target.writeProperty("r", obj.r);
-        target.writeProperty("g", obj.g);
-        target.writeProperty("b", obj.b);
-      }
-      function createColorObjectWriter(supportsAlpha) {
-        return supportsAlpha ? writeRgbaColorObject : writeRgbColorObject;
-      }
-      function shouldSupportAlpha(inputParams) {
-        return "input" in inputParams && inputParams.input === "color.rgba";
-      }
-      var NumberColorInputPlugin = {
-        id: "input-color-number",
-        binding: {
-          accept: function(value, params) {
-            if (typeof value !== "number") {
+          exports2.createWithString = createWithString;
+          function createWithNumber(document2, target, params) {
+            var initialValue = target.read();
+            if (typeof initialValue !== "number") {
               return null;
             }
             if (!("input" in params)) {
@@ -3532,1504 +1139,5903 @@ var require_tweakpane = __commonJS({
             if (params.input !== "color" && params.input !== "color.rgb" && params.input !== "color.rgba") {
               return null;
             }
-            return value;
-          },
-          reader: function(args) {
-            return shouldSupportAlpha(args.params) ? colorFromRgbaNumber : colorFromRgbNumber;
-          },
-          writer: function(args) {
-            return createColorNumberWriter(shouldSupportAlpha(args.params));
-          },
-          equals: Color.equals
-        },
-        controller: function(args) {
-          var supportsAlpha = shouldSupportAlpha(args.params);
-          var formatter = supportsAlpha ? colorToHexRgbaString : colorToHexRgbString;
-          return new ColorSwatchTextController(args.document, {
-            formatter,
-            parser: CompositeColorParser,
-            supportsAlpha,
-            value: args.binding.value
-          });
-        }
-      };
-      function shouldSupportAlpha$1(initialValue) {
-        return Color.isRgbaColorObject(initialValue);
-      }
-      var ObjectColorInputPlugin = {
-        id: "input-color-object",
-        binding: {
-          accept: function(value, _params) {
-            return Color.isColorObject(value) ? value : null;
-          },
-          reader: function(_args) {
-            return colorFromObject;
-          },
-          writer: function(args) {
-            return createColorObjectWriter(shouldSupportAlpha$1(args.initialValue));
-          },
-          equals: Color.equals
-        },
-        controller: function(args) {
-          var supportsAlpha = Color.isRgbaColorObject(args.initialValue);
-          var formatter = supportsAlpha ? colorToHexRgbaString : colorToHexRgbString;
-          return new ColorSwatchTextController(args.document, {
-            formatter,
-            parser: CompositeColorParser,
-            supportsAlpha,
-            value: args.binding.value
-          });
-        }
-      };
-      var StringColorInputPlugin = {
-        id: "input-color-string",
-        binding: {
-          accept: function(value, params) {
-            if (typeof value !== "string") {
+            var supportsAlpha = params.input === "color.rgba";
+            var parser = supportsAlpha ? NumberColorParser.RgbaParser : NumberColorParser.RgbParser;
+            var color = parser(initialValue);
+            if (!color) {
               return null;
             }
-            if ("input" in params && params.input === "string") {
-              return null;
-            }
-            var notation = getColorNotation(value);
-            if (!notation) {
-              return null;
-            }
-            return value;
-          },
-          reader: function(_args) {
-            return colorFromString;
-          },
-          writer: function(args) {
-            var notation = getColorNotation(args.initialValue);
-            if (!notation) {
-              throw TpError.shouldNeverHappen();
-            }
-            return createColorStringWriter(notation);
-          },
-          equals: Color.equals
-        },
-        controller: function(args) {
-          var notation = getColorNotation(args.initialValue);
-          if (!notation) {
-            throw TpError.shouldNeverHappen();
-          }
-          var stringifier = getColorStringifier(notation);
-          return new ColorSwatchTextController(args.document, {
-            formatter: stringifier,
-            parser: CompositeColorParser,
-            supportsAlpha: hasAlphaComponent(notation),
-            value: args.binding.value
-          });
-        }
-      };
-      var RangeConstraint = function() {
-        function RangeConstraint2(config) {
-          this.maxValue = config.max;
-          this.minValue = config.min;
-        }
-        RangeConstraint2.prototype.constrain = function(value) {
-          var result = value;
-          if (!isEmpty(this.minValue)) {
-            result = Math.max(result, this.minValue);
-          }
-          if (!isEmpty(this.maxValue)) {
-            result = Math.min(result, this.maxValue);
-          }
-          return result;
-        };
-        return RangeConstraint2;
-      }();
-      var className$g = ClassName("sldtxt");
-      var SliderTextView = function() {
-        function SliderTextView2(doc, config) {
-          this.element = doc.createElement("div");
-          this.element.classList.add(className$g());
-          var sliderElem = doc.createElement("div");
-          sliderElem.classList.add(className$g("s"));
-          this.sliderView_ = config.sliderView;
-          sliderElem.appendChild(this.sliderView_.element);
-          this.element.appendChild(sliderElem);
-          var textElem = doc.createElement("div");
-          textElem.classList.add(className$g("t"));
-          this.textView_ = config.textView;
-          textElem.appendChild(this.textView_.element);
-          this.element.appendChild(textElem);
-        }
-        Object.defineProperty(SliderTextView2.prototype, "value", {
-          get: function() {
-            return this.sliderView_.value;
-          },
-          enumerable: false,
-          configurable: true
-        });
-        SliderTextView2.prototype.update = function() {
-          this.sliderView_.update();
-          this.textView_.update();
-        };
-        return SliderTextView2;
-      }();
-      var className$h = ClassName("sld");
-      var SliderView = function() {
-        function SliderView2(doc, config) {
-          this.onValueChange_ = this.onValueChange_.bind(this);
-          this.minValue_ = config.minValue;
-          this.maxValue_ = config.maxValue;
-          this.element = doc.createElement("div");
-          this.element.classList.add(className$h());
-          var outerElem = doc.createElement("div");
-          outerElem.classList.add(className$h("o"));
-          outerElem.tabIndex = 0;
-          this.element.appendChild(outerElem);
-          this.outerElement = outerElem;
-          var innerElem = doc.createElement("div");
-          innerElem.classList.add(className$h("i"));
-          this.outerElement.appendChild(innerElem);
-          this.innerElement = innerElem;
-          config.value.emitter.on("change", this.onValueChange_);
-          this.value = config.value;
-          this.update();
-        }
-        SliderView2.prototype.update = function() {
-          var p = constrainRange(mapRange(this.value.rawValue, this.minValue_, this.maxValue_, 0, 100), 0, 100);
-          this.innerElement.style.width = p + "%";
-        };
-        SliderView2.prototype.onValueChange_ = function() {
-          this.update();
-        };
-        return SliderView2;
-      }();
-      function findRange(value) {
-        var c = value.constraint ? findConstraint(value.constraint, RangeConstraint) : null;
-        if (!c) {
-          return [void 0, void 0];
-        }
-        return [c.minValue, c.maxValue];
-      }
-      function estimateSuitableRange(value) {
-        var _a2 = findRange(value), min4 = _a2[0], max4 = _a2[1];
-        return [min4 !== null && min4 !== void 0 ? min4 : 0, max4 !== null && max4 !== void 0 ? max4 : 100];
-      }
-      var SliderController = function() {
-        function SliderController2(doc, config) {
-          this.onKeyDown_ = this.onKeyDown_.bind(this);
-          this.onPointerDown_ = this.onPointerDown_.bind(this);
-          this.onPointerMove_ = this.onPointerMove_.bind(this);
-          this.onPointerUp_ = this.onPointerUp_.bind(this);
-          this.value = config.value;
-          this.baseStep_ = config.baseStep;
-          var _a2 = estimateSuitableRange(this.value), min4 = _a2[0], max4 = _a2[1];
-          this.minValue_ = min4;
-          this.maxValue_ = max4;
-          this.view = new SliderView(doc, {
-            maxValue: this.maxValue_,
-            minValue: this.minValue_,
-            value: this.value
-          });
-          this.ptHandler_ = new PointerHandler(doc, this.view.outerElement);
-          this.ptHandler_.emitter.on("down", this.onPointerDown_);
-          this.ptHandler_.emitter.on("move", this.onPointerMove_);
-          this.ptHandler_.emitter.on("up", this.onPointerUp_);
-          this.view.outerElement.addEventListener("keydown", this.onKeyDown_);
-        }
-        SliderController2.prototype.handlePointerEvent_ = function(d) {
-          this.value.rawValue = mapRange(d.px, 0, 1, this.minValue_, this.maxValue_);
-        };
-        SliderController2.prototype.onPointerDown_ = function(ev) {
-          this.handlePointerEvent_(ev.data);
-        };
-        SliderController2.prototype.onPointerMove_ = function(ev) {
-          this.handlePointerEvent_(ev.data);
-        };
-        SliderController2.prototype.onPointerUp_ = function(ev) {
-          this.handlePointerEvent_(ev.data);
-        };
-        SliderController2.prototype.onKeyDown_ = function(ev) {
-          this.value.rawValue += getStepForKey(this.baseStep_, getHorizontalStepKeys(ev));
-        };
-        return SliderController2;
-      }();
-      var SliderTextController = function() {
-        function SliderTextController2(doc, config) {
-          this.value = config.value;
-          this.sliderIc_ = new SliderController(doc, {
-            baseStep: config.baseStep,
-            value: config.value
-          });
-          this.textIc_ = new NumberTextController(doc, {
-            baseStep: config.baseStep,
-            formatter: config.formatter,
-            parser: config.parser,
-            value: config.value
-          });
-          this.view = new SliderTextView(doc, {
-            sliderView: this.sliderIc_.view,
-            textView: this.textIc_.view
-          });
-        }
-        return SliderTextController2;
-      }();
-      function createConstraint$1(params) {
-        var constraints = [];
-        if ("step" in params && !isEmpty(params.step)) {
-          constraints.push(new StepConstraint({
-            step: params.step
-          }));
-        }
-        if ("max" in params && !isEmpty(params.max) || "min" in params && !isEmpty(params.min)) {
-          constraints.push(new RangeConstraint({
-            max: params.max,
-            min: params.min
-          }));
-        }
-        if ("options" in params && params.options !== void 0) {
-          constraints.push(new ListConstraint({
-            options: normalizeInputParamsOptions(params.options, numberFromUnknown)
-          }));
-        }
-        return new CompositeConstraint({
-          constraints
-        });
-      }
-      function createController$3(doc, value) {
-        var _a2;
-        var c = value.constraint;
-        if (c && findConstraint(c, ListConstraint)) {
-          return new ListController(doc, {
-            listItems: (_a2 = findListItems(c)) !== null && _a2 !== void 0 ? _a2 : [],
-            stringifyValue: numberToString,
-            value
-          });
-        }
-        if (c && findConstraint(c, RangeConstraint)) {
-          return new SliderTextController(doc, {
-            baseStep: getBaseStep(c),
-            formatter: createNumberFormatter(getSuitableDecimalDigits(value.constraint, value.rawValue)),
-            parser: parseNumber,
-            value
-          });
-        }
-        return new NumberTextController(doc, {
-          baseStep: getBaseStep(c),
-          formatter: createNumberFormatter(getSuitableDecimalDigits(value.constraint, value.rawValue)),
-          parser: parseNumber,
-          value
-        });
-      }
-      var NumberInputPlugin = {
-        id: "input-number",
-        binding: {
-          accept: function(value) {
-            return typeof value === "number" ? value : null;
-          },
-          constraint: function(args) {
-            return createConstraint$1(args.params);
-          },
-          reader: function(_args) {
-            return numberFromUnknown;
-          },
-          writer: function(_args) {
-            return writePrimitive;
-          }
-        },
-        controller: function(args) {
-          return createController$3(args.document, args.binding.value);
-        }
-      };
-      var Point2d = function() {
-        function Point2d2(x, y) {
-          if (x === void 0) {
-            x = 0;
-          }
-          if (y === void 0) {
-            y = 0;
-          }
-          this.x = x;
-          this.y = y;
-        }
-        Point2d2.prototype.getComponents = function() {
-          return [this.x, this.y];
-        };
-        Point2d2.isObject = function(obj) {
-          if (isEmpty(obj)) {
-            return false;
-          }
-          var x = obj.x;
-          var y = obj.y;
-          if (typeof x !== "number" || typeof y !== "number") {
-            return false;
-          }
-          return true;
-        };
-        Point2d2.equals = function(v1, v2) {
-          return v1.x === v2.x && v1.y === v2.y;
-        };
-        Point2d2.prototype.toObject = function() {
-          return {
-            x: this.x,
-            y: this.y
-          };
-        };
-        return Point2d2;
-      }();
-      var Point2dConstraint = function() {
-        function Point2dConstraint2(config) {
-          this.x = config.x;
-          this.y = config.y;
-        }
-        Point2dConstraint2.prototype.constrain = function(value) {
-          return new Point2d(this.x ? this.x.constrain(value.x) : value.x, this.y ? this.y.constrain(value.y) : value.y);
-        };
-        return Point2dConstraint2;
-      }();
-      var className$i = ClassName("p2dpadtxt");
-      var Point2dPadTextView = function() {
-        function Point2dPadTextView2(doc, config) {
-          this.element = doc.createElement("div");
-          this.element.classList.add(className$i());
-          var padWrapperElem = doc.createElement("div");
-          padWrapperElem.classList.add(className$i("w"));
-          this.element.appendChild(padWrapperElem);
-          var buttonElem = doc.createElement("button");
-          buttonElem.classList.add(className$i("b"));
-          buttonElem.appendChild(createSvgIconElement(doc, "p2dpad"));
-          padWrapperElem.appendChild(buttonElem);
-          this.padButtonElem_ = buttonElem;
-          var padElem = doc.createElement("div");
-          padElem.classList.add(className$i("p"));
-          padWrapperElem.appendChild(padElem);
-          this.padView_ = config.padView;
-          padElem.appendChild(this.padView_.element);
-          var textElem = doc.createElement("div");
-          textElem.classList.add(className$i("t"));
-          this.textView_ = config.textView;
-          textElem.appendChild(this.textView_.element);
-          this.element.appendChild(textElem);
-        }
-        Object.defineProperty(Point2dPadTextView2.prototype, "value", {
-          get: function() {
-            return this.textView_.value;
-          },
-          enumerable: false,
-          configurable: true
-        });
-        Object.defineProperty(Point2dPadTextView2.prototype, "padButtonElement", {
-          get: function() {
-            return this.padButtonElem_;
-          },
-          enumerable: false,
-          configurable: true
-        });
-        Point2dPadTextView2.prototype.update = function() {
-          this.padView_.update();
-          this.textView_.update();
-        };
-        return Point2dPadTextView2;
-      }();
-      var className$j = ClassName("p2dpad");
-      var Point2dPadView = function() {
-        function Point2dPadView2(doc, config) {
-          this.onFoldableChange_ = this.onFoldableChange_.bind(this);
-          this.onValueChange_ = this.onValueChange_.bind(this);
-          this.foldable = config.foldable;
-          this.foldable.emitter.on("change", this.onFoldableChange_);
-          this.invertsY_ = config.invertsY;
-          this.maxValue_ = config.maxValue;
-          this.element = doc.createElement("div");
-          this.element.classList.add(className$j());
-          var padElem = doc.createElement("div");
-          padElem.tabIndex = 0;
-          padElem.classList.add(className$j("p"));
-          this.element.appendChild(padElem);
-          this.padElement = padElem;
-          var svgElem = doc.createElementNS(SVG_NS, "svg");
-          svgElem.classList.add(className$j("g"));
-          this.padElement.appendChild(svgElem);
-          this.svgElem_ = svgElem;
-          var xAxisElem = doc.createElementNS(SVG_NS, "line");
-          xAxisElem.classList.add(className$j("ax"));
-          xAxisElem.setAttributeNS(null, "x1", "0");
-          xAxisElem.setAttributeNS(null, "y1", "50%");
-          xAxisElem.setAttributeNS(null, "x2", "100%");
-          xAxisElem.setAttributeNS(null, "y2", "50%");
-          this.svgElem_.appendChild(xAxisElem);
-          var yAxisElem = doc.createElementNS(SVG_NS, "line");
-          yAxisElem.classList.add(className$j("ax"));
-          yAxisElem.setAttributeNS(null, "x1", "50%");
-          yAxisElem.setAttributeNS(null, "y1", "0");
-          yAxisElem.setAttributeNS(null, "x2", "50%");
-          yAxisElem.setAttributeNS(null, "y2", "100%");
-          this.svgElem_.appendChild(yAxisElem);
-          var lineElem = doc.createElementNS(SVG_NS, "line");
-          lineElem.classList.add(className$j("l"));
-          lineElem.setAttributeNS(null, "x1", "50%");
-          lineElem.setAttributeNS(null, "y1", "50%");
-          this.svgElem_.appendChild(lineElem);
-          this.lineElem_ = lineElem;
-          var markerElem = doc.createElementNS(SVG_NS, "circle");
-          markerElem.classList.add(className$j("m"));
-          markerElem.setAttributeNS(null, "r", "2px");
-          this.svgElem_.appendChild(markerElem);
-          this.markerElem_ = markerElem;
-          config.value.emitter.on("change", this.onValueChange_);
-          this.value = config.value;
-          this.update();
-        }
-        Object.defineProperty(Point2dPadView2.prototype, "allFocusableElements", {
-          get: function() {
-            return [this.padElement];
-          },
-          enumerable: false,
-          configurable: true
-        });
-        Point2dPadView2.prototype.update = function() {
-          if (this.foldable.expanded) {
-            this.element.classList.add(className$j(void 0, "expanded"));
-          } else {
-            this.element.classList.remove(className$j(void 0, "expanded"));
-          }
-          var _a2 = this.value.rawValue.getComponents(), x = _a2[0], y = _a2[1];
-          var max4 = this.maxValue_;
-          var px = mapRange(x, -max4, +max4, 0, 100);
-          var py = mapRange(y, -max4, +max4, 0, 100);
-          var ipy = this.invertsY_ ? 100 - py : py;
-          this.lineElem_.setAttributeNS(null, "x2", px + "%");
-          this.lineElem_.setAttributeNS(null, "y2", ipy + "%");
-          this.markerElem_.setAttributeNS(null, "cx", px + "%");
-          this.markerElem_.setAttributeNS(null, "cy", ipy + "%");
-        };
-        Point2dPadView2.prototype.onValueChange_ = function() {
-          this.update();
-        };
-        Point2dPadView2.prototype.onFoldableChange_ = function() {
-          this.update();
-        };
-        return Point2dPadView2;
-      }();
-      var Point2dPadController = function() {
-        function Point2dPadController2(doc, config) {
-          var _this = this;
-          this.triggerElement = null;
-          this.onFocusableElementBlur_ = this.onFocusableElementBlur_.bind(this);
-          this.onKeyDown_ = this.onKeyDown_.bind(this);
-          this.onPadKeyDown_ = this.onPadKeyDown_.bind(this);
-          this.onPointerDown_ = this.onPointerDown_.bind(this);
-          this.onPointerMove_ = this.onPointerMove_.bind(this);
-          this.onPointerUp_ = this.onPointerUp_.bind(this);
-          this.value = config.value;
-          this.foldable = new Foldable();
-          this.baseSteps_ = config.baseSteps;
-          this.maxValue_ = config.maxValue;
-          this.invertsY_ = config.invertsY;
-          this.view = new Point2dPadView(doc, {
-            foldable: this.foldable,
-            invertsY: this.invertsY_,
-            maxValue: this.maxValue_,
-            value: this.value
-          });
-          this.ptHandler_ = new PointerHandler(doc, this.view.padElement);
-          this.ptHandler_.emitter.on("down", this.onPointerDown_);
-          this.ptHandler_.emitter.on("move", this.onPointerMove_);
-          this.ptHandler_.emitter.on("up", this.onPointerUp_);
-          this.view.padElement.addEventListener("keydown", this.onPadKeyDown_);
-          this.view.element.addEventListener("keydown", this.onKeyDown_);
-          this.view.allFocusableElements.forEach(function(elem) {
-            elem.addEventListener("blur", _this.onFocusableElementBlur_);
-          });
-        }
-        Point2dPadController2.prototype.handlePointerEvent_ = function(d) {
-          var max4 = this.maxValue_;
-          var px = mapRange(d.px, 0, 1, -max4, +max4);
-          var py = mapRange(this.invertsY_ ? 1 - d.py : d.py, 0, 1, -max4, +max4);
-          this.value.rawValue = new Point2d(px, py);
-          this.view.update();
-        };
-        Point2dPadController2.prototype.onPointerDown_ = function(ev) {
-          this.handlePointerEvent_(ev.data);
-        };
-        Point2dPadController2.prototype.onPointerMove_ = function(ev) {
-          this.handlePointerEvent_(ev.data);
-        };
-        Point2dPadController2.prototype.onPointerUp_ = function(ev) {
-          this.handlePointerEvent_(ev.data);
-        };
-        Point2dPadController2.prototype.onPadKeyDown_ = function(ev) {
-          if (isArrowKey(ev.keyCode)) {
-            ev.preventDefault();
-          }
-          this.value.rawValue = new Point2d(this.value.rawValue.x + getStepForKey(this.baseSteps_[0], getHorizontalStepKeys(ev)), this.value.rawValue.y + getStepForKey(this.baseSteps_[1], getVerticalStepKeys(ev)) * (this.invertsY_ ? 1 : -1));
-        };
-        Point2dPadController2.prototype.onFocusableElementBlur_ = function(ev) {
-          var elem = this.view.element;
-          var nextTarget = findNextTarget(ev);
-          if (nextTarget && elem.contains(nextTarget)) {
-            return;
-          }
-          if (nextTarget && nextTarget === this.triggerElement && !supportsTouch(elem.ownerDocument)) {
-            return;
-          }
-          this.foldable.expanded = false;
-        };
-        Point2dPadController2.prototype.onKeyDown_ = function(ev) {
-          if (ev.keyCode === 27) {
-            this.foldable.expanded = false;
-          }
-        };
-        return Point2dPadController2;
-      }();
-      var className$k = ClassName("p2dtxt");
-      var Point2dTextView = function() {
-        function Point2dTextView2(doc, config) {
-          var _this = this;
-          this.onValueChange_ = this.onValueChange_.bind(this);
-          this.formatters_ = config.formatters;
-          this.element = doc.createElement("div");
-          this.element.classList.add(className$k());
-          var inputElems = [0, 1].map(function() {
-            var inputElem = doc.createElement("input");
-            inputElem.classList.add(className$k("i"));
-            inputElem.type = "text";
-            return inputElem;
-          });
-          [0, 1].forEach(function(_, index) {
-            var elem = doc.createElement("div");
-            elem.classList.add(className$k("w"));
-            elem.appendChild(inputElems[index]);
-            _this.element.appendChild(elem);
-          });
-          this.inputElems_ = [inputElems[0], inputElems[1]];
-          config.value.emitter.on("change", this.onValueChange_);
-          this.value = config.value;
-          this.update();
-        }
-        Object.defineProperty(Point2dTextView2.prototype, "inputElements", {
-          get: function() {
-            return this.inputElems_;
-          },
-          enumerable: false,
-          configurable: true
-        });
-        Point2dTextView2.prototype.update = function() {
-          var _this = this;
-          var xyComps = this.value.rawValue.getComponents();
-          xyComps.forEach(function(comp, index) {
-            var inputElem = _this.inputElems_[index];
-            inputElem.value = _this.formatters_[index](comp);
-          });
-        };
-        Point2dTextView2.prototype.onValueChange_ = function() {
-          this.update();
-        };
-        return Point2dTextView2;
-      }();
-      var Point2dTextController = function() {
-        function Point2dTextController2(doc, config) {
-          var _this = this;
-          this.onInputChange_ = this.onInputChange_.bind(this);
-          this.onInputKeyDown_ = this.onInputKeyDown_.bind(this);
-          this.parser_ = config.parser;
-          this.value = config.value;
-          this.baseSteps_ = [config.axes[0].baseStep, config.axes[1].baseStep];
-          this.view = new Point2dTextView(doc, {
-            formatters: [config.axes[0].formatter, config.axes[1].formatter],
-            value: this.value
-          });
-          this.view.inputElements.forEach(function(inputElem) {
-            inputElem.addEventListener("change", _this.onInputChange_);
-            inputElem.addEventListener("keydown", _this.onInputKeyDown_);
-          });
-        }
-        Point2dTextController2.prototype.findIndexOfInputElem_ = function(inputElem) {
-          var inputElems = this.view.inputElements;
-          for (var i = 0; i < inputElems.length; i++) {
-            if (inputElems[i] === inputElem) {
-              return i;
-            }
-          }
-          return null;
-        };
-        Point2dTextController2.prototype.updateComponent_ = function(index, newValue) {
-          var comps = this.value.rawValue.getComponents();
-          var newComps = comps.map(function(comp, i) {
-            return i === index ? newValue : comp;
-          });
-          this.value.rawValue = new Point2d(newComps[0], newComps[1]);
-          this.view.update();
-        };
-        Point2dTextController2.prototype.onInputChange_ = function(e) {
-          var inputElem = forceCast(e.currentTarget);
-          var parsedValue = this.parser_(inputElem.value);
-          if (isEmpty(parsedValue)) {
-            return;
-          }
-          var compIndex = this.findIndexOfInputElem_(inputElem);
-          if (isEmpty(compIndex)) {
-            return;
-          }
-          this.updateComponent_(compIndex, parsedValue);
-        };
-        Point2dTextController2.prototype.onInputKeyDown_ = function(e) {
-          var inputElem = forceCast(e.currentTarget);
-          var parsedValue = this.parser_(inputElem.value);
-          if (isEmpty(parsedValue)) {
-            return;
-          }
-          var compIndex = this.findIndexOfInputElem_(inputElem);
-          if (isEmpty(compIndex)) {
-            return;
-          }
-          var step = getStepForKey(this.baseSteps_[compIndex], getVerticalStepKeys(e));
-          if (step === 0) {
-            return;
-          }
-          this.updateComponent_(compIndex, parsedValue + step);
-        };
-        return Point2dTextController2;
-      }();
-      var Point2dPadTextController = function() {
-        function Point2dPadTextController2(doc, config) {
-          this.onPadButtonBlur_ = this.onPadButtonBlur_.bind(this);
-          this.onPadButtonClick_ = this.onPadButtonClick_.bind(this);
-          this.value = config.value;
-          this.padIc_ = new Point2dPadController(doc, {
-            baseSteps: [config.axes[0].baseStep, config.axes[1].baseStep],
-            invertsY: config.invertsY,
-            maxValue: config.maxValue,
-            value: this.value
-          });
-          this.textIc_ = new Point2dTextController(doc, {
-            axes: config.axes,
-            parser: config.parser,
-            value: this.value
-          });
-          this.view = new Point2dPadTextView(doc, {
-            padView: this.padIc_.view,
-            textView: this.textIc_.view
-          });
-          this.view.padButtonElement.addEventListener("blur", this.onPadButtonBlur_);
-          this.view.padButtonElement.addEventListener("click", this.onPadButtonClick_);
-          this.padIc_.triggerElement = this.view.padButtonElement;
-        }
-        Point2dPadTextController2.prototype.onPadButtonBlur_ = function(e) {
-          var elem = this.view.element;
-          var nextTarget = forceCast(e.relatedTarget);
-          if (!nextTarget || !elem.contains(nextTarget)) {
-            this.padIc_.foldable.expanded = false;
-          }
-        };
-        Point2dPadTextController2.prototype.onPadButtonClick_ = function() {
-          this.padIc_.foldable.expanded = !this.padIc_.foldable.expanded;
-          if (this.padIc_.foldable.expanded) {
-            this.padIc_.view.allFocusableElements[0].focus();
-          }
-        };
-        return Point2dPadTextController2;
-      }();
-      function point2dFromUnknown(value) {
-        return Point2d.isObject(value) ? new Point2d(value.x, value.y) : new Point2d();
-      }
-      function writePoint2d(target, value) {
-        target.writeProperty("x", value.x);
-        target.writeProperty("y", value.y);
-      }
-      function createDimensionConstraint(params) {
-        if (!params) {
-          return void 0;
-        }
-        var constraints = [];
-        if (!isEmpty(params.step)) {
-          constraints.push(new StepConstraint({
-            step: params.step
-          }));
-        }
-        if (!isEmpty(params.max) || !isEmpty(params.min)) {
-          constraints.push(new RangeConstraint({
-            max: params.max,
-            min: params.min
-          }));
-        }
-        return new CompositeConstraint({
-          constraints
-        });
-      }
-      function createConstraint$2(params) {
-        return new Point2dConstraint({
-          x: createDimensionConstraint("x" in params ? params.x : void 0),
-          y: createDimensionConstraint("y" in params ? params.y : void 0)
-        });
-      }
-      function getSuitableMaxDimensionValue(constraint, rawValue) {
-        var rc = constraint && findConstraint(constraint, RangeConstraint);
-        if (rc) {
-          return Math.max(Math.abs(rc.minValue || 0), Math.abs(rc.maxValue || 0));
-        }
-        var step = getBaseStep(constraint);
-        return Math.max(Math.abs(step) * 10, Math.abs(rawValue) * 10);
-      }
-      function getSuitableMaxValue(initialValue, constraint) {
-        var xc = constraint instanceof Point2dConstraint ? constraint.x : void 0;
-        var yc = constraint instanceof Point2dConstraint ? constraint.y : void 0;
-        var xr = getSuitableMaxDimensionValue(xc, initialValue.x);
-        var yr = getSuitableMaxDimensionValue(yc, initialValue.y);
-        return Math.max(xr, yr);
-      }
-      function createController$4(document2, value, invertsY) {
-        var c = value.constraint;
-        if (!(c instanceof Point2dConstraint)) {
-          throw TpError.shouldNeverHappen();
-        }
-        return new Point2dPadTextController(document2, {
-          axes: [
-            {
-              baseStep: getBaseStep(c.x),
-              formatter: createNumberFormatter(getSuitableDecimalDigits(c.x, value.rawValue.x))
-            },
-            {
-              baseStep: getBaseStep(c.y),
-              formatter: createNumberFormatter(getSuitableDecimalDigits(c.y, value.rawValue.y))
-            }
-          ],
-          invertsY,
-          maxValue: getSuitableMaxValue(value.rawValue, value.constraint),
-          parser: parseNumber,
-          value
-        });
-      }
-      function shouldInvertY(params) {
-        if (!("y" in params)) {
-          return false;
-        }
-        var yParams = params.y;
-        if (!yParams) {
-          return false;
-        }
-        return "inverted" in yParams ? !!yParams.inverted : false;
-      }
-      var Point2dInputPlugin = {
-        id: "input-point2d",
-        binding: {
-          accept: function(value, _params) {
-            return Point2d.isObject(value) ? value : null;
-          },
-          reader: function(_args) {
-            return point2dFromUnknown;
-          },
-          writer: function(_args) {
-            return writePoint2d;
-          },
-          constraint: function(args) {
-            return createConstraint$2(args.params);
-          },
-          equals: Point2d.equals
-        },
-        controller: function(args) {
-          return createController$4(args.document, args.binding.value, shouldInvertY(args.params));
-        }
-      };
-      var Point3d = function() {
-        function Point3d2(x, y, z) {
-          if (x === void 0) {
-            x = 0;
-          }
-          if (y === void 0) {
-            y = 0;
-          }
-          if (z === void 0) {
-            z = 0;
-          }
-          this.x = x;
-          this.y = y;
-          this.z = z;
-        }
-        Point3d2.prototype.getComponents = function() {
-          return [this.x, this.y, this.z];
-        };
-        Point3d2.isObject = function(obj) {
-          if (isEmpty(obj)) {
-            return false;
-          }
-          var x = obj.x;
-          var y = obj.y;
-          var z = obj.z;
-          if (typeof x !== "number" || typeof y !== "number" || typeof z !== "number") {
-            return false;
-          }
-          return true;
-        };
-        Point3d2.equals = function(v1, v2) {
-          return v1.x === v2.x && v1.y === v2.y && v1.z === v2.z;
-        };
-        Point3d2.prototype.toObject = function() {
-          return {
-            x: this.x,
-            y: this.y,
-            z: this.z
-          };
-        };
-        return Point3d2;
-      }();
-      var Point3dConstraint = function() {
-        function Point3dConstraint2(config) {
-          this.x = config.x;
-          this.y = config.y;
-          this.z = config.z;
-        }
-        Point3dConstraint2.prototype.constrain = function(value) {
-          return new Point3d(this.x ? this.x.constrain(value.x) : value.x, this.y ? this.y.constrain(value.y) : value.y, this.z ? this.z.constrain(value.z) : value.z);
-        };
-        return Point3dConstraint2;
-      }();
-      var className$l = ClassName("p3dtxt");
-      var Point3dTextView = function() {
-        function Point3dTextView2(doc, config) {
-          var _this = this;
-          this.onValueChange_ = this.onValueChange_.bind(this);
-          this.formatters_ = config.formatters;
-          this.element = doc.createElement("div");
-          this.element.classList.add(className$l());
-          var inputElems = [0, 1, 2].map(function() {
-            var inputElem = doc.createElement("input");
-            inputElem.classList.add(className$l("i"));
-            inputElem.type = "text";
-            return inputElem;
-          });
-          [0, 1, 2].forEach(function(_, index) {
-            var elem = doc.createElement("div");
-            elem.classList.add(className$l("w"));
-            elem.appendChild(inputElems[index]);
-            _this.element.appendChild(elem);
-          });
-          this.inputElems_ = [inputElems[0], inputElems[1], inputElems[2]];
-          config.value.emitter.on("change", this.onValueChange_);
-          this.value = config.value;
-          this.update();
-        }
-        Object.defineProperty(Point3dTextView2.prototype, "inputElements", {
-          get: function() {
-            return this.inputElems_;
-          },
-          enumerable: false,
-          configurable: true
-        });
-        Point3dTextView2.prototype.update = function() {
-          var _this = this;
-          var comps = this.value.rawValue.getComponents();
-          comps.forEach(function(comp, index) {
-            var inputElem = _this.inputElems_[index];
-            inputElem.value = _this.formatters_[index](comp);
-          });
-        };
-        Point3dTextView2.prototype.onValueChange_ = function() {
-          this.update();
-        };
-        return Point3dTextView2;
-      }();
-      var Point3dTextController = function() {
-        function Point3dTextController2(doc, config) {
-          var _this = this;
-          this.onInputChange_ = this.onInputChange_.bind(this);
-          this.onInputKeyDown_ = this.onInputKeyDown_.bind(this);
-          this.parser_ = config.parser;
-          this.value = config.value;
-          var axes = config.axes;
-          this.baseSteps_ = [axes[0].baseStep, axes[1].baseStep, axes[2].baseStep];
-          this.view = new Point3dTextView(doc, {
-            formatters: [axes[0].formatter, axes[1].formatter, axes[2].formatter],
-            value: this.value
-          });
-          this.view.inputElements.forEach(function(inputElem) {
-            inputElem.addEventListener("change", _this.onInputChange_);
-            inputElem.addEventListener("keydown", _this.onInputKeyDown_);
-          });
-        }
-        Point3dTextController2.prototype.findIndexOfInputElem_ = function(inputElem) {
-          var inputElems = this.view.inputElements;
-          for (var i = 0; i < inputElems.length; i++) {
-            if (inputElems[i] === inputElem) {
-              return i;
-            }
-          }
-          return null;
-        };
-        Point3dTextController2.prototype.updateComponent_ = function(index, newValue) {
-          var comps = this.value.rawValue.getComponents();
-          var newComps = comps.map(function(comp, i) {
-            return i === index ? newValue : comp;
-          });
-          this.value.rawValue = new Point3d(newComps[0], newComps[1], newComps[2]);
-          this.view.update();
-        };
-        Point3dTextController2.prototype.onInputChange_ = function(e) {
-          var inputElem = forceCast(e.currentTarget);
-          var parsedValue = this.parser_(inputElem.value);
-          if (isEmpty(parsedValue)) {
-            return;
-          }
-          var compIndex = this.findIndexOfInputElem_(inputElem);
-          if (isEmpty(compIndex)) {
-            return;
-          }
-          this.updateComponent_(compIndex, parsedValue);
-        };
-        Point3dTextController2.prototype.onInputKeyDown_ = function(e) {
-          var inputElem = forceCast(e.currentTarget);
-          var parsedValue = this.parser_(inputElem.value);
-          if (isEmpty(parsedValue)) {
-            return;
-          }
-          var compIndex = this.findIndexOfInputElem_(inputElem);
-          if (isEmpty(compIndex)) {
-            return;
-          }
-          var step = getStepForKey(this.baseSteps_[compIndex], getVerticalStepKeys(e));
-          if (step === 0) {
-            return;
-          }
-          this.updateComponent_(compIndex, parsedValue + step);
-        };
-        return Point3dTextController2;
-      }();
-      function point3dFromUnknown(value) {
-        return Point3d.isObject(value) ? new Point3d(value.x, value.y, value.z) : new Point3d();
-      }
-      function writePoint3d(target, value) {
-        target.writeProperty("x", value.x);
-        target.writeProperty("y", value.y);
-        target.writeProperty("z", value.z);
-      }
-      function createDimensionConstraint$1(params) {
-        if (!params) {
-          return void 0;
-        }
-        var constraints = [];
-        if (!isEmpty(params.step)) {
-          constraints.push(new StepConstraint({
-            step: params.step
-          }));
-        }
-        if (!isEmpty(params.max) || !isEmpty(params.min)) {
-          constraints.push(new RangeConstraint({
-            max: params.max,
-            min: params.min
-          }));
-        }
-        return new CompositeConstraint({
-          constraints
-        });
-      }
-      function createConstraint$3(params) {
-        return new Point3dConstraint({
-          x: createDimensionConstraint$1("x" in params ? params.x : void 0),
-          y: createDimensionConstraint$1("y" in params ? params.y : void 0),
-          z: createDimensionConstraint$1("z" in params ? params.z : void 0)
-        });
-      }
-      function getAxis(initialValue, constraint) {
-        return {
-          baseStep: getBaseStep(constraint),
-          formatter: createNumberFormatter(getSuitableDecimalDigits(constraint, initialValue))
-        };
-      }
-      function createController$5(document2, value) {
-        var c = value.constraint;
-        if (!(c instanceof Point3dConstraint)) {
-          throw TpError.shouldNeverHappen();
-        }
-        return new Point3dTextController(document2, {
-          axes: [
-            getAxis(value.rawValue.x, c.x),
-            getAxis(value.rawValue.y, c.y),
-            getAxis(value.rawValue.z, c.z)
-          ],
-          parser: parseNumber,
-          value
-        });
-      }
-      var Point3dInputPlugin = {
-        id: "input-point3d",
-        binding: {
-          accept: function(value, _params) {
-            return Point3d.isObject(value) ? value : null;
-          },
-          reader: function(_args) {
-            return point3dFromUnknown;
-          },
-          writer: function(_args) {
-            return writePoint3d;
-          },
-          constraint: function(args) {
-            return createConstraint$3(args.params);
-          },
-          equals: Point3d.equals
-        },
-        controller: function(args) {
-          return createController$5(args.document, args.binding.value);
-        }
-      };
-      function stringFromUnknown(value) {
-        return String(value);
-      }
-      function formatString(value) {
-        return value;
-      }
-      function createConstraint$4(params) {
-        var constraints = [];
-        if ("options" in params && params.options !== void 0) {
-          constraints.push(new ListConstraint({
-            options: normalizeInputParamsOptions(params.options, stringFromUnknown)
-          }));
-        }
-        return new CompositeConstraint({
-          constraints
-        });
-      }
-      function createController$6(doc, value) {
-        var _a2;
-        var c = value.constraint;
-        if (c && findConstraint(c, ListConstraint)) {
-          return new ListController(doc, {
-            listItems: (_a2 = findListItems(c)) !== null && _a2 !== void 0 ? _a2 : [],
-            stringifyValue: function(v) {
-              return v;
-            },
-            value
-          });
-        }
-        return new TextController(doc, {
-          formatter: formatString,
-          parser: function(v) {
-            return v;
-          },
-          value
-        });
-      }
-      var StringInputPlugin = {
-        id: "input-string",
-        binding: {
-          accept: function(value, _params) {
-            return typeof value === "string" ? value : null;
-          },
-          constraint: function(args) {
-            return createConstraint$4(args.params);
-          },
-          reader: function(_args) {
-            return stringFromUnknown;
-          },
-          writer: function(_args) {
-            return writePrimitive;
-          }
-        },
-        controller: function(params) {
-          return createController$6(params.document, params.binding.value);
-        }
-      };
-      var className$m = ClassName("mll");
-      var MultiLogView = function() {
-        function MultiLogView2(doc, config) {
-          this.onValueUpdate_ = this.onValueUpdate_.bind(this);
-          this.formatter_ = config.formatter;
-          this.element = doc.createElement("div");
-          this.element.classList.add(className$m());
-          var textareaElem = doc.createElement("textarea");
-          textareaElem.classList.add(className$m("i"));
-          textareaElem.style.height = "calc(var(--unit-size) * " + config.lineCount + ")";
-          textareaElem.readOnly = true;
-          this.element.appendChild(textareaElem);
-          this.textareaElem_ = textareaElem;
-          config.value.emitter.on("change", this.onValueUpdate_);
-          this.value = config.value;
-          this.update();
-        }
-        MultiLogView2.prototype.update = function() {
-          var _this = this;
-          var elem = this.textareaElem_;
-          var shouldScroll = elem.scrollTop === elem.scrollHeight - elem.clientHeight;
-          elem.textContent = this.value.rawValue.map(function(value) {
-            return value !== void 0 ? _this.formatter_(value) : "";
-          }).join("\n");
-          if (shouldScroll) {
-            elem.scrollTop = elem.scrollHeight;
-          }
-        };
-        MultiLogView2.prototype.onValueUpdate_ = function() {
-          this.update();
-        };
-        return MultiLogView2;
-      }();
-      var MultiLogController = function() {
-        function MultiLogController2(doc, config) {
-          this.value = config.value;
-          this.view = new MultiLogView(doc, {
-            formatter: config.formatter,
-            lineCount: config.lineCount,
-            value: this.value
-          });
-        }
-        return MultiLogController2;
-      }();
-      var className$n = ClassName("sgl");
-      var SingleLogView = function() {
-        function SingleLogView2(doc, config) {
-          this.onValueUpdate_ = this.onValueUpdate_.bind(this);
-          this.formatter_ = config.formatter;
-          this.element = doc.createElement("div");
-          this.element.classList.add(className$n());
-          var inputElem = doc.createElement("input");
-          inputElem.classList.add(className$n("i"));
-          inputElem.readOnly = true;
-          inputElem.type = "text";
-          this.element.appendChild(inputElem);
-          this.inputElem_ = inputElem;
-          config.value.emitter.on("change", this.onValueUpdate_);
-          this.value = config.value;
-          this.update();
-        }
-        SingleLogView2.prototype.update = function() {
-          var values = this.value.rawValue;
-          var lastValue = values[values.length - 1];
-          this.inputElem_.value = lastValue !== void 0 ? this.formatter_(lastValue) : "";
-        };
-        SingleLogView2.prototype.onValueUpdate_ = function() {
-          this.update();
-        };
-        return SingleLogView2;
-      }();
-      var SingleLogMonitorController = function() {
-        function SingleLogMonitorController2(doc, config) {
-          this.value = config.value;
-          this.view = new SingleLogView(doc, {
-            formatter: config.formatter,
-            value: this.value
-          });
-        }
-        return SingleLogMonitorController2;
-      }();
-      var BooleanMonitorPlugin = {
-        id: "monitor-bool",
-        binding: {
-          accept: function(value, _params) {
-            return typeof value === "boolean" ? value : null;
-          },
-          reader: function(_args) {
-            return boolFromUnknown;
-          }
-        },
-        controller: function(args) {
-          var _a2;
-          if (args.binding.value.rawValue.length === 1) {
-            return new SingleLogMonitorController(args.document, {
-              formatter: BooleanFormatter,
-              value: args.binding.value
+            var formatter = supportsAlpha ? new color_1.ColorFormatter(ColorConverter.toHexRgbaString) : new color_1.ColorFormatter(ColorConverter.toHexRgbString);
+            var reader = supportsAlpha ? ColorConverter.fromNumberToRgba : ColorConverter.fromNumberToRgb;
+            var writer = supportsAlpha ? ColorConverter.toRgbaNumber : ColorConverter.toRgbNumber;
+            var value = new input_value_1.InputValue(color);
+            return new input_binding_1.InputBindingController(document2, {
+              binding: new input_1.InputBinding({
+                reader,
+                target,
+                value,
+                writer
+              }),
+              controller: new color_swatch_text_1.ColorSwatchTextInputController(document2, {
+                formatter,
+                parser: StringColorParser.CompositeParser,
+                supportsAlpha,
+                value,
+                viewModel: new view_model_1.ViewModel()
+              }),
+              label: params.label || target.key
             });
           }
-          return new MultiLogController(args.document, {
-            formatter: BooleanFormatter,
-            lineCount: (_a2 = args.params.lineCount) !== null && _a2 !== void 0 ? _a2 : Constants.monitor.defaultLineCount,
-            value: args.binding.value
-          });
-        }
-      };
-      var GraphCursor = function() {
-        function GraphCursor2() {
-          this.emitter = new Emitter();
-          this.index_ = -1;
-        }
-        Object.defineProperty(GraphCursor2.prototype, "index", {
-          get: function() {
-            return this.index_;
-          },
-          set: function(index) {
-            var changed = this.index_ !== index;
-            if (changed) {
-              this.index_ = index;
-              this.emitter.emit("change", {
-                index,
-                sender: this
+          exports2.createWithNumber = createWithNumber;
+          function createWithObject(document2, target, params) {
+            var initialValue = target.read();
+            if (!color_2.Color.isColorObject(initialValue)) {
+              return null;
+            }
+            var color = color_2.Color.fromObject(initialValue);
+            var supportsAlpha = color_2.Color.isRgbaColorObject(initialValue);
+            var formatter = supportsAlpha ? new color_1.ColorFormatter(ColorConverter.toHexRgbaString) : new color_1.ColorFormatter(ColorConverter.toHexRgbString);
+            var value = new input_value_1.InputValue(color);
+            return new input_binding_1.InputBindingController(document2, {
+              binding: new input_1.InputBinding({
+                reader: ColorConverter.fromObject,
+                target,
+                value,
+                writer: color_2.Color.toRgbaObject
+              }),
+              controller: new color_swatch_text_1.ColorSwatchTextInputController(document2, {
+                viewModel: new view_model_1.ViewModel(),
+                formatter,
+                parser: StringColorParser.CompositeParser,
+                supportsAlpha,
+                value
+              }),
+              label: params.label || target.key
+            });
+          }
+          exports2.createWithObject = createWithObject;
+        },
+        "./src/main/js/controller/binding-creators/input.ts": function(module2, exports2, __webpack_require__) {
+          "use strict";
+          Object.defineProperty(exports2, "__esModule", { value: true });
+          exports2.create = void 0;
+          var pane_error_1 = __webpack_require__("./src/main/js/misc/pane-error.ts");
+          var type_util_1 = __webpack_require__("./src/main/js/misc/type-util.ts");
+          var BooleanInputBindingControllerCreators = __webpack_require__("./src/main/js/controller/binding-creators/boolean-input.ts");
+          var ColorInputBindingControllerCreators = __webpack_require__("./src/main/js/controller/binding-creators/color-input.ts");
+          var NumberInputBindingControllerCreators = __webpack_require__("./src/main/js/controller/binding-creators/number-input.ts");
+          var Point2dInputBindingControllerCreators = __webpack_require__("./src/main/js/controller/binding-creators/point-2d-input.ts");
+          var StringInputBindingControllerCreators = __webpack_require__("./src/main/js/controller/binding-creators/string-input.ts");
+          function create7(document2, target, params) {
+            var initialValue = target.read();
+            if (type_util_1.TypeUtil.isEmpty(initialValue)) {
+              throw new pane_error_1.PaneError({
+                context: {
+                  key: target.key
+                },
+                type: "emptyvalue"
               });
             }
-          },
-          enumerable: false,
-          configurable: true
-        });
-        return GraphCursor2;
-      }();
-      var className$o = ClassName("grl");
-      var GraphLogView = function() {
-        function GraphLogView2(doc, config) {
-          this.onCursorChange_ = this.onCursorChange_.bind(this);
-          this.onValueUpdate_ = this.onValueUpdate_.bind(this);
-          this.element = doc.createElement("div");
-          this.element.classList.add(className$o());
-          this.formatter_ = config.formatter;
-          this.minValue_ = config.minValue;
-          this.maxValue_ = config.maxValue;
-          this.cursor_ = config.cursor;
-          this.cursor_.emitter.on("change", this.onCursorChange_);
-          var svgElem = doc.createElementNS(SVG_NS, "svg");
-          svgElem.classList.add(className$o("g"));
-          svgElem.style.height = "calc(var(--unit-size) * " + config.lineCount + ")";
-          this.element.appendChild(svgElem);
-          this.svgElem_ = svgElem;
-          var lineElem = doc.createElementNS(SVG_NS, "polyline");
-          this.svgElem_.appendChild(lineElem);
-          this.lineElem_ = lineElem;
-          var tooltipElem = doc.createElement("div");
-          tooltipElem.classList.add(className$o("t"));
-          this.element.appendChild(tooltipElem);
-          this.tooltipElem_ = tooltipElem;
-          config.value.emitter.on("change", this.onValueUpdate_);
-          this.value = config.value;
-          this.update();
-        }
-        Object.defineProperty(GraphLogView2.prototype, "graphElement", {
-          get: function() {
-            return this.svgElem_;
-          },
-          enumerable: false,
-          configurable: true
-        });
-        GraphLogView2.prototype.update = function() {
-          var bounds = this.svgElem_.getBoundingClientRect();
-          var maxIndex = this.value.rawValue.length - 1;
-          var min4 = this.minValue_;
-          var max4 = this.maxValue_;
-          var points2 = [];
-          this.value.rawValue.forEach(function(v, index) {
-            if (v === void 0) {
+            var bc = [
+              BooleanInputBindingControllerCreators.create,
+              ColorInputBindingControllerCreators.createWithNumber,
+              ColorInputBindingControllerCreators.createWithObject,
+              ColorInputBindingControllerCreators.createWithString,
+              NumberInputBindingControllerCreators.create,
+              StringInputBindingControllerCreators.create,
+              Point2dInputBindingControllerCreators.create
+            ].reduce(function(result, createBindingController) {
+              return result || createBindingController(document2, target, params);
+            }, null);
+            if (bc) {
+              return bc;
+            }
+            throw new pane_error_1.PaneError({
+              context: {
+                key: target.key
+              },
+              type: "nomatchingcontroller"
+            });
+          }
+          exports2.create = create7;
+        },
+        "./src/main/js/controller/binding-creators/monitor.ts": function(module2, exports2, __webpack_require__) {
+          "use strict";
+          Object.defineProperty(exports2, "__esModule", { value: true });
+          exports2.create = void 0;
+          var pane_error_1 = __webpack_require__("./src/main/js/misc/pane-error.ts");
+          var type_util_1 = __webpack_require__("./src/main/js/misc/type-util.ts");
+          var BooleanMonitorBindingControllerCreators = __webpack_require__("./src/main/js/controller/binding-creators/boolean-monitor.ts");
+          var NumberMonitorBindingControllerCreators = __webpack_require__("./src/main/js/controller/binding-creators/number-monitor.ts");
+          var StringMonitorBindingControllerCreators = __webpack_require__("./src/main/js/controller/binding-creators/string-monitor.ts");
+          function create7(document2, target, params) {
+            var initialValue = target.read();
+            if (type_util_1.TypeUtil.isEmpty(initialValue)) {
+              throw new pane_error_1.PaneError({
+                context: {
+                  key: target.key
+                },
+                type: "emptyvalue"
+              });
+            }
+            var bc = [
+              NumberMonitorBindingControllerCreators.create,
+              StringMonitorBindingControllerCreators.create,
+              BooleanMonitorBindingControllerCreators.create
+            ].reduce(function(result, createBindingController) {
+              return result || createBindingController(document2, target, params);
+            }, null);
+            if (bc) {
+              return bc;
+            }
+            throw new pane_error_1.PaneError({
+              context: {
+                key: target.key
+              },
+              type: "nomatchingcontroller"
+            });
+          }
+          exports2.create = create7;
+        },
+        "./src/main/js/controller/binding-creators/number-input.ts": function(module2, exports2, __webpack_require__) {
+          "use strict";
+          Object.defineProperty(exports2, "__esModule", { value: true });
+          exports2.create = void 0;
+          var input_1 = __webpack_require__("./src/main/js/binding/input.ts");
+          var composite_1 = __webpack_require__("./src/main/js/constraint/composite.ts");
+          var list_1 = __webpack_require__("./src/main/js/constraint/list.ts");
+          var range_1 = __webpack_require__("./src/main/js/constraint/range.ts");
+          var step_1 = __webpack_require__("./src/main/js/constraint/step.ts");
+          var util_1 = __webpack_require__("./src/main/js/constraint/util.ts");
+          var NumberConverter = __webpack_require__("./src/main/js/converter/number.ts");
+          var number_1 = __webpack_require__("./src/main/js/formatter/number.ts");
+          var type_util_1 = __webpack_require__("./src/main/js/misc/type-util.ts");
+          var input_value_1 = __webpack_require__("./src/main/js/model/input-value.ts");
+          var view_model_1 = __webpack_require__("./src/main/js/model/view-model.ts");
+          var string_number_1 = __webpack_require__("./src/main/js/parser/string-number.ts");
+          var input_binding_1 = __webpack_require__("./src/main/js/controller/input-binding.ts");
+          var list_2 = __webpack_require__("./src/main/js/controller/input/list.ts");
+          var number_text_1 = __webpack_require__("./src/main/js/controller/input/number-text.ts");
+          var slider_text_1 = __webpack_require__("./src/main/js/controller/input/slider-text.ts");
+          var UiUtil = __webpack_require__("./src/main/js/controller/ui-util.ts");
+          function createConstraint(params) {
+            var constraints = [];
+            if ("step" in params && !type_util_1.TypeUtil.isEmpty(params.step)) {
+              constraints.push(new step_1.StepConstraint({
+                step: params.step
+              }));
+            }
+            if ("max" in params && !type_util_1.TypeUtil.isEmpty(params.max) || "min" in params && !type_util_1.TypeUtil.isEmpty(params.min)) {
+              constraints.push(new range_1.RangeConstraint({
+                max: params.max,
+                min: params.min
+              }));
+            }
+            if ("options" in params && params.options !== void 0) {
+              constraints.push(new list_1.ListConstraint({
+                options: UiUtil.normalizeInputParamsOptions(params.options, NumberConverter.fromMixed)
+              }));
+            }
+            return new composite_1.CompositeConstraint({
+              constraints
+            });
+          }
+          function createController(document2, value) {
+            var c = value.constraint;
+            if (c && util_1.ConstraintUtil.findConstraint(c, list_1.ListConstraint)) {
+              return new list_2.ListInputController(document2, {
+                stringifyValue: NumberConverter.toString,
+                value,
+                viewModel: new view_model_1.ViewModel()
+              });
+            }
+            if (c && util_1.ConstraintUtil.findConstraint(c, range_1.RangeConstraint)) {
+              return new slider_text_1.SliderTextInputController(document2, {
+                formatter: new number_1.NumberFormatter(UiUtil.getSuitableDecimalDigits(value.constraint, value.rawValue)),
+                parser: string_number_1.StringNumberParser,
+                value,
+                viewModel: new view_model_1.ViewModel()
+              });
+            }
+            return new number_text_1.NumberTextInputController(document2, {
+              formatter: new number_1.NumberFormatter(UiUtil.getSuitableDecimalDigits(value.constraint, value.rawValue)),
+              parser: string_number_1.StringNumberParser,
+              value,
+              viewModel: new view_model_1.ViewModel()
+            });
+          }
+          function create7(document2, target, params) {
+            var initialValue = target.read();
+            if (typeof initialValue !== "number") {
+              return null;
+            }
+            var value = new input_value_1.InputValue(0, createConstraint(params));
+            var binding = new input_1.InputBinding({
+              reader: NumberConverter.fromMixed,
+              target,
+              value,
+              writer: function(v) {
+                return v;
+              }
+            });
+            var controller = createController(document2, value);
+            return new input_binding_1.InputBindingController(document2, {
+              binding,
+              controller,
+              label: params.label || target.key
+            });
+          }
+          exports2.create = create7;
+        },
+        "./src/main/js/controller/binding-creators/number-monitor.ts": function(module2, exports2, __webpack_require__) {
+          "use strict";
+          Object.defineProperty(exports2, "__esModule", { value: true });
+          exports2.create = void 0;
+          var monitor_1 = __webpack_require__("./src/main/js/binding/monitor.ts");
+          var NumberConverter = __webpack_require__("./src/main/js/converter/number.ts");
+          var number_1 = __webpack_require__("./src/main/js/formatter/number.ts");
+          var type_util_1 = __webpack_require__("./src/main/js/misc/type-util.ts");
+          var monitor_value_1 = __webpack_require__("./src/main/js/model/monitor-value.ts");
+          var view_model_1 = __webpack_require__("./src/main/js/model/view-model.ts");
+          var monitor_binding_1 = __webpack_require__("./src/main/js/controller/monitor-binding.ts");
+          var graph_1 = __webpack_require__("./src/main/js/controller/monitor/graph.ts");
+          var multi_log_1 = __webpack_require__("./src/main/js/controller/monitor/multi-log.ts");
+          var single_log_1 = __webpack_require__("./src/main/js/controller/monitor/single-log.ts");
+          var util_1 = __webpack_require__("./src/main/js/controller/binding-creators/util.ts");
+          function createFormatter() {
+            return new number_1.NumberFormatter(2);
+          }
+          function createTextMonitor(document2, target, params) {
+            var value = new monitor_value_1.MonitorValue(type_util_1.TypeUtil.getOrDefault(params.count, 1));
+            var controller = value.totalCount === 1 ? new single_log_1.SingleLogMonitorController(document2, {
+              formatter: createFormatter(),
+              value,
+              viewModel: new view_model_1.ViewModel()
+            }) : new multi_log_1.MultiLogMonitorController(document2, {
+              formatter: createFormatter(),
+              value,
+              viewModel: new view_model_1.ViewModel()
+            });
+            return new monitor_binding_1.MonitorBindingController(document2, {
+              binding: new monitor_1.MonitorBinding({
+                reader: NumberConverter.fromMixed,
+                target,
+                ticker: util_1.createTicker(document2, params.interval),
+                value
+              }),
+              controller,
+              label: params.label || target.key
+            });
+          }
+          function createGraphMonitor(document2, target, params) {
+            var value = new monitor_value_1.MonitorValue(type_util_1.TypeUtil.getOrDefault(params.count, 64));
+            var controller = new graph_1.GraphMonitorController(document2, {
+              formatter: createFormatter(),
+              maxValue: type_util_1.TypeUtil.getOrDefault("max" in params ? params.max : null, 100),
+              minValue: type_util_1.TypeUtil.getOrDefault("min" in params ? params.min : null, 0),
+              value,
+              viewModel: new view_model_1.ViewModel()
+            });
+            return new monitor_binding_1.MonitorBindingController(document2, {
+              binding: new monitor_1.MonitorBinding({
+                reader: NumberConverter.fromMixed,
+                target,
+                ticker: util_1.createTicker(document2, params.interval),
+                value
+              }),
+              controller,
+              label: params.label || target.key
+            });
+          }
+          function create7(document2, target, params) {
+            var initialValue = target.read();
+            if (typeof initialValue !== "number") {
+              return null;
+            }
+            if ("view" in params && params.view === "graph") {
+              return createGraphMonitor(document2, target, params);
+            }
+            return createTextMonitor(document2, target, params);
+          }
+          exports2.create = create7;
+        },
+        "./src/main/js/controller/binding-creators/point-2d-input.ts": function(module2, exports2, __webpack_require__) {
+          "use strict";
+          Object.defineProperty(exports2, "__esModule", { value: true });
+          exports2.create = void 0;
+          var input_1 = __webpack_require__("./src/main/js/binding/input.ts");
+          var composite_1 = __webpack_require__("./src/main/js/constraint/composite.ts");
+          var point_2d_1 = __webpack_require__("./src/main/js/constraint/point-2d.ts");
+          var range_1 = __webpack_require__("./src/main/js/constraint/range.ts");
+          var step_1 = __webpack_require__("./src/main/js/constraint/step.ts");
+          var Point2dConverter = __webpack_require__("./src/main/js/converter/point-2d.ts");
+          var number_1 = __webpack_require__("./src/main/js/formatter/number.ts");
+          var pane_error_1 = __webpack_require__("./src/main/js/misc/pane-error.ts");
+          var type_util_1 = __webpack_require__("./src/main/js/misc/type-util.ts");
+          var input_value_1 = __webpack_require__("./src/main/js/model/input-value.ts");
+          var view_model_1 = __webpack_require__("./src/main/js/model/view-model.ts");
+          var any_point_2d_1 = __webpack_require__("./src/main/js/parser/any-point-2d.ts");
+          var string_number_1 = __webpack_require__("./src/main/js/parser/string-number.ts");
+          var input_binding_1 = __webpack_require__("./src/main/js/controller/input-binding.ts");
+          var point_2d_pad_text_1 = __webpack_require__("./src/main/js/controller/input/point-2d-pad-text.ts");
+          var UiUtil = __webpack_require__("./src/main/js/controller/ui-util.ts");
+          function createDimensionConstraint(params) {
+            if (!params) {
+              return void 0;
+            }
+            var constraints = [];
+            if (!type_util_1.TypeUtil.isEmpty(params.step)) {
+              constraints.push(new step_1.StepConstraint({
+                step: params.step
+              }));
+            }
+            if (!type_util_1.TypeUtil.isEmpty(params.max) || !type_util_1.TypeUtil.isEmpty(params.min)) {
+              constraints.push(new range_1.RangeConstraint({
+                max: params.max,
+                min: params.min
+              }));
+            }
+            return new composite_1.CompositeConstraint({
+              constraints
+            });
+          }
+          function createConstraint(params) {
+            return new point_2d_1.Point2dConstraint({
+              x: createDimensionConstraint("x" in params ? params.x : void 0),
+              y: createDimensionConstraint("y" in params ? params.y : void 0)
+            });
+          }
+          function createController(document2, value, invertsY) {
+            var c = value.constraint;
+            if (!(c instanceof point_2d_1.Point2dConstraint)) {
+              throw pane_error_1.PaneError.shouldNeverHappen();
+            }
+            return new point_2d_pad_text_1.Point2dPadTextInputController(document2, {
+              invertsY,
+              parser: string_number_1.StringNumberParser,
+              value,
+              viewModel: new view_model_1.ViewModel(),
+              xFormatter: new number_1.NumberFormatter(UiUtil.getSuitableDecimalDigits(c.xConstraint, value.rawValue.x)),
+              yFormatter: new number_1.NumberFormatter(UiUtil.getSuitableDecimalDigits(c.yConstraint, value.rawValue.y))
+            });
+          }
+          function create7(document2, target, params) {
+            var initialValue = target.read();
+            var p = any_point_2d_1.AnyPoint2dParser(initialValue);
+            if (!p) {
+              return null;
+            }
+            var value = new input_value_1.InputValue(p, createConstraint(params));
+            var binding = new input_1.InputBinding({
+              reader: Point2dConverter.fromMixed,
+              target,
+              value,
+              writer: function(v) {
+                return v.toObject();
+              }
+            });
+            var yParams = "y" in params ? params.y : void 0;
+            var invertsY = yParams ? !!yParams.inverted : false;
+            var controller = createController(document2, value, invertsY);
+            return new input_binding_1.InputBindingController(document2, {
+              binding,
+              controller,
+              label: params.label || target.key
+            });
+          }
+          exports2.create = create7;
+        },
+        "./src/main/js/controller/binding-creators/string-input.ts": function(module2, exports2, __webpack_require__) {
+          "use strict";
+          Object.defineProperty(exports2, "__esModule", { value: true });
+          exports2.create = void 0;
+          var input_1 = __webpack_require__("./src/main/js/binding/input.ts");
+          var composite_1 = __webpack_require__("./src/main/js/constraint/composite.ts");
+          var list_1 = __webpack_require__("./src/main/js/constraint/list.ts");
+          var util_1 = __webpack_require__("./src/main/js/constraint/util.ts");
+          var StringConverter = __webpack_require__("./src/main/js/converter/string.ts");
+          var string_1 = __webpack_require__("./src/main/js/formatter/string.ts");
+          var input_value_1 = __webpack_require__("./src/main/js/model/input-value.ts");
+          var view_model_1 = __webpack_require__("./src/main/js/model/view-model.ts");
+          var input_binding_1 = __webpack_require__("./src/main/js/controller/input-binding.ts");
+          var list_2 = __webpack_require__("./src/main/js/controller/input/list.ts");
+          var text_1 = __webpack_require__("./src/main/js/controller/input/text.ts");
+          var UiUtil = __webpack_require__("./src/main/js/controller/ui-util.ts");
+          function createConstraint(params) {
+            var constraints = [];
+            if ("options" in params && params.options !== void 0) {
+              constraints.push(new list_1.ListConstraint({
+                options: UiUtil.normalizeInputParamsOptions(params.options, StringConverter.fromMixed)
+              }));
+            }
+            return new composite_1.CompositeConstraint({
+              constraints
+            });
+          }
+          function createController(document2, value) {
+            var c = value.constraint;
+            if (c && util_1.ConstraintUtil.findConstraint(c, list_1.ListConstraint)) {
+              return new list_2.ListInputController(document2, {
+                stringifyValue: StringConverter.toString,
+                value,
+                viewModel: new view_model_1.ViewModel()
+              });
+            }
+            return new text_1.TextInputController(document2, {
+              formatter: new string_1.StringFormatter(),
+              parser: StringConverter.toString,
+              value,
+              viewModel: new view_model_1.ViewModel()
+            });
+          }
+          function create7(document2, target, params) {
+            var initialValue = target.read();
+            if (typeof initialValue !== "string") {
+              return null;
+            }
+            var value = new input_value_1.InputValue("", createConstraint(params));
+            var binding = new input_1.InputBinding({
+              reader: StringConverter.fromMixed,
+              target,
+              value,
+              writer: function(v) {
+                return v;
+              }
+            });
+            var controller = createController(document2, value);
+            return new input_binding_1.InputBindingController(document2, {
+              binding,
+              controller,
+              label: params.label || target.key
+            });
+          }
+          exports2.create = create7;
+        },
+        "./src/main/js/controller/binding-creators/string-monitor.ts": function(module2, exports2, __webpack_require__) {
+          "use strict";
+          Object.defineProperty(exports2, "__esModule", { value: true });
+          exports2.create = void 0;
+          var monitor_1 = __webpack_require__("./src/main/js/binding/monitor.ts");
+          var StringConverter = __webpack_require__("./src/main/js/converter/string.ts");
+          var string_1 = __webpack_require__("./src/main/js/formatter/string.ts");
+          var type_util_1 = __webpack_require__("./src/main/js/misc/type-util.ts");
+          var monitor_value_1 = __webpack_require__("./src/main/js/model/monitor-value.ts");
+          var view_model_1 = __webpack_require__("./src/main/js/model/view-model.ts");
+          var monitor_binding_1 = __webpack_require__("./src/main/js/controller/monitor-binding.ts");
+          var multi_log_1 = __webpack_require__("./src/main/js/controller/monitor/multi-log.ts");
+          var single_log_1 = __webpack_require__("./src/main/js/controller/monitor/single-log.ts");
+          var util_1 = __webpack_require__("./src/main/js/controller/binding-creators/util.ts");
+          function create7(document2, target, params) {
+            var initialValue = target.read();
+            if (typeof initialValue !== "string") {
+              return null;
+            }
+            var value = new monitor_value_1.MonitorValue(type_util_1.TypeUtil.getOrDefault(params.count, 1));
+            var multiline = value.totalCount > 1 || "multiline" in params && params.multiline;
+            var controller = multiline ? new multi_log_1.MultiLogMonitorController(document2, {
+              formatter: new string_1.StringFormatter(),
+              value,
+              viewModel: new view_model_1.ViewModel()
+            }) : new single_log_1.SingleLogMonitorController(document2, {
+              formatter: new string_1.StringFormatter(),
+              value,
+              viewModel: new view_model_1.ViewModel()
+            });
+            return new monitor_binding_1.MonitorBindingController(document2, {
+              binding: new monitor_1.MonitorBinding({
+                reader: StringConverter.fromMixed,
+                target,
+                ticker: util_1.createTicker(document2, params.interval),
+                value
+              }),
+              controller,
+              label: params.label || target.key
+            });
+          }
+          exports2.create = create7;
+        },
+        "./src/main/js/controller/binding-creators/util.ts": function(module2, exports2, __webpack_require__) {
+          "use strict";
+          Object.defineProperty(exports2, "__esModule", { value: true });
+          exports2.createTicker = void 0;
+          var constants_1 = __webpack_require__("./src/main/js/misc/constants.ts");
+          var interval_1 = __webpack_require__("./src/main/js/misc/ticker/interval.ts");
+          var manual_1 = __webpack_require__("./src/main/js/misc/ticker/manual.ts");
+          var type_util_1 = __webpack_require__("./src/main/js/misc/type-util.ts");
+          function createTicker(document2, interval) {
+            return interval === 0 ? new manual_1.ManualTicker() : new interval_1.IntervalTicker(document2, type_util_1.TypeUtil.getOrDefault(interval, constants_1.Constants.monitorDefaultInterval));
+          }
+          exports2.createTicker = createTicker;
+        },
+        "./src/main/js/controller/button.ts": function(module2, exports2, __webpack_require__) {
+          "use strict";
+          Object.defineProperty(exports2, "__esModule", { value: true });
+          exports2.ButtonController = void 0;
+          var button_1 = __webpack_require__("./src/main/js/model/button.ts");
+          var button_2 = __webpack_require__("./src/main/js/view/button.ts");
+          var ButtonController = function() {
+            function ButtonController2(document2, config) {
+              this.onButtonClick_ = this.onButtonClick_.bind(this);
+              this.button = new button_1.Button(config.title);
+              this.viewModel = config.viewModel;
+              this.view = new button_2.ButtonView(document2, {
+                button: this.button,
+                model: this.viewModel
+              });
+              this.view.buttonElement.addEventListener("click", this.onButtonClick_);
+            }
+            ButtonController2.prototype.onButtonClick_ = function() {
+              this.button.click();
+            };
+            return ButtonController2;
+          }();
+          exports2.ButtonController = ButtonController;
+        },
+        "./src/main/js/controller/container-util.ts": function(module2, exports2, __webpack_require__) {
+          "use strict";
+          Object.defineProperty(exports2, "__esModule", { value: true });
+          exports2.computeExpandedFolderHeight = exports2.updateAllItemsPositions = void 0;
+          var DomUtil = __webpack_require__("./src/main/js/misc/dom-util.ts");
+          function updateAllItemsPositions(uiContainer) {
+            var visibleItems = uiContainer.items.filter(function(uc) {
+              return !uc.viewModel.hidden;
+            });
+            var firstVisibleItem = visibleItems[0];
+            var lastVisibleItem = visibleItems[visibleItems.length - 1];
+            uiContainer.items.forEach(function(uc) {
+              var ps = [];
+              if (uc === firstVisibleItem) {
+                ps.push("first");
+              }
+              if (uc === lastVisibleItem) {
+                ps.push("last");
+              }
+              uc.viewModel.positions = ps;
+            });
+          }
+          exports2.updateAllItemsPositions = updateAllItemsPositions;
+          function computeExpandedFolderHeight(folder, containerElement) {
+            var height = 0;
+            DomUtil.disableTransitionTemporarily(containerElement, function() {
+              folder.expandedHeight = null;
+              folder.temporaryExpanded = true;
+              DomUtil.forceReflow(containerElement);
+              height = containerElement.clientHeight;
+              folder.temporaryExpanded = null;
+              DomUtil.forceReflow(containerElement);
+            });
+            return height;
+          }
+          exports2.computeExpandedFolderHeight = computeExpandedFolderHeight;
+        },
+        "./src/main/js/controller/folder.ts": function(module2, exports2, __webpack_require__) {
+          "use strict";
+          Object.defineProperty(exports2, "__esModule", { value: true });
+          exports2.FolderController = void 0;
+          var DomUtil = __webpack_require__("./src/main/js/misc/dom-util.ts");
+          var type_util_1 = __webpack_require__("./src/main/js/misc/type-util.ts");
+          var folder_1 = __webpack_require__("./src/main/js/model/folder.ts");
+          var ui_container_1 = __webpack_require__("./src/main/js/model/ui-container.ts");
+          var folder_2 = __webpack_require__("./src/main/js/view/folder.ts");
+          var ContainerUtil = __webpack_require__("./src/main/js/controller/container-util.ts");
+          var FolderController = function() {
+            function FolderController2(document2, config) {
+              this.onContainerTransitionEnd_ = this.onContainerTransitionEnd_.bind(this);
+              this.onFolderBeforeChange_ = this.onFolderBeforeChange_.bind(this);
+              this.onTitleClick_ = this.onTitleClick_.bind(this);
+              this.onUiContainerAdd_ = this.onUiContainerAdd_.bind(this);
+              this.onUiContainerItemLayout_ = this.onUiContainerItemLayout_.bind(this);
+              this.onUiContainerRemove_ = this.onUiContainerRemove_.bind(this);
+              this.viewModel = config.viewModel;
+              this.folder = new folder_1.Folder(config.title, type_util_1.TypeUtil.getOrDefault(config.expanded, true));
+              this.folder.emitter.on("beforechange", this.onFolderBeforeChange_);
+              this.ucList_ = new ui_container_1.UiContainer();
+              this.ucList_.emitter.on("add", this.onUiContainerAdd_);
+              this.ucList_.emitter.on("itemlayout", this.onUiContainerItemLayout_);
+              this.ucList_.emitter.on("remove", this.onUiContainerRemove_);
+              this.doc_ = document2;
+              this.view = new folder_2.FolderView(this.doc_, {
+                folder: this.folder,
+                model: this.viewModel
+              });
+              this.view.titleElement.addEventListener("click", this.onTitleClick_);
+              this.view.containerElement.addEventListener("transitionend", this.onContainerTransitionEnd_);
+            }
+            Object.defineProperty(FolderController2.prototype, "document", {
+              get: function() {
+                return this.doc_;
+              },
+              enumerable: false,
+              configurable: true
+            });
+            Object.defineProperty(FolderController2.prototype, "uiContainer", {
+              get: function() {
+                return this.ucList_;
+              },
+              enumerable: false,
+              configurable: true
+            });
+            FolderController2.prototype.onFolderBeforeChange_ = function(ev) {
+              if (ev.propertyName !== "expanded") {
+                return;
+              }
+              if (type_util_1.TypeUtil.isEmpty(this.folder.expandedHeight)) {
+                this.folder.expandedHeight = ContainerUtil.computeExpandedFolderHeight(this.folder, this.view.containerElement);
+              }
+              this.folder.shouldFixHeight = true;
+              DomUtil.forceReflow(this.view.containerElement);
+            };
+            FolderController2.prototype.onTitleClick_ = function() {
+              this.folder.expanded = !this.folder.expanded;
+            };
+            FolderController2.prototype.applyUiContainerChange_ = function() {
+              ContainerUtil.updateAllItemsPositions(this.uiContainer);
+            };
+            FolderController2.prototype.onUiContainerAdd_ = function(ev) {
+              DomUtil.insertElementAt(this.view.containerElement, ev.uiController.view.element, ev.index);
+              this.applyUiContainerChange_();
+            };
+            FolderController2.prototype.onUiContainerRemove_ = function(_) {
+              this.applyUiContainerChange_();
+            };
+            FolderController2.prototype.onUiContainerItemLayout_ = function(_) {
+              this.applyUiContainerChange_();
+            };
+            FolderController2.prototype.onContainerTransitionEnd_ = function(ev) {
+              if (ev.propertyName !== "height") {
+                return;
+              }
+              this.folder.shouldFixHeight = false;
+              this.folder.expandedHeight = null;
+            };
+            return FolderController2;
+          }();
+          exports2.FolderController = FolderController;
+        },
+        "./src/main/js/controller/input-binding.ts": function(module2, exports2, __webpack_require__) {
+          "use strict";
+          Object.defineProperty(exports2, "__esModule", { value: true });
+          exports2.InputBindingController = void 0;
+          var labeled_1 = __webpack_require__("./src/main/js/view/labeled.ts");
+          var InputBindingController = function() {
+            function InputBindingController2(document2, config) {
+              this.binding = config.binding;
+              this.controller = config.controller;
+              this.view = new labeled_1.LabeledView(document2, {
+                model: this.controller.viewModel,
+                label: config.label,
+                view: this.controller.view
+              });
+            }
+            Object.defineProperty(InputBindingController2.prototype, "viewModel", {
+              get: function() {
+                return this.controller.viewModel;
+              },
+              enumerable: false,
+              configurable: true
+            });
+            return InputBindingController2;
+          }();
+          exports2.InputBindingController = InputBindingController;
+        },
+        "./src/main/js/controller/input/a-palette.ts": function(module2, exports2, __webpack_require__) {
+          "use strict";
+          Object.defineProperty(exports2, "__esModule", { value: true });
+          exports2.APaletteInputController = void 0;
+          var pointer_handler_1 = __webpack_require__("./src/main/js/misc/pointer-handler.ts");
+          var color_1 = __webpack_require__("./src/main/js/model/color.ts");
+          var a_palette_1 = __webpack_require__("./src/main/js/view/input/a-palette.ts");
+          var UiUtil = __webpack_require__("./src/main/js/controller/ui-util.ts");
+          var APaletteInputController = function() {
+            function APaletteInputController2(document2, config) {
+              this.onKeyDown_ = this.onKeyDown_.bind(this);
+              this.onPointerDown_ = this.onPointerDown_.bind(this);
+              this.onPointerMove_ = this.onPointerMove_.bind(this);
+              this.onPointerUp_ = this.onPointerUp_.bind(this);
+              this.value = config.value;
+              this.viewModel = config.viewModel;
+              this.view = new a_palette_1.APaletteInputView(document2, {
+                model: this.viewModel,
+                value: this.value
+              });
+              this.ptHandler_ = new pointer_handler_1.PointerHandler(document2, this.view.element);
+              this.ptHandler_.emitter.on("down", this.onPointerDown_);
+              this.ptHandler_.emitter.on("move", this.onPointerMove_);
+              this.ptHandler_.emitter.on("up", this.onPointerUp_);
+              this.view.element.addEventListener("keydown", this.onKeyDown_);
+            }
+            APaletteInputController2.prototype.handlePointerEvent_ = function(d) {
+              var alpha = d.px;
+              var c = this.value.rawValue;
+              var _a2 = c.getComponents("hsv"), h = _a2[0], s = _a2[1], v = _a2[2];
+              this.value.rawValue = new color_1.Color([h, s, v, alpha], "hsv");
+              this.view.update();
+            };
+            APaletteInputController2.prototype.onPointerDown_ = function(ev) {
+              this.handlePointerEvent_(ev.data);
+            };
+            APaletteInputController2.prototype.onPointerMove_ = function(ev) {
+              this.handlePointerEvent_(ev.data);
+            };
+            APaletteInputController2.prototype.onPointerUp_ = function(ev) {
+              this.handlePointerEvent_(ev.data);
+            };
+            APaletteInputController2.prototype.onKeyDown_ = function(ev) {
+              var step = UiUtil.getStepForKey(UiUtil.getBaseStepForColor(true), UiUtil.getHorizontalStepKeys(ev));
+              var c = this.value.rawValue;
+              var _a2 = c.getComponents("hsv"), h = _a2[0], s = _a2[1], v = _a2[2], a = _a2[3];
+              this.value.rawValue = new color_1.Color([h, s, v, a + step], "hsv");
+            };
+            return APaletteInputController2;
+          }();
+          exports2.APaletteInputController = APaletteInputController;
+        },
+        "./src/main/js/controller/input/checkbox.ts": function(module2, exports2, __webpack_require__) {
+          "use strict";
+          Object.defineProperty(exports2, "__esModule", { value: true });
+          exports2.CheckboxInputController = void 0;
+          var type_util_1 = __webpack_require__("./src/main/js/misc/type-util.ts");
+          var checkbox_1 = __webpack_require__("./src/main/js/view/input/checkbox.ts");
+          var CheckboxInputController = function() {
+            function CheckboxInputController2(document2, config) {
+              this.onInputChange_ = this.onInputChange_.bind(this);
+              this.value = config.value;
+              this.viewModel = config.viewModel;
+              this.view = new checkbox_1.CheckboxInputView(document2, {
+                model: this.viewModel,
+                value: this.value
+              });
+              this.view.inputElement.addEventListener("change", this.onInputChange_);
+            }
+            CheckboxInputController2.prototype.onInputChange_ = function(e) {
+              var inputElem = type_util_1.TypeUtil.forceCast(e.currentTarget);
+              this.value.rawValue = inputElem.checked;
+              this.view.update();
+            };
+            return CheckboxInputController2;
+          }();
+          exports2.CheckboxInputController = CheckboxInputController;
+        },
+        "./src/main/js/controller/input/color-component-texts.ts": function(module2, exports2, __webpack_require__) {
+          "use strict";
+          Object.defineProperty(exports2, "__esModule", { value: true });
+          exports2.ColorComponentTextsInputController = void 0;
+          var type_util_1 = __webpack_require__("./src/main/js/misc/type-util.ts");
+          var color_1 = __webpack_require__("./src/main/js/model/color.ts");
+          var color_component_texts_1 = __webpack_require__("./src/main/js/view/input/color-component-texts.ts");
+          var UiUtil = __webpack_require__("./src/main/js/controller/ui-util.ts");
+          var ColorComponentTextsInputController = function() {
+            function ColorComponentTextsInputController2(document2, config) {
+              var _this = this;
+              this.onModeSelectChange_ = this.onModeSelectChange_.bind(this);
+              this.onInputChange_ = this.onInputChange_.bind(this);
+              this.onInputKeyDown_ = this.onInputKeyDown_.bind(this);
+              this.parser_ = config.parser;
+              this.pickedColor = config.pickedColor;
+              this.viewModel = config.viewModel;
+              this.view = new color_component_texts_1.ColorComponentTextsInputView(document2, {
+                model: this.viewModel,
+                pickedColor: this.pickedColor
+              });
+              this.view.inputElements.forEach(function(inputElem) {
+                inputElem.addEventListener("change", _this.onInputChange_);
+                inputElem.addEventListener("keydown", _this.onInputKeyDown_);
+              });
+              this.view.modeSelectElement.addEventListener("change", this.onModeSelectChange_);
+            }
+            Object.defineProperty(ColorComponentTextsInputController2.prototype, "value", {
+              get: function() {
+                return this.pickedColor.value;
+              },
+              enumerable: false,
+              configurable: true
+            });
+            ColorComponentTextsInputController2.prototype.findIndexOfInputElem_ = function(inputElem) {
+              var inputElems = this.view.inputElements;
+              for (var i = 0; i < inputElems.length; i++) {
+                if (inputElems[i] === inputElem) {
+                  return i;
+                }
+              }
+              return null;
+            };
+            ColorComponentTextsInputController2.prototype.updateComponent_ = function(index, newValue) {
+              var mode = this.pickedColor.mode;
+              var comps = this.value.rawValue.getComponents(mode);
+              var newComps = comps.map(function(comp, i) {
+                return i === index ? newValue : comp;
+              });
+              this.value.rawValue = new color_1.Color(newComps, mode);
+              this.view.update();
+            };
+            ColorComponentTextsInputController2.prototype.onInputChange_ = function(e) {
+              var inputElem = type_util_1.TypeUtil.forceCast(e.currentTarget);
+              var parsedValue = this.parser_(inputElem.value);
+              if (type_util_1.TypeUtil.isEmpty(parsedValue)) {
+                return;
+              }
+              var compIndex = this.findIndexOfInputElem_(inputElem);
+              if (type_util_1.TypeUtil.isEmpty(compIndex)) {
+                return;
+              }
+              this.updateComponent_(compIndex, parsedValue);
+            };
+            ColorComponentTextsInputController2.prototype.onInputKeyDown_ = function(e) {
+              var compIndex = this.findIndexOfInputElem_(e.currentTarget);
+              var step = UiUtil.getStepForKey(UiUtil.getBaseStepForColor(compIndex === 3), UiUtil.getVerticalStepKeys(e));
+              if (step === 0) {
+                return;
+              }
+              var inputElem = type_util_1.TypeUtil.forceCast(e.currentTarget);
+              var parsedValue = this.parser_(inputElem.value);
+              if (type_util_1.TypeUtil.isEmpty(parsedValue)) {
+                return;
+              }
+              if (type_util_1.TypeUtil.isEmpty(compIndex)) {
+                return;
+              }
+              this.updateComponent_(compIndex, parsedValue + step);
+            };
+            ColorComponentTextsInputController2.prototype.onModeSelectChange_ = function(ev) {
+              var selectElem = ev.currentTarget;
+              this.pickedColor.mode = selectElem.value;
+            };
+            return ColorComponentTextsInputController2;
+          }();
+          exports2.ColorComponentTextsInputController = ColorComponentTextsInputController;
+        },
+        "./src/main/js/controller/input/color-picker.ts": function(module2, exports2, __webpack_require__) {
+          "use strict";
+          Object.defineProperty(exports2, "__esModule", { value: true });
+          exports2.ColorPickerInputController = void 0;
+          var number_1 = __webpack_require__("./src/main/js/formatter/number.ts");
+          var DomUtil = __webpack_require__("./src/main/js/misc/dom-util.ts");
+          var color_1 = __webpack_require__("./src/main/js/model/color.ts");
+          var foldable_1 = __webpack_require__("./src/main/js/model/foldable.ts");
+          var input_value_1 = __webpack_require__("./src/main/js/model/input-value.ts");
+          var ModelSync = __webpack_require__("./src/main/js/model/model-sync.ts");
+          var string_number_1 = __webpack_require__("./src/main/js/parser/string-number.ts");
+          var color_picker_1 = __webpack_require__("./src/main/js/view/input/color-picker.ts");
+          var a_palette_1 = __webpack_require__("./src/main/js/controller/input/a-palette.ts");
+          var color_component_texts_1 = __webpack_require__("./src/main/js/controller/input/color-component-texts.ts");
+          var h_palette_1 = __webpack_require__("./src/main/js/controller/input/h-palette.ts");
+          var number_text_1 = __webpack_require__("./src/main/js/controller/input/number-text.ts");
+          var sv_palette_1 = __webpack_require__("./src/main/js/controller/input/sv-palette.ts");
+          var ColorPickerInputController = function() {
+            function ColorPickerInputController2(document2, config) {
+              var _this = this;
+              this.triggerElement = null;
+              this.onFocusableElementBlur_ = this.onFocusableElementBlur_.bind(this);
+              this.onKeyDown_ = this.onKeyDown_.bind(this);
+              this.pickedColor = config.pickedColor;
+              this.foldable = new foldable_1.Foldable();
+              this.viewModel = config.viewModel;
+              this.hPaletteIc_ = new h_palette_1.HPaletteInputController(document2, {
+                value: this.pickedColor.value,
+                viewModel: this.viewModel
+              });
+              this.svPaletteIc_ = new sv_palette_1.SvPaletteInputController(document2, {
+                value: this.pickedColor.value,
+                viewModel: this.viewModel
+              });
+              this.alphaIcs_ = config.supportsAlpha ? {
+                palette: new a_palette_1.APaletteInputController(document2, {
+                  value: this.pickedColor.value,
+                  viewModel: this.viewModel
+                }),
+                text: new number_text_1.NumberTextInputController(document2, {
+                  formatter: new number_1.NumberFormatter(2),
+                  parser: string_number_1.StringNumberParser,
+                  step: 0.1,
+                  value: new input_value_1.InputValue(0),
+                  viewModel: this.viewModel
+                })
+              } : null;
+              if (this.alphaIcs_) {
+                ModelSync.connect({
+                  primary: {
+                    apply: function(from, to) {
+                      to.rawValue = from.value.rawValue.getComponents()[3];
+                    },
+                    emitter: function(m) {
+                      return m.value.emitter;
+                    },
+                    value: this.pickedColor
+                  },
+                  secondary: {
+                    apply: function(from, to) {
+                      var comps = to.value.rawValue.getComponents();
+                      comps[3] = from.rawValue;
+                      to.value.rawValue = new color_1.Color(comps, to.value.rawValue.mode);
+                    },
+                    emitter: function(m) {
+                      return m.emitter;
+                    },
+                    value: this.alphaIcs_.text.value
+                  }
+                });
+              }
+              this.compTextsIc_ = new color_component_texts_1.ColorComponentTextsInputController(document2, {
+                parser: string_number_1.StringNumberParser,
+                pickedColor: this.pickedColor,
+                viewModel: this.viewModel
+              });
+              this.view = new color_picker_1.ColorPickerInputView(document2, {
+                alphaInputViews: this.alphaIcs_ ? {
+                  palette: this.alphaIcs_.palette.view,
+                  text: this.alphaIcs_.text.view
+                } : null,
+                componentTextsView: this.compTextsIc_.view,
+                foldable: this.foldable,
+                hPaletteInputView: this.hPaletteIc_.view,
+                model: this.viewModel,
+                pickedColor: this.pickedColor,
+                supportsAlpha: config.supportsAlpha,
+                svPaletteInputView: this.svPaletteIc_.view
+              });
+              this.view.element.addEventListener("keydown", this.onKeyDown_);
+              this.view.allFocusableElements.forEach(function(elem) {
+                elem.addEventListener("blur", _this.onFocusableElementBlur_);
+              });
+            }
+            Object.defineProperty(ColorPickerInputController2.prototype, "value", {
+              get: function() {
+                return this.pickedColor.value;
+              },
+              enumerable: false,
+              configurable: true
+            });
+            ColorPickerInputController2.prototype.onFocusableElementBlur_ = function(ev) {
+              var elem = this.view.element;
+              var nextTarget = DomUtil.findNextTarget(ev);
+              if (nextTarget && elem.contains(nextTarget)) {
+                return;
+              }
+              if (nextTarget && nextTarget === this.triggerElement && !DomUtil.supportsTouch(elem.ownerDocument)) {
+                return;
+              }
+              this.foldable.expanded = false;
+            };
+            ColorPickerInputController2.prototype.onKeyDown_ = function(ev) {
+              if (ev.keyCode === 27) {
+                this.foldable.expanded = false;
+              }
+            };
+            return ColorPickerInputController2;
+          }();
+          exports2.ColorPickerInputController = ColorPickerInputController;
+        },
+        "./src/main/js/controller/input/color-swatch-text.ts": function(module2, exports2, __webpack_require__) {
+          "use strict";
+          Object.defineProperty(exports2, "__esModule", { value: true });
+          exports2.ColorSwatchTextInputController = void 0;
+          var color_swatch_text_1 = __webpack_require__("./src/main/js/view/input/color-swatch-text.ts");
+          var color_swatch_1 = __webpack_require__("./src/main/js/controller/input/color-swatch.ts");
+          var text_1 = __webpack_require__("./src/main/js/controller/input/text.ts");
+          var ColorSwatchTextInputController = function() {
+            function ColorSwatchTextInputController2(document2, config) {
+              this.value = config.value;
+              this.viewModel = config.viewModel;
+              this.swatchIc_ = new color_swatch_1.ColorSwatchInputController(document2, {
+                supportsAlpha: config.supportsAlpha,
+                value: this.value,
+                viewModel: this.viewModel
+              });
+              this.textIc_ = new text_1.TextInputController(document2, {
+                formatter: config.formatter,
+                parser: config.parser,
+                value: this.value,
+                viewModel: this.viewModel
+              });
+              this.view = new color_swatch_text_1.ColorSwatchTextInputView(document2, {
+                swatchInputView: this.swatchIc_.view,
+                textInputView: this.textIc_.view,
+                model: this.viewModel
+              });
+            }
+            return ColorSwatchTextInputController2;
+          }();
+          exports2.ColorSwatchTextInputController = ColorSwatchTextInputController;
+        },
+        "./src/main/js/controller/input/color-swatch.ts": function(module2, exports2, __webpack_require__) {
+          "use strict";
+          Object.defineProperty(exports2, "__esModule", { value: true });
+          exports2.ColorSwatchInputController = void 0;
+          var type_util_1 = __webpack_require__("./src/main/js/misc/type-util.ts");
+          var picked_color_1 = __webpack_require__("./src/main/js/model/picked-color.ts");
+          var color_swatch_1 = __webpack_require__("./src/main/js/view/input/color-swatch.ts");
+          var color_picker_1 = __webpack_require__("./src/main/js/controller/input/color-picker.ts");
+          var ColorSwatchInputController = function() {
+            function ColorSwatchInputController2(document2, config) {
+              this.onButtonBlur_ = this.onButtonBlur_.bind(this);
+              this.onButtonClick_ = this.onButtonClick_.bind(this);
+              this.value = config.value;
+              this.viewModel = config.viewModel;
+              this.pickerIc_ = new color_picker_1.ColorPickerInputController(document2, {
+                pickedColor: new picked_color_1.PickedColor(this.value),
+                supportsAlpha: config.supportsAlpha,
+                viewModel: this.viewModel
+              });
+              this.view = new color_swatch_1.ColorSwatchInputView(document2, {
+                model: this.viewModel,
+                pickerInputView: this.pickerIc_.view,
+                value: this.value
+              });
+              this.view.buttonElement.addEventListener("blur", this.onButtonBlur_);
+              this.view.buttonElement.addEventListener("click", this.onButtonClick_);
+              this.pickerIc_.triggerElement = this.view.buttonElement;
+            }
+            ColorSwatchInputController2.prototype.onButtonBlur_ = function(e) {
+              var elem = this.view.element;
+              var nextTarget = type_util_1.TypeUtil.forceCast(e.relatedTarget);
+              if (!nextTarget || !elem.contains(nextTarget)) {
+                this.pickerIc_.foldable.expanded = false;
+              }
+            };
+            ColorSwatchInputController2.prototype.onButtonClick_ = function() {
+              this.pickerIc_.foldable.expanded = !this.pickerIc_.foldable.expanded;
+              if (this.pickerIc_.foldable.expanded) {
+                this.pickerIc_.view.allFocusableElements[0].focus();
+              }
+            };
+            return ColorSwatchInputController2;
+          }();
+          exports2.ColorSwatchInputController = ColorSwatchInputController;
+        },
+        "./src/main/js/controller/input/h-palette.ts": function(module2, exports2, __webpack_require__) {
+          "use strict";
+          Object.defineProperty(exports2, "__esModule", { value: true });
+          exports2.HPaletteInputController = void 0;
+          var number_util_1 = __webpack_require__("./src/main/js/misc/number-util.ts");
+          var pointer_handler_1 = __webpack_require__("./src/main/js/misc/pointer-handler.ts");
+          var color_1 = __webpack_require__("./src/main/js/model/color.ts");
+          var h_palette_1 = __webpack_require__("./src/main/js/view/input/h-palette.ts");
+          var UiUtil = __webpack_require__("./src/main/js/controller/ui-util.ts");
+          var HPaletteInputController = function() {
+            function HPaletteInputController2(document2, config) {
+              this.onKeyDown_ = this.onKeyDown_.bind(this);
+              this.onPointerDown_ = this.onPointerDown_.bind(this);
+              this.onPointerMove_ = this.onPointerMove_.bind(this);
+              this.onPointerUp_ = this.onPointerUp_.bind(this);
+              this.value = config.value;
+              this.viewModel = config.viewModel;
+              this.view = new h_palette_1.HPaletteInputView(document2, {
+                model: this.viewModel,
+                value: this.value
+              });
+              this.ptHandler_ = new pointer_handler_1.PointerHandler(document2, this.view.element);
+              this.ptHandler_.emitter.on("down", this.onPointerDown_);
+              this.ptHandler_.emitter.on("move", this.onPointerMove_);
+              this.ptHandler_.emitter.on("up", this.onPointerUp_);
+              this.view.element.addEventListener("keydown", this.onKeyDown_);
+            }
+            HPaletteInputController2.prototype.handlePointerEvent_ = function(d) {
+              var hue = number_util_1.NumberUtil.map(d.px, 0, 1, 0, 360);
+              var c = this.value.rawValue;
+              var _a2 = c.getComponents("hsv"), s = _a2[1], v = _a2[2], a = _a2[3];
+              this.value.rawValue = new color_1.Color([hue, s, v, a], "hsv");
+              this.view.update();
+            };
+            HPaletteInputController2.prototype.onPointerDown_ = function(ev) {
+              this.handlePointerEvent_(ev.data);
+            };
+            HPaletteInputController2.prototype.onPointerMove_ = function(ev) {
+              this.handlePointerEvent_(ev.data);
+            };
+            HPaletteInputController2.prototype.onPointerUp_ = function(ev) {
+              this.handlePointerEvent_(ev.data);
+            };
+            HPaletteInputController2.prototype.onKeyDown_ = function(ev) {
+              var step = UiUtil.getStepForKey(UiUtil.getBaseStepForColor(false), UiUtil.getHorizontalStepKeys(ev));
+              var c = this.value.rawValue;
+              var _a2 = c.getComponents("hsv"), h = _a2[0], s = _a2[1], v = _a2[2], a = _a2[3];
+              this.value.rawValue = new color_1.Color([h + step, s, v, a], "hsv");
+            };
+            return HPaletteInputController2;
+          }();
+          exports2.HPaletteInputController = HPaletteInputController;
+        },
+        "./src/main/js/controller/input/list.ts": function(module2, exports2, __webpack_require__) {
+          "use strict";
+          Object.defineProperty(exports2, "__esModule", { value: true });
+          exports2.ListInputController = void 0;
+          var list_1 = __webpack_require__("./src/main/js/constraint/list.ts");
+          var util_1 = __webpack_require__("./src/main/js/constraint/util.ts");
+          var type_util_1 = __webpack_require__("./src/main/js/misc/type-util.ts");
+          var list_2 = __webpack_require__("./src/main/js/view/input/list.ts");
+          function findListItems(value) {
+            var c = value.constraint ? util_1.ConstraintUtil.findConstraint(value.constraint, list_1.ListConstraint) : null;
+            if (!c) {
+              return null;
+            }
+            return c.options;
+          }
+          var ListInputController = function() {
+            function ListInputController2(document2, config) {
+              this.onSelectChange_ = this.onSelectChange_.bind(this);
+              this.value_ = config.value;
+              this.listItems_ = findListItems(this.value_) || [];
+              this.viewModel = config.viewModel;
+              this.view_ = new list_2.ListInputView(document2, {
+                model: this.viewModel,
+                options: this.listItems_,
+                stringifyValue: config.stringifyValue,
+                value: this.value_
+              });
+              this.view_.selectElement.addEventListener("change", this.onSelectChange_);
+            }
+            Object.defineProperty(ListInputController2.prototype, "value", {
+              get: function() {
+                return this.value_;
+              },
+              enumerable: false,
+              configurable: true
+            });
+            Object.defineProperty(ListInputController2.prototype, "view", {
+              get: function() {
+                return this.view_;
+              },
+              enumerable: false,
+              configurable: true
+            });
+            ListInputController2.prototype.onSelectChange_ = function(e) {
+              var selectElem = type_util_1.TypeUtil.forceCast(e.currentTarget);
+              var optElem = selectElem.selectedOptions.item(0);
+              if (!optElem) {
+                return;
+              }
+              var itemIndex = Number(optElem.dataset.index);
+              this.value_.rawValue = this.listItems_[itemIndex].value;
+              this.view_.update();
+            };
+            return ListInputController2;
+          }();
+          exports2.ListInputController = ListInputController;
+        },
+        "./src/main/js/controller/input/number-text.ts": function(module2, exports2, __webpack_require__) {
+          "use strict";
+          var __extends = this && this.__extends || function() {
+            var extendStatics = function(d, b) {
+              extendStatics = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(d2, b2) {
+                d2.__proto__ = b2;
+              } || function(d2, b2) {
+                for (var p in b2)
+                  if (b2.hasOwnProperty(p))
+                    d2[p] = b2[p];
+              };
+              return extendStatics(d, b);
+            };
+            return function(d, b) {
+              extendStatics(d, b);
+              function __() {
+                this.constructor = d;
+              }
+              d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+            };
+          }();
+          Object.defineProperty(exports2, "__esModule", { value: true });
+          exports2.NumberTextInputController = void 0;
+          var type_util_1 = __webpack_require__("./src/main/js/misc/type-util.ts");
+          var UiUtil = __webpack_require__("./src/main/js/controller/ui-util.ts");
+          var text_1 = __webpack_require__("./src/main/js/controller/input/text.ts");
+          var NumberTextInputController = function(_super) {
+            __extends(NumberTextInputController2, _super);
+            function NumberTextInputController2(document2, config) {
+              var _this = _super.call(this, document2, config) || this;
+              _this.onInputKeyDown_ = _this.onInputKeyDown_.bind(_this);
+              _this.step_ = type_util_1.TypeUtil.getOrDefault(config.step, UiUtil.getStepForTextInput(_this.value.constraint));
+              _this.view.inputElement.addEventListener("keydown", _this.onInputKeyDown_);
+              return _this;
+            }
+            NumberTextInputController2.prototype.onInputKeyDown_ = function(e) {
+              var step = UiUtil.getStepForKey(this.step_, UiUtil.getVerticalStepKeys(e));
+              if (step !== 0) {
+                this.value.rawValue += step;
+                this.view.update();
+              }
+            };
+            return NumberTextInputController2;
+          }(text_1.TextInputController);
+          exports2.NumberTextInputController = NumberTextInputController;
+        },
+        "./src/main/js/controller/input/point-2d-pad-text.ts": function(module2, exports2, __webpack_require__) {
+          "use strict";
+          Object.defineProperty(exports2, "__esModule", { value: true });
+          exports2.Point2dPadTextInputController = void 0;
+          var type_util_1 = __webpack_require__("./src/main/js/misc/type-util.ts");
+          var point_2d_pad_text_1 = __webpack_require__("./src/main/js/view/input/point-2d-pad-text.ts");
+          var point_2d_pad_1 = __webpack_require__("./src/main/js/controller/input/point-2d-pad.ts");
+          var point_2d_text_1 = __webpack_require__("./src/main/js/controller/input/point-2d-text.ts");
+          var Point2dPadTextInputController = function() {
+            function Point2dPadTextInputController2(document2, config) {
+              this.onPadButtonBlur_ = this.onPadButtonBlur_.bind(this);
+              this.onPadButtonClick_ = this.onPadButtonClick_.bind(this);
+              this.value = config.value;
+              this.viewModel = config.viewModel;
+              this.padIc_ = new point_2d_pad_1.Point2dPadInputController(document2, {
+                invertsY: config.invertsY,
+                value: this.value,
+                viewModel: this.viewModel
+              });
+              this.textIc_ = new point_2d_text_1.Point2dTextInputController(document2, {
+                parser: config.parser,
+                value: this.value,
+                viewModel: this.viewModel,
+                xFormatter: config.xFormatter,
+                yFormatter: config.yFormatter
+              });
+              this.view = new point_2d_pad_text_1.Point2dPadTextInputView(document2, {
+                model: this.viewModel,
+                padInputView: this.padIc_.view,
+                textInputView: this.textIc_.view
+              });
+              this.view.padButtonElement.addEventListener("blur", this.onPadButtonBlur_);
+              this.view.padButtonElement.addEventListener("click", this.onPadButtonClick_);
+              this.padIc_.triggerElement = this.view.padButtonElement;
+            }
+            Point2dPadTextInputController2.prototype.onPadButtonBlur_ = function(e) {
+              var elem = this.view.element;
+              var nextTarget = type_util_1.TypeUtil.forceCast(e.relatedTarget);
+              if (!nextTarget || !elem.contains(nextTarget)) {
+                this.padIc_.foldable.expanded = false;
+              }
+            };
+            Point2dPadTextInputController2.prototype.onPadButtonClick_ = function() {
+              this.padIc_.foldable.expanded = !this.padIc_.foldable.expanded;
+              if (this.padIc_.foldable.expanded) {
+                this.padIc_.view.allFocusableElements[0].focus();
+              }
+            };
+            return Point2dPadTextInputController2;
+          }();
+          exports2.Point2dPadTextInputController = Point2dPadTextInputController;
+        },
+        "./src/main/js/controller/input/point-2d-pad.ts": function(module2, exports2, __webpack_require__) {
+          "use strict";
+          Object.defineProperty(exports2, "__esModule", { value: true });
+          exports2.Point2dPadInputController = void 0;
+          var point_2d_1 = __webpack_require__("./src/main/js/constraint/point-2d.ts");
+          var DomUtil = __webpack_require__("./src/main/js/misc/dom-util.ts");
+          var number_util_1 = __webpack_require__("./src/main/js/misc/number-util.ts");
+          var pointer_handler_1 = __webpack_require__("./src/main/js/misc/pointer-handler.ts");
+          var foldable_1 = __webpack_require__("./src/main/js/model/foldable.ts");
+          var point_2d_2 = __webpack_require__("./src/main/js/model/point-2d.ts");
+          var point_2d_pad_1 = __webpack_require__("./src/main/js/view/input/point-2d-pad.ts");
+          var UiUtil = __webpack_require__("./src/main/js/controller/ui-util.ts");
+          var Point2dPadInputController = function() {
+            function Point2dPadInputController2(document2, config) {
+              var _this = this;
+              this.triggerElement = null;
+              this.onFocusableElementBlur_ = this.onFocusableElementBlur_.bind(this);
+              this.onKeyDown_ = this.onKeyDown_.bind(this);
+              this.onPadKeyDown_ = this.onPadKeyDown_.bind(this);
+              this.onPointerDown_ = this.onPointerDown_.bind(this);
+              this.onPointerMove_ = this.onPointerMove_.bind(this);
+              this.onPointerUp_ = this.onPointerUp_.bind(this);
+              this.value = config.value;
+              this.foldable = new foldable_1.Foldable();
+              this.maxValue_ = UiUtil.getSuitableMaxValueForPoint2dPad(this.value.constraint, this.value.rawValue);
+              this.invertsY_ = config.invertsY;
+              var c = this.value.constraint;
+              this.xStep_ = UiUtil.getStepForTextInput(c instanceof point_2d_1.Point2dConstraint ? c.xConstraint : void 0);
+              this.yStep_ = UiUtil.getStepForTextInput(c instanceof point_2d_1.Point2dConstraint ? c.yConstraint : void 0);
+              this.viewModel = config.viewModel;
+              this.view = new point_2d_pad_1.Point2dPadInputView(document2, {
+                foldable: this.foldable,
+                invertsY: this.invertsY_,
+                maxValue: this.maxValue_,
+                model: this.viewModel,
+                value: this.value
+              });
+              this.ptHandler_ = new pointer_handler_1.PointerHandler(document2, this.view.padElement);
+              this.ptHandler_.emitter.on("down", this.onPointerDown_);
+              this.ptHandler_.emitter.on("move", this.onPointerMove_);
+              this.ptHandler_.emitter.on("up", this.onPointerUp_);
+              this.view.padElement.addEventListener("keydown", this.onPadKeyDown_);
+              this.view.element.addEventListener("keydown", this.onKeyDown_);
+              this.view.allFocusableElements.forEach(function(elem) {
+                elem.addEventListener("blur", _this.onFocusableElementBlur_);
+              });
+            }
+            Point2dPadInputController2.prototype.handlePointerEvent_ = function(d) {
+              var max4 = this.maxValue_;
+              var px = number_util_1.NumberUtil.map(d.px, 0, 1, -max4, +max4);
+              var py = number_util_1.NumberUtil.map(this.invertsY_ ? 1 - d.py : d.py, 0, 1, -max4, +max4);
+              this.value.rawValue = new point_2d_2.Point2d(px, py);
+              this.view.update();
+            };
+            Point2dPadInputController2.prototype.onPointerDown_ = function(ev) {
+              this.handlePointerEvent_(ev.data);
+            };
+            Point2dPadInputController2.prototype.onPointerMove_ = function(ev) {
+              this.handlePointerEvent_(ev.data);
+            };
+            Point2dPadInputController2.prototype.onPointerUp_ = function(ev) {
+              this.handlePointerEvent_(ev.data);
+            };
+            Point2dPadInputController2.prototype.onPadKeyDown_ = function(ev) {
+              if (UiUtil.isArrowKey(ev.keyCode)) {
+                ev.preventDefault();
+              }
+              this.value.rawValue = new point_2d_2.Point2d(this.value.rawValue.x + UiUtil.getStepForKey(this.xStep_, UiUtil.getHorizontalStepKeys(ev)), this.value.rawValue.y + UiUtil.getStepForKey(this.yStep_, UiUtil.getVerticalStepKeys(ev)) * (this.invertsY_ ? 1 : -1));
+            };
+            Point2dPadInputController2.prototype.onFocusableElementBlur_ = function(ev) {
+              var elem = this.view.element;
+              var nextTarget = DomUtil.findNextTarget(ev);
+              if (nextTarget && elem.contains(nextTarget)) {
+                return;
+              }
+              if (nextTarget && nextTarget === this.triggerElement && !DomUtil.supportsTouch(elem.ownerDocument)) {
+                return;
+              }
+              this.foldable.expanded = false;
+            };
+            Point2dPadInputController2.prototype.onKeyDown_ = function(ev) {
+              if (ev.keyCode === 27) {
+                this.foldable.expanded = false;
+              }
+            };
+            return Point2dPadInputController2;
+          }();
+          exports2.Point2dPadInputController = Point2dPadInputController;
+        },
+        "./src/main/js/controller/input/point-2d-text.ts": function(module2, exports2, __webpack_require__) {
+          "use strict";
+          Object.defineProperty(exports2, "__esModule", { value: true });
+          exports2.Point2dTextInputController = void 0;
+          var point_2d_1 = __webpack_require__("./src/main/js/constraint/point-2d.ts");
+          var type_util_1 = __webpack_require__("./src/main/js/misc/type-util.ts");
+          var point_2d_2 = __webpack_require__("./src/main/js/model/point-2d.ts");
+          var point_2d_text_1 = __webpack_require__("./src/main/js/view/input/point-2d-text.ts");
+          var UiUtil = __webpack_require__("./src/main/js/controller/ui-util.ts");
+          var Point2dTextInputController = function() {
+            function Point2dTextInputController2(document2, config) {
+              var _this = this;
+              this.onInputChange_ = this.onInputChange_.bind(this);
+              this.onInputKeyDown_ = this.onInputKeyDown_.bind(this);
+              this.parser_ = config.parser;
+              this.value = config.value;
+              var c = this.value.constraint;
+              this.xStep_ = UiUtil.getStepForTextInput(c instanceof point_2d_1.Point2dConstraint ? c.xConstraint : void 0);
+              this.yStep_ = UiUtil.getStepForTextInput(c instanceof point_2d_1.Point2dConstraint ? c.yConstraint : void 0);
+              this.viewModel = config.viewModel;
+              this.view = new point_2d_text_1.Point2dTextInputView(document2, {
+                model: this.viewModel,
+                value: this.value,
+                xFormatter: config.xFormatter,
+                yFormatter: config.yFormatter
+              });
+              this.view.inputElements.forEach(function(inputElem) {
+                inputElem.addEventListener("change", _this.onInputChange_);
+                inputElem.addEventListener("keydown", _this.onInputKeyDown_);
+              });
+            }
+            Point2dTextInputController2.prototype.findIndexOfInputElem_ = function(inputElem) {
+              var inputElems = this.view.inputElements;
+              for (var i = 0; i < inputElems.length; i++) {
+                if (inputElems[i] === inputElem) {
+                  return i;
+                }
+              }
+              return null;
+            };
+            Point2dTextInputController2.prototype.updateComponent_ = function(index, newValue) {
+              var comps = this.value.rawValue.getComponents();
+              var newComps = comps.map(function(comp, i) {
+                return i === index ? newValue : comp;
+              });
+              this.value.rawValue = new point_2d_2.Point2d(newComps[0], newComps[1]);
+              this.view.update();
+            };
+            Point2dTextInputController2.prototype.onInputChange_ = function(e) {
+              var inputElem = type_util_1.TypeUtil.forceCast(e.currentTarget);
+              var parsedValue = this.parser_(inputElem.value);
+              if (type_util_1.TypeUtil.isEmpty(parsedValue)) {
+                return;
+              }
+              var compIndex = this.findIndexOfInputElem_(inputElem);
+              if (type_util_1.TypeUtil.isEmpty(compIndex)) {
+                return;
+              }
+              this.updateComponent_(compIndex, parsedValue);
+            };
+            Point2dTextInputController2.prototype.onInputKeyDown_ = function(e) {
+              var inputElem = type_util_1.TypeUtil.forceCast(e.currentTarget);
+              var parsedValue = this.parser_(inputElem.value);
+              if (type_util_1.TypeUtil.isEmpty(parsedValue)) {
+                return;
+              }
+              var compIndex = this.findIndexOfInputElem_(inputElem);
+              if (type_util_1.TypeUtil.isEmpty(compIndex)) {
+                return;
+              }
+              var step = UiUtil.getStepForKey(compIndex === 0 ? this.xStep_ : this.yStep_, UiUtil.getVerticalStepKeys(e));
+              if (step === 0) {
+                return;
+              }
+              this.updateComponent_(compIndex, parsedValue + step);
+            };
+            return Point2dTextInputController2;
+          }();
+          exports2.Point2dTextInputController = Point2dTextInputController;
+        },
+        "./src/main/js/controller/input/slider-text.ts": function(module2, exports2, __webpack_require__) {
+          "use strict";
+          Object.defineProperty(exports2, "__esModule", { value: true });
+          exports2.SliderTextInputController = void 0;
+          var slider_text_1 = __webpack_require__("./src/main/js/view/input/slider-text.ts");
+          var number_text_1 = __webpack_require__("./src/main/js/controller/input/number-text.ts");
+          var slider_1 = __webpack_require__("./src/main/js/controller/input/slider.ts");
+          var SliderTextInputController = function() {
+            function SliderTextInputController2(document2, config) {
+              this.value_ = config.value;
+              this.viewModel = config.viewModel;
+              this.sliderIc_ = new slider_1.SliderInputController(document2, {
+                value: config.value,
+                viewModel: this.viewModel
+              });
+              this.textIc_ = new number_text_1.NumberTextInputController(document2, {
+                formatter: config.formatter,
+                parser: config.parser,
+                value: config.value,
+                viewModel: this.viewModel
+              });
+              this.view_ = new slider_text_1.SliderTextInputView(document2, {
+                model: this.viewModel,
+                sliderInputView: this.sliderIc_.view,
+                textInputView: this.textIc_.view
+              });
+            }
+            Object.defineProperty(SliderTextInputController2.prototype, "value", {
+              get: function() {
+                return this.value_;
+              },
+              enumerable: false,
+              configurable: true
+            });
+            Object.defineProperty(SliderTextInputController2.prototype, "view", {
+              get: function() {
+                return this.view_;
+              },
+              enumerable: false,
+              configurable: true
+            });
+            return SliderTextInputController2;
+          }();
+          exports2.SliderTextInputController = SliderTextInputController;
+        },
+        "./src/main/js/controller/input/slider.ts": function(module2, exports2, __webpack_require__) {
+          "use strict";
+          Object.defineProperty(exports2, "__esModule", { value: true });
+          exports2.SliderInputController = void 0;
+          var range_1 = __webpack_require__("./src/main/js/constraint/range.ts");
+          var util_1 = __webpack_require__("./src/main/js/constraint/util.ts");
+          var number_util_1 = __webpack_require__("./src/main/js/misc/number-util.ts");
+          var pointer_handler_1 = __webpack_require__("./src/main/js/misc/pointer-handler.ts");
+          var type_util_1 = __webpack_require__("./src/main/js/misc/type-util.ts");
+          var slider_1 = __webpack_require__("./src/main/js/view/input/slider.ts");
+          var UiUtil = __webpack_require__("./src/main/js/controller/ui-util.ts");
+          function findRange(value) {
+            var c = value.constraint ? util_1.ConstraintUtil.findConstraint(value.constraint, range_1.RangeConstraint) : null;
+            if (!c) {
+              return [void 0, void 0];
+            }
+            return [c.minValue, c.maxValue];
+          }
+          function estimateSuitableRange(value) {
+            var _a2 = findRange(value), min4 = _a2[0], max4 = _a2[1];
+            return [
+              type_util_1.TypeUtil.getOrDefault(min4, 0),
+              type_util_1.TypeUtil.getOrDefault(max4, 100)
+            ];
+          }
+          var SliderInputController = function() {
+            function SliderInputController2(document2, config) {
+              this.onKeyDown_ = this.onKeyDown_.bind(this);
+              this.onPointerDown_ = this.onPointerDown_.bind(this);
+              this.onPointerMove_ = this.onPointerMove_.bind(this);
+              this.onPointerUp_ = this.onPointerUp_.bind(this);
+              this.value = config.value;
+              this.step_ = UiUtil.getStepForTextInput(this.value.constraint);
+              var _a2 = estimateSuitableRange(this.value), min4 = _a2[0], max4 = _a2[1];
+              this.minValue_ = min4;
+              this.maxValue_ = max4;
+              this.viewModel = config.viewModel;
+              this.view = new slider_1.SliderInputView(document2, {
+                maxValue: this.maxValue_,
+                minValue: this.minValue_,
+                model: this.viewModel,
+                value: this.value
+              });
+              this.ptHandler_ = new pointer_handler_1.PointerHandler(document2, this.view.outerElement);
+              this.ptHandler_.emitter.on("down", this.onPointerDown_);
+              this.ptHandler_.emitter.on("move", this.onPointerMove_);
+              this.ptHandler_.emitter.on("up", this.onPointerUp_);
+              this.view.outerElement.addEventListener("keydown", this.onKeyDown_);
+            }
+            SliderInputController2.prototype.handlePointerEvent_ = function(d) {
+              this.value.rawValue = number_util_1.NumberUtil.map(d.px, 0, 1, this.minValue_, this.maxValue_);
+            };
+            SliderInputController2.prototype.onPointerDown_ = function(ev) {
+              this.handlePointerEvent_(ev.data);
+            };
+            SliderInputController2.prototype.onPointerMove_ = function(ev) {
+              this.handlePointerEvent_(ev.data);
+            };
+            SliderInputController2.prototype.onPointerUp_ = function(ev) {
+              this.handlePointerEvent_(ev.data);
+            };
+            SliderInputController2.prototype.onKeyDown_ = function(ev) {
+              this.value.rawValue += UiUtil.getStepForKey(this.step_, UiUtil.getHorizontalStepKeys(ev));
+            };
+            return SliderInputController2;
+          }();
+          exports2.SliderInputController = SliderInputController;
+        },
+        "./src/main/js/controller/input/sv-palette.ts": function(module2, exports2, __webpack_require__) {
+          "use strict";
+          Object.defineProperty(exports2, "__esModule", { value: true });
+          exports2.SvPaletteInputController = void 0;
+          var number_util_1 = __webpack_require__("./src/main/js/misc/number-util.ts");
+          var pointer_handler_1 = __webpack_require__("./src/main/js/misc/pointer-handler.ts");
+          var color_1 = __webpack_require__("./src/main/js/model/color.ts");
+          var sv_palette_1 = __webpack_require__("./src/main/js/view/input/sv-palette.ts");
+          var UiUtil = __webpack_require__("./src/main/js/controller/ui-util.ts");
+          var SvPaletteInputController = function() {
+            function SvPaletteInputController2(document2, config) {
+              this.onKeyDown_ = this.onKeyDown_.bind(this);
+              this.onPointerDown_ = this.onPointerDown_.bind(this);
+              this.onPointerMove_ = this.onPointerMove_.bind(this);
+              this.onPointerUp_ = this.onPointerUp_.bind(this);
+              this.value = config.value;
+              this.viewModel = config.viewModel;
+              this.view = new sv_palette_1.SvPaletteInputView(document2, {
+                model: this.viewModel,
+                value: this.value
+              });
+              this.ptHandler_ = new pointer_handler_1.PointerHandler(document2, this.view.element);
+              this.ptHandler_.emitter.on("down", this.onPointerDown_);
+              this.ptHandler_.emitter.on("move", this.onPointerMove_);
+              this.ptHandler_.emitter.on("up", this.onPointerUp_);
+              this.view.element.addEventListener("keydown", this.onKeyDown_);
+            }
+            SvPaletteInputController2.prototype.handlePointerEvent_ = function(d) {
+              var saturation = number_util_1.NumberUtil.map(d.px, 0, 1, 0, 100);
+              var value = number_util_1.NumberUtil.map(d.py, 0, 1, 100, 0);
+              var _a2 = this.value.rawValue.getComponents("hsv"), h = _a2[0], a = _a2[3];
+              this.value.rawValue = new color_1.Color([h, saturation, value, a], "hsv");
+              this.view.update();
+            };
+            SvPaletteInputController2.prototype.onPointerDown_ = function(ev) {
+              this.handlePointerEvent_(ev.data);
+            };
+            SvPaletteInputController2.prototype.onPointerMove_ = function(ev) {
+              this.handlePointerEvent_(ev.data);
+            };
+            SvPaletteInputController2.prototype.onPointerUp_ = function(ev) {
+              this.handlePointerEvent_(ev.data);
+            };
+            SvPaletteInputController2.prototype.onKeyDown_ = function(ev) {
+              if (UiUtil.isArrowKey(ev.keyCode)) {
+                ev.preventDefault();
+              }
+              var _a2 = this.value.rawValue.getComponents("hsv"), h = _a2[0], s = _a2[1], v = _a2[2], a = _a2[3];
+              var baseStep = UiUtil.getBaseStepForColor(false);
+              this.value.rawValue = new color_1.Color([
+                h,
+                s + UiUtil.getStepForKey(baseStep, UiUtil.getHorizontalStepKeys(ev)),
+                v + UiUtil.getStepForKey(baseStep, UiUtil.getVerticalStepKeys(ev)),
+                a
+              ], "hsv");
+            };
+            return SvPaletteInputController2;
+          }();
+          exports2.SvPaletteInputController = SvPaletteInputController;
+        },
+        "./src/main/js/controller/input/text.ts": function(module2, exports2, __webpack_require__) {
+          "use strict";
+          Object.defineProperty(exports2, "__esModule", { value: true });
+          exports2.TextInputController = void 0;
+          var type_util_1 = __webpack_require__("./src/main/js/misc/type-util.ts");
+          var text_1 = __webpack_require__("./src/main/js/view/input/text.ts");
+          var TextInputController = function() {
+            function TextInputController2(document2, config) {
+              this.onInputChange_ = this.onInputChange_.bind(this);
+              this.parser_ = config.parser;
+              this.value = config.value;
+              this.viewModel = config.viewModel;
+              this.view = new text_1.TextInputView(document2, {
+                formatter: config.formatter,
+                model: this.viewModel,
+                value: this.value
+              });
+              this.view.inputElement.addEventListener("change", this.onInputChange_);
+            }
+            TextInputController2.prototype.onInputChange_ = function(e) {
+              var inputElem = type_util_1.TypeUtil.forceCast(e.currentTarget);
+              var value = inputElem.value;
+              var parsedValue = this.parser_(value);
+              if (!type_util_1.TypeUtil.isEmpty(parsedValue)) {
+                this.value.rawValue = parsedValue;
+              }
+              this.view.update();
+            };
+            return TextInputController2;
+          }();
+          exports2.TextInputController = TextInputController;
+        },
+        "./src/main/js/controller/monitor-binding.ts": function(module2, exports2, __webpack_require__) {
+          "use strict";
+          Object.defineProperty(exports2, "__esModule", { value: true });
+          exports2.MonitorBindingController = void 0;
+          var labeled_1 = __webpack_require__("./src/main/js/view/labeled.ts");
+          var MonitorBindingController = function() {
+            function MonitorBindingController2(document2, config) {
+              var _this = this;
+              this.binding = config.binding;
+              this.controller = config.controller;
+              this.view = new labeled_1.LabeledView(document2, {
+                label: config.label,
+                model: this.viewModel,
+                view: this.controller.view
+              });
+              this.viewModel.emitter.on("dispose", function() {
+                _this.binding.dispose();
+              });
+            }
+            Object.defineProperty(MonitorBindingController2.prototype, "viewModel", {
+              get: function() {
+                return this.controller.viewModel;
+              },
+              enumerable: false,
+              configurable: true
+            });
+            return MonitorBindingController2;
+          }();
+          exports2.MonitorBindingController = MonitorBindingController;
+        },
+        "./src/main/js/controller/monitor/graph.ts": function(module2, exports2, __webpack_require__) {
+          "use strict";
+          Object.defineProperty(exports2, "__esModule", { value: true });
+          exports2.GraphMonitorController = void 0;
+          var number_util_1 = __webpack_require__("./src/main/js/misc/number-util.ts");
+          var graph_cursor_1 = __webpack_require__("./src/main/js/model/graph-cursor.ts");
+          var graph_1 = __webpack_require__("./src/main/js/view/monitor/graph.ts");
+          var GraphMonitorController = function() {
+            function GraphMonitorController2(document2, config) {
+              this.onGraphMouseLeave_ = this.onGraphMouseLeave_.bind(this);
+              this.onGraphMouseMove_ = this.onGraphMouseMove_.bind(this);
+              this.value = config.value;
+              this.cursor_ = new graph_cursor_1.GraphCursor();
+              this.viewModel = config.viewModel;
+              this.view = new graph_1.GraphMonitorView(document2, {
+                cursor: this.cursor_,
+                formatter: config.formatter,
+                maxValue: config.maxValue,
+                minValue: config.minValue,
+                model: this.viewModel,
+                value: this.value
+              });
+              this.view.graphElement.addEventListener("mouseleave", this.onGraphMouseLeave_);
+              this.view.graphElement.addEventListener("mousemove", this.onGraphMouseMove_);
+            }
+            GraphMonitorController2.prototype.onGraphMouseLeave_ = function() {
+              this.cursor_.index = -1;
+            };
+            GraphMonitorController2.prototype.onGraphMouseMove_ = function(e) {
+              var bounds = this.view.graphElement.getBoundingClientRect();
+              var x = e.offsetX;
+              this.cursor_.index = Math.floor(number_util_1.NumberUtil.map(x, 0, bounds.width, 0, this.value.totalCount));
+            };
+            return GraphMonitorController2;
+          }();
+          exports2.GraphMonitorController = GraphMonitorController;
+        },
+        "./src/main/js/controller/monitor/multi-log.ts": function(module2, exports2, __webpack_require__) {
+          "use strict";
+          Object.defineProperty(exports2, "__esModule", { value: true });
+          exports2.MultiLogMonitorController = void 0;
+          var multi_log_1 = __webpack_require__("./src/main/js/view/monitor/multi-log.ts");
+          var MultiLogMonitorController = function() {
+            function MultiLogMonitorController2(document2, config) {
+              this.value = config.value;
+              this.viewModel = config.viewModel;
+              this.view = new multi_log_1.MultiLogMonitorView(document2, {
+                formatter: config.formatter,
+                model: this.viewModel,
+                value: this.value
+              });
+            }
+            return MultiLogMonitorController2;
+          }();
+          exports2.MultiLogMonitorController = MultiLogMonitorController;
+        },
+        "./src/main/js/controller/monitor/single-log.ts": function(module2, exports2, __webpack_require__) {
+          "use strict";
+          Object.defineProperty(exports2, "__esModule", { value: true });
+          exports2.SingleLogMonitorController = void 0;
+          var single_log_1 = __webpack_require__("./src/main/js/view/monitor/single-log.ts");
+          var SingleLogMonitorController = function() {
+            function SingleLogMonitorController2(document2, config) {
+              this.value = config.value;
+              this.viewModel = config.viewModel;
+              this.view = new single_log_1.SingleLogMonitorView(document2, {
+                formatter: config.formatter,
+                model: this.viewModel,
+                value: this.value
+              });
+            }
+            return SingleLogMonitorController2;
+          }();
+          exports2.SingleLogMonitorController = SingleLogMonitorController;
+        },
+        "./src/main/js/controller/root.ts": function(module2, exports2, __webpack_require__) {
+          "use strict";
+          Object.defineProperty(exports2, "__esModule", { value: true });
+          exports2.RootController = void 0;
+          var DomUtil = __webpack_require__("./src/main/js/misc/dom-util.ts");
+          var type_util_1 = __webpack_require__("./src/main/js/misc/type-util.ts");
+          var folder_1 = __webpack_require__("./src/main/js/model/folder.ts");
+          var ui_container_1 = __webpack_require__("./src/main/js/model/ui-container.ts");
+          var root_1 = __webpack_require__("./src/main/js/view/root.ts");
+          var ContainerUtil = __webpack_require__("./src/main/js/controller/container-util.ts");
+          function createFolder(config) {
+            if (!config.title) {
+              return null;
+            }
+            return new folder_1.Folder(config.title, type_util_1.TypeUtil.getOrDefault(config.expanded, true));
+          }
+          var RootController = function() {
+            function RootController2(document2, config) {
+              this.onContainerTransitionEnd_ = this.onContainerTransitionEnd_.bind(this);
+              this.onFolderBeforeChange_ = this.onFolderBeforeChange_.bind(this);
+              this.onTitleClick_ = this.onTitleClick_.bind(this);
+              this.onUiContainerAdd_ = this.onUiContainerAdd_.bind(this);
+              this.onUiContainerItemLayout_ = this.onUiContainerItemLayout_.bind(this);
+              this.onUiContainerRemove_ = this.onUiContainerRemove_.bind(this);
+              this.folder = createFolder(config);
+              if (this.folder) {
+                this.folder.emitter.on("beforechange", this.onFolderBeforeChange_);
+              }
+              this.ucList_ = new ui_container_1.UiContainer();
+              this.ucList_.emitter.on("add", this.onUiContainerAdd_);
+              this.ucList_.emitter.on("itemlayout", this.onUiContainerItemLayout_);
+              this.ucList_.emitter.on("remove", this.onUiContainerRemove_);
+              this.doc_ = document2;
+              this.viewModel = config.viewModel;
+              this.view = new root_1.RootView(this.doc_, {
+                folder: this.folder,
+                model: this.viewModel
+              });
+              if (this.view.titleElement) {
+                this.view.titleElement.addEventListener("click", this.onTitleClick_);
+              }
+              this.view.containerElement.addEventListener("transitionend", this.onContainerTransitionEnd_);
+            }
+            Object.defineProperty(RootController2.prototype, "document", {
+              get: function() {
+                return this.doc_;
+              },
+              enumerable: false,
+              configurable: true
+            });
+            Object.defineProperty(RootController2.prototype, "uiContainer", {
+              get: function() {
+                return this.ucList_;
+              },
+              enumerable: false,
+              configurable: true
+            });
+            RootController2.prototype.onFolderBeforeChange_ = function(ev) {
+              if (ev.propertyName !== "expanded") {
+                return;
+              }
+              var folder = this.folder;
+              if (!folder) {
+                return;
+              }
+              if (type_util_1.TypeUtil.isEmpty(folder.expandedHeight)) {
+                folder.expandedHeight = ContainerUtil.computeExpandedFolderHeight(folder, this.view.containerElement);
+              }
+              folder.shouldFixHeight = true;
+              DomUtil.forceReflow(this.view.containerElement);
+            };
+            RootController2.prototype.applyUiContainerChange_ = function() {
+              ContainerUtil.updateAllItemsPositions(this.uiContainer);
+            };
+            RootController2.prototype.onUiContainerAdd_ = function(ev) {
+              DomUtil.insertElementAt(this.view.containerElement, ev.uiController.view.element, ev.index);
+              this.applyUiContainerChange_();
+            };
+            RootController2.prototype.onUiContainerRemove_ = function(_) {
+              this.applyUiContainerChange_();
+            };
+            RootController2.prototype.onUiContainerItemLayout_ = function(_) {
+              this.applyUiContainerChange_();
+            };
+            RootController2.prototype.onTitleClick_ = function() {
+              if (this.folder) {
+                this.folder.expanded = !this.folder.expanded;
+              }
+            };
+            RootController2.prototype.onContainerTransitionEnd_ = function(ev) {
+              if (ev.propertyName !== "height") {
+                return;
+              }
+              if (this.folder) {
+                this.folder.shouldFixHeight = false;
+                this.folder.expandedHeight = null;
+              }
+            };
+            return RootController2;
+          }();
+          exports2.RootController = RootController;
+        },
+        "./src/main/js/controller/separator.ts": function(module2, exports2, __webpack_require__) {
+          "use strict";
+          Object.defineProperty(exports2, "__esModule", { value: true });
+          exports2.SeparatorController = void 0;
+          var separator_1 = __webpack_require__("./src/main/js/view/separator.ts");
+          var SeparatorController = function() {
+            function SeparatorController2(document2, config) {
+              this.viewModel = config.viewModel;
+              this.view = new separator_1.SeparatorView(document2, {
+                model: this.viewModel
+              });
+            }
+            return SeparatorController2;
+          }();
+          exports2.SeparatorController = SeparatorController;
+        },
+        "./src/main/js/controller/ui-util.ts": function(module2, exports2, __webpack_require__) {
+          "use strict";
+          Object.defineProperty(exports2, "__esModule", { value: true });
+          exports2.getBaseStepForColor = exports2.getSuitableMaxValueForPoint2dPad = exports2.getSuitableDecimalDigits = exports2.isArrowKey = exports2.isVerticalArrowKey = exports2.getHorizontalStepKeys = exports2.getVerticalStepKeys = exports2.getStepForKey = exports2.getStepForTextInput = exports2.findControllers = exports2.normalizeInputParamsOptions = void 0;
+          var point_2d_1 = __webpack_require__("./src/main/js/constraint/point-2d.ts");
+          var range_1 = __webpack_require__("./src/main/js/constraint/range.ts");
+          var step_1 = __webpack_require__("./src/main/js/constraint/step.ts");
+          var util_1 = __webpack_require__("./src/main/js/constraint/util.ts");
+          var number_util_1 = __webpack_require__("./src/main/js/misc/number-util.ts");
+          var type_util_1 = __webpack_require__("./src/main/js/misc/type-util.ts");
+          var folder_1 = __webpack_require__("./src/main/js/controller/folder.ts");
+          function normalizeInputParamsOptions(options, convert) {
+            if (Array.isArray(options)) {
+              return options.map(function(item) {
+                return {
+                  text: item.text,
+                  value: convert(item.value)
+                };
+              });
+            }
+            var textToValueMap = options;
+            var texts = Object.keys(textToValueMap);
+            return texts.reduce(function(result, text) {
+              return result.concat({
+                text,
+                value: convert(textToValueMap[text])
+              });
+            }, []);
+          }
+          exports2.normalizeInputParamsOptions = normalizeInputParamsOptions;
+          function findControllers(uiControllers, controllerClass) {
+            return uiControllers.reduce(function(results, uc) {
+              if (uc instanceof folder_1.FolderController) {
+                results.push.apply(results, findControllers(uc.uiContainer.items, controllerClass));
+              }
+              if (uc instanceof controllerClass) {
+                results.push(uc);
+              }
+              return results;
+            }, []);
+          }
+          exports2.findControllers = findControllers;
+          function findStep(constraint) {
+            var c = constraint ? util_1.ConstraintUtil.findConstraint(constraint, step_1.StepConstraint) : null;
+            if (!c) {
+              return null;
+            }
+            return c.step;
+          }
+          function getStepForTextInput(constraint) {
+            var step = findStep(constraint);
+            return type_util_1.TypeUtil.getOrDefault(step, 1);
+          }
+          exports2.getStepForTextInput = getStepForTextInput;
+          function getStepForKey(baseStep, keys) {
+            var step = baseStep * (keys.altKey ? 0.1 : 1) * (keys.shiftKey ? 10 : 1);
+            if (keys.upKey) {
+              return +step;
+            } else if (keys.downKey) {
+              return -step;
+            }
+            return 0;
+          }
+          exports2.getStepForKey = getStepForKey;
+          function getVerticalStepKeys(ev) {
+            return {
+              altKey: ev.altKey,
+              downKey: ev.keyCode === 40,
+              shiftKey: ev.shiftKey,
+              upKey: ev.keyCode === 38
+            };
+          }
+          exports2.getVerticalStepKeys = getVerticalStepKeys;
+          function getHorizontalStepKeys(ev) {
+            return {
+              altKey: ev.altKey,
+              downKey: ev.keyCode === 37,
+              shiftKey: ev.shiftKey,
+              upKey: ev.keyCode === 39
+            };
+          }
+          exports2.getHorizontalStepKeys = getHorizontalStepKeys;
+          function isVerticalArrowKey(keyCode) {
+            return keyCode === 38 || keyCode === 40;
+          }
+          exports2.isVerticalArrowKey = isVerticalArrowKey;
+          function isArrowKey(keyCode) {
+            return isVerticalArrowKey(keyCode) || keyCode === 37 || keyCode === 39;
+          }
+          exports2.isArrowKey = isArrowKey;
+          function getSuitableDecimalDigits(constraint, rawValue) {
+            var sc = constraint && util_1.ConstraintUtil.findConstraint(constraint, step_1.StepConstraint);
+            if (sc) {
+              return number_util_1.NumberUtil.getDecimalDigits(sc.step);
+            }
+            return Math.max(number_util_1.NumberUtil.getDecimalDigits(rawValue), 2);
+          }
+          exports2.getSuitableDecimalDigits = getSuitableDecimalDigits;
+          function getSuitableMaxDimensionValue(constraint, rawValue) {
+            var rc = constraint && util_1.ConstraintUtil.findConstraint(constraint, range_1.RangeConstraint);
+            if (rc) {
+              return Math.max(Math.abs(rc.minValue || 0), Math.abs(rc.maxValue || 0));
+            }
+            var step = getStepForTextInput(constraint);
+            return Math.max(Math.abs(step) * 10, Math.abs(rawValue) * 10);
+          }
+          function getSuitableMaxValueForPoint2dPad(constraint, rawValue) {
+            var xc = constraint instanceof point_2d_1.Point2dConstraint ? constraint.xConstraint : void 0;
+            var yc = constraint instanceof point_2d_1.Point2dConstraint ? constraint.yConstraint : void 0;
+            var xr = getSuitableMaxDimensionValue(xc, rawValue.x);
+            var yr = getSuitableMaxDimensionValue(yc, rawValue.y);
+            return Math.max(xr, yr);
+          }
+          exports2.getSuitableMaxValueForPoint2dPad = getSuitableMaxValueForPoint2dPad;
+          function getBaseStepForColor(forAlpha) {
+            return forAlpha ? 0.1 : 1;
+          }
+          exports2.getBaseStepForColor = getBaseStepForColor;
+        },
+        "./src/main/js/converter/boolean.ts": function(module2, exports2, __webpack_require__) {
+          "use strict";
+          Object.defineProperty(exports2, "__esModule", { value: true });
+          exports2.toString = exports2.fromMixed = void 0;
+          function fromMixed(value) {
+            if (value === "false") {
+              return false;
+            }
+            return !!value;
+          }
+          exports2.fromMixed = fromMixed;
+          function toString(value) {
+            return String(value);
+          }
+          exports2.toString = toString;
+        },
+        "./src/main/js/converter/color.ts": function(module2, exports2, __webpack_require__) {
+          "use strict";
+          Object.defineProperty(exports2, "__esModule", { value: true });
+          exports2.toRgbaNumber = exports2.toRgbNumber = exports2.getStringifier = exports2.toFunctionalHslaString = exports2.toFunctionalHslString = exports2.toFunctionalRgbaString = exports2.toFunctionalRgbString = exports2.toHexRgbaString = exports2.toHexRgbString = exports2.fromNumberToRgba = exports2.fromNumberToRgb = exports2.fromObject = exports2.fromString = void 0;
+          var number_1 = __webpack_require__("./src/main/js/formatter/number.ts");
+          var percentage_1 = __webpack_require__("./src/main/js/formatter/percentage.ts");
+          var ColorModel = __webpack_require__("./src/main/js/misc/color-model.ts");
+          var number_util_1 = __webpack_require__("./src/main/js/misc/number-util.ts");
+          var color_1 = __webpack_require__("./src/main/js/model/color.ts");
+          var NumberColorParser = __webpack_require__("./src/main/js/parser/number-color.ts");
+          var StringColorParser = __webpack_require__("./src/main/js/parser/string-color.ts");
+          function createEmptyColor() {
+            return new color_1.Color([0, 0, 0], "rgb");
+          }
+          function fromString(value) {
+            if (typeof value === "string") {
+              var cv = StringColorParser.CompositeParser(value);
+              if (cv) {
+                return cv;
+              }
+            }
+            return createEmptyColor();
+          }
+          exports2.fromString = fromString;
+          function fromObject(value) {
+            if (color_1.Color.isColorObject(value)) {
+              return color_1.Color.fromObject(value);
+            }
+            return createEmptyColor();
+          }
+          exports2.fromObject = fromObject;
+          function fromNumberToRgb(value) {
+            if (typeof value === "number") {
+              var cv = NumberColorParser.RgbParser(value);
+              if (cv) {
+                return cv;
+              }
+            }
+            return createEmptyColor();
+          }
+          exports2.fromNumberToRgb = fromNumberToRgb;
+          function fromNumberToRgba(value) {
+            if (typeof value === "number") {
+              var cv = NumberColorParser.RgbaParser(value);
+              if (cv) {
+                return cv;
+              }
+            }
+            return createEmptyColor();
+          }
+          exports2.fromNumberToRgba = fromNumberToRgba;
+          function zerofill(comp) {
+            var hex = number_util_1.NumberUtil.constrain(Math.floor(comp), 0, 255).toString(16);
+            return hex.length === 1 ? "0" + hex : hex;
+          }
+          function toHexRgbString(value) {
+            var hexes = ColorModel.withoutAlpha(value.getComponents("rgb")).map(zerofill).join("");
+            return "#" + hexes;
+          }
+          exports2.toHexRgbString = toHexRgbString;
+          function toHexRgbaString(value) {
+            var rgbaComps = value.getComponents("rgb");
+            var hexes = [rgbaComps[0], rgbaComps[1], rgbaComps[2], rgbaComps[3] * 255].map(zerofill).join("");
+            return "#" + hexes;
+          }
+          exports2.toHexRgbaString = toHexRgbaString;
+          function toFunctionalRgbString(value) {
+            var formatter = new number_1.NumberFormatter(0);
+            var comps = ColorModel.withoutAlpha(value.getComponents("rgb")).map(function(comp) {
+              return formatter.format(comp);
+            });
+            return "rgb(" + comps.join(", ") + ")";
+          }
+          exports2.toFunctionalRgbString = toFunctionalRgbString;
+          function toFunctionalRgbaString(value) {
+            var aFormatter = new number_1.NumberFormatter(2);
+            var rgbFormatter = new number_1.NumberFormatter(0);
+            var comps = value.getComponents("rgb").map(function(comp, index) {
+              var formatter = index === 3 ? aFormatter : rgbFormatter;
+              return formatter.format(comp);
+            });
+            return "rgba(" + comps.join(", ") + ")";
+          }
+          exports2.toFunctionalRgbaString = toFunctionalRgbaString;
+          function toFunctionalHslString(value) {
+            var formatters = [
+              new number_1.NumberFormatter(0),
+              new percentage_1.PercentageFormatter(),
+              new percentage_1.PercentageFormatter()
+            ];
+            var comps = ColorModel.withoutAlpha(value.getComponents("hsl")).map(function(comp, index) {
+              return formatters[index].format(comp);
+            });
+            return "hsl(" + comps.join(", ") + ")";
+          }
+          exports2.toFunctionalHslString = toFunctionalHslString;
+          function toFunctionalHslaString(value) {
+            var formatters = [
+              new number_1.NumberFormatter(0),
+              new percentage_1.PercentageFormatter(),
+              new percentage_1.PercentageFormatter(),
+              new number_1.NumberFormatter(2)
+            ];
+            var comps = value.getComponents("hsl").map(function(comp, index) {
+              return formatters[index].format(comp);
+            });
+            return "hsla(" + comps.join(", ") + ")";
+          }
+          exports2.toFunctionalHslaString = toFunctionalHslaString;
+          var NOTATION_TO_STRINGIFIER_MAP = {
+            "func.hsl": toFunctionalHslString,
+            "func.hsla": toFunctionalHslaString,
+            "func.rgb": toFunctionalRgbString,
+            "func.rgba": toFunctionalRgbaString,
+            "hex.rgb": toHexRgbString,
+            "hex.rgba": toHexRgbaString
+          };
+          function getStringifier(notation) {
+            return NOTATION_TO_STRINGIFIER_MAP[notation];
+          }
+          exports2.getStringifier = getStringifier;
+          function toRgbNumber(value) {
+            return ColorModel.withoutAlpha(value.getComponents("rgb")).reduce(function(result, comp) {
+              return result << 8 | Math.floor(comp) & 255;
+            }, 0);
+          }
+          exports2.toRgbNumber = toRgbNumber;
+          function toRgbaNumber(value) {
+            return value.getComponents("rgb").reduce(function(result, comp, index) {
+              var hex = Math.floor(index === 3 ? comp * 255 : comp) & 255;
+              return result << 8 | hex;
+            }, 0);
+          }
+          exports2.toRgbaNumber = toRgbaNumber;
+        },
+        "./src/main/js/converter/number.ts": function(module2, exports2, __webpack_require__) {
+          "use strict";
+          Object.defineProperty(exports2, "__esModule", { value: true });
+          exports2.toString = exports2.fromMixed = void 0;
+          var type_util_1 = __webpack_require__("./src/main/js/misc/type-util.ts");
+          var string_number_1 = __webpack_require__("./src/main/js/parser/string-number.ts");
+          function fromMixed(value) {
+            if (typeof value === "number") {
+              return value;
+            }
+            if (typeof value === "string") {
+              var pv = string_number_1.StringNumberParser(value);
+              if (!type_util_1.TypeUtil.isEmpty(pv)) {
+                return pv;
+              }
+            }
+            return 0;
+          }
+          exports2.fromMixed = fromMixed;
+          function toString(value) {
+            return String(value);
+          }
+          exports2.toString = toString;
+        },
+        "./src/main/js/converter/point-2d.ts": function(module2, exports2, __webpack_require__) {
+          "use strict";
+          Object.defineProperty(exports2, "__esModule", { value: true });
+          exports2.fromMixed = void 0;
+          var point_2d_1 = __webpack_require__("./src/main/js/model/point-2d.ts");
+          var any_point_2d_1 = __webpack_require__("./src/main/js/parser/any-point-2d.ts");
+          function fromMixed(value) {
+            return any_point_2d_1.AnyPoint2dParser(value) || new point_2d_1.Point2d();
+          }
+          exports2.fromMixed = fromMixed;
+        },
+        "./src/main/js/converter/string.ts": function(module2, exports2, __webpack_require__) {
+          "use strict";
+          Object.defineProperty(exports2, "__esModule", { value: true });
+          exports2.toString = exports2.fromMixed = void 0;
+          function fromMixed(value) {
+            return String(value);
+          }
+          exports2.fromMixed = fromMixed;
+          function toString(value) {
+            return value;
+          }
+          exports2.toString = toString;
+        },
+        "./src/main/js/formatter/boolean.ts": function(module2, exports2, __webpack_require__) {
+          "use strict";
+          Object.defineProperty(exports2, "__esModule", { value: true });
+          exports2.BooleanFormatter = void 0;
+          var BooleanConverter = __webpack_require__("./src/main/js/converter/boolean.ts");
+          var BooleanFormatter = function() {
+            function BooleanFormatter2() {
+            }
+            BooleanFormatter2.prototype.format = function(value) {
+              return BooleanConverter.toString(value);
+            };
+            return BooleanFormatter2;
+          }();
+          exports2.BooleanFormatter = BooleanFormatter;
+        },
+        "./src/main/js/formatter/color.ts": function(module2, exports2, __webpack_require__) {
+          "use strict";
+          Object.defineProperty(exports2, "__esModule", { value: true });
+          exports2.ColorFormatter = void 0;
+          var ColorFormatter = function() {
+            function ColorFormatter2(stringifier) {
+              this.stringifier_ = stringifier;
+            }
+            ColorFormatter2.prototype.format = function(value) {
+              return this.stringifier_(value);
+            };
+            return ColorFormatter2;
+          }();
+          exports2.ColorFormatter = ColorFormatter;
+        },
+        "./src/main/js/formatter/number.ts": function(module2, exports2, __webpack_require__) {
+          "use strict";
+          Object.defineProperty(exports2, "__esModule", { value: true });
+          exports2.NumberFormatter = void 0;
+          var NumberFormatter = function() {
+            function NumberFormatter2(digits) {
+              this.digits_ = digits;
+            }
+            Object.defineProperty(NumberFormatter2.prototype, "digits", {
+              get: function() {
+                return this.digits_;
+              },
+              enumerable: false,
+              configurable: true
+            });
+            NumberFormatter2.prototype.format = function(value) {
+              return value.toFixed(Math.max(Math.min(this.digits_, 20), 0));
+            };
+            return NumberFormatter2;
+          }();
+          exports2.NumberFormatter = NumberFormatter;
+        },
+        "./src/main/js/formatter/percentage.ts": function(module2, exports2, __webpack_require__) {
+          "use strict";
+          Object.defineProperty(exports2, "__esModule", { value: true });
+          exports2.PercentageFormatter = void 0;
+          var number_1 = __webpack_require__("./src/main/js/formatter/number.ts");
+          var innerFormatter = new number_1.NumberFormatter(0);
+          var PercentageFormatter = function() {
+            function PercentageFormatter2() {
+            }
+            PercentageFormatter2.prototype.format = function(value) {
+              return innerFormatter.format(value) + "%";
+            };
+            return PercentageFormatter2;
+          }();
+          exports2.PercentageFormatter = PercentageFormatter;
+        },
+        "./src/main/js/formatter/string.ts": function(module2, exports2, __webpack_require__) {
+          "use strict";
+          Object.defineProperty(exports2, "__esModule", { value: true });
+          exports2.StringFormatter = void 0;
+          var StringFormatter = function() {
+            function StringFormatter2() {
+            }
+            StringFormatter2.prototype.format = function(value) {
+              return value;
+            };
+            return StringFormatter2;
+          }();
+          exports2.StringFormatter = StringFormatter;
+        },
+        "./src/main/js/index.ts": function(module2, exports2, __webpack_require__) {
+          "use strict";
+          var __extends = this && this.__extends || function() {
+            var extendStatics = function(d, b) {
+              extendStatics = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(d2, b2) {
+                d2.__proto__ = b2;
+              } || function(d2, b2) {
+                for (var p in b2)
+                  if (b2.hasOwnProperty(p))
+                    d2[p] = b2[p];
+              };
+              return extendStatics(d, b);
+            };
+            return function(d, b) {
+              extendStatics(d, b);
+              function __() {
+                this.constructor = d;
+              }
+              d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+            };
+          }();
+          Object.defineProperty(exports2, "__esModule", { value: true });
+          var Style = __webpack_require__("./src/main/sass/bundle.scss");
+          var tweakpane_without_style_1 = __webpack_require__("./src/main/js/tweakpane-without-style.ts");
+          function embedDefaultStyleIfNeeded(document2) {
+            var MARKER = "tweakpane";
+            if (document2.querySelector("style[data-for=" + MARKER + "]")) {
               return;
             }
-            var x = mapRange(index, 0, maxIndex, 0, bounds.width);
-            var y = mapRange(v, min4, max4, bounds.height, 0);
-            points2.push([x, y].join(","));
-          });
-          this.lineElem_.setAttributeNS(null, "points", points2.join(" "));
-          var tooltipElem = this.tooltipElem_;
-          var value = this.value.rawValue[this.cursor_.index];
-          if (value === void 0) {
-            tooltipElem.classList.remove(className$o("t", "valid"));
-            return;
-          }
-          tooltipElem.classList.add(className$o("t", "valid"));
-          var tx = mapRange(this.cursor_.index, 0, maxIndex, 0, bounds.width);
-          var ty = mapRange(value, min4, max4, bounds.height, 0);
-          tooltipElem.style.left = tx + "px";
-          tooltipElem.style.top = ty + "px";
-          tooltipElem.textContent = "" + this.formatter_(value);
-        };
-        GraphLogView2.prototype.onValueUpdate_ = function() {
-          this.update();
-        };
-        GraphLogView2.prototype.onCursorChange_ = function() {
-          this.update();
-        };
-        return GraphLogView2;
-      }();
-      var GraphLogController = function() {
-        function GraphLogController2(doc, config) {
-          this.onGraphMouseLeave_ = this.onGraphMouseLeave_.bind(this);
-          this.onGraphMouseMove_ = this.onGraphMouseMove_.bind(this);
-          this.value = config.value;
-          this.cursor_ = new GraphCursor();
-          this.view = new GraphLogView(doc, {
-            cursor: this.cursor_,
-            formatter: config.formatter,
-            lineCount: config.lineCount,
-            maxValue: config.maxValue,
-            minValue: config.minValue,
-            value: this.value
-          });
-          this.view.element.addEventListener("mouseleave", this.onGraphMouseLeave_);
-          this.view.element.addEventListener("mousemove", this.onGraphMouseMove_);
-        }
-        GraphLogController2.prototype.onGraphMouseLeave_ = function() {
-          this.cursor_.index = -1;
-        };
-        GraphLogController2.prototype.onGraphMouseMove_ = function(e) {
-          var bounds = this.view.graphElement.getBoundingClientRect();
-          var x = e.offsetX;
-          this.cursor_.index = Math.floor(mapRange(x, 0, bounds.width, 0, this.value.rawValue.length));
-        };
-        return GraphLogController2;
-      }();
-      function createFormatter() {
-        return createNumberFormatter(2);
-      }
-      function createTextMonitor(document2, binding, params) {
-        var _a2;
-        if (binding.value.rawValue.length === 1) {
-          return new SingleLogMonitorController(document2, {
-            formatter: createFormatter(),
-            value: binding.value
-          });
-        }
-        return new MultiLogController(document2, {
-          formatter: createFormatter(),
-          lineCount: (_a2 = params.lineCount) !== null && _a2 !== void 0 ? _a2 : Constants.monitor.defaultLineCount,
-          value: binding.value
-        });
-      }
-      function createGraphMonitor(_a2) {
-        var _b, _c, _d;
-        var document2 = _a2.document, binding = _a2.binding, params = _a2.params;
-        return new GraphLogController(document2, {
-          formatter: createFormatter(),
-          lineCount: (_b = params.lineCount) !== null && _b !== void 0 ? _b : Constants.monitor.defaultLineCount,
-          maxValue: (_c = "max" in params ? params.max : null) !== null && _c !== void 0 ? _c : 100,
-          minValue: (_d = "min" in params ? params.min : null) !== null && _d !== void 0 ? _d : 0,
-          value: binding.value
-        });
-      }
-      function shouldShowGraph(params) {
-        return "view" in params && params.view === "graph";
-      }
-      var NumberMonitorPlugin = {
-        id: "monitor-number",
-        binding: {
-          accept: function(value, _params) {
-            return typeof value === "number" ? value : null;
-          },
-          defaultBufferSize: function(params) {
-            return shouldShowGraph(params) ? 64 : 1;
-          },
-          reader: function(_args) {
-            return numberFromUnknown;
-          }
-        },
-        controller: function(args) {
-          if (shouldShowGraph(args.params)) {
-            return createGraphMonitor({
-              document: args.document,
-              binding: args.binding,
-              params: args.params
-            });
-          }
-          return createTextMonitor(args.document, args.binding, args.params);
-        }
-      };
-      var StringMonitorPlugin = {
-        id: "monitor-string",
-        binding: {
-          accept: function(value, _params) {
-            return typeof value === "string" ? value : null;
-          },
-          reader: function(_args) {
-            return stringFromUnknown;
-          }
-        },
-        controller: function(args) {
-          var _a2;
-          var value = args.binding.value;
-          var multiline = value.rawValue.length > 1 || "multiline" in args.params && args.params.multiline;
-          if (multiline) {
-            return new MultiLogController(args.document, {
-              formatter: formatString,
-              lineCount: (_a2 = args.params.lineCount) !== null && _a2 !== void 0 ? _a2 : Constants.monitor.defaultLineCount,
-              value
-            });
-          }
-          return new SingleLogMonitorController(args.document, {
-            formatter: formatString,
-            value
-          });
-        }
-      };
-      function createDefaultWrapperElement(doc) {
-        var elem = doc.createElement("div");
-        elem.classList.add(ClassName("dfw")());
-        if (doc.body) {
-          doc.body.appendChild(elem);
-        }
-        return elem;
-      }
-      function embedStyle(doc, id, css2) {
-        if (doc.querySelector("style[data-tp-style=" + id + "]")) {
-          return;
-        }
-        var styleElem = doc.createElement("style");
-        styleElem.dataset.tpStyle = id;
-        styleElem.textContent = css2;
-        doc.head.appendChild(styleElem);
-      }
-      function embedDefaultStyleIfNeeded(doc) {
-        embedStyle(doc, "default", ".tp-btnv_b,.tp-lstv_s,.tp-p2dpadtxtv_b,.tp-fldv_t,.tp-rotv_t,.tp-cctxtsv_i,.tp-cswv_sw,.tp-p2dpadv_p,.tp-p2dtxtv_i,.tp-p3dtxtv_i,.tp-txtv_i,.tp-grlv_g,.tp-sglv_i,.tp-mllv_i,.tp-ckbv_i,.tp-cctxtsv_ms{-webkit-appearance:none;-moz-appearance:none;appearance:none;background-color:transparent;border-width:0;font-family:inherit;font-size:inherit;font-weight:inherit;margin:0;outline:none;padding:0}.tp-btnv_b,.tp-lstv_s,.tp-p2dpadtxtv_b{background-color:var(--button-background-color);border-radius:2px;color:var(--button-foreground-color);cursor:pointer;display:block;font-weight:bold;height:var(--unit-size);line-height:var(--unit-size);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.tp-btnv_b:hover,.tp-lstv_s:hover,.tp-p2dpadtxtv_b:hover{background-color:var(--button-background-color-hover)}.tp-btnv_b:focus,.tp-lstv_s:focus,.tp-p2dpadtxtv_b:focus{background-color:var(--button-background-color-focus)}.tp-btnv_b:active,.tp-lstv_s:active,.tp-p2dpadtxtv_b:active{background-color:var(--button-background-color-active)}.tp-fldv_t,.tp-rotv_t{background-color:var(--folder-background-color);color:var(--folder-foreground-color);cursor:pointer;display:block;height:calc(var(--unit-size) + 4px);line-height:calc(var(--unit-size) + 4px);overflow:hidden;padding-left:28px;position:relative;text-align:left;text-overflow:ellipsis;white-space:nowrap;width:100%;transition:border-radius .2s ease-in-out .2s}.tp-fldv_t:hover,.tp-rotv_t:hover{background-color:var(--folder-background-color-hover)}.tp-fldv_t:focus,.tp-rotv_t:focus{background-color:var(--folder-background-color-focus)}.tp-fldv_t:active,.tp-rotv_t:active{background-color:var(--folder-background-color-active)}.tp-fldv_m,.tp-rotv_m{background:linear-gradient(to left, var(--folder-foreground-color), var(--folder-foreground-color) 2px, transparent 2px, transparent 4px, var(--folder-foreground-color) 4px);border-radius:2px;bottom:0;content:'';display:block;height:6px;left:13px;margin:auto;opacity:0.5;position:absolute;top:0;transform:rotate(90deg);transition:transform .2s ease-in-out;width:6px}.tp-fldv.tp-fldv-expanded>.tp-fldv_t>.tp-fldv_m,.tp-rotv.tp-rotv-expanded .tp-rotv_m{transform:none}.tp-fldv_c,.tp-rotv_c{box-sizing:border-box;height:0;opacity:0;overflow:hidden;padding-bottom:0;padding-top:0;position:relative;transition:height .2s ease-in-out,opacity .2s linear,padding .2s ease-in-out}.tp-fldv_c>.tp-fldv.tp-v-first,.tp-rotv_c>.tp-fldv.tp-v-first{margin-top:-4px}.tp-fldv_c>.tp-fldv.tp-v-last,.tp-rotv_c>.tp-fldv.tp-v-last{margin-bottom:-4px}.tp-fldv_c>*:not(.tp-v-first),.tp-rotv_c>*:not(.tp-v-first){margin-top:4px}.tp-fldv_c>.tp-fldv:not(.tp-v-hidden)+.tp-fldv,.tp-rotv_c>.tp-fldv:not(.tp-v-hidden)+.tp-fldv{margin-top:0}.tp-fldv_c>.tp-sptv:not(.tp-v-hidden)+.tp-sptv,.tp-rotv_c>.tp-sptv:not(.tp-v-hidden)+.tp-sptv{margin-top:0}.tp-fldv.tp-fldv-expanded>.tp-fldv_c,.tp-rotv.tp-rotv-expanded .tp-rotv_c{opacity:1;padding-bottom:4px;padding-top:4px;transform:none;overflow:visible;transition:height .2s ease-in-out,opacity .2s linear .2s,padding .2s ease-in-out}.tp-cctxtsv_i,.tp-cswv_sw,.tp-p2dpadv_p,.tp-p2dtxtv_i,.tp-p3dtxtv_i,.tp-txtv_i{background-color:var(--input-background-color);border-radius:2px;box-sizing:border-box;color:var(--input-foreground-color);font-family:inherit;height:var(--unit-size);line-height:var(--unit-size);min-width:0;width:100%}.tp-cctxtsv_i:hover,.tp-cswv_sw:hover,.tp-p2dpadv_p:hover,.tp-p2dtxtv_i:hover,.tp-p3dtxtv_i:hover,.tp-txtv_i:hover{background-color:var(--input-background-color-hover)}.tp-cctxtsv_i:focus,.tp-cswv_sw:focus,.tp-p2dpadv_p:focus,.tp-p2dtxtv_i:focus,.tp-p3dtxtv_i:focus,.tp-txtv_i:focus{background-color:var(--input-background-color-focus)}.tp-cctxtsv_i:active,.tp-cswv_sw:active,.tp-p2dpadv_p:active,.tp-p2dtxtv_i:active,.tp-p3dtxtv_i:active,.tp-txtv_i:active{background-color:var(--input-background-color-active)}.tp-grlv_g,.tp-sglv_i,.tp-mllv_i{background-color:var(--monitor-background-color);border-radius:2px;box-sizing:border-box;color:var(--monitor-foreground-color);height:var(--unit-size);width:100%}.tp-btnv{padding:0 4px}.tp-btnv_b{width:100%}.tp-ckbv_l{display:block;position:relative}.tp-ckbv_i{left:0;opacity:0;position:absolute;top:0}.tp-ckbv_m{background-color:var(--input-background-color);border-radius:2px;cursor:pointer;display:block;height:var(--unit-size);position:relative;width:var(--unit-size)}.tp-ckbv_m::before{background-color:var(--input-foreground-color);border-radius:2px;bottom:4px;content:'';display:block;left:4px;opacity:0;position:absolute;right:4px;top:4px}.tp-ckbv_i:hover+.tp-ckbv_m{background-color:var(--input-background-color-hover)}.tp-ckbv_i:focus+.tp-ckbv_m{background-color:var(--input-background-color-focus)}.tp-ckbv_i:active+.tp-ckbv_m{background-color:var(--input-background-color-active)}.tp-ckbv_i:checked+.tp-ckbv_m::before{opacity:1}.tp-cctxtsv{display:flex;width:100%}.tp-cctxtsv_m{margin-right:4px;position:relative}.tp-cctxtsv_ms{border-radius:2px;color:var(--label-foreground-color);cursor:pointer;height:var(--unit-size);line-height:var(--unit-size);padding:0 18px 0 4px}.tp-cctxtsv_ms:hover{background-color:var(--input-background-color-hover)}.tp-cctxtsv_ms:focus{background-color:var(--input-background-color-focus)}.tp-cctxtsv_ms:active{background-color:var(--input-background-color-active)}.tp-cctxtsv_mm{border-color:var(--label-foreground-color) transparent transparent;border-style:solid;border-width:3px;box-sizing:border-box;height:6px;pointer-events:none;width:6px;bottom:0;margin:auto;position:absolute;right:6px;top:3px}.tp-cctxtsv_w{display:flex;flex:1}.tp-cctxtsv_i{border-radius:0;flex:1;padding:0 4px}.tp-cctxtsv_i:first-child{border-bottom-left-radius:2px;border-top-left-radius:2px}.tp-cctxtsv_i:last-child{border-bottom-right-radius:2px;border-top-right-radius:2px}.tp-cctxtsv_i+.tp-cctxtsv_i{margin-left:2px}.tp-clpv{background-color:var(--base-background-color);border-radius:6px;box-shadow:0 2px 4px var(--base-shadow-color);display:none;padding:4px;position:relative;visibility:hidden;z-index:1000}.tp-clpv.tp-clpv-expanded{display:block;visibility:visible}.tp-clpv_h,.tp-clpv_ap{margin-left:6px;margin-right:6px}.tp-clpv_h{margin-top:4px}.tp-clpv_rgb{display:flex;margin-top:4px;width:100%}.tp-clpv_a{display:flex;margin-top:4px;padding-top:8px;position:relative}.tp-clpv_a:before{background-color:var(--separator-color);content:'';height:4px;left:-4px;position:absolute;right:-4px;top:0}.tp-clpv_ap{align-items:center;display:flex;flex:3}.tp-clpv_at{flex:1;margin-left:4px}.tp-svpv{border-radius:2px;outline:none;overflow:hidden;position:relative}.tp-svpv_c{cursor:crosshair;display:block;height:80px;width:100%}.tp-svpv_m{border-radius:100%;border:rgba(255,255,255,0.75) solid 2px;box-sizing:border-box;filter:drop-shadow(0 0 1px rgba(0,0,0,0.3));height:12px;margin-left:-6px;margin-top:-6px;pointer-events:none;position:absolute;width:12px}.tp-svpv:focus .tp-svpv_m{border-color:#fff}.tp-hplv{cursor:pointer;height:var(--unit-size);outline:none;position:relative}.tp-hplv_c{background-image:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAAABCAYAAABubagXAAAAQ0lEQVQoU2P8z8Dwn0GCgQEDi2OK/RBgYHjBgIpfovFh8j8YBIgzFGQxuqEgPhaDOT5gOhPkdCxOZeBg+IDFZZiGAgCaSSMYtcRHLgAAAABJRU5ErkJggg==);background-position:left top;background-repeat:no-repeat;background-size:100% 100%;border-radius:2px;display:block;height:4px;left:0;margin-top:-2px;position:absolute;top:50%;width:100%}.tp-hplv_m{border-radius:2px;border:rgba(255,255,255,0.75) solid 2px;box-shadow:0 0 2px rgba(0,0,0,0.1);box-sizing:border-box;height:12px;left:50%;margin-left:-6px;margin-top:-6px;pointer-events:none;position:absolute;top:50%;width:12px}.tp-hplv:focus .tp-hplv_m{border-color:#fff}.tp-aplv{cursor:pointer;height:var(--unit-size);outline:none;position:relative;width:100%}.tp-aplv_b{background-color:#fff;background-image:linear-gradient(to top right, #ddd 25%, transparent 25%, transparent 75%, #ddd 75%),linear-gradient(to top right, #ddd 25%, transparent 25%, transparent 75%, #ddd 75%);background-size:4px 4px;background-position:0 0,2px 2px;border-radius:2px;display:block;height:4px;left:0;margin-top:-2px;overflow:hidden;position:absolute;top:50%;width:100%}.tp-aplv_c{bottom:0;left:0;position:absolute;right:0;top:0}.tp-aplv_m{background-color:#fff;background-image:linear-gradient(to top right, #ddd 25%, transparent 25%, transparent 75%, #ddd 75%),linear-gradient(to top right, #ddd 25%, transparent 25%, transparent 75%, #ddd 75%);background-size:12px 12px;background-position:0 0,6px 6px;border-radius:2px;box-shadow:0 0 2px rgba(0,0,0,0.1);height:12px;left:50%;margin-left:-6px;margin-top:-6px;overflow:hidden;pointer-events:none;position:absolute;top:50%;width:12px}.tp-aplv_p{border-radius:2px;border:rgba(255,255,255,0.75) solid 2px;box-sizing:border-box;bottom:0;left:0;position:absolute;right:0;top:0}.tp-aplv:focus .tp-aplv_p{border-color:#fff}.tp-cswv{background-color:#fff;background-image:linear-gradient(to top right, #ddd 25%, transparent 25%, transparent 75%, #ddd 75%),linear-gradient(to top right, #ddd 25%, transparent 25%, transparent 75%, #ddd 75%);background-size:10px 10px;background-position:0 0,5px 5px;border-radius:2px}.tp-cswv_b{-webkit-appearance:none;-moz-appearance:none;appearance:none;background-color:transparent;border-width:0;cursor:pointer;display:block;height:var(--unit-size);left:0;margin:0;outline:none;padding:0;position:absolute;top:0;width:var(--unit-size)}.tp-cswv_b:focus::after{border:rgba(255,255,255,0.75) solid 2px;border-radius:2px;bottom:0;content:'';display:block;left:0;position:absolute;right:0;top:0}.tp-cswv_p{left:-4px;position:absolute;right:-4px;top:var(--unit-size)}.tp-cswtxtv{display:flex;position:relative}.tp-cswtxtv_s{flex-grow:0;flex-shrink:0;width:var(--unit-size)}.tp-cswtxtv_t{flex:1;margin-left:4px}.tp-dfwv{position:absolute;top:8px;right:8px;width:256px}.tp-fldv.tp-fldv-expanded .tp-fldv_t{transition:border-radius 0s}.tp-fldv_c{border-left:var(--folder-background-color) solid 4px}.tp-fldv_t:hover+.tp-fldv_c{border-left-color:var(--folder-background-color-hover)}.tp-fldv_t:focus+.tp-fldv_c{border-left-color:var(--folder-background-color-focus)}.tp-fldv_t:active+.tp-fldv_c{border-left-color:var(--folder-background-color-active)}.tp-fldv_c>.tp-fldv{margin-left:4px}.tp-fldv_c>.tp-fldv>.tp-fldv_t{border-top-left-radius:2px;border-bottom-left-radius:2px}.tp-fldv_c>.tp-fldv.tp-fldv-expanded>.tp-fldv_t{border-bottom-left-radius:0}.tp-fldv_c .tp-fldv>.tp-fldv_c{border-bottom-left-radius:2px}.tp-grlv{position:relative}.tp-grlv_g{display:block;height:calc(var(--unit-size) * 3)}.tp-grlv_g polyline{fill:none;stroke:var(--monitor-foreground-color);stroke-linejoin:round}.tp-grlv_t{color:var(--monitor-foreground-color);font-size:0.9em;left:0;pointer-events:none;position:absolute;text-indent:4px;top:0;visibility:hidden}.tp-grlv_t.tp-grlv_t-valid{visibility:visible}.tp-grlv_t::before{background-color:var(--monitor-foreground-color);border-radius:100%;content:'';display:block;height:4px;left:-2px;position:absolute;top:-2px;width:4px}.tp-lblv{align-items:center;display:flex;line-height:1.3;padding-left:4px;padding-right:4px}.tp-lblv_l{color:var(--label-foreground-color);flex:1;-webkit-hyphens:auto;-ms-hyphens:auto;hyphens:auto;overflow:hidden;padding-left:4px;padding-right:16px}.tp-lblv_v{align-self:flex-start;flex-grow:0;flex-shrink:0;width:160px}.tp-lstv{position:relative}.tp-lstv_s{padding:0 18px 0 4px;width:100%}.tp-lstv_m{border-color:var(--button-foreground-color) transparent transparent;border-style:solid;border-width:3px;box-sizing:border-box;height:6px;pointer-events:none;width:6px;bottom:0;margin:auto;position:absolute;right:6px;top:3px}.tp-sglv_i{padding:0 4px}.tp-mllv_i{display:block;height:calc(var(--unit-size) * 3);line-height:var(--unit-size);padding:0 4px;resize:none;white-space:pre}.tp-p2dpadv{background-color:var(--base-background-color);border-radius:6px;box-shadow:0 2px 4px var(--base-shadow-color);display:none;padding:4px 4px 4px calc(4px * 2 + var(--unit-size));position:relative;visibility:hidden;z-index:1000}.tp-p2dpadv.tp-p2dpadv-expanded{display:block;visibility:visible}.tp-p2dpadv_p{cursor:crosshair;height:0;overflow:hidden;padding-bottom:100%;position:relative}.tp-p2dpadv_g{display:block;height:100%;left:0;pointer-events:none;position:absolute;top:0;width:100%}.tp-p2dpadv_ax{stroke:var(--input-guide-color)}.tp-p2dpadv_l{stroke:var(--input-foreground-color);stroke-linecap:round;stroke-dasharray:1px 3px}.tp-p2dpadv_m{fill:var(--input-foreground-color)}.tp-p2dpadtxtv{display:flex;position:relative}.tp-p2dpadtxtv_b{height:var(--unit-size);position:relative;width:var(--unit-size)}.tp-p2dpadtxtv_b svg{display:block;height:16px;left:50%;margin-left:-8px;margin-top:-8px;position:absolute;top:50%;width:16px}.tp-p2dpadtxtv_p{left:-4px;position:absolute;right:-4px;top:var(--unit-size)}.tp-p2dpadtxtv_t{margin-left:4px}.tp-p2dtxtv{display:flex}.tp-p2dtxtv_w{align-items:center;display:flex}.tp-p2dtxtv_w+.tp-p2dtxtv_w{margin-left:2px}.tp-p2dtxtv_i{padding:0 4px;width:100%}.tp-p2dtxtv_w:nth-child(1) .tp-p2dtxtv_i{border-top-right-radius:0;border-bottom-right-radius:0}.tp-p2dtxtv_w:nth-child(2) .tp-p2dtxtv_i{border-top-left-radius:0;border-bottom-left-radius:0}.tp-p3dtxtv{display:flex}.tp-p3dtxtv_w{align-items:center;display:flex}.tp-p3dtxtv_w+.tp-p3dtxtv_w{margin-left:2px}.tp-p3dtxtv_i{padding:0 4px;width:100%}.tp-p3dtxtv_w:first-child .tp-p3dtxtv_i{border-top-right-radius:0;border-bottom-right-radius:0}.tp-p3dtxtv_w:not(:first-child):not(:last-child) .tp-p3dtxtv_i{border-radius:0}.tp-p3dtxtv_w:last-child .tp-p3dtxtv_i{border-top-left-radius:0;border-bottom-left-radius:0}.tp-rotv{--font-family: var(--tp-font-family, Roboto Mono,Source Code Pro,Menlo,Courier,monospace);--unit-size: var(--tp-unit-size, 20px);--base-background-color: var(--tp-base-background-color, #2f3137);--base-shadow-color: var(--tp-base-shadow-color, rgba(0,0,0,0.2));--button-background-color: var(--tp-button-background-color, #adafb8);--button-background-color-active: var(--tp-button-background-color-active, #d6d7db);--button-background-color-focus: var(--tp-button-background-color-focus, #c8cad0);--button-background-color-hover: var(--tp-button-background-color-hover, #bbbcc4);--button-foreground-color: var(--tp-button-foreground-color, #2f3137);--folder-background-color: var(--tp-folder-background-color, rgba(200,202,208,0.1));--folder-background-color-active: var(--tp-folder-background-color-active, rgba(200,202,208,0.25));--folder-background-color-focus: var(--tp-folder-background-color-focus, rgba(200,202,208,0.2));--folder-background-color-hover: var(--tp-folder-background-color-hover, rgba(200,202,208,0.15));--folder-foreground-color: var(--tp-folder-foreground-color, #c8cad0);--input-background-color: var(--tp-input-background-color, rgba(200,202,208,0.1));--input-background-color-active: var(--tp-input-background-color-active, rgba(200,202,208,0.25));--input-background-color-focus: var(--tp-input-background-color-focus, rgba(200,202,208,0.2));--input-background-color-hover: var(--tp-input-background-color-hover, rgba(200,202,208,0.15));--input-foreground-color: var(--tp-input-foreground-color, #c8cad0);--input-guide-color: var(--tp-input-guide-color, rgba(47,49,55,0.5));--label-foreground-color: var(--tp-label-foreground-color, rgba(200,202,208,0.7));--monitor-background-color: var(--tp-monitor-background-color, #26272c);--monitor-foreground-color: var(--tp-monitor-foreground-color, rgba(200,202,208,0.7));--separator-color: var(--tp-separator-color, #26272c)}.tp-rotv{background-color:var(--base-background-color);border-radius:6px;box-shadow:0 2px 4px var(--base-shadow-color);font-family:var(--font-family);font-size:11px;font-weight:500;line-height:1;text-align:left}.tp-rotv_t{border-bottom-left-radius:6px;border-bottom-right-radius:6px;border-top-left-radius:6px;border-top-right-radius:6px}.tp-rotv.tp-rotv-expanded .tp-rotv_t{border-bottom-left-radius:0;border-bottom-right-radius:0}.tp-rotv_m{transition:none}.tp-rotv_c>.tp-fldv:last-child>.tp-fldv_c{border-bottom-left-radius:6px;border-bottom-right-radius:6px}.tp-rotv_c>.tp-fldv:last-child:not(.tp-fldv-expanded)>.tp-fldv_t{border-bottom-left-radius:6px;border-bottom-right-radius:6px}.tp-rotv_c>.tp-fldv:first-child>.tp-fldv_t{border-top-left-radius:6px;border-top-right-radius:6px}.tp-sptv_r{background-color:var(--separator-color);border-width:0;display:block;height:4px;margin:0;width:100%}.tp-sldv_o{box-sizing:border-box;cursor:pointer;height:var(--unit-size);margin:0 6px;outline:none;position:relative}.tp-sldv_o::before{background-color:var(--input-background-color);border-radius:1px;bottom:0;content:'';display:block;height:2px;left:0;margin:auto;position:absolute;right:0;top:0}.tp-sldv_i{height:100%;left:0;position:absolute;top:0}.tp-sldv_i::before{background-color:var(--button-background-color);border-radius:2px;bottom:0;content:'';display:block;height:12px;margin:auto;position:absolute;right:-6px;top:0;width:12px}.tp-sldv_o:hover .tp-sldv_i::before{background-color:var(--button-background-color-hover)}.tp-sldv_o:focus .tp-sldv_i::before{background-color:var(--button-background-color-focus)}.tp-sldv_o:active .tp-sldv_i::before{background-color:var(--button-background-color-active)}.tp-sldtxtv{display:flex}.tp-sldtxtv_s{flex:2}.tp-sldtxtv_t{flex:1;margin-left:4px}.tp-txtv_i{padding:0 4px}.tp-v-hidden{display:none}");
-        getAllPlugins().forEach(function(plugin) {
-          if (plugin.css) {
-            embedStyle(doc, "plugin-" + plugin.id, plugin.css);
-          }
-        });
-      }
-      var Tweakpane5 = function(_super) {
-        __extends(Tweakpane6, _super);
-        function Tweakpane6(opt_config) {
-          var _a2;
-          var _this = this;
-          var config = opt_config || {};
-          var doc = (_a2 = config.document) !== null && _a2 !== void 0 ? _a2 : getWindowDocument();
-          var rootController = new RootController(doc, {
-            expanded: config.expanded,
-            blade: new Blade(),
-            title: config.title
-          });
-          _this = _super.call(this, rootController) || this;
-          _this.containerElem_ = config.container || createDefaultWrapperElement(doc);
-          _this.containerElem_.appendChild(_this.element);
-          _this.doc_ = doc;
-          _this.usesDefaultWrapper_ = !config.container;
-          embedDefaultStyleIfNeeded(_this.document);
-          return _this;
-        }
-        Object.defineProperty(Tweakpane6.prototype, "document", {
-          get: function() {
-            if (!this.doc_) {
-              throw TpError.alreadyDisposed();
-            }
-            return this.doc_;
-          },
-          enumerable: false,
-          configurable: true
-        });
-        Tweakpane6.prototype.dispose = function() {
-          var containerElem = this.containerElem_;
-          if (!containerElem) {
-            throw TpError.alreadyDisposed();
-          }
-          if (this.usesDefaultWrapper_) {
-            var parentElem = containerElem.parentElement;
-            if (parentElem) {
-              parentElem.removeChild(containerElem);
+            var styleElem = document2.createElement("style");
+            styleElem.dataset.for = MARKER;
+            styleElem.textContent = Style.toString();
+            if (document2.head) {
+              document2.head.appendChild(styleElem);
             }
           }
-          this.containerElem_ = null;
-          this.doc_ = null;
-          _super.prototype.dispose.call(this);
-        };
-        return Tweakpane6;
-      }(RootApi);
-      function registerDefaultPlugins() {
-        [
-          Point2dInputPlugin,
-          Point3dInputPlugin,
-          StringInputPlugin,
-          NumberInputPlugin,
-          StringColorInputPlugin,
-          ObjectColorInputPlugin,
-          NumberColorInputPlugin,
-          BooleanInputPlugin
-        ].forEach(function(p) {
-          RootApi.registerPlugin({
-            type: "input",
-            plugin: p
-          });
-        });
-        [BooleanMonitorPlugin, StringMonitorPlugin, NumberMonitorPlugin].forEach(function(p) {
-          RootApi.registerPlugin({
-            type: "monitor",
-            plugin: p
-          });
-        });
-      }
-      registerDefaultPlugins();
-      return Tweakpane5;
+          var Tweakpane5 = function(_super) {
+            __extends(Tweakpane6, _super);
+            function Tweakpane6(opt_config) {
+              var _this = _super.call(this, opt_config) || this;
+              embedDefaultStyleIfNeeded(_this.document);
+              return _this;
+            }
+            return Tweakpane6;
+          }(tweakpane_without_style_1.TweakpaneWithoutStyle);
+          exports2.default = Tweakpane5;
+        },
+        "./src/main/js/misc/class-name.ts": function(module2, exports2, __webpack_require__) {
+          "use strict";
+          Object.defineProperty(exports2, "__esModule", { value: true });
+          exports2.ClassName = void 0;
+          var PREFIX = "tp";
+          var TYPE_TO_POSTFIX_MAP = {
+            "": "v",
+            input: "iv",
+            monitor: "mv"
+          };
+          function ClassName(viewName, opt_viewType) {
+            var viewType = opt_viewType || "";
+            var postfix = TYPE_TO_POSTFIX_MAP[viewType];
+            return function(opt_elementName, opt_modifier) {
+              return [
+                PREFIX,
+                "-",
+                viewName,
+                postfix,
+                opt_elementName ? "_" + opt_elementName : "",
+                opt_modifier ? "-" + opt_modifier : ""
+              ].join("");
+            };
+          }
+          exports2.ClassName = ClassName;
+        },
+        "./src/main/js/misc/color-model.ts": function(module2, exports2, __webpack_require__) {
+          "use strict";
+          Object.defineProperty(exports2, "__esModule", { value: true });
+          exports2.convertMode = exports2.withAlpha = exports2.withoutAlpha = exports2.opaque = exports2.hsvToRgb = void 0;
+          var number_util_1 = __webpack_require__("./src/main/js/misc/number-util.ts");
+          function rgbToHsl(r, g, b) {
+            var rp = number_util_1.NumberUtil.constrain(r / 255, 0, 1);
+            var gp = number_util_1.NumberUtil.constrain(g / 255, 0, 1);
+            var bp = number_util_1.NumberUtil.constrain(b / 255, 0, 1);
+            var cmax = Math.max(rp, gp, bp);
+            var cmin = Math.min(rp, gp, bp);
+            var c = cmax - cmin;
+            var h = 0;
+            var s = 0;
+            var l = (cmin + cmax) / 2;
+            if (c !== 0) {
+              s = l > 0.5 ? c / (2 - cmin - cmax) : c / (cmax + cmin);
+              if (rp === cmax) {
+                h = (gp - bp) / c;
+              } else if (gp === cmax) {
+                h = 2 + (bp - rp) / c;
+              } else {
+                h = 4 + (rp - gp) / c;
+              }
+              h = h / 6 + (h < 0 ? 1 : 0);
+            }
+            return [h * 360, s * 100, l * 100];
+          }
+          function hslToRgb(h, s, l) {
+            var _a2, _b, _c, _d, _e, _f;
+            var hp = (h % 360 + 360) % 360;
+            var sp = number_util_1.NumberUtil.constrain(s / 100, 0, 1);
+            var lp = number_util_1.NumberUtil.constrain(l / 100, 0, 1);
+            var c = (1 - Math.abs(2 * lp - 1)) * sp;
+            var x = c * (1 - Math.abs(hp / 60 % 2 - 1));
+            var m = lp - c / 2;
+            var rp, gp, bp;
+            if (hp >= 0 && hp < 60) {
+              _a2 = [c, x, 0], rp = _a2[0], gp = _a2[1], bp = _a2[2];
+            } else if (hp >= 60 && hp < 120) {
+              _b = [x, c, 0], rp = _b[0], gp = _b[1], bp = _b[2];
+            } else if (hp >= 120 && hp < 180) {
+              _c = [0, c, x], rp = _c[0], gp = _c[1], bp = _c[2];
+            } else if (hp >= 180 && hp < 240) {
+              _d = [0, x, c], rp = _d[0], gp = _d[1], bp = _d[2];
+            } else if (hp >= 240 && hp < 300) {
+              _e = [x, 0, c], rp = _e[0], gp = _e[1], bp = _e[2];
+            } else {
+              _f = [c, 0, x], rp = _f[0], gp = _f[1], bp = _f[2];
+            }
+            return [(rp + m) * 255, (gp + m) * 255, (bp + m) * 255];
+          }
+          function rgbToHsv(r, g, b) {
+            var rp = number_util_1.NumberUtil.constrain(r / 255, 0, 1);
+            var gp = number_util_1.NumberUtil.constrain(g / 255, 0, 1);
+            var bp = number_util_1.NumberUtil.constrain(b / 255, 0, 1);
+            var cmax = Math.max(rp, gp, bp);
+            var cmin = Math.min(rp, gp, bp);
+            var d = cmax - cmin;
+            var h;
+            if (d === 0) {
+              h = 0;
+            } else if (cmax === rp) {
+              h = 60 * (((gp - bp) / d % 6 + 6) % 6);
+            } else if (cmax === gp) {
+              h = 60 * ((bp - rp) / d + 2);
+            } else {
+              h = 60 * ((rp - gp) / d + 4);
+            }
+            var s = cmax === 0 ? 0 : d / cmax;
+            var v = cmax;
+            return [h, s * 100, v * 100];
+          }
+          function hsvToRgb(h, s, v) {
+            var _a2, _b, _c, _d, _e, _f;
+            var hp = number_util_1.NumberUtil.loop(h, 360);
+            var sp = number_util_1.NumberUtil.constrain(s / 100, 0, 1);
+            var vp = number_util_1.NumberUtil.constrain(v / 100, 0, 1);
+            var c = vp * sp;
+            var x = c * (1 - Math.abs(hp / 60 % 2 - 1));
+            var m = vp - c;
+            var rp, gp, bp;
+            if (hp >= 0 && hp < 60) {
+              _a2 = [c, x, 0], rp = _a2[0], gp = _a2[1], bp = _a2[2];
+            } else if (hp >= 60 && hp < 120) {
+              _b = [x, c, 0], rp = _b[0], gp = _b[1], bp = _b[2];
+            } else if (hp >= 120 && hp < 180) {
+              _c = [0, c, x], rp = _c[0], gp = _c[1], bp = _c[2];
+            } else if (hp >= 180 && hp < 240) {
+              _d = [0, x, c], rp = _d[0], gp = _d[1], bp = _d[2];
+            } else if (hp >= 240 && hp < 300) {
+              _e = [x, 0, c], rp = _e[0], gp = _e[1], bp = _e[2];
+            } else {
+              _f = [c, 0, x], rp = _f[0], gp = _f[1], bp = _f[2];
+            }
+            return [(rp + m) * 255, (gp + m) * 255, (bp + m) * 255];
+          }
+          exports2.hsvToRgb = hsvToRgb;
+          function opaque(comps) {
+            return [comps[0], comps[1], comps[2], 1];
+          }
+          exports2.opaque = opaque;
+          function withoutAlpha(comps) {
+            return [comps[0], comps[1], comps[2]];
+          }
+          exports2.withoutAlpha = withoutAlpha;
+          function withAlpha(comps, alpha) {
+            return [comps[0], comps[1], comps[2], alpha];
+          }
+          exports2.withAlpha = withAlpha;
+          var MODE_CONVERTER_MAP = {
+            hsl: {
+              hsl: function(h, s, l) {
+                return [h, s, l];
+              },
+              hsv: function(h, s, l) {
+                var _a2 = hslToRgb(h, s, l), r = _a2[0], g = _a2[1], b = _a2[2];
+                return rgbToHsv(r, g, b);
+              },
+              rgb: hslToRgb
+            },
+            hsv: {
+              hsl: function(h, s, v) {
+                var _a2 = hsvToRgb(h, s, v), r = _a2[0], g = _a2[1], b = _a2[2];
+                return rgbToHsl(r, g, b);
+              },
+              hsv: function(h, s, v) {
+                return [h, s, v];
+              },
+              rgb: hsvToRgb
+            },
+            rgb: {
+              hsl: rgbToHsl,
+              hsv: rgbToHsv,
+              rgb: function(r, g, b) {
+                return [r, g, b];
+              }
+            }
+          };
+          function convertMode(components, fromMode, toMode) {
+            var _a2;
+            return (_a2 = MODE_CONVERTER_MAP[fromMode])[toMode].apply(_a2, components);
+          }
+          exports2.convertMode = convertMode;
+        },
+        "./src/main/js/misc/constants.ts": function(module2, exports2, __webpack_require__) {
+          "use strict";
+          Object.defineProperty(exports2, "__esModule", { value: true });
+          exports2.Constants = void 0;
+          exports2.Constants = {
+            monitorDefaultInterval: 200
+          };
+        },
+        "./src/main/js/misc/disposing-util.ts": function(module2, exports2, __webpack_require__) {
+          "use strict";
+          Object.defineProperty(exports2, "__esModule", { value: true });
+          exports2.disposeElement = void 0;
+          function disposeElement(elem) {
+            if (elem && elem.parentElement) {
+              elem.parentElement.removeChild(elem);
+            }
+            return null;
+          }
+          exports2.disposeElement = disposeElement;
+        },
+        "./src/main/js/misc/dom-util.ts": function(module2, exports2, __webpack_require__) {
+          "use strict";
+          (function(process2) {
+            Object.defineProperty(exports2, "__esModule", { value: true });
+            exports2.findNextTarget = exports2.indexOfChildElement = exports2.removeElement = exports2.insertElementAt = exports2.createSvgIconElement = exports2.getCanvasContext = exports2.getWindowDocument = exports2.supportsTouch = exports2.disableTransitionTemporarily = exports2.forceReflow = exports2.SVG_NS = void 0;
+            var type_util_1 = __webpack_require__("./src/main/js/misc/type-util.ts");
+            exports2.SVG_NS = "http://www.w3.org/2000/svg";
+            function forceReflow(element) {
+              element.offsetHeight;
+            }
+            exports2.forceReflow = forceReflow;
+            function disableTransitionTemporarily(element, callback) {
+              var t = element.style.transition;
+              element.style.transition = "none";
+              callback();
+              element.style.transition = t;
+            }
+            exports2.disableTransitionTemporarily = disableTransitionTemporarily;
+            function supportsTouch(document2) {
+              return document2.ontouchstart !== void 0;
+            }
+            exports2.supportsTouch = supportsTouch;
+            function getWindowDocument() {
+              var globalObj = type_util_1.TypeUtil.forceCast(new Function("return this")());
+              return globalObj.document;
+            }
+            exports2.getWindowDocument = getWindowDocument;
+            function isBrowser() {
+              return !!process2.browser;
+            }
+            function getCanvasContext(canvasElement) {
+              return isBrowser() ? canvasElement.getContext("2d") : null;
+            }
+            exports2.getCanvasContext = getCanvasContext;
+            var ICON_ID_TO_INNER_HTML_MAP = {
+              p2dpad: '<path d="M8 2V14" stroke="currentColor" stroke-width="1.5"/><path d="M2 8H14" stroke="currentColor" stroke-width="1.5"/><circle cx="8" cy="8" r="2" fill="currentColor"/>'
+            };
+            function createSvgIconElement(document2, iconId) {
+              var elem = document2.createElementNS(exports2.SVG_NS, "svg");
+              elem.innerHTML = ICON_ID_TO_INNER_HTML_MAP[iconId];
+              return elem;
+            }
+            exports2.createSvgIconElement = createSvgIconElement;
+            function insertElementAt(parentElement, element, index) {
+              parentElement.insertBefore(element, parentElement.children[index]);
+            }
+            exports2.insertElementAt = insertElementAt;
+            function removeElement(element) {
+              if (element.parentElement) {
+                element.parentElement.removeChild(element);
+              }
+            }
+            exports2.removeElement = removeElement;
+            function indexOfChildElement(element) {
+              var parentElem = element.parentElement;
+              if (!parentElem) {
+                return -1;
+              }
+              var children = Array.prototype.slice.call(parentElem.children);
+              return children.indexOf(element);
+            }
+            exports2.indexOfChildElement = indexOfChildElement;
+            function findNextTarget(ev) {
+              if (ev.relatedTarget) {
+                return type_util_1.TypeUtil.forceCast(ev.relatedTarget);
+              }
+              if ("explicitOriginalTarget" in ev) {
+                return ev.explicitOriginalTarget;
+              }
+              return null;
+            }
+            exports2.findNextTarget = findNextTarget;
+          }).call(this, __webpack_require__("./node_modules/process/browser.js"));
+        },
+        "./src/main/js/misc/emitter.ts": function(module2, exports2, __webpack_require__) {
+          "use strict";
+          Object.defineProperty(exports2, "__esModule", { value: true });
+          exports2.Emitter = void 0;
+          var Emitter = function() {
+            function Emitter2() {
+              this.observers_ = {};
+            }
+            Emitter2.prototype.on = function(eventName, handler) {
+              var observers = this.observers_[eventName];
+              if (!observers) {
+                observers = this.observers_[eventName] = [];
+              }
+              observers.push({
+                handler
+              });
+              return this;
+            };
+            Emitter2.prototype.off = function(eventName, handler) {
+              var observers = this.observers_[eventName];
+              if (observers) {
+                this.observers_[eventName] = observers.filter(function(observer) {
+                  return observer.handler !== handler;
+                });
+              }
+              return this;
+            };
+            Emitter2.prototype.emit = function(eventName, event) {
+              var observers = this.observers_[eventName];
+              if (!observers) {
+                return;
+              }
+              observers.forEach(function(observer) {
+                observer.handler(event);
+              });
+            };
+            return Emitter2;
+          }();
+          exports2.Emitter = Emitter;
+        },
+        "./src/main/js/misc/number-util.ts": function(module2, exports2, __webpack_require__) {
+          "use strict";
+          Object.defineProperty(exports2, "__esModule", { value: true });
+          exports2.NumberUtil = void 0;
+          exports2.NumberUtil = {
+            map: function(value, start1, end1, start2, end2) {
+              var p = (value - start1) / (end1 - start1);
+              return start2 + p * (end2 - start2);
+            },
+            getDecimalDigits: function(value) {
+              var text = String(value.toFixed(10));
+              var frac = text.split(".")[1];
+              return frac.replace(/0+$/, "").length;
+            },
+            constrain: function(value, min4, max4) {
+              return Math.min(Math.max(value, min4), max4);
+            },
+            loop: function(value, max4) {
+              return (value % max4 + max4) % max4;
+            }
+          };
+        },
+        "./src/main/js/misc/pane-error.ts": function(module2, exports2, __webpack_require__) {
+          "use strict";
+          Object.defineProperty(exports2, "__esModule", { value: true });
+          exports2.PaneError = void 0;
+          function createMessage(config) {
+            if (config.type === "alreadydisposed") {
+              return "View has been already disposed";
+            }
+            if (config.type === "emptyvalue") {
+              return "Value is empty for " + config.context.key;
+            }
+            if (config.type === "invalidparams") {
+              return "Invalid parameters for " + config.context.name;
+            }
+            if (config.type === "nomatchingcontroller") {
+              return "No matching controller for " + config.context.key;
+            }
+            if (config.type === "shouldneverhappen") {
+              return "This error should never happen";
+            }
+            return "Unexpected error";
+          }
+          var PaneError = function() {
+            function PaneError2(config) {
+              this.message = createMessage(config);
+              this.name = this.constructor.name;
+              this.stack = new Error(this.message).stack;
+              this.type = config.type;
+            }
+            PaneError2.alreadyDisposed = function() {
+              return new PaneError2({ type: "alreadydisposed" });
+            };
+            PaneError2.shouldNeverHappen = function() {
+              return new PaneError2({ type: "shouldneverhappen" });
+            };
+            return PaneError2;
+          }();
+          exports2.PaneError = PaneError;
+          PaneError.prototype = Object.create(Error.prototype);
+          PaneError.prototype.constructor = PaneError;
+        },
+        "./src/main/js/misc/pointer-handler.ts": function(module2, exports2, __webpack_require__) {
+          "use strict";
+          Object.defineProperty(exports2, "__esModule", { value: true });
+          exports2.PointerHandler = void 0;
+          var DomUtil = __webpack_require__("./src/main/js/misc/dom-util.ts");
+          var emitter_1 = __webpack_require__("./src/main/js/misc/emitter.ts");
+          var PointerHandler = function() {
+            function PointerHandler2(document2, element) {
+              this.onDocumentMouseMove_ = this.onDocumentMouseMove_.bind(this);
+              this.onDocumentMouseUp_ = this.onDocumentMouseUp_.bind(this);
+              this.onMouseDown_ = this.onMouseDown_.bind(this);
+              this.onTouchMove_ = this.onTouchMove_.bind(this);
+              this.onTouchStart_ = this.onTouchStart_.bind(this);
+              this.document = document2;
+              this.element = element;
+              this.emitter = new emitter_1.Emitter();
+              this.pressed_ = false;
+              if (DomUtil.supportsTouch(this.document)) {
+                element.addEventListener("touchstart", this.onTouchStart_);
+                element.addEventListener("touchmove", this.onTouchMove_);
+              } else {
+                element.addEventListener("mousedown", this.onMouseDown_);
+                this.document.addEventListener("mousemove", this.onDocumentMouseMove_);
+                this.document.addEventListener("mouseup", this.onDocumentMouseUp_);
+              }
+            }
+            PointerHandler2.prototype.computePosition_ = function(offsetX, offsetY) {
+              var rect = this.element.getBoundingClientRect();
+              return {
+                px: offsetX / rect.width,
+                py: offsetY / rect.height
+              };
+            };
+            PointerHandler2.prototype.onMouseDown_ = function(e) {
+              var _a2;
+              e.preventDefault();
+              (_a2 = e.currentTarget) === null || _a2 === void 0 ? void 0 : _a2.focus();
+              this.pressed_ = true;
+              this.emitter.emit("down", {
+                data: this.computePosition_(e.offsetX, e.offsetY),
+                sender: this
+              });
+            };
+            PointerHandler2.prototype.onDocumentMouseMove_ = function(e) {
+              if (!this.pressed_) {
+                return;
+              }
+              var win = this.document.defaultView;
+              var rect = this.element.getBoundingClientRect();
+              this.emitter.emit("move", {
+                data: this.computePosition_(e.pageX - ((win && win.scrollX || 0) + rect.left), e.pageY - ((win && win.scrollY || 0) + rect.top)),
+                sender: this
+              });
+            };
+            PointerHandler2.prototype.onDocumentMouseUp_ = function(e) {
+              if (!this.pressed_) {
+                return;
+              }
+              this.pressed_ = false;
+              var win = this.document.defaultView;
+              var rect = this.element.getBoundingClientRect();
+              this.emitter.emit("up", {
+                data: this.computePosition_(e.pageX - ((win && win.scrollX || 0) + rect.left), e.pageY - ((win && win.scrollY || 0) + rect.top)),
+                sender: this
+              });
+            };
+            PointerHandler2.prototype.onTouchStart_ = function(e) {
+              e.preventDefault();
+              var touch = e.targetTouches[0];
+              var rect = this.element.getBoundingClientRect();
+              this.emitter.emit("down", {
+                data: this.computePosition_(touch.clientX - rect.left, touch.clientY - rect.top),
+                sender: this
+              });
+            };
+            PointerHandler2.prototype.onTouchMove_ = function(e) {
+              var touch = e.targetTouches[0];
+              var rect = this.element.getBoundingClientRect();
+              this.emitter.emit("move", {
+                data: this.computePosition_(touch.clientX - rect.left, touch.clientY - rect.top),
+                sender: this
+              });
+            };
+            return PointerHandler2;
+          }();
+          exports2.PointerHandler = PointerHandler;
+        },
+        "./src/main/js/misc/ticker/interval.ts": function(module2, exports2, __webpack_require__) {
+          "use strict";
+          Object.defineProperty(exports2, "__esModule", { value: true });
+          exports2.IntervalTicker = void 0;
+          var disposable_1 = __webpack_require__("./src/main/js/model/disposable.ts");
+          var emitter_1 = __webpack_require__("./src/main/js/misc/emitter.ts");
+          var IntervalTicker = function() {
+            function IntervalTicker2(document2, interval) {
+              var _this = this;
+              this.onTick_ = this.onTick_.bind(this);
+              this.doc_ = document2;
+              this.emitter = new emitter_1.Emitter();
+              if (interval <= 0) {
+                this.id_ = null;
+              } else {
+                var win = this.doc_.defaultView;
+                if (win) {
+                  this.id_ = win.setInterval(this.onTick_, interval);
+                }
+              }
+              this.disposable = new disposable_1.Disposable();
+              this.disposable.emitter.on("dispose", function() {
+                if (_this.id_ !== null) {
+                  var win2 = _this.doc_.defaultView;
+                  if (win2) {
+                    win2.clearInterval(_this.id_);
+                  }
+                }
+                _this.id_ = null;
+              });
+            }
+            IntervalTicker2.prototype.onTick_ = function() {
+              this.emitter.emit("tick", {
+                sender: this
+              });
+            };
+            return IntervalTicker2;
+          }();
+          exports2.IntervalTicker = IntervalTicker;
+        },
+        "./src/main/js/misc/ticker/manual.ts": function(module2, exports2, __webpack_require__) {
+          "use strict";
+          Object.defineProperty(exports2, "__esModule", { value: true });
+          exports2.ManualTicker = void 0;
+          var disposable_1 = __webpack_require__("./src/main/js/model/disposable.ts");
+          var emitter_1 = __webpack_require__("./src/main/js/misc/emitter.ts");
+          var ManualTicker = function() {
+            function ManualTicker2() {
+              this.disposable = new disposable_1.Disposable();
+              this.emitter = new emitter_1.Emitter();
+            }
+            ManualTicker2.prototype.tick = function() {
+              this.emitter.emit("tick", {
+                sender: this
+              });
+            };
+            return ManualTicker2;
+          }();
+          exports2.ManualTicker = ManualTicker;
+        },
+        "./src/main/js/misc/type-util.ts": function(module2, exports2, __webpack_require__) {
+          "use strict";
+          Object.defineProperty(exports2, "__esModule", { value: true });
+          exports2.TypeUtil = void 0;
+          exports2.TypeUtil = {
+            forceCast: function(v) {
+              return v;
+            },
+            isEmpty: function(value) {
+              return value === null || value === void 0;
+            },
+            getOrDefault: function(value, defaultValue) {
+              return !exports2.TypeUtil.isEmpty(value) ? value : defaultValue;
+            },
+            deepEqualsArray: function(a1, a2) {
+              if (a1.length !== a2.length) {
+                return false;
+              }
+              for (var i = 0; i < a1.length; i++) {
+                if (a1[i] !== a2[i]) {
+                  return false;
+                }
+              }
+              return true;
+            }
+          };
+        },
+        "./src/main/js/model/button.ts": function(module2, exports2, __webpack_require__) {
+          "use strict";
+          Object.defineProperty(exports2, "__esModule", { value: true });
+          exports2.Button = void 0;
+          var emitter_1 = __webpack_require__("./src/main/js/misc/emitter.ts");
+          var Button = function() {
+            function Button2(title) {
+              this.emitter = new emitter_1.Emitter();
+              this.title = title;
+            }
+            Button2.prototype.click = function() {
+              this.emitter.emit("click", {
+                sender: this
+              });
+            };
+            return Button2;
+          }();
+          exports2.Button = Button;
+        },
+        "./src/main/js/model/color.ts": function(module2, exports2, __webpack_require__) {
+          "use strict";
+          Object.defineProperty(exports2, "__esModule", { value: true });
+          exports2.Color = void 0;
+          var ColorModel = __webpack_require__("./src/main/js/misc/color-model.ts");
+          var number_util_1 = __webpack_require__("./src/main/js/misc/number-util.ts");
+          var type_util_1 = __webpack_require__("./src/main/js/misc/type-util.ts");
+          var CONSTRAINT_MAP = {
+            hsl: function(comps) {
+              return [
+                number_util_1.NumberUtil.loop(comps[0], 360),
+                number_util_1.NumberUtil.constrain(comps[1], 0, 100),
+                number_util_1.NumberUtil.constrain(comps[2], 0, 100),
+                number_util_1.NumberUtil.constrain(type_util_1.TypeUtil.getOrDefault(comps[3], 1), 0, 1)
+              ];
+            },
+            hsv: function(comps) {
+              return [
+                number_util_1.NumberUtil.loop(comps[0], 360),
+                number_util_1.NumberUtil.constrain(comps[1], 0, 100),
+                number_util_1.NumberUtil.constrain(comps[2], 0, 100),
+                number_util_1.NumberUtil.constrain(type_util_1.TypeUtil.getOrDefault(comps[3], 1), 0, 1)
+              ];
+            },
+            rgb: function(comps) {
+              return [
+                number_util_1.NumberUtil.constrain(comps[0], 0, 255),
+                number_util_1.NumberUtil.constrain(comps[1], 0, 255),
+                number_util_1.NumberUtil.constrain(comps[2], 0, 255),
+                number_util_1.NumberUtil.constrain(type_util_1.TypeUtil.getOrDefault(comps[3], 1), 0, 1)
+              ];
+            }
+          };
+          function isRgbColorComponent(obj, key2) {
+            if (typeof obj !== "object" || type_util_1.TypeUtil.isEmpty(obj)) {
+              return false;
+            }
+            return key2 in obj && typeof obj[key2] === "number";
+          }
+          var Color = function() {
+            function Color2(comps, mode) {
+              this.mode_ = mode;
+              this.comps_ = CONSTRAINT_MAP[mode](comps);
+            }
+            Color2.fromObject = function(obj) {
+              var comps = "a" in obj ? [obj.r, obj.g, obj.b, obj.a] : [obj.r, obj.g, obj.b];
+              return new Color2(comps, "rgb");
+            };
+            Color2.toRgbaObject = function(color) {
+              return color.toRgbaObject();
+            };
+            Color2.isRgbColorObject = function(obj) {
+              return isRgbColorComponent(obj, "r") && isRgbColorComponent(obj, "g") && isRgbColorComponent(obj, "b");
+            };
+            Color2.isRgbaColorObject = function(obj) {
+              return this.isRgbColorObject(obj) && isRgbColorComponent(obj, "a");
+            };
+            Color2.isColorObject = function(obj) {
+              return this.isRgbColorObject(obj);
+            };
+            Object.defineProperty(Color2.prototype, "mode", {
+              get: function() {
+                return this.mode_;
+              },
+              enumerable: false,
+              configurable: true
+            });
+            Color2.prototype.getComponents = function(opt_mode) {
+              return ColorModel.withAlpha(ColorModel.convertMode(ColorModel.withoutAlpha(this.comps_), this.mode_, opt_mode || this.mode_), this.comps_[3]);
+            };
+            Color2.prototype.toRgbaObject = function() {
+              var rgbComps = this.getComponents("rgb");
+              return {
+                r: rgbComps[0],
+                g: rgbComps[1],
+                b: rgbComps[2],
+                a: rgbComps[3]
+              };
+            };
+            return Color2;
+          }();
+          exports2.Color = Color;
+        },
+        "./src/main/js/model/disposable.ts": function(module2, exports2, __webpack_require__) {
+          "use strict";
+          Object.defineProperty(exports2, "__esModule", { value: true });
+          exports2.Disposable = void 0;
+          var emitter_1 = __webpack_require__("./src/main/js/misc/emitter.ts");
+          var Disposable = function() {
+            function Disposable2() {
+              this.emitter = new emitter_1.Emitter();
+              this.disposed_ = false;
+            }
+            Object.defineProperty(Disposable2.prototype, "disposed", {
+              get: function() {
+                return this.disposed_;
+              },
+              enumerable: false,
+              configurable: true
+            });
+            Disposable2.prototype.dispose = function() {
+              if (this.disposed_) {
+                return false;
+              }
+              this.disposed_ = true;
+              this.emitter.emit("dispose", {
+                sender: this
+              });
+              return true;
+            };
+            return Disposable2;
+          }();
+          exports2.Disposable = Disposable;
+        },
+        "./src/main/js/model/foldable.ts": function(module2, exports2, __webpack_require__) {
+          "use strict";
+          Object.defineProperty(exports2, "__esModule", { value: true });
+          exports2.Foldable = void 0;
+          var emitter_1 = __webpack_require__("./src/main/js/misc/emitter.ts");
+          var Foldable = function() {
+            function Foldable2() {
+              this.emitter = new emitter_1.Emitter();
+              this.expanded_ = false;
+            }
+            Object.defineProperty(Foldable2.prototype, "expanded", {
+              get: function() {
+                return this.expanded_;
+              },
+              set: function(expanded) {
+                var changed = this.expanded_ !== expanded;
+                if (changed) {
+                  this.expanded_ = expanded;
+                  this.emitter.emit("change", {
+                    sender: this
+                  });
+                }
+              },
+              enumerable: false,
+              configurable: true
+            });
+            return Foldable2;
+          }();
+          exports2.Foldable = Foldable;
+        },
+        "./src/main/js/model/folder.ts": function(module2, exports2, __webpack_require__) {
+          "use strict";
+          Object.defineProperty(exports2, "__esModule", { value: true });
+          exports2.Folder = void 0;
+          var emitter_1 = __webpack_require__("./src/main/js/misc/emitter.ts");
+          var type_util_1 = __webpack_require__("./src/main/js/misc/type-util.ts");
+          var Folder = function() {
+            function Folder2(title, expanded) {
+              this.emitter = new emitter_1.Emitter();
+              this.expanded_ = expanded;
+              this.expandedHeight_ = null;
+              this.temporaryExpanded_ = null;
+              this.shouldFixHeight_ = false;
+              this.title = title;
+            }
+            Object.defineProperty(Folder2.prototype, "expanded", {
+              get: function() {
+                return this.expanded_;
+              },
+              set: function(expanded) {
+                var changed = this.expanded_ !== expanded;
+                if (!changed) {
+                  return;
+                }
+                this.emitter.emit("beforechange", {
+                  propertyName: "expanded",
+                  sender: this
+                });
+                this.expanded_ = expanded;
+                this.emitter.emit("change", {
+                  propertyName: "expanded",
+                  sender: this
+                });
+              },
+              enumerable: false,
+              configurable: true
+            });
+            Object.defineProperty(Folder2.prototype, "temporaryExpanded", {
+              get: function() {
+                return this.temporaryExpanded_;
+              },
+              set: function(expanded) {
+                var changed = this.temporaryExpanded_ !== expanded;
+                if (!changed) {
+                  return;
+                }
+                this.emitter.emit("beforechange", {
+                  propertyName: "temporaryExpanded",
+                  sender: this
+                });
+                this.temporaryExpanded_ = expanded;
+                this.emitter.emit("change", {
+                  propertyName: "temporaryExpanded",
+                  sender: this
+                });
+              },
+              enumerable: false,
+              configurable: true
+            });
+            Object.defineProperty(Folder2.prototype, "expandedHeight", {
+              get: function() {
+                return this.expandedHeight_;
+              },
+              set: function(expandedHeight) {
+                var changed = this.expandedHeight_ !== expandedHeight;
+                if (!changed) {
+                  return;
+                }
+                this.emitter.emit("beforechange", {
+                  propertyName: "expandedHeight",
+                  sender: this
+                });
+                this.expandedHeight_ = expandedHeight;
+                this.emitter.emit("change", {
+                  propertyName: "expandedHeight",
+                  sender: this
+                });
+              },
+              enumerable: false,
+              configurable: true
+            });
+            Object.defineProperty(Folder2.prototype, "shouldFixHeight", {
+              get: function() {
+                return this.shouldFixHeight_;
+              },
+              set: function(shouldFixHeight) {
+                var changed = this.shouldFixHeight_ !== shouldFixHeight;
+                if (!changed) {
+                  return;
+                }
+                this.emitter.emit("beforechange", {
+                  propertyName: "shouldFixHeight",
+                  sender: this
+                });
+                this.shouldFixHeight_ = shouldFixHeight;
+                this.emitter.emit("change", {
+                  propertyName: "shouldFixHeight",
+                  sender: this
+                });
+              },
+              enumerable: false,
+              configurable: true
+            });
+            Object.defineProperty(Folder2.prototype, "styleExpanded", {
+              get: function() {
+                return type_util_1.TypeUtil.getOrDefault(this.temporaryExpanded, this.expanded);
+              },
+              enumerable: false,
+              configurable: true
+            });
+            Object.defineProperty(Folder2.prototype, "styleHeight", {
+              get: function() {
+                if (!this.styleExpanded) {
+                  return "0";
+                }
+                if (this.shouldFixHeight && !type_util_1.TypeUtil.isEmpty(this.expandedHeight)) {
+                  return this.expandedHeight + "px";
+                }
+                return "auto";
+              },
+              enumerable: false,
+              configurable: true
+            });
+            return Folder2;
+          }();
+          exports2.Folder = Folder;
+        },
+        "./src/main/js/model/graph-cursor.ts": function(module2, exports2, __webpack_require__) {
+          "use strict";
+          Object.defineProperty(exports2, "__esModule", { value: true });
+          exports2.GraphCursor = void 0;
+          var emitter_1 = __webpack_require__("./src/main/js/misc/emitter.ts");
+          var GraphCursor = function() {
+            function GraphCursor2() {
+              this.emitter = new emitter_1.Emitter();
+              this.index_ = -1;
+            }
+            Object.defineProperty(GraphCursor2.prototype, "index", {
+              get: function() {
+                return this.index_;
+              },
+              set: function(index) {
+                var changed = this.index_ !== index;
+                if (changed) {
+                  this.index_ = index;
+                  this.emitter.emit("change", {
+                    index,
+                    sender: this
+                  });
+                }
+              },
+              enumerable: false,
+              configurable: true
+            });
+            return GraphCursor2;
+          }();
+          exports2.GraphCursor = GraphCursor;
+        },
+        "./src/main/js/model/input-value.ts": function(module2, exports2, __webpack_require__) {
+          "use strict";
+          Object.defineProperty(exports2, "__esModule", { value: true });
+          exports2.InputValue = void 0;
+          var emitter_1 = __webpack_require__("./src/main/js/misc/emitter.ts");
+          var InputValue = function() {
+            function InputValue2(initialValue, constraint) {
+              this.constraint_ = constraint;
+              this.emitter = new emitter_1.Emitter();
+              this.rawValue_ = initialValue;
+            }
+            InputValue2.equalsValue = function(v1, v2) {
+              return v1 === v2;
+            };
+            Object.defineProperty(InputValue2.prototype, "constraint", {
+              get: function() {
+                return this.constraint_;
+              },
+              enumerable: false,
+              configurable: true
+            });
+            Object.defineProperty(InputValue2.prototype, "rawValue", {
+              get: function() {
+                return this.rawValue_;
+              },
+              set: function(rawValue) {
+                var constrainedValue = this.constraint_ ? this.constraint_.constrain(rawValue) : rawValue;
+                var changed = !InputValue2.equalsValue(this.rawValue_, constrainedValue);
+                if (changed) {
+                  this.rawValue_ = constrainedValue;
+                  this.emitter.emit("change", {
+                    rawValue: constrainedValue,
+                    sender: this
+                  });
+                }
+              },
+              enumerable: false,
+              configurable: true
+            });
+            return InputValue2;
+          }();
+          exports2.InputValue = InputValue;
+        },
+        "./src/main/js/model/list.ts": function(module2, exports2, __webpack_require__) {
+          "use strict";
+          Object.defineProperty(exports2, "__esModule", { value: true });
+          exports2.List = void 0;
+          var emitter_1 = __webpack_require__("./src/main/js/misc/emitter.ts");
+          var List = function() {
+            function List2() {
+              this.emitter = new emitter_1.Emitter();
+              this.items_ = [];
+            }
+            Object.defineProperty(List2.prototype, "items", {
+              get: function() {
+                return this.items_;
+              },
+              enumerable: false,
+              configurable: true
+            });
+            List2.prototype.add = function(item, opt_index) {
+              var index = opt_index !== void 0 ? opt_index : this.items_.length;
+              this.items_.splice(index, 0, item);
+              this.emitter.emit("add", {
+                index,
+                item,
+                sender: this
+              });
+            };
+            List2.prototype.remove = function(item) {
+              var index = this.items_.indexOf(item);
+              if (index < 0) {
+                return;
+              }
+              this.items_.splice(index, 1);
+              this.emitter.emit("remove", {
+                sender: this
+              });
+            };
+            return List2;
+          }();
+          exports2.List = List;
+        },
+        "./src/main/js/model/model-sync.ts": function(module2, exports2, __webpack_require__) {
+          "use strict";
+          Object.defineProperty(exports2, "__esModule", { value: true });
+          exports2.connect = void 0;
+          function connect(_a2) {
+            var primary = _a2.primary, secondary = _a2.secondary;
+            primary.emitter(primary.value).on("change", function() {
+              primary.apply(primary.value, secondary.value);
+            });
+            secondary.emitter(secondary.value).on("change", function() {
+              secondary.apply(secondary.value, primary.value);
+            });
+            primary.apply(primary.value, secondary.value);
+          }
+          exports2.connect = connect;
+        },
+        "./src/main/js/model/monitor-value.ts": function(module2, exports2, __webpack_require__) {
+          "use strict";
+          Object.defineProperty(exports2, "__esModule", { value: true });
+          exports2.MonitorValue = void 0;
+          var emitter_1 = __webpack_require__("./src/main/js/misc/emitter.ts");
+          var MonitorValue = function() {
+            function MonitorValue2(totalCount) {
+              this.emitter = new emitter_1.Emitter();
+              this.rawValues_ = [];
+              this.totalCount_ = totalCount;
+            }
+            Object.defineProperty(MonitorValue2.prototype, "rawValues", {
+              get: function() {
+                return this.rawValues_;
+              },
+              enumerable: false,
+              configurable: true
+            });
+            Object.defineProperty(MonitorValue2.prototype, "totalCount", {
+              get: function() {
+                return this.totalCount_;
+              },
+              enumerable: false,
+              configurable: true
+            });
+            MonitorValue2.prototype.append = function(rawValue) {
+              this.rawValues_.push(rawValue);
+              if (this.rawValues_.length > this.totalCount_) {
+                this.rawValues_.splice(0, this.rawValues_.length - this.totalCount_);
+              }
+              this.emitter.emit("update", {
+                rawValue,
+                sender: this
+              });
+            };
+            return MonitorValue2;
+          }();
+          exports2.MonitorValue = MonitorValue;
+        },
+        "./src/main/js/model/picked-color.ts": function(module2, exports2, __webpack_require__) {
+          "use strict";
+          Object.defineProperty(exports2, "__esModule", { value: true });
+          exports2.PickedColor = void 0;
+          var emitter_1 = __webpack_require__("./src/main/js/misc/emitter.ts");
+          var PickedColor = function() {
+            function PickedColor2(value) {
+              this.onValueChange_ = this.onValueChange_.bind(this);
+              this.mode_ = "rgb";
+              this.value = value;
+              this.value.emitter.on("change", this.onValueChange_);
+              this.emitter = new emitter_1.Emitter();
+            }
+            Object.defineProperty(PickedColor2.prototype, "mode", {
+              get: function() {
+                return this.mode_;
+              },
+              set: function(mode) {
+                if (this.mode_ === mode) {
+                  return;
+                }
+                this.mode_ = mode;
+                this.emitter.emit("change", {
+                  propertyName: "mode",
+                  sender: this
+                });
+              },
+              enumerable: false,
+              configurable: true
+            });
+            PickedColor2.prototype.onValueChange_ = function() {
+              this.emitter.emit("change", {
+                propertyName: "value",
+                sender: this
+              });
+            };
+            return PickedColor2;
+          }();
+          exports2.PickedColor = PickedColor;
+        },
+        "./src/main/js/model/point-2d.ts": function(module2, exports2, __webpack_require__) {
+          "use strict";
+          Object.defineProperty(exports2, "__esModule", { value: true });
+          exports2.Point2d = void 0;
+          var Point2d = function() {
+            function Point2d2(x, y) {
+              if (x === void 0) {
+                x = 0;
+              }
+              if (y === void 0) {
+                y = 0;
+              }
+              this.x = x;
+              this.y = y;
+            }
+            Point2d2.prototype.getComponents = function() {
+              return [this.x, this.y];
+            };
+            Point2d2.prototype.toObject = function() {
+              return {
+                x: this.x,
+                y: this.y
+              };
+            };
+            return Point2d2;
+          }();
+          exports2.Point2d = Point2d;
+        },
+        "./src/main/js/model/target.ts": function(module2, exports2, __webpack_require__) {
+          "use strict";
+          Object.defineProperty(exports2, "__esModule", { value: true });
+          exports2.Target = void 0;
+          var type_util_1 = __webpack_require__("./src/main/js/misc/type-util.ts");
+          var Target = function() {
+            function Target2(object, key2, opt_id) {
+              this.obj_ = object;
+              this.key_ = key2;
+              this.presetKey_ = type_util_1.TypeUtil.getOrDefault(opt_id, key2);
+            }
+            Object.defineProperty(Target2.prototype, "key", {
+              get: function() {
+                return this.key_;
+              },
+              enumerable: false,
+              configurable: true
+            });
+            Object.defineProperty(Target2.prototype, "presetKey", {
+              get: function() {
+                return this.presetKey_;
+              },
+              enumerable: false,
+              configurable: true
+            });
+            Target2.prototype.read = function() {
+              return this.obj_[this.key_];
+            };
+            Target2.prototype.write = function(value) {
+              this.obj_[this.key_] = value;
+            };
+            return Target2;
+          }();
+          exports2.Target = Target;
+        },
+        "./src/main/js/model/ui-container.ts": function(module2, exports2, __webpack_require__) {
+          "use strict";
+          Object.defineProperty(exports2, "__esModule", { value: true });
+          exports2.UiContainer = void 0;
+          var folder_1 = __webpack_require__("./src/main/js/controller/folder.ts");
+          var input_binding_1 = __webpack_require__("./src/main/js/controller/input-binding.ts");
+          var monitor_binding_1 = __webpack_require__("./src/main/js/controller/monitor-binding.ts");
+          var emitter_1 = __webpack_require__("./src/main/js/misc/emitter.ts");
+          var list_1 = __webpack_require__("./src/main/js/model/list.ts");
+          var UiContainer = function() {
+            function UiContainer2() {
+              this.onItemFolderFold_ = this.onItemFolderFold_.bind(this);
+              this.onListItemLayout_ = this.onListItemLayout_.bind(this);
+              this.onSubitemLayout_ = this.onSubitemLayout_.bind(this);
+              this.onSubitemFolderFold_ = this.onSubitemFolderFold_.bind(this);
+              this.onSubitemInputChange_ = this.onSubitemInputChange_.bind(this);
+              this.onSubitemMonitorUpdate_ = this.onSubitemMonitorUpdate_.bind(this);
+              this.onItemInputChange_ = this.onItemInputChange_.bind(this);
+              this.onListAdd_ = this.onListAdd_.bind(this);
+              this.onListItemDispose_ = this.onListItemDispose_.bind(this);
+              this.onListRemove_ = this.onListRemove_.bind(this);
+              this.onItemMonitorUpdate_ = this.onItemMonitorUpdate_.bind(this);
+              this.ucList_ = new list_1.List();
+              this.emitter = new emitter_1.Emitter();
+              this.ucList_.emitter.on("add", this.onListAdd_);
+              this.ucList_.emitter.on("remove", this.onListRemove_);
+            }
+            Object.defineProperty(UiContainer2.prototype, "items", {
+              get: function() {
+                return this.ucList_.items;
+              },
+              enumerable: false,
+              configurable: true
+            });
+            UiContainer2.prototype.add = function(uc, opt_index) {
+              this.ucList_.add(uc, opt_index);
+            };
+            UiContainer2.prototype.onListAdd_ = function(ev) {
+              var uc = ev.item;
+              this.emitter.emit("add", {
+                index: ev.index,
+                sender: this,
+                uiController: uc
+              });
+              uc.viewModel.emitter.on("dispose", this.onListItemDispose_);
+              uc.viewModel.emitter.on("change", this.onListItemLayout_);
+              if (uc instanceof input_binding_1.InputBindingController) {
+                var emitter = uc.binding.emitter;
+                emitter.on("change", this.onItemInputChange_);
+              } else if (uc instanceof monitor_binding_1.MonitorBindingController) {
+                var emitter = uc.binding.emitter;
+                emitter.on("update", this.onItemMonitorUpdate_);
+              } else if (uc instanceof folder_1.FolderController) {
+                uc.folder.emitter.on("change", this.onItemFolderFold_);
+                var emitter = uc.uiContainer.emitter;
+                emitter.on("itemfold", this.onSubitemFolderFold_);
+                emitter.on("itemlayout", this.onSubitemLayout_);
+                emitter.on("inputchange", this.onSubitemInputChange_);
+                emitter.on("monitorupdate", this.onSubitemMonitorUpdate_);
+              }
+            };
+            UiContainer2.prototype.onListRemove_ = function(_) {
+              this.emitter.emit("remove", {
+                sender: this
+              });
+            };
+            UiContainer2.prototype.onListItemLayout_ = function(ev) {
+              if (ev.propertyName === "hidden" || ev.propertyName === "positions") {
+                this.emitter.emit("itemlayout", {
+                  sender: this
+                });
+              }
+            };
+            UiContainer2.prototype.onListItemDispose_ = function(_) {
+              var _this = this;
+              var disposedUcs = this.ucList_.items.filter(function(uc) {
+                return uc.viewModel.disposed;
+              });
+              disposedUcs.forEach(function(uc) {
+                _this.ucList_.remove(uc);
+              });
+            };
+            UiContainer2.prototype.onItemInputChange_ = function(ev) {
+              this.emitter.emit("inputchange", {
+                inputBinding: ev.sender,
+                sender: this,
+                value: ev.rawValue
+              });
+            };
+            UiContainer2.prototype.onItemMonitorUpdate_ = function(ev) {
+              this.emitter.emit("monitorupdate", {
+                monitorBinding: ev.sender,
+                sender: this,
+                value: ev.rawValue
+              });
+            };
+            UiContainer2.prototype.onItemFolderFold_ = function(ev) {
+              if (ev.propertyName !== "expanded") {
+                return;
+              }
+              this.emitter.emit("itemfold", {
+                expanded: ev.sender.expanded,
+                sender: this
+              });
+            };
+            UiContainer2.prototype.onSubitemLayout_ = function(_) {
+              this.emitter.emit("itemlayout", {
+                sender: this
+              });
+            };
+            UiContainer2.prototype.onSubitemInputChange_ = function(ev) {
+              this.emitter.emit("inputchange", {
+                inputBinding: ev.inputBinding,
+                sender: this,
+                value: ev.value
+              });
+            };
+            UiContainer2.prototype.onSubitemMonitorUpdate_ = function(ev) {
+              this.emitter.emit("monitorupdate", {
+                monitorBinding: ev.monitorBinding,
+                sender: this,
+                value: ev.value
+              });
+            };
+            UiContainer2.prototype.onSubitemFolderFold_ = function(ev) {
+              this.emitter.emit("itemfold", {
+                expanded: ev.expanded,
+                sender: this
+              });
+            };
+            return UiContainer2;
+          }();
+          exports2.UiContainer = UiContainer;
+        },
+        "./src/main/js/model/view-model.ts": function(module2, exports2, __webpack_require__) {
+          "use strict";
+          Object.defineProperty(exports2, "__esModule", { value: true });
+          exports2.ViewModel = void 0;
+          var emitter_1 = __webpack_require__("./src/main/js/misc/emitter.ts");
+          var type_util_1 = __webpack_require__("./src/main/js/misc/type-util.ts");
+          var disposable_1 = __webpack_require__("./src/main/js/model/disposable.ts");
+          var ViewModel = function() {
+            function ViewModel2() {
+              this.onDispose_ = this.onDispose_.bind(this);
+              this.emitter = new emitter_1.Emitter();
+              this.positions_ = [];
+              this.hidden_ = false;
+              this.disposable_ = new disposable_1.Disposable();
+              this.disposable_.emitter.on("dispose", this.onDispose_);
+            }
+            Object.defineProperty(ViewModel2.prototype, "hidden", {
+              get: function() {
+                return this.hidden_;
+              },
+              set: function(hidden) {
+                if (this.hidden_ === hidden) {
+                  return;
+                }
+                this.hidden_ = hidden;
+                this.emitter.emit("change", {
+                  propertyName: "hidden",
+                  sender: this
+                });
+              },
+              enumerable: false,
+              configurable: true
+            });
+            Object.defineProperty(ViewModel2.prototype, "positions", {
+              get: function() {
+                return this.positions_;
+              },
+              set: function(positions) {
+                if (type_util_1.TypeUtil.deepEqualsArray(positions, this.positions_)) {
+                  return;
+                }
+                this.positions_ = positions;
+                this.emitter.emit("change", {
+                  propertyName: "positions",
+                  sender: this
+                });
+              },
+              enumerable: false,
+              configurable: true
+            });
+            Object.defineProperty(ViewModel2.prototype, "disposed", {
+              get: function() {
+                return this.disposable_.disposed;
+              },
+              enumerable: false,
+              configurable: true
+            });
+            ViewModel2.prototype.dispose = function() {
+              this.disposable_.dispose();
+            };
+            ViewModel2.prototype.onDispose_ = function() {
+              this.emitter.emit("dispose", {
+                sender: this
+              });
+            };
+            return ViewModel2;
+          }();
+          exports2.ViewModel = ViewModel;
+        },
+        "./src/main/js/model/view-positions.ts": function(module2, exports2, __webpack_require__) {
+          "use strict";
+          Object.defineProperty(exports2, "__esModule", { value: true });
+          exports2.getAll = void 0;
+          function getAll() {
+            return ["first", "last"];
+          }
+          exports2.getAll = getAll;
+        },
+        "./src/main/js/parser/any-point-2d.ts": function(module2, exports2, __webpack_require__) {
+          "use strict";
+          Object.defineProperty(exports2, "__esModule", { value: true });
+          exports2.AnyPoint2dParser = void 0;
+          var type_util_1 = __webpack_require__("./src/main/js/misc/type-util.ts");
+          var point_2d_1 = __webpack_require__("./src/main/js/model/point-2d.ts");
+          exports2.AnyPoint2dParser = function(obj) {
+            if (type_util_1.TypeUtil.isEmpty(obj)) {
+              return null;
+            }
+            var x = obj.x;
+            var y = obj.y;
+            if (typeof x !== "number" || typeof y !== "number") {
+              return null;
+            }
+            return new point_2d_1.Point2d(x, y);
+          };
+        },
+        "./src/main/js/parser/number-color.ts": function(module2, exports2, __webpack_require__) {
+          "use strict";
+          Object.defineProperty(exports2, "__esModule", { value: true });
+          exports2.RgbaParser = exports2.RgbParser = void 0;
+          var number_util_1 = __webpack_require__("./src/main/js/misc/number-util.ts");
+          var color_1 = __webpack_require__("./src/main/js/model/color.ts");
+          exports2.RgbParser = function(num) {
+            return new color_1.Color([num >> 16 & 255, num >> 8 & 255, num & 255], "rgb");
+          };
+          exports2.RgbaParser = function(num) {
+            return new color_1.Color([
+              num >> 24 & 255,
+              num >> 16 & 255,
+              num >> 8 & 255,
+              number_util_1.NumberUtil.map(num & 255, 0, 255, 0, 1)
+            ], "rgb");
+          };
+        },
+        "./src/main/js/parser/string-color.ts": function(module2, exports2, __webpack_require__) {
+          "use strict";
+          Object.defineProperty(exports2, "__esModule", { value: true });
+          exports2.hasAlphaComponent = exports2.CompositeParser = exports2.getNotation = void 0;
+          var number_util_1 = __webpack_require__("./src/main/js/misc/number-util.ts");
+          var color_1 = __webpack_require__("./src/main/js/model/color.ts");
+          function parseCssNumberOrPercentage(text, maxValue) {
+            var m = text.match(/^(.+)%$/);
+            if (!m) {
+              return Math.min(parseFloat(text), maxValue);
+            }
+            return Math.min(parseFloat(m[1]) * 0.01 * maxValue, maxValue);
+          }
+          var ANGLE_TO_DEG_MAP = {
+            deg: function(angle3) {
+              return angle3;
+            },
+            grad: function(angle3) {
+              return angle3 * 360 / 400;
+            },
+            rad: function(angle3) {
+              return angle3 * 360 / (2 * Math.PI);
+            },
+            turn: function(angle3) {
+              return angle3 * 360;
+            }
+          };
+          function parseCssNumberOrAngle(text) {
+            var m = text.match(/^([0-9.]+?)(deg|grad|rad|turn)$/);
+            if (!m) {
+              return parseFloat(text);
+            }
+            var angle3 = parseFloat(m[1]);
+            var unit = m[2];
+            return ANGLE_TO_DEG_MAP[unit](angle3);
+          }
+          var NOTATION_TO_PARSER_MAP = {
+            "func.rgb": function(text) {
+              var m = text.match(/^rgb\(\s*([0-9A-Fa-f.]+%?)\s*,\s*([0-9A-Fa-f.]+%?)\s*,\s*([0-9A-Fa-f.]+%?)\s*\)$/);
+              if (!m) {
+                return null;
+              }
+              var comps = [
+                parseCssNumberOrPercentage(m[1], 255),
+                parseCssNumberOrPercentage(m[2], 255),
+                parseCssNumberOrPercentage(m[3], 255)
+              ];
+              if (isNaN(comps[0]) || isNaN(comps[1]) || isNaN(comps[2])) {
+                return null;
+              }
+              return new color_1.Color(comps, "rgb");
+            },
+            "func.rgba": function(text) {
+              var m = text.match(/^rgba\(\s*([0-9A-Fa-f.]+%?)\s*,\s*([0-9A-Fa-f.]+%?)\s*,\s*([0-9A-Fa-f.]+%?)\s*,\s*([0-9A-Fa-f.]+%?)\s*\)$/);
+              if (!m) {
+                return null;
+              }
+              var comps = [
+                parseCssNumberOrPercentage(m[1], 255),
+                parseCssNumberOrPercentage(m[2], 255),
+                parseCssNumberOrPercentage(m[3], 255),
+                parseCssNumberOrPercentage(m[4], 1)
+              ];
+              if (isNaN(comps[0]) || isNaN(comps[1]) || isNaN(comps[2]) || isNaN(comps[3])) {
+                return null;
+              }
+              return new color_1.Color(comps, "rgb");
+            },
+            "func.hsl": function(text) {
+              var m = text.match(/^hsl\(\s*([0-9A-Fa-f.]+(?:deg|grad|rad|turn)?)\s*,\s*([0-9A-Fa-f.]+%?)\s*,\s*([0-9A-Fa-f.]+%?)\s*\)$/);
+              if (!m) {
+                return null;
+              }
+              var comps = [
+                parseCssNumberOrAngle(m[1]),
+                parseCssNumberOrPercentage(m[2], 100),
+                parseCssNumberOrPercentage(m[3], 100)
+              ];
+              if (isNaN(comps[0]) || isNaN(comps[1]) || isNaN(comps[2])) {
+                return null;
+              }
+              return new color_1.Color(comps, "hsl");
+            },
+            "func.hsla": function(text) {
+              var m = text.match(/^hsla\(\s*([0-9A-Fa-f.]+(?:deg|grad|rad|turn)?)\s*,\s*([0-9A-Fa-f.]+%?)\s*,\s*([0-9A-Fa-f.]+%?)\s*,\s*([0-9A-Fa-f.]+%?)\s*\)$/);
+              if (!m) {
+                return null;
+              }
+              var comps = [
+                parseCssNumberOrAngle(m[1]),
+                parseCssNumberOrPercentage(m[2], 100),
+                parseCssNumberOrPercentage(m[3], 100),
+                parseCssNumberOrPercentage(m[4], 1)
+              ];
+              if (isNaN(comps[0]) || isNaN(comps[1]) || isNaN(comps[2]) || isNaN(comps[3])) {
+                return null;
+              }
+              return new color_1.Color(comps, "hsl");
+            },
+            "hex.rgb": function(text) {
+              var mRrggbb = text.match(/^#([0-9A-Fa-f])([0-9A-Fa-f])([0-9A-Fa-f])$/);
+              if (mRrggbb) {
+                return new color_1.Color([
+                  parseInt(mRrggbb[1] + mRrggbb[1], 16),
+                  parseInt(mRrggbb[2] + mRrggbb[2], 16),
+                  parseInt(mRrggbb[3] + mRrggbb[3], 16)
+                ], "rgb");
+              }
+              var mRgb = text.match(/^#([0-9A-Fa-f]{2})([0-9A-Fa-f]{2})([0-9A-Fa-f]{2})$/);
+              if (mRgb) {
+                return new color_1.Color([parseInt(mRgb[1], 16), parseInt(mRgb[2], 16), parseInt(mRgb[3], 16)], "rgb");
+              }
+              return null;
+            },
+            "hex.rgba": function(text) {
+              var mRrggbb = text.match(/^#?([0-9A-Fa-f])([0-9A-Fa-f])([0-9A-Fa-f])([0-9A-Fa-f])$/);
+              if (mRrggbb) {
+                return new color_1.Color([
+                  parseInt(mRrggbb[1] + mRrggbb[1], 16),
+                  parseInt(mRrggbb[2] + mRrggbb[2], 16),
+                  parseInt(mRrggbb[3] + mRrggbb[3], 16),
+                  number_util_1.NumberUtil.map(parseInt(mRrggbb[4] + mRrggbb[4], 16), 0, 255, 0, 1)
+                ], "rgb");
+              }
+              var mRgb = text.match(/^#?([0-9A-Fa-f]{2})([0-9A-Fa-f]{2})([0-9A-Fa-f]{2})([0-9A-Fa-f]{2})$/);
+              if (mRgb) {
+                return new color_1.Color([
+                  parseInt(mRgb[1], 16),
+                  parseInt(mRgb[2], 16),
+                  parseInt(mRgb[3], 16),
+                  number_util_1.NumberUtil.map(parseInt(mRgb[4], 16), 0, 255, 0, 1)
+                ], "rgb");
+              }
+              return null;
+            }
+          };
+          function getNotation(text) {
+            var notations = Object.keys(NOTATION_TO_PARSER_MAP);
+            return notations.reduce(function(result, notation) {
+              if (result) {
+                return result;
+              }
+              var subparser = NOTATION_TO_PARSER_MAP[notation];
+              return subparser(text) ? notation : null;
+            }, null);
+          }
+          exports2.getNotation = getNotation;
+          exports2.CompositeParser = function(text) {
+            var notation = getNotation(text);
+            return notation ? NOTATION_TO_PARSER_MAP[notation](text) : null;
+          };
+          function hasAlphaComponent(notation) {
+            return notation === "func.hsla" || notation === "func.rgba" || notation === "hex.rgba";
+          }
+          exports2.hasAlphaComponent = hasAlphaComponent;
+        },
+        "./src/main/js/parser/string-number.ts": function(module2, exports2, __webpack_require__) {
+          "use strict";
+          Object.defineProperty(exports2, "__esModule", { value: true });
+          exports2.StringNumberParser = void 0;
+          exports2.StringNumberParser = function(text) {
+            var num = parseFloat(text);
+            if (isNaN(num)) {
+              return null;
+            }
+            return num;
+          };
+        },
+        "./src/main/js/tweakpane-without-style.ts": function(module2, exports2, __webpack_require__) {
+          "use strict";
+          var __extends = this && this.__extends || function() {
+            var extendStatics = function(d, b) {
+              extendStatics = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(d2, b2) {
+                d2.__proto__ = b2;
+              } || function(d2, b2) {
+                for (var p in b2)
+                  if (b2.hasOwnProperty(p))
+                    d2[p] = b2[p];
+              };
+              return extendStatics(d, b);
+            };
+            return function(d, b) {
+              extendStatics(d, b);
+              function __() {
+                this.constructor = d;
+              }
+              d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+            };
+          }();
+          Object.defineProperty(exports2, "__esModule", { value: true });
+          exports2.TweakpaneWithoutStyle = void 0;
+          var root_1 = __webpack_require__("./src/main/js/api/root.ts");
+          var root_2 = __webpack_require__("./src/main/js/controller/root.ts");
+          var class_name_1 = __webpack_require__("./src/main/js/misc/class-name.ts");
+          var DomUtil = __webpack_require__("./src/main/js/misc/dom-util.ts");
+          var pane_error_1 = __webpack_require__("./src/main/js/misc/pane-error.ts");
+          var type_util_1 = __webpack_require__("./src/main/js/misc/type-util.ts");
+          var view_model_1 = __webpack_require__("./src/main/js/model/view-model.ts");
+          function createDefaultWrapperElement(document2) {
+            var elem = document2.createElement("div");
+            elem.classList.add(class_name_1.ClassName("dfw")());
+            if (document2.body) {
+              document2.body.appendChild(elem);
+            }
+            return elem;
+          }
+          var TweakpaneWithoutStyle = function(_super) {
+            __extends(TweakpaneWithoutStyle2, _super);
+            function TweakpaneWithoutStyle2(opt_config) {
+              var _this = this;
+              var config = opt_config || {};
+              var document2 = type_util_1.TypeUtil.getOrDefault(config.document, DomUtil.getWindowDocument());
+              var rootController = new root_2.RootController(document2, {
+                expanded: config.expanded,
+                viewModel: new view_model_1.ViewModel(),
+                title: config.title
+              });
+              _this = _super.call(this, rootController) || this;
+              _this.containerElem_ = config.container || createDefaultWrapperElement(document2);
+              _this.containerElem_.appendChild(_this.element);
+              _this.doc_ = document2;
+              _this.usesDefaultWrapper_ = !config.container;
+              return _this;
+            }
+            TweakpaneWithoutStyle2.prototype.dispose = function() {
+              var containerElem = this.containerElem_;
+              if (!containerElem) {
+                throw pane_error_1.PaneError.alreadyDisposed();
+              }
+              if (this.usesDefaultWrapper_) {
+                var parentElem = containerElem.parentElement;
+                if (parentElem) {
+                  parentElem.removeChild(containerElem);
+                }
+              }
+              this.containerElem_ = null;
+              this.doc_ = null;
+              _super.prototype.dispose.call(this);
+            };
+            Object.defineProperty(TweakpaneWithoutStyle2.prototype, "document", {
+              get: function() {
+                if (!this.doc_) {
+                  throw pane_error_1.PaneError.alreadyDisposed();
+                }
+                return this.doc_;
+              },
+              enumerable: false,
+              configurable: true
+            });
+            return TweakpaneWithoutStyle2;
+          }(root_1.RootApi);
+          exports2.TweakpaneWithoutStyle = TweakpaneWithoutStyle;
+        },
+        "./src/main/js/view/button.ts": function(module2, exports2, __webpack_require__) {
+          "use strict";
+          var __extends = this && this.__extends || function() {
+            var extendStatics = function(d, b) {
+              extendStatics = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(d2, b2) {
+                d2.__proto__ = b2;
+              } || function(d2, b2) {
+                for (var p in b2)
+                  if (b2.hasOwnProperty(p))
+                    d2[p] = b2[p];
+              };
+              return extendStatics(d, b);
+            };
+            return function(d, b) {
+              extendStatics(d, b);
+              function __() {
+                this.constructor = d;
+              }
+              d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+            };
+          }();
+          Object.defineProperty(exports2, "__esModule", { value: true });
+          exports2.ButtonView = void 0;
+          var class_name_1 = __webpack_require__("./src/main/js/misc/class-name.ts");
+          var DisposingUtil = __webpack_require__("./src/main/js/misc/disposing-util.ts");
+          var pane_error_1 = __webpack_require__("./src/main/js/misc/pane-error.ts");
+          var view_1 = __webpack_require__("./src/main/js/view/view.ts");
+          var className = class_name_1.ClassName("btn");
+          var ButtonView = function(_super) {
+            __extends(ButtonView2, _super);
+            function ButtonView2(document2, config) {
+              var _this = _super.call(this, document2, config) || this;
+              _this.button = config.button;
+              _this.element.classList.add(className());
+              var buttonElem = document2.createElement("button");
+              buttonElem.classList.add(className("b"));
+              buttonElem.textContent = _this.button.title;
+              _this.element.appendChild(buttonElem);
+              _this.buttonElem_ = buttonElem;
+              config.model.emitter.on("dispose", function() {
+                _this.buttonElem_ = DisposingUtil.disposeElement(_this.buttonElem_);
+              });
+              return _this;
+            }
+            Object.defineProperty(ButtonView2.prototype, "buttonElement", {
+              get: function() {
+                if (!this.buttonElem_) {
+                  throw pane_error_1.PaneError.alreadyDisposed();
+                }
+                return this.buttonElem_;
+              },
+              enumerable: false,
+              configurable: true
+            });
+            return ButtonView2;
+          }(view_1.View);
+          exports2.ButtonView = ButtonView;
+        },
+        "./src/main/js/view/folder.ts": function(module2, exports2, __webpack_require__) {
+          "use strict";
+          var __extends = this && this.__extends || function() {
+            var extendStatics = function(d, b) {
+              extendStatics = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(d2, b2) {
+                d2.__proto__ = b2;
+              } || function(d2, b2) {
+                for (var p in b2)
+                  if (b2.hasOwnProperty(p))
+                    d2[p] = b2[p];
+              };
+              return extendStatics(d, b);
+            };
+            return function(d, b) {
+              extendStatics(d, b);
+              function __() {
+                this.constructor = d;
+              }
+              d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+            };
+          }();
+          Object.defineProperty(exports2, "__esModule", { value: true });
+          exports2.FolderView = void 0;
+          var class_name_1 = __webpack_require__("./src/main/js/misc/class-name.ts");
+          var DisposingUtil = __webpack_require__("./src/main/js/misc/disposing-util.ts");
+          var pane_error_1 = __webpack_require__("./src/main/js/misc/pane-error.ts");
+          var view_1 = __webpack_require__("./src/main/js/view/view.ts");
+          var className = class_name_1.ClassName("fld");
+          var FolderView = function(_super) {
+            __extends(FolderView2, _super);
+            function FolderView2(document2, config) {
+              var _this = _super.call(this, document2, config) || this;
+              _this.onFolderChange_ = _this.onFolderChange_.bind(_this);
+              _this.folder_ = config.folder;
+              _this.folder_.emitter.on("change", _this.onFolderChange_);
+              _this.element.classList.add(className());
+              var titleElem = document2.createElement("button");
+              titleElem.classList.add(className("t"));
+              titleElem.textContent = _this.folder_.title;
+              _this.element.appendChild(titleElem);
+              _this.titleElem_ = titleElem;
+              var markElem = document2.createElement("div");
+              markElem.classList.add(className("m"));
+              _this.titleElem_.appendChild(markElem);
+              var containerElem = document2.createElement("div");
+              containerElem.classList.add(className("c"));
+              _this.element.appendChild(containerElem);
+              _this.containerElem_ = containerElem;
+              _this.applyModel_();
+              config.model.emitter.on("dispose", function() {
+                _this.containerElem_ = DisposingUtil.disposeElement(_this.containerElem_);
+                _this.titleElem_ = DisposingUtil.disposeElement(_this.titleElem_);
+              });
+              return _this;
+            }
+            Object.defineProperty(FolderView2.prototype, "titleElement", {
+              get: function() {
+                if (!this.titleElem_) {
+                  throw pane_error_1.PaneError.alreadyDisposed();
+                }
+                return this.titleElem_;
+              },
+              enumerable: false,
+              configurable: true
+            });
+            Object.defineProperty(FolderView2.prototype, "containerElement", {
+              get: function() {
+                if (!this.containerElem_) {
+                  throw pane_error_1.PaneError.alreadyDisposed();
+                }
+                return this.containerElem_;
+              },
+              enumerable: false,
+              configurable: true
+            });
+            FolderView2.prototype.applyModel_ = function() {
+              var containerElem = this.containerElem_;
+              if (!containerElem) {
+                throw pane_error_1.PaneError.alreadyDisposed();
+              }
+              var expanded = this.folder_.styleExpanded;
+              var expandedClass = className(void 0, "expanded");
+              if (expanded) {
+                this.element.classList.add(expandedClass);
+              } else {
+                this.element.classList.remove(expandedClass);
+              }
+              containerElem.style.height = this.folder_.styleHeight;
+            };
+            FolderView2.prototype.onFolderChange_ = function() {
+              this.applyModel_();
+            };
+            return FolderView2;
+          }(view_1.View);
+          exports2.FolderView = FolderView;
+        },
+        "./src/main/js/view/input/a-palette.ts": function(module2, exports2, __webpack_require__) {
+          "use strict";
+          var __extends = this && this.__extends || function() {
+            var extendStatics = function(d, b) {
+              extendStatics = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(d2, b2) {
+                d2.__proto__ = b2;
+              } || function(d2, b2) {
+                for (var p in b2)
+                  if (b2.hasOwnProperty(p))
+                    d2[p] = b2[p];
+              };
+              return extendStatics(d, b);
+            };
+            return function(d, b) {
+              extendStatics(d, b);
+              function __() {
+                this.constructor = d;
+              }
+              d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+            };
+          }();
+          Object.defineProperty(exports2, "__esModule", { value: true });
+          exports2.APaletteInputView = void 0;
+          var ColorConverter = __webpack_require__("./src/main/js/converter/color.ts");
+          var class_name_1 = __webpack_require__("./src/main/js/misc/class-name.ts");
+          var DisposingUtil = __webpack_require__("./src/main/js/misc/disposing-util.ts");
+          var number_util_1 = __webpack_require__("./src/main/js/misc/number-util.ts");
+          var pane_error_1 = __webpack_require__("./src/main/js/misc/pane-error.ts");
+          var color_1 = __webpack_require__("./src/main/js/model/color.ts");
+          var view_1 = __webpack_require__("./src/main/js/view/view.ts");
+          var className = class_name_1.ClassName("apl", "input");
+          var APaletteInputView = function(_super) {
+            __extends(APaletteInputView2, _super);
+            function APaletteInputView2(document2, config) {
+              var _this = _super.call(this, document2, config) || this;
+              _this.onValueChange_ = _this.onValueChange_.bind(_this);
+              _this.value = config.value;
+              _this.value.emitter.on("change", _this.onValueChange_);
+              _this.element.classList.add(className());
+              _this.element.tabIndex = 0;
+              var barElem = document2.createElement("div");
+              barElem.classList.add(className("b"));
+              _this.element.appendChild(barElem);
+              var colorElem = document2.createElement("div");
+              colorElem.classList.add(className("c"));
+              barElem.appendChild(colorElem);
+              _this.colorElem_ = colorElem;
+              var markerElem = document2.createElement("div");
+              markerElem.classList.add(className("m"));
+              _this.element.appendChild(markerElem);
+              _this.markerElem_ = markerElem;
+              var previewElem = document2.createElement("div");
+              previewElem.classList.add(className("p"));
+              _this.markerElem_.appendChild(previewElem);
+              _this.previewElem_ = previewElem;
+              _this.update();
+              config.model.emitter.on("dispose", function() {
+                _this.colorElem_ = DisposingUtil.disposeElement(_this.colorElem_);
+                _this.markerElem_ = DisposingUtil.disposeElement(_this.markerElem_);
+              });
+              return _this;
+            }
+            APaletteInputView2.prototype.update = function() {
+              if (!this.markerElem_ || !this.previewElem_ || !this.colorElem_) {
+                throw pane_error_1.PaneError.alreadyDisposed();
+              }
+              var c = this.value.rawValue;
+              var rgbaComps = c.getComponents("rgb");
+              var leftColor = new color_1.Color([rgbaComps[0], rgbaComps[1], rgbaComps[2], 0], "rgb");
+              var rightColor = new color_1.Color([rgbaComps[0], rgbaComps[1], rgbaComps[2], 255], "rgb");
+              var gradientComps = [
+                "to right",
+                ColorConverter.toFunctionalRgbaString(leftColor),
+                ColorConverter.toFunctionalRgbaString(rightColor)
+              ];
+              this.colorElem_.style.background = "linear-gradient(" + gradientComps.join(",") + ")";
+              this.previewElem_.style.backgroundColor = ColorConverter.toFunctionalRgbaString(c);
+              var left = number_util_1.NumberUtil.map(rgbaComps[3], 0, 1, 0, 100);
+              this.markerElem_.style.left = left + "%";
+            };
+            APaletteInputView2.prototype.onValueChange_ = function() {
+              this.update();
+            };
+            return APaletteInputView2;
+          }(view_1.View);
+          exports2.APaletteInputView = APaletteInputView;
+        },
+        "./src/main/js/view/input/checkbox.ts": function(module2, exports2, __webpack_require__) {
+          "use strict";
+          var __extends = this && this.__extends || function() {
+            var extendStatics = function(d, b) {
+              extendStatics = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(d2, b2) {
+                d2.__proto__ = b2;
+              } || function(d2, b2) {
+                for (var p in b2)
+                  if (b2.hasOwnProperty(p))
+                    d2[p] = b2[p];
+              };
+              return extendStatics(d, b);
+            };
+            return function(d, b) {
+              extendStatics(d, b);
+              function __() {
+                this.constructor = d;
+              }
+              d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+            };
+          }();
+          Object.defineProperty(exports2, "__esModule", { value: true });
+          exports2.CheckboxInputView = void 0;
+          var class_name_1 = __webpack_require__("./src/main/js/misc/class-name.ts");
+          var DisposingUtil = __webpack_require__("./src/main/js/misc/disposing-util.ts");
+          var pane_error_1 = __webpack_require__("./src/main/js/misc/pane-error.ts");
+          var view_1 = __webpack_require__("./src/main/js/view/view.ts");
+          var className = class_name_1.ClassName("ckb", "input");
+          var CheckboxInputView = function(_super) {
+            __extends(CheckboxInputView2, _super);
+            function CheckboxInputView2(document2, config) {
+              var _this = _super.call(this, document2, config) || this;
+              _this.onValueChange_ = _this.onValueChange_.bind(_this);
+              _this.element.classList.add(className());
+              var labelElem = document2.createElement("label");
+              labelElem.classList.add(className("l"));
+              _this.element.appendChild(labelElem);
+              var inputElem = document2.createElement("input");
+              inputElem.classList.add(className("i"));
+              inputElem.type = "checkbox";
+              labelElem.appendChild(inputElem);
+              _this.inputElem_ = inputElem;
+              var markElem = document2.createElement("div");
+              markElem.classList.add(className("m"));
+              labelElem.appendChild(markElem);
+              config.value.emitter.on("change", _this.onValueChange_);
+              _this.value = config.value;
+              _this.update();
+              config.model.emitter.on("dispose", function() {
+                _this.inputElem_ = DisposingUtil.disposeElement(_this.inputElem_);
+              });
+              return _this;
+            }
+            Object.defineProperty(CheckboxInputView2.prototype, "inputElement", {
+              get: function() {
+                if (!this.inputElem_) {
+                  throw pane_error_1.PaneError.alreadyDisposed();
+                }
+                return this.inputElem_;
+              },
+              enumerable: false,
+              configurable: true
+            });
+            CheckboxInputView2.prototype.update = function() {
+              if (!this.inputElem_) {
+                throw pane_error_1.PaneError.alreadyDisposed();
+              }
+              this.inputElem_.checked = this.value.rawValue;
+            };
+            CheckboxInputView2.prototype.onValueChange_ = function() {
+              this.update();
+            };
+            return CheckboxInputView2;
+          }(view_1.View);
+          exports2.CheckboxInputView = CheckboxInputView;
+        },
+        "./src/main/js/view/input/color-component-texts.ts": function(module2, exports2, __webpack_require__) {
+          "use strict";
+          var __extends = this && this.__extends || function() {
+            var extendStatics = function(d, b) {
+              extendStatics = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(d2, b2) {
+                d2.__proto__ = b2;
+              } || function(d2, b2) {
+                for (var p in b2)
+                  if (b2.hasOwnProperty(p))
+                    d2[p] = b2[p];
+              };
+              return extendStatics(d, b);
+            };
+            return function(d, b) {
+              extendStatics(d, b);
+              function __() {
+                this.constructor = d;
+              }
+              d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+            };
+          }();
+          Object.defineProperty(exports2, "__esModule", { value: true });
+          exports2.ColorComponentTextsInputView = void 0;
+          var number_1 = __webpack_require__("./src/main/js/formatter/number.ts");
+          var class_name_1 = __webpack_require__("./src/main/js/misc/class-name.ts");
+          var DisposingUtil = __webpack_require__("./src/main/js/misc/disposing-util.ts");
+          var pane_error_1 = __webpack_require__("./src/main/js/misc/pane-error.ts");
+          var view_1 = __webpack_require__("./src/main/js/view/view.ts");
+          var className = class_name_1.ClassName("cctxts", "input");
+          var FORMATTER = new number_1.NumberFormatter(0);
+          function createModeSelectElement(document2) {
+            var selectElem = document2.createElement("select");
+            var items = [
+              { text: "RGB", value: "rgb" },
+              { text: "HSL", value: "hsl" },
+              { text: "HSV", value: "hsv" }
+            ];
+            selectElem.appendChild(items.reduce(function(frag, item) {
+              var optElem = document2.createElement("option");
+              optElem.textContent = item.text;
+              optElem.value = item.value;
+              frag.appendChild(optElem);
+              return frag;
+            }, document2.createDocumentFragment()));
+            return selectElem;
+          }
+          var ColorComponentTextsInputView = function(_super) {
+            __extends(ColorComponentTextsInputView2, _super);
+            function ColorComponentTextsInputView2(document2, config) {
+              var _this = _super.call(this, document2, config) || this;
+              _this.onValueChange_ = _this.onValueChange_.bind(_this);
+              _this.element.classList.add(className());
+              var modeElem = document2.createElement("div");
+              modeElem.classList.add(className("m"));
+              _this.modeSelectElement = createModeSelectElement(document2);
+              _this.modeSelectElement.classList.add(className("ms"));
+              modeElem.appendChild(_this.modeSelectElement);
+              var modeMarkerElem = document2.createElement("div");
+              modeMarkerElem.classList.add(className("mm"));
+              modeElem.appendChild(modeMarkerElem);
+              _this.element.appendChild(modeElem);
+              var wrapperElem = document2.createElement("div");
+              wrapperElem.classList.add(className("w"));
+              _this.element.appendChild(wrapperElem);
+              var inputElems = [0, 1, 2].map(function() {
+                var inputElem = document2.createElement("input");
+                inputElem.classList.add(className("i"));
+                inputElem.type = "text";
+                return inputElem;
+              });
+              inputElems.forEach(function(elem) {
+                wrapperElem.appendChild(elem);
+              });
+              _this.inputElems_ = [inputElems[0], inputElems[1], inputElems[2]];
+              _this.pickedColor = config.pickedColor;
+              _this.pickedColor.emitter.on("change", _this.onValueChange_);
+              _this.update();
+              config.model.emitter.on("dispose", function() {
+                if (_this.inputElems_) {
+                  _this.inputElems_.forEach(function(elem) {
+                    DisposingUtil.disposeElement(elem);
+                  });
+                  _this.inputElems_ = null;
+                }
+              });
+              return _this;
+            }
+            Object.defineProperty(ColorComponentTextsInputView2.prototype, "inputElements", {
+              get: function() {
+                if (!this.inputElems_) {
+                  throw pane_error_1.PaneError.alreadyDisposed();
+                }
+                return this.inputElems_;
+              },
+              enumerable: false,
+              configurable: true
+            });
+            Object.defineProperty(ColorComponentTextsInputView2.prototype, "value", {
+              get: function() {
+                return this.pickedColor.value;
+              },
+              enumerable: false,
+              configurable: true
+            });
+            ColorComponentTextsInputView2.prototype.update = function() {
+              var inputElems = this.inputElems_;
+              if (!inputElems) {
+                throw pane_error_1.PaneError.alreadyDisposed();
+              }
+              var comps = this.pickedColor.value.rawValue.getComponents(this.pickedColor.mode);
+              comps.forEach(function(comp, index) {
+                var inputElem = inputElems[index];
+                if (!inputElem) {
+                  return;
+                }
+                inputElem.value = FORMATTER.format(comp);
+              });
+            };
+            ColorComponentTextsInputView2.prototype.onValueChange_ = function() {
+              this.update();
+            };
+            return ColorComponentTextsInputView2;
+          }(view_1.View);
+          exports2.ColorComponentTextsInputView = ColorComponentTextsInputView;
+        },
+        "./src/main/js/view/input/color-picker.ts": function(module2, exports2, __webpack_require__) {
+          "use strict";
+          var __extends = this && this.__extends || function() {
+            var extendStatics = function(d, b) {
+              extendStatics = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(d2, b2) {
+                d2.__proto__ = b2;
+              } || function(d2, b2) {
+                for (var p in b2)
+                  if (b2.hasOwnProperty(p))
+                    d2[p] = b2[p];
+              };
+              return extendStatics(d, b);
+            };
+            return function(d, b) {
+              extendStatics(d, b);
+              function __() {
+                this.constructor = d;
+              }
+              d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+            };
+          }();
+          var __spreadArrays = this && this.__spreadArrays || function() {
+            for (var s = 0, i = 0, il = arguments.length; i < il; i++)
+              s += arguments[i].length;
+            for (var r = Array(s), k = 0, i = 0; i < il; i++)
+              for (var a = arguments[i], j = 0, jl = a.length; j < jl; j++, k++)
+                r[k] = a[j];
+            return r;
+          };
+          Object.defineProperty(exports2, "__esModule", { value: true });
+          exports2.ColorPickerInputView = void 0;
+          var class_name_1 = __webpack_require__("./src/main/js/misc/class-name.ts");
+          var type_util_1 = __webpack_require__("./src/main/js/misc/type-util.ts");
+          var view_1 = __webpack_require__("./src/main/js/view/view.ts");
+          var className = class_name_1.ClassName("clp", "input");
+          var ColorPickerInputView = function(_super) {
+            __extends(ColorPickerInputView2, _super);
+            function ColorPickerInputView2(document2, config) {
+              var _this = _super.call(this, document2, config) || this;
+              _this.onFoldableChange_ = _this.onFoldableChange_.bind(_this);
+              _this.onValueChange_ = _this.onValueChange_.bind(_this);
+              _this.pickedColor = config.pickedColor;
+              _this.pickedColor.value.emitter.on("change", _this.onValueChange_);
+              _this.foldable = config.foldable;
+              _this.foldable.emitter.on("change", _this.onFoldableChange_);
+              _this.element.classList.add(className());
+              var hsvElem = document2.createElement("div");
+              hsvElem.classList.add(className("hsv"));
+              var svElem = document2.createElement("div");
+              svElem.classList.add(className("sv"));
+              _this.svPaletteView_ = config.svPaletteInputView;
+              svElem.appendChild(_this.svPaletteView_.element);
+              hsvElem.appendChild(svElem);
+              var hElem = document2.createElement("div");
+              hElem.classList.add(className("h"));
+              _this.hPaletteView_ = config.hPaletteInputView;
+              hElem.appendChild(_this.hPaletteView_.element);
+              hsvElem.appendChild(hElem);
+              _this.element.appendChild(hsvElem);
+              var rgbElem = document2.createElement("div");
+              rgbElem.classList.add(className("rgb"));
+              _this.compTextsView_ = config.componentTextsView;
+              rgbElem.appendChild(_this.compTextsView_.element);
+              _this.element.appendChild(rgbElem);
+              if (config.alphaInputViews) {
+                _this.alphaViews_ = {
+                  palette: config.alphaInputViews.palette,
+                  text: config.alphaInputViews.text
+                };
+                var aElem = document2.createElement("div");
+                aElem.classList.add(className("a"));
+                var apElem = document2.createElement("div");
+                apElem.classList.add(className("ap"));
+                apElem.appendChild(_this.alphaViews_.palette.element);
+                aElem.appendChild(apElem);
+                var atElem = document2.createElement("div");
+                atElem.classList.add(className("at"));
+                atElem.appendChild(_this.alphaViews_.text.element);
+                aElem.appendChild(atElem);
+                _this.element.appendChild(aElem);
+              }
+              _this.update();
+              return _this;
+            }
+            Object.defineProperty(ColorPickerInputView2.prototype, "allFocusableElements", {
+              get: function() {
+                var elems = __spreadArrays([
+                  this.svPaletteView_.element,
+                  this.hPaletteView_.element
+                ], this.compTextsView_.inputElements);
+                if (this.alphaViews_) {
+                  elems.push(this.alphaViews_.palette.element, this.alphaViews_.text.inputElement);
+                }
+                return type_util_1.TypeUtil.forceCast(elems);
+              },
+              enumerable: false,
+              configurable: true
+            });
+            Object.defineProperty(ColorPickerInputView2.prototype, "value", {
+              get: function() {
+                return this.pickedColor.value;
+              },
+              enumerable: false,
+              configurable: true
+            });
+            ColorPickerInputView2.prototype.update = function() {
+              if (this.foldable.expanded) {
+                this.element.classList.add(className(void 0, "expanded"));
+              } else {
+                this.element.classList.remove(className(void 0, "expanded"));
+              }
+            };
+            ColorPickerInputView2.prototype.onValueChange_ = function() {
+              this.update();
+            };
+            ColorPickerInputView2.prototype.onFoldableChange_ = function() {
+              this.update();
+            };
+            return ColorPickerInputView2;
+          }(view_1.View);
+          exports2.ColorPickerInputView = ColorPickerInputView;
+        },
+        "./src/main/js/view/input/color-swatch-text.ts": function(module2, exports2, __webpack_require__) {
+          "use strict";
+          var __extends = this && this.__extends || function() {
+            var extendStatics = function(d, b) {
+              extendStatics = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(d2, b2) {
+                d2.__proto__ = b2;
+              } || function(d2, b2) {
+                for (var p in b2)
+                  if (b2.hasOwnProperty(p))
+                    d2[p] = b2[p];
+              };
+              return extendStatics(d, b);
+            };
+            return function(d, b) {
+              extendStatics(d, b);
+              function __() {
+                this.constructor = d;
+              }
+              d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+            };
+          }();
+          Object.defineProperty(exports2, "__esModule", { value: true });
+          exports2.ColorSwatchTextInputView = void 0;
+          var class_name_1 = __webpack_require__("./src/main/js/misc/class-name.ts");
+          var view_1 = __webpack_require__("./src/main/js/view/view.ts");
+          var className = class_name_1.ClassName("cswtxt", "input");
+          var ColorSwatchTextInputView = function(_super) {
+            __extends(ColorSwatchTextInputView2, _super);
+            function ColorSwatchTextInputView2(document2, config) {
+              var _this = _super.call(this, document2, config) || this;
+              _this.element.classList.add(className());
+              var swatchElem = document2.createElement("div");
+              swatchElem.classList.add(className("s"));
+              _this.swatchInputView_ = config.swatchInputView;
+              swatchElem.appendChild(_this.swatchInputView_.element);
+              _this.element.appendChild(swatchElem);
+              var textElem = document2.createElement("div");
+              textElem.classList.add(className("t"));
+              _this.textInputView = config.textInputView;
+              textElem.appendChild(_this.textInputView.element);
+              _this.element.appendChild(textElem);
+              return _this;
+            }
+            Object.defineProperty(ColorSwatchTextInputView2.prototype, "value", {
+              get: function() {
+                return this.textInputView.value;
+              },
+              enumerable: false,
+              configurable: true
+            });
+            ColorSwatchTextInputView2.prototype.update = function() {
+              this.swatchInputView_.update();
+              this.textInputView.update();
+            };
+            return ColorSwatchTextInputView2;
+          }(view_1.View);
+          exports2.ColorSwatchTextInputView = ColorSwatchTextInputView;
+        },
+        "./src/main/js/view/input/color-swatch.ts": function(module2, exports2, __webpack_require__) {
+          "use strict";
+          var __extends = this && this.__extends || function() {
+            var extendStatics = function(d, b) {
+              extendStatics = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(d2, b2) {
+                d2.__proto__ = b2;
+              } || function(d2, b2) {
+                for (var p in b2)
+                  if (b2.hasOwnProperty(p))
+                    d2[p] = b2[p];
+              };
+              return extendStatics(d, b);
+            };
+            return function(d, b) {
+              extendStatics(d, b);
+              function __() {
+                this.constructor = d;
+              }
+              d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+            };
+          }();
+          Object.defineProperty(exports2, "__esModule", { value: true });
+          exports2.ColorSwatchInputView = void 0;
+          var ColorConverter = __webpack_require__("./src/main/js/converter/color.ts");
+          var class_name_1 = __webpack_require__("./src/main/js/misc/class-name.ts");
+          var DisposingUtil = __webpack_require__("./src/main/js/misc/disposing-util.ts");
+          var pane_error_1 = __webpack_require__("./src/main/js/misc/pane-error.ts");
+          var view_1 = __webpack_require__("./src/main/js/view/view.ts");
+          var className = class_name_1.ClassName("csw", "input");
+          var ColorSwatchInputView = function(_super) {
+            __extends(ColorSwatchInputView2, _super);
+            function ColorSwatchInputView2(document2, config) {
+              var _this = _super.call(this, document2, config) || this;
+              if (_this.element === null) {
+                throw pane_error_1.PaneError.alreadyDisposed();
+              }
+              _this.onValueChange_ = _this.onValueChange_.bind(_this);
+              config.value.emitter.on("change", _this.onValueChange_);
+              _this.value = config.value;
+              _this.element.classList.add(className());
+              var swatchElem = document2.createElement("div");
+              swatchElem.classList.add(className("sw"));
+              _this.element.appendChild(swatchElem);
+              _this.swatchElem_ = swatchElem;
+              var buttonElem = document2.createElement("button");
+              buttonElem.classList.add(className("b"));
+              _this.element.appendChild(buttonElem);
+              _this.buttonElem_ = buttonElem;
+              var pickerElem = document2.createElement("div");
+              pickerElem.classList.add(className("p"));
+              _this.pickerView_ = config.pickerInputView;
+              pickerElem.appendChild(_this.pickerView_.element);
+              _this.element.appendChild(pickerElem);
+              _this.update();
+              config.model.emitter.on("dispose", function() {
+                _this.buttonElem_ = DisposingUtil.disposeElement(_this.buttonElem_);
+                _this.swatchElem_ = DisposingUtil.disposeElement(_this.swatchElem_);
+              });
+              return _this;
+            }
+            Object.defineProperty(ColorSwatchInputView2.prototype, "buttonElement", {
+              get: function() {
+                if (this.buttonElem_ === null) {
+                  throw pane_error_1.PaneError.alreadyDisposed();
+                }
+                return this.buttonElem_;
+              },
+              enumerable: false,
+              configurable: true
+            });
+            ColorSwatchInputView2.prototype.update = function() {
+              if (!this.swatchElem_) {
+                throw pane_error_1.PaneError.alreadyDisposed();
+              }
+              var value = this.value.rawValue;
+              this.swatchElem_.style.backgroundColor = ColorConverter.toHexRgbaString(value);
+            };
+            ColorSwatchInputView2.prototype.onValueChange_ = function() {
+              this.update();
+            };
+            return ColorSwatchInputView2;
+          }(view_1.View);
+          exports2.ColorSwatchInputView = ColorSwatchInputView;
+        },
+        "./src/main/js/view/input/h-palette.ts": function(module2, exports2, __webpack_require__) {
+          "use strict";
+          var __extends = this && this.__extends || function() {
+            var extendStatics = function(d, b) {
+              extendStatics = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(d2, b2) {
+                d2.__proto__ = b2;
+              } || function(d2, b2) {
+                for (var p in b2)
+                  if (b2.hasOwnProperty(p))
+                    d2[p] = b2[p];
+              };
+              return extendStatics(d, b);
+            };
+            return function(d, b) {
+              extendStatics(d, b);
+              function __() {
+                this.constructor = d;
+              }
+              d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+            };
+          }();
+          Object.defineProperty(exports2, "__esModule", { value: true });
+          exports2.HPaletteInputView = void 0;
+          var ColorConverter = __webpack_require__("./src/main/js/converter/color.ts");
+          var class_name_1 = __webpack_require__("./src/main/js/misc/class-name.ts");
+          var DisposingUtil = __webpack_require__("./src/main/js/misc/disposing-util.ts");
+          var number_util_1 = __webpack_require__("./src/main/js/misc/number-util.ts");
+          var pane_error_1 = __webpack_require__("./src/main/js/misc/pane-error.ts");
+          var color_1 = __webpack_require__("./src/main/js/model/color.ts");
+          var view_1 = __webpack_require__("./src/main/js/view/view.ts");
+          var className = class_name_1.ClassName("hpl", "input");
+          var HPaletteInputView = function(_super) {
+            __extends(HPaletteInputView2, _super);
+            function HPaletteInputView2(document2, config) {
+              var _this = _super.call(this, document2, config) || this;
+              _this.onValueChange_ = _this.onValueChange_.bind(_this);
+              _this.value = config.value;
+              _this.value.emitter.on("change", _this.onValueChange_);
+              _this.element.classList.add(className());
+              _this.element.tabIndex = 0;
+              var colorElem = document2.createElement("div");
+              colorElem.classList.add(className("c"));
+              _this.element.appendChild(colorElem);
+              _this.colorElem_ = colorElem;
+              var markerElem = document2.createElement("div");
+              markerElem.classList.add(className("m"));
+              _this.element.appendChild(markerElem);
+              _this.markerElem_ = markerElem;
+              _this.update();
+              config.model.emitter.on("dispose", function() {
+                _this.colorElem_ = DisposingUtil.disposeElement(_this.colorElem_);
+                _this.markerElem_ = DisposingUtil.disposeElement(_this.markerElem_);
+              });
+              return _this;
+            }
+            HPaletteInputView2.prototype.update = function() {
+              if (!this.markerElem_) {
+                throw pane_error_1.PaneError.alreadyDisposed();
+              }
+              var c = this.value.rawValue;
+              var h = c.getComponents("hsv")[0];
+              this.markerElem_.style.backgroundColor = ColorConverter.toFunctionalRgbString(new color_1.Color([h, 100, 100], "hsv"));
+              var left = number_util_1.NumberUtil.map(h, 0, 360, 0, 100);
+              this.markerElem_.style.left = left + "%";
+            };
+            HPaletteInputView2.prototype.onValueChange_ = function() {
+              this.update();
+            };
+            return HPaletteInputView2;
+          }(view_1.View);
+          exports2.HPaletteInputView = HPaletteInputView;
+        },
+        "./src/main/js/view/input/list.ts": function(module2, exports2, __webpack_require__) {
+          "use strict";
+          var __extends = this && this.__extends || function() {
+            var extendStatics = function(d, b) {
+              extendStatics = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(d2, b2) {
+                d2.__proto__ = b2;
+              } || function(d2, b2) {
+                for (var p in b2)
+                  if (b2.hasOwnProperty(p))
+                    d2[p] = b2[p];
+              };
+              return extendStatics(d, b);
+            };
+            return function(d, b) {
+              extendStatics(d, b);
+              function __() {
+                this.constructor = d;
+              }
+              d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+            };
+          }();
+          Object.defineProperty(exports2, "__esModule", { value: true });
+          exports2.ListInputView = void 0;
+          var class_name_1 = __webpack_require__("./src/main/js/misc/class-name.ts");
+          var DisposingUtil = __webpack_require__("./src/main/js/misc/disposing-util.ts");
+          var pane_error_1 = __webpack_require__("./src/main/js/misc/pane-error.ts");
+          var view_1 = __webpack_require__("./src/main/js/view/view.ts");
+          var className = class_name_1.ClassName("lst", "input");
+          var ListInputView = function(_super) {
+            __extends(ListInputView2, _super);
+            function ListInputView2(document2, config) {
+              var _this = _super.call(this, document2, config) || this;
+              _this.onValueChange_ = _this.onValueChange_.bind(_this);
+              _this.element.classList.add(className());
+              _this.stringifyValue_ = config.stringifyValue;
+              var selectElem = document2.createElement("select");
+              selectElem.classList.add(className("s"));
+              config.options.forEach(function(item, index) {
+                var optionElem = document2.createElement("option");
+                optionElem.dataset.index = String(index);
+                optionElem.textContent = item.text;
+                optionElem.value = _this.stringifyValue_(item.value);
+                selectElem.appendChild(optionElem);
+              });
+              _this.element.appendChild(selectElem);
+              _this.selectElem_ = selectElem;
+              var markElem = document2.createElement("div");
+              markElem.classList.add(className("m"));
+              _this.element.appendChild(markElem);
+              config.value.emitter.on("change", _this.onValueChange_);
+              _this.value = config.value;
+              _this.update();
+              config.model.emitter.on("dispose", function() {
+                _this.selectElem_ = DisposingUtil.disposeElement(_this.selectElem_);
+              });
+              return _this;
+            }
+            Object.defineProperty(ListInputView2.prototype, "selectElement", {
+              get: function() {
+                if (!this.selectElem_) {
+                  throw pane_error_1.PaneError.alreadyDisposed();
+                }
+                return this.selectElem_;
+              },
+              enumerable: false,
+              configurable: true
+            });
+            ListInputView2.prototype.update = function() {
+              if (!this.selectElem_) {
+                throw pane_error_1.PaneError.alreadyDisposed();
+              }
+              this.selectElem_.value = this.stringifyValue_(this.value.rawValue);
+            };
+            ListInputView2.prototype.onValueChange_ = function() {
+              this.update();
+            };
+            return ListInputView2;
+          }(view_1.View);
+          exports2.ListInputView = ListInputView;
+        },
+        "./src/main/js/view/input/point-2d-pad-text.ts": function(module2, exports2, __webpack_require__) {
+          "use strict";
+          var __extends = this && this.__extends || function() {
+            var extendStatics = function(d, b) {
+              extendStatics = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(d2, b2) {
+                d2.__proto__ = b2;
+              } || function(d2, b2) {
+                for (var p in b2)
+                  if (b2.hasOwnProperty(p))
+                    d2[p] = b2[p];
+              };
+              return extendStatics(d, b);
+            };
+            return function(d, b) {
+              extendStatics(d, b);
+              function __() {
+                this.constructor = d;
+              }
+              d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+            };
+          }();
+          Object.defineProperty(exports2, "__esModule", { value: true });
+          exports2.Point2dPadTextInputView = void 0;
+          var class_name_1 = __webpack_require__("./src/main/js/misc/class-name.ts");
+          var DomUtil = __webpack_require__("./src/main/js/misc/dom-util.ts");
+          var view_1 = __webpack_require__("./src/main/js/view/view.ts");
+          var className = class_name_1.ClassName("p2dpadtxt", "input");
+          var Point2dPadTextInputView = function(_super) {
+            __extends(Point2dPadTextInputView2, _super);
+            function Point2dPadTextInputView2(document2, config) {
+              var _this = _super.call(this, document2, config) || this;
+              _this.element.classList.add(className());
+              var padWrapperElem = document2.createElement("div");
+              padWrapperElem.classList.add(className("w"));
+              _this.element.appendChild(padWrapperElem);
+              var buttonElem = document2.createElement("button");
+              buttonElem.classList.add(className("b"));
+              buttonElem.appendChild(DomUtil.createSvgIconElement(document2, "p2dpad"));
+              padWrapperElem.appendChild(buttonElem);
+              _this.padButtonElem_ = buttonElem;
+              var padElem = document2.createElement("div");
+              padElem.classList.add(className("p"));
+              padWrapperElem.appendChild(padElem);
+              _this.padInputView_ = config.padInputView;
+              padElem.appendChild(_this.padInputView_.element);
+              var textElem = document2.createElement("div");
+              textElem.classList.add(className("t"));
+              _this.textInputView_ = config.textInputView;
+              textElem.appendChild(_this.textInputView_.element);
+              _this.element.appendChild(textElem);
+              return _this;
+            }
+            Object.defineProperty(Point2dPadTextInputView2.prototype, "value", {
+              get: function() {
+                return this.textInputView_.value;
+              },
+              enumerable: false,
+              configurable: true
+            });
+            Object.defineProperty(Point2dPadTextInputView2.prototype, "padButtonElement", {
+              get: function() {
+                return this.padButtonElem_;
+              },
+              enumerable: false,
+              configurable: true
+            });
+            Point2dPadTextInputView2.prototype.update = function() {
+              this.padInputView_.update();
+              this.textInputView_.update();
+            };
+            return Point2dPadTextInputView2;
+          }(view_1.View);
+          exports2.Point2dPadTextInputView = Point2dPadTextInputView;
+        },
+        "./src/main/js/view/input/point-2d-pad.ts": function(module2, exports2, __webpack_require__) {
+          "use strict";
+          var __extends = this && this.__extends || function() {
+            var extendStatics = function(d, b) {
+              extendStatics = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(d2, b2) {
+                d2.__proto__ = b2;
+              } || function(d2, b2) {
+                for (var p in b2)
+                  if (b2.hasOwnProperty(p))
+                    d2[p] = b2[p];
+              };
+              return extendStatics(d, b);
+            };
+            return function(d, b) {
+              extendStatics(d, b);
+              function __() {
+                this.constructor = d;
+              }
+              d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+            };
+          }();
+          Object.defineProperty(exports2, "__esModule", { value: true });
+          exports2.Point2dPadInputView = void 0;
+          var class_name_1 = __webpack_require__("./src/main/js/misc/class-name.ts");
+          var DisposingUtil = __webpack_require__("./src/main/js/misc/disposing-util.ts");
+          var DomUtil = __webpack_require__("./src/main/js/misc/dom-util.ts");
+          var number_util_1 = __webpack_require__("./src/main/js/misc/number-util.ts");
+          var pane_error_1 = __webpack_require__("./src/main/js/misc/pane-error.ts");
+          var view_1 = __webpack_require__("./src/main/js/view/view.ts");
+          var SVG_NS = DomUtil.SVG_NS;
+          var className = class_name_1.ClassName("p2dpad", "input");
+          var Point2dPadInputView = function(_super) {
+            __extends(Point2dPadInputView2, _super);
+            function Point2dPadInputView2(document2, config) {
+              var _this = _super.call(this, document2, config) || this;
+              _this.onFoldableChange_ = _this.onFoldableChange_.bind(_this);
+              _this.onValueChange_ = _this.onValueChange_.bind(_this);
+              _this.foldable = config.foldable;
+              _this.foldable.emitter.on("change", _this.onFoldableChange_);
+              _this.invertsY_ = config.invertsY;
+              _this.maxValue_ = config.maxValue;
+              _this.element.classList.add(className());
+              var padElem = document2.createElement("div");
+              padElem.tabIndex = 0;
+              padElem.classList.add(className("p"));
+              _this.element.appendChild(padElem);
+              _this.padElem_ = padElem;
+              var svgElem = document2.createElementNS(SVG_NS, "svg");
+              svgElem.classList.add(className("g"));
+              _this.padElem_.appendChild(svgElem);
+              _this.svgElem_ = svgElem;
+              var xAxisElem = document2.createElementNS(SVG_NS, "line");
+              xAxisElem.classList.add(className("ax"));
+              xAxisElem.setAttributeNS(null, "x1", "0");
+              xAxisElem.setAttributeNS(null, "y1", "50%");
+              xAxisElem.setAttributeNS(null, "x2", "100%");
+              xAxisElem.setAttributeNS(null, "y2", "50%");
+              _this.svgElem_.appendChild(xAxisElem);
+              var yAxisElem = document2.createElementNS(SVG_NS, "line");
+              yAxisElem.classList.add(className("ax"));
+              yAxisElem.setAttributeNS(null, "x1", "50%");
+              yAxisElem.setAttributeNS(null, "y1", "0");
+              yAxisElem.setAttributeNS(null, "x2", "50%");
+              yAxisElem.setAttributeNS(null, "y2", "100%");
+              _this.svgElem_.appendChild(yAxisElem);
+              var lineElem = document2.createElementNS(SVG_NS, "line");
+              lineElem.classList.add(className("l"));
+              lineElem.setAttributeNS(null, "x1", "50%");
+              lineElem.setAttributeNS(null, "y1", "50%");
+              _this.svgElem_.appendChild(lineElem);
+              _this.lineElem_ = lineElem;
+              var markerElem = document2.createElementNS(SVG_NS, "circle");
+              markerElem.classList.add(className("m"));
+              markerElem.setAttributeNS(null, "r", "2px");
+              _this.svgElem_.appendChild(markerElem);
+              _this.markerElem_ = markerElem;
+              config.value.emitter.on("change", _this.onValueChange_);
+              _this.value = config.value;
+              _this.update();
+              config.model.emitter.on("dispose", function() {
+                _this.padElem_ = DisposingUtil.disposeElement(_this.padElem_);
+              });
+              return _this;
+            }
+            Object.defineProperty(Point2dPadInputView2.prototype, "padElement", {
+              get: function() {
+                if (!this.padElem_) {
+                  throw pane_error_1.PaneError.alreadyDisposed();
+                }
+                return this.padElem_;
+              },
+              enumerable: false,
+              configurable: true
+            });
+            Object.defineProperty(Point2dPadInputView2.prototype, "allFocusableElements", {
+              get: function() {
+                if (!this.padElem_) {
+                  throw pane_error_1.PaneError.alreadyDisposed();
+                }
+                return [this.padElem_];
+              },
+              enumerable: false,
+              configurable: true
+            });
+            Point2dPadInputView2.prototype.update = function() {
+              if (this.foldable.expanded) {
+                this.element.classList.add(className(void 0, "expanded"));
+              } else {
+                this.element.classList.remove(className(void 0, "expanded"));
+              }
+              var lineElem = this.lineElem_;
+              var markerElem = this.markerElem_;
+              if (!lineElem || !markerElem) {
+                throw pane_error_1.PaneError.alreadyDisposed();
+              }
+              var _a2 = this.value.rawValue.getComponents(), x = _a2[0], y = _a2[1];
+              var max4 = this.maxValue_;
+              var px = number_util_1.NumberUtil.map(x, -max4, +max4, 0, 100);
+              var py = number_util_1.NumberUtil.map(y, -max4, +max4, 0, 100);
+              var ipy = this.invertsY_ ? 100 - py : py;
+              lineElem.setAttributeNS(null, "x2", px + "%");
+              lineElem.setAttributeNS(null, "y2", ipy + "%");
+              markerElem.setAttributeNS(null, "cx", px + "%");
+              markerElem.setAttributeNS(null, "cy", ipy + "%");
+            };
+            Point2dPadInputView2.prototype.onValueChange_ = function() {
+              this.update();
+            };
+            Point2dPadInputView2.prototype.onFoldableChange_ = function() {
+              this.update();
+            };
+            return Point2dPadInputView2;
+          }(view_1.View);
+          exports2.Point2dPadInputView = Point2dPadInputView;
+        },
+        "./src/main/js/view/input/point-2d-text.ts": function(module2, exports2, __webpack_require__) {
+          "use strict";
+          var __extends = this && this.__extends || function() {
+            var extendStatics = function(d, b) {
+              extendStatics = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(d2, b2) {
+                d2.__proto__ = b2;
+              } || function(d2, b2) {
+                for (var p in b2)
+                  if (b2.hasOwnProperty(p))
+                    d2[p] = b2[p];
+              };
+              return extendStatics(d, b);
+            };
+            return function(d, b) {
+              extendStatics(d, b);
+              function __() {
+                this.constructor = d;
+              }
+              d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+            };
+          }();
+          Object.defineProperty(exports2, "__esModule", { value: true });
+          exports2.Point2dTextInputView = void 0;
+          var class_name_1 = __webpack_require__("./src/main/js/misc/class-name.ts");
+          var DisposingUtil = __webpack_require__("./src/main/js/misc/disposing-util.ts");
+          var pane_error_1 = __webpack_require__("./src/main/js/misc/pane-error.ts");
+          var view_1 = __webpack_require__("./src/main/js/view/view.ts");
+          var COMPONENT_LABELS = ["X", "Y"];
+          var className = class_name_1.ClassName("p2dtxt", "input");
+          var Point2dTextInputView = function(_super) {
+            __extends(Point2dTextInputView2, _super);
+            function Point2dTextInputView2(document2, config) {
+              var _this = _super.call(this, document2, config) || this;
+              _this.onValueChange_ = _this.onValueChange_.bind(_this);
+              _this.formatters_ = [config.xFormatter, config.yFormatter];
+              _this.element.classList.add(className());
+              var inputElems = COMPONENT_LABELS.map(function() {
+                var inputElem = document2.createElement("input");
+                inputElem.classList.add(className("i"));
+                inputElem.type = "text";
+                return inputElem;
+              });
+              COMPONENT_LABELS.forEach(function(_, index) {
+                var elem = document2.createElement("div");
+                elem.classList.add(className("w"));
+                elem.appendChild(inputElems[index]);
+                _this.element.appendChild(elem);
+              });
+              _this.inputElems_ = [inputElems[0], inputElems[1]];
+              config.value.emitter.on("change", _this.onValueChange_);
+              _this.value = config.value;
+              _this.update();
+              config.model.emitter.on("dispose", function() {
+                if (_this.inputElems_) {
+                  _this.inputElems_.forEach(function(elem) {
+                    DisposingUtil.disposeElement(elem);
+                  });
+                  _this.inputElems_ = null;
+                }
+              });
+              return _this;
+            }
+            Object.defineProperty(Point2dTextInputView2.prototype, "inputElements", {
+              get: function() {
+                if (!this.inputElems_) {
+                  throw pane_error_1.PaneError.alreadyDisposed();
+                }
+                return this.inputElems_;
+              },
+              enumerable: false,
+              configurable: true
+            });
+            Point2dTextInputView2.prototype.update = function() {
+              var _this = this;
+              var inputElems = this.inputElems_;
+              if (!inputElems) {
+                throw pane_error_1.PaneError.alreadyDisposed();
+              }
+              var xyComps = this.value.rawValue.getComponents();
+              xyComps.forEach(function(comp, index) {
+                var inputElem = inputElems[index];
+                inputElem.value = _this.formatters_[index].format(comp);
+              });
+            };
+            Point2dTextInputView2.prototype.onValueChange_ = function() {
+              this.update();
+            };
+            return Point2dTextInputView2;
+          }(view_1.View);
+          exports2.Point2dTextInputView = Point2dTextInputView;
+        },
+        "./src/main/js/view/input/slider-text.ts": function(module2, exports2, __webpack_require__) {
+          "use strict";
+          var __extends = this && this.__extends || function() {
+            var extendStatics = function(d, b) {
+              extendStatics = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(d2, b2) {
+                d2.__proto__ = b2;
+              } || function(d2, b2) {
+                for (var p in b2)
+                  if (b2.hasOwnProperty(p))
+                    d2[p] = b2[p];
+              };
+              return extendStatics(d, b);
+            };
+            return function(d, b) {
+              extendStatics(d, b);
+              function __() {
+                this.constructor = d;
+              }
+              d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+            };
+          }();
+          Object.defineProperty(exports2, "__esModule", { value: true });
+          exports2.SliderTextInputView = void 0;
+          var class_name_1 = __webpack_require__("./src/main/js/misc/class-name.ts");
+          var view_1 = __webpack_require__("./src/main/js/view/view.ts");
+          var className = class_name_1.ClassName("sldtxt", "input");
+          var SliderTextInputView = function(_super) {
+            __extends(SliderTextInputView2, _super);
+            function SliderTextInputView2(document2, config) {
+              var _this = _super.call(this, document2, config) || this;
+              _this.element.classList.add(className());
+              var sliderElem = document2.createElement("div");
+              sliderElem.classList.add(className("s"));
+              _this.sliderInputView_ = config.sliderInputView;
+              sliderElem.appendChild(_this.sliderInputView_.element);
+              _this.element.appendChild(sliderElem);
+              var textElem = document2.createElement("div");
+              textElem.classList.add(className("t"));
+              _this.textInputView_ = config.textInputView;
+              textElem.appendChild(_this.textInputView_.element);
+              _this.element.appendChild(textElem);
+              return _this;
+            }
+            Object.defineProperty(SliderTextInputView2.prototype, "value", {
+              get: function() {
+                return this.sliderInputView_.value;
+              },
+              enumerable: false,
+              configurable: true
+            });
+            SliderTextInputView2.prototype.update = function() {
+              this.sliderInputView_.update();
+              this.textInputView_.update();
+            };
+            return SliderTextInputView2;
+          }(view_1.View);
+          exports2.SliderTextInputView = SliderTextInputView;
+        },
+        "./src/main/js/view/input/slider.ts": function(module2, exports2, __webpack_require__) {
+          "use strict";
+          var __extends = this && this.__extends || function() {
+            var extendStatics = function(d, b) {
+              extendStatics = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(d2, b2) {
+                d2.__proto__ = b2;
+              } || function(d2, b2) {
+                for (var p in b2)
+                  if (b2.hasOwnProperty(p))
+                    d2[p] = b2[p];
+              };
+              return extendStatics(d, b);
+            };
+            return function(d, b) {
+              extendStatics(d, b);
+              function __() {
+                this.constructor = d;
+              }
+              d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+            };
+          }();
+          Object.defineProperty(exports2, "__esModule", { value: true });
+          exports2.SliderInputView = void 0;
+          var class_name_1 = __webpack_require__("./src/main/js/misc/class-name.ts");
+          var DisposingUtil = __webpack_require__("./src/main/js/misc/disposing-util.ts");
+          var number_util_1 = __webpack_require__("./src/main/js/misc/number-util.ts");
+          var pane_error_1 = __webpack_require__("./src/main/js/misc/pane-error.ts");
+          var view_1 = __webpack_require__("./src/main/js/view/view.ts");
+          var className = class_name_1.ClassName("sld", "input");
+          var SliderInputView = function(_super) {
+            __extends(SliderInputView2, _super);
+            function SliderInputView2(document2, config) {
+              var _this = _super.call(this, document2, config) || this;
+              _this.onValueChange_ = _this.onValueChange_.bind(_this);
+              _this.minValue_ = config.minValue;
+              _this.maxValue_ = config.maxValue;
+              _this.element.classList.add(className());
+              var outerElem = document2.createElement("div");
+              outerElem.classList.add(className("o"));
+              outerElem.tabIndex = 0;
+              _this.element.appendChild(outerElem);
+              _this.outerElem_ = outerElem;
+              var innerElem = document2.createElement("div");
+              innerElem.classList.add(className("i"));
+              _this.outerElem_.appendChild(innerElem);
+              _this.innerElem_ = innerElem;
+              config.value.emitter.on("change", _this.onValueChange_);
+              _this.value = config.value;
+              _this.update();
+              config.model.emitter.on("dispose", function() {
+                _this.innerElem_ = DisposingUtil.disposeElement(_this.innerElem_);
+                _this.outerElem_ = DisposingUtil.disposeElement(_this.outerElem_);
+              });
+              return _this;
+            }
+            Object.defineProperty(SliderInputView2.prototype, "outerElement", {
+              get: function() {
+                if (!this.outerElem_) {
+                  throw pane_error_1.PaneError.alreadyDisposed();
+                }
+                return this.outerElem_;
+              },
+              enumerable: false,
+              configurable: true
+            });
+            Object.defineProperty(SliderInputView2.prototype, "innerElement", {
+              get: function() {
+                if (!this.innerElem_) {
+                  throw pane_error_1.PaneError.alreadyDisposed();
+                }
+                return this.innerElem_;
+              },
+              enumerable: false,
+              configurable: true
+            });
+            SliderInputView2.prototype.update = function() {
+              if (!this.innerElem_) {
+                throw pane_error_1.PaneError.alreadyDisposed();
+              }
+              var p = number_util_1.NumberUtil.constrain(number_util_1.NumberUtil.map(this.value.rawValue, this.minValue_, this.maxValue_, 0, 100), 0, 100);
+              this.innerElem_.style.width = p + "%";
+            };
+            SliderInputView2.prototype.onValueChange_ = function() {
+              this.update();
+            };
+            return SliderInputView2;
+          }(view_1.View);
+          exports2.SliderInputView = SliderInputView;
+        },
+        "./src/main/js/view/input/sv-palette.ts": function(module2, exports2, __webpack_require__) {
+          "use strict";
+          var __extends = this && this.__extends || function() {
+            var extendStatics = function(d, b) {
+              extendStatics = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(d2, b2) {
+                d2.__proto__ = b2;
+              } || function(d2, b2) {
+                for (var p in b2)
+                  if (b2.hasOwnProperty(p))
+                    d2[p] = b2[p];
+              };
+              return extendStatics(d, b);
+            };
+            return function(d, b) {
+              extendStatics(d, b);
+              function __() {
+                this.constructor = d;
+              }
+              d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+            };
+          }();
+          Object.defineProperty(exports2, "__esModule", { value: true });
+          exports2.SvPaletteInputView = void 0;
+          var class_name_1 = __webpack_require__("./src/main/js/misc/class-name.ts");
+          var color_model_1 = __webpack_require__("./src/main/js/misc/color-model.ts");
+          var DisposingUtil = __webpack_require__("./src/main/js/misc/disposing-util.ts");
+          var DomUtil = __webpack_require__("./src/main/js/misc/dom-util.ts");
+          var number_util_1 = __webpack_require__("./src/main/js/misc/number-util.ts");
+          var pane_error_1 = __webpack_require__("./src/main/js/misc/pane-error.ts");
+          var view_1 = __webpack_require__("./src/main/js/view/view.ts");
+          var className = class_name_1.ClassName("svp", "input");
+          var CANVAS_RESOL = 64;
+          var SvPaletteInputView = function(_super) {
+            __extends(SvPaletteInputView2, _super);
+            function SvPaletteInputView2(document2, config) {
+              var _this = _super.call(this, document2, config) || this;
+              _this.onValueChange_ = _this.onValueChange_.bind(_this);
+              _this.value = config.value;
+              _this.value.emitter.on("change", _this.onValueChange_);
+              _this.element.classList.add(className());
+              _this.element.tabIndex = 0;
+              var canvasElem = document2.createElement("canvas");
+              canvasElem.height = CANVAS_RESOL;
+              canvasElem.width = CANVAS_RESOL;
+              canvasElem.classList.add(className("c"));
+              _this.element.appendChild(canvasElem);
+              _this.canvasElem_ = canvasElem;
+              var markerElem = document2.createElement("div");
+              markerElem.classList.add(className("m"));
+              _this.element.appendChild(markerElem);
+              _this.markerElem_ = markerElem;
+              _this.update();
+              config.model.emitter.on("dispose", function() {
+                _this.canvasElem_ = DisposingUtil.disposeElement(_this.canvasElem_);
+                _this.markerElem_ = DisposingUtil.disposeElement(_this.markerElem_);
+              });
+              return _this;
+            }
+            Object.defineProperty(SvPaletteInputView2.prototype, "canvasElement", {
+              get: function() {
+                if (!this.canvasElem_) {
+                  throw pane_error_1.PaneError.alreadyDisposed();
+                }
+                return this.canvasElem_;
+              },
+              enumerable: false,
+              configurable: true
+            });
+            SvPaletteInputView2.prototype.update = function() {
+              if (!this.markerElem_) {
+                throw pane_error_1.PaneError.alreadyDisposed();
+              }
+              var ctx = DomUtil.getCanvasContext(this.canvasElement);
+              if (!ctx) {
+                return;
+              }
+              var c = this.value.rawValue;
+              var hsvComps = c.getComponents("hsv");
+              var width = this.canvasElement.width;
+              var height = this.canvasElement.height;
+              var imgData = ctx.getImageData(0, 0, width, height);
+              var data = imgData.data;
+              for (var iy = 0; iy < height; iy++) {
+                for (var ix = 0; ix < width; ix++) {
+                  var s = number_util_1.NumberUtil.map(ix, 0, width, 0, 100);
+                  var v = number_util_1.NumberUtil.map(iy, 0, height, 100, 0);
+                  var rgbComps = color_model_1.hsvToRgb(hsvComps[0], s, v);
+                  var i = (iy * width + ix) * 4;
+                  data[i] = rgbComps[0];
+                  data[i + 1] = rgbComps[1];
+                  data[i + 2] = rgbComps[2];
+                  data[i + 3] = 255;
+                }
+              }
+              ctx.putImageData(imgData, 0, 0);
+              var left = number_util_1.NumberUtil.map(hsvComps[1], 0, 100, 0, 100);
+              this.markerElem_.style.left = left + "%";
+              var top = number_util_1.NumberUtil.map(hsvComps[2], 0, 100, 100, 0);
+              this.markerElem_.style.top = top + "%";
+            };
+            SvPaletteInputView2.prototype.onValueChange_ = function() {
+              this.update();
+            };
+            return SvPaletteInputView2;
+          }(view_1.View);
+          exports2.SvPaletteInputView = SvPaletteInputView;
+        },
+        "./src/main/js/view/input/text.ts": function(module2, exports2, __webpack_require__) {
+          "use strict";
+          var __extends = this && this.__extends || function() {
+            var extendStatics = function(d, b) {
+              extendStatics = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(d2, b2) {
+                d2.__proto__ = b2;
+              } || function(d2, b2) {
+                for (var p in b2)
+                  if (b2.hasOwnProperty(p))
+                    d2[p] = b2[p];
+              };
+              return extendStatics(d, b);
+            };
+            return function(d, b) {
+              extendStatics(d, b);
+              function __() {
+                this.constructor = d;
+              }
+              d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+            };
+          }();
+          Object.defineProperty(exports2, "__esModule", { value: true });
+          exports2.TextInputView = void 0;
+          var class_name_1 = __webpack_require__("./src/main/js/misc/class-name.ts");
+          var DisposingUtil = __webpack_require__("./src/main/js/misc/disposing-util.ts");
+          var pane_error_1 = __webpack_require__("./src/main/js/misc/pane-error.ts");
+          var view_1 = __webpack_require__("./src/main/js/view/view.ts");
+          var className = class_name_1.ClassName("txt", "input");
+          var TextInputView = function(_super) {
+            __extends(TextInputView2, _super);
+            function TextInputView2(document2, config) {
+              var _this = _super.call(this, document2, config) || this;
+              _this.onValueChange_ = _this.onValueChange_.bind(_this);
+              _this.formatter_ = config.formatter;
+              _this.element.classList.add(className());
+              var inputElem = document2.createElement("input");
+              inputElem.classList.add(className("i"));
+              inputElem.type = "text";
+              _this.element.appendChild(inputElem);
+              _this.inputElem_ = inputElem;
+              config.value.emitter.on("change", _this.onValueChange_);
+              _this.value = config.value;
+              _this.update();
+              config.model.emitter.on("dispose", function() {
+                _this.inputElem_ = DisposingUtil.disposeElement(_this.inputElem_);
+              });
+              return _this;
+            }
+            Object.defineProperty(TextInputView2.prototype, "inputElement", {
+              get: function() {
+                if (!this.inputElem_) {
+                  throw pane_error_1.PaneError.alreadyDisposed();
+                }
+                return this.inputElem_;
+              },
+              enumerable: false,
+              configurable: true
+            });
+            TextInputView2.prototype.update = function() {
+              if (!this.inputElem_) {
+                throw pane_error_1.PaneError.alreadyDisposed();
+              }
+              this.inputElem_.value = this.formatter_.format(this.value.rawValue);
+            };
+            TextInputView2.prototype.onValueChange_ = function() {
+              this.update();
+            };
+            return TextInputView2;
+          }(view_1.View);
+          exports2.TextInputView = TextInputView;
+        },
+        "./src/main/js/view/labeled.ts": function(module2, exports2, __webpack_require__) {
+          "use strict";
+          var __extends = this && this.__extends || function() {
+            var extendStatics = function(d, b) {
+              extendStatics = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(d2, b2) {
+                d2.__proto__ = b2;
+              } || function(d2, b2) {
+                for (var p in b2)
+                  if (b2.hasOwnProperty(p))
+                    d2[p] = b2[p];
+              };
+              return extendStatics(d, b);
+            };
+            return function(d, b) {
+              extendStatics(d, b);
+              function __() {
+                this.constructor = d;
+              }
+              d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+            };
+          }();
+          Object.defineProperty(exports2, "__esModule", { value: true });
+          exports2.LabeledView = void 0;
+          var class_name_1 = __webpack_require__("./src/main/js/misc/class-name.ts");
+          var view_1 = __webpack_require__("./src/main/js/view/view.ts");
+          var className = class_name_1.ClassName("lbl");
+          function createLabelNode(document2, label) {
+            var frag = document2.createDocumentFragment();
+            var lineNodes = label.split("\n").map(function(line) {
+              return document2.createTextNode(line);
+            });
+            lineNodes.forEach(function(lineNode, index) {
+              if (index > 0) {
+                frag.appendChild(document2.createElement("br"));
+              }
+              frag.appendChild(lineNode);
+            });
+            return frag;
+          }
+          var LabeledView = function(_super) {
+            __extends(LabeledView2, _super);
+            function LabeledView2(document2, config) {
+              var _this = _super.call(this, document2, config) || this;
+              _this.label = config.label;
+              _this.element.classList.add(className());
+              var labelElem = document2.createElement("div");
+              labelElem.classList.add(className("l"));
+              labelElem.appendChild(createLabelNode(document2, _this.label));
+              _this.element.appendChild(labelElem);
+              var viewElem = document2.createElement("div");
+              viewElem.classList.add(className("v"));
+              viewElem.appendChild(config.view.element);
+              _this.element.appendChild(viewElem);
+              return _this;
+            }
+            return LabeledView2;
+          }(view_1.View);
+          exports2.LabeledView = LabeledView;
+        },
+        "./src/main/js/view/monitor/graph.ts": function(module2, exports2, __webpack_require__) {
+          "use strict";
+          var __extends = this && this.__extends || function() {
+            var extendStatics = function(d, b) {
+              extendStatics = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(d2, b2) {
+                d2.__proto__ = b2;
+              } || function(d2, b2) {
+                for (var p in b2)
+                  if (b2.hasOwnProperty(p))
+                    d2[p] = b2[p];
+              };
+              return extendStatics(d, b);
+            };
+            return function(d, b) {
+              extendStatics(d, b);
+              function __() {
+                this.constructor = d;
+              }
+              d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+            };
+          }();
+          Object.defineProperty(exports2, "__esModule", { value: true });
+          exports2.GraphMonitorView = void 0;
+          var class_name_1 = __webpack_require__("./src/main/js/misc/class-name.ts");
+          var DisposingUtil = __webpack_require__("./src/main/js/misc/disposing-util.ts");
+          var DomUtil = __webpack_require__("./src/main/js/misc/dom-util.ts");
+          var number_util_1 = __webpack_require__("./src/main/js/misc/number-util.ts");
+          var pane_error_1 = __webpack_require__("./src/main/js/misc/pane-error.ts");
+          var view_1 = __webpack_require__("./src/main/js/view/view.ts");
+          var SVG_NS = DomUtil.SVG_NS;
+          var className = class_name_1.ClassName("grp", "monitor");
+          var GraphMonitorView = function(_super) {
+            __extends(GraphMonitorView2, _super);
+            function GraphMonitorView2(document2, config) {
+              var _this = _super.call(this, document2, config) || this;
+              _this.onCursorChange_ = _this.onCursorChange_.bind(_this);
+              _this.onValueUpdate_ = _this.onValueUpdate_.bind(_this);
+              _this.element.classList.add(className());
+              _this.formatter_ = config.formatter;
+              _this.minValue_ = config.minValue;
+              _this.maxValue_ = config.maxValue;
+              _this.cursor_ = config.cursor;
+              _this.cursor_.emitter.on("change", _this.onCursorChange_);
+              var svgElem = document2.createElementNS(SVG_NS, "svg");
+              svgElem.classList.add(className("g"));
+              _this.element.appendChild(svgElem);
+              _this.svgElem_ = svgElem;
+              var lineElem = document2.createElementNS(SVG_NS, "polyline");
+              _this.svgElem_.appendChild(lineElem);
+              _this.lineElem_ = lineElem;
+              var tooltipElem = document2.createElement("div");
+              tooltipElem.classList.add(className("t"));
+              _this.element.appendChild(tooltipElem);
+              _this.tooltipElem_ = tooltipElem;
+              config.value.emitter.on("update", _this.onValueUpdate_);
+              _this.value = config.value;
+              _this.update();
+              config.model.emitter.on("dispose", function() {
+                _this.lineElem_ = DisposingUtil.disposeElement(_this.lineElem_);
+                _this.svgElem_ = DisposingUtil.disposeElement(_this.svgElem_);
+                _this.tooltipElem_ = DisposingUtil.disposeElement(_this.tooltipElem_);
+              });
+              return _this;
+            }
+            Object.defineProperty(GraphMonitorView2.prototype, "graphElement", {
+              get: function() {
+                if (!this.svgElem_) {
+                  throw pane_error_1.PaneError.alreadyDisposed();
+                }
+                return this.svgElem_;
+              },
+              enumerable: false,
+              configurable: true
+            });
+            GraphMonitorView2.prototype.update = function() {
+              var tooltipElem = this.tooltipElem_;
+              if (!this.lineElem_ || !this.svgElem_ || !tooltipElem) {
+                throw pane_error_1.PaneError.alreadyDisposed();
+              }
+              var bounds = this.svgElem_.getBoundingClientRect();
+              var maxIndex = this.value.totalCount - 1;
+              var min4 = this.minValue_;
+              var max4 = this.maxValue_;
+              this.lineElem_.setAttributeNS(null, "points", this.value.rawValues.map(function(v, index) {
+                var x = number_util_1.NumberUtil.map(index, 0, maxIndex, 0, bounds.width);
+                var y = number_util_1.NumberUtil.map(v, min4, max4, bounds.height, 0);
+                return [x, y].join(",");
+              }).join(" "));
+              var value = this.value.rawValues[this.cursor_.index];
+              if (value === void 0) {
+                tooltipElem.classList.remove(className("t", "valid"));
+                return;
+              }
+              tooltipElem.classList.add(className("t", "valid"));
+              var tx = number_util_1.NumberUtil.map(this.cursor_.index, 0, maxIndex, 0, bounds.width);
+              var ty = number_util_1.NumberUtil.map(value, min4, max4, bounds.height, 0);
+              tooltipElem.style.left = tx + "px";
+              tooltipElem.style.top = ty + "px";
+              tooltipElem.textContent = "" + this.formatter_.format(value);
+            };
+            GraphMonitorView2.prototype.onValueUpdate_ = function() {
+              this.update();
+            };
+            GraphMonitorView2.prototype.onCursorChange_ = function() {
+              this.update();
+            };
+            return GraphMonitorView2;
+          }(view_1.View);
+          exports2.GraphMonitorView = GraphMonitorView;
+        },
+        "./src/main/js/view/monitor/multi-log.ts": function(module2, exports2, __webpack_require__) {
+          "use strict";
+          var __extends = this && this.__extends || function() {
+            var extendStatics = function(d, b) {
+              extendStatics = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(d2, b2) {
+                d2.__proto__ = b2;
+              } || function(d2, b2) {
+                for (var p in b2)
+                  if (b2.hasOwnProperty(p))
+                    d2[p] = b2[p];
+              };
+              return extendStatics(d, b);
+            };
+            return function(d, b) {
+              extendStatics(d, b);
+              function __() {
+                this.constructor = d;
+              }
+              d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+            };
+          }();
+          Object.defineProperty(exports2, "__esModule", { value: true });
+          exports2.MultiLogMonitorView = void 0;
+          var class_name_1 = __webpack_require__("./src/main/js/misc/class-name.ts");
+          var DisposingUtil = __webpack_require__("./src/main/js/misc/disposing-util.ts");
+          var pane_error_1 = __webpack_require__("./src/main/js/misc/pane-error.ts");
+          var view_1 = __webpack_require__("./src/main/js/view/view.ts");
+          var className = class_name_1.ClassName("mll", "monitor");
+          var MultiLogMonitorView = function(_super) {
+            __extends(MultiLogMonitorView2, _super);
+            function MultiLogMonitorView2(document2, config) {
+              var _this = _super.call(this, document2, config) || this;
+              _this.onValueUpdate_ = _this.onValueUpdate_.bind(_this);
+              _this.formatter_ = config.formatter;
+              _this.element.classList.add(className());
+              var textareaElem = document2.createElement("textarea");
+              textareaElem.classList.add(className("i"));
+              textareaElem.readOnly = true;
+              _this.element.appendChild(textareaElem);
+              _this.textareaElem_ = textareaElem;
+              config.value.emitter.on("update", _this.onValueUpdate_);
+              _this.value = config.value;
+              _this.update();
+              config.model.emitter.on("dispose", function() {
+                _this.textareaElem_ = DisposingUtil.disposeElement(_this.textareaElem_);
+              });
+              return _this;
+            }
+            MultiLogMonitorView2.prototype.update = function() {
+              var _this = this;
+              var elem = this.textareaElem_;
+              if (!elem) {
+                throw pane_error_1.PaneError.alreadyDisposed();
+              }
+              var shouldScroll = elem.scrollTop === elem.scrollHeight - elem.clientHeight;
+              elem.textContent = this.value.rawValues.map(function(value) {
+                return _this.formatter_.format(value);
+              }).join("\n");
+              if (shouldScroll) {
+                elem.scrollTop = elem.scrollHeight;
+              }
+            };
+            MultiLogMonitorView2.prototype.onValueUpdate_ = function() {
+              this.update();
+            };
+            return MultiLogMonitorView2;
+          }(view_1.View);
+          exports2.MultiLogMonitorView = MultiLogMonitorView;
+        },
+        "./src/main/js/view/monitor/single-log.ts": function(module2, exports2, __webpack_require__) {
+          "use strict";
+          var __extends = this && this.__extends || function() {
+            var extendStatics = function(d, b) {
+              extendStatics = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(d2, b2) {
+                d2.__proto__ = b2;
+              } || function(d2, b2) {
+                for (var p in b2)
+                  if (b2.hasOwnProperty(p))
+                    d2[p] = b2[p];
+              };
+              return extendStatics(d, b);
+            };
+            return function(d, b) {
+              extendStatics(d, b);
+              function __() {
+                this.constructor = d;
+              }
+              d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+            };
+          }();
+          Object.defineProperty(exports2, "__esModule", { value: true });
+          exports2.SingleLogMonitorView = void 0;
+          var class_name_1 = __webpack_require__("./src/main/js/misc/class-name.ts");
+          var DisposingUtil = __webpack_require__("./src/main/js/misc/disposing-util.ts");
+          var pane_error_1 = __webpack_require__("./src/main/js/misc/pane-error.ts");
+          var view_1 = __webpack_require__("./src/main/js/view/view.ts");
+          var className = class_name_1.ClassName("sgl", "monitor");
+          var SingleLogMonitorView = function(_super) {
+            __extends(SingleLogMonitorView2, _super);
+            function SingleLogMonitorView2(document2, config) {
+              var _this = _super.call(this, document2, config) || this;
+              _this.onValueUpdate_ = _this.onValueUpdate_.bind(_this);
+              _this.formatter_ = config.formatter;
+              _this.element.classList.add(className());
+              var inputElem = document2.createElement("input");
+              inputElem.classList.add(className("i"));
+              inputElem.readOnly = true;
+              inputElem.type = "text";
+              _this.element.appendChild(inputElem);
+              _this.inputElem_ = inputElem;
+              config.value.emitter.on("update", _this.onValueUpdate_);
+              _this.value = config.value;
+              _this.update();
+              config.model.emitter.on("dispose", function() {
+                _this.inputElem_ = DisposingUtil.disposeElement(_this.inputElem_);
+              });
+              return _this;
+            }
+            SingleLogMonitorView2.prototype.update = function() {
+              if (!this.inputElem_) {
+                throw pane_error_1.PaneError.alreadyDisposed();
+              }
+              var values = this.value.rawValues;
+              this.inputElem_.value = values.length > 0 ? this.formatter_.format(values[values.length - 1]) : "";
+            };
+            SingleLogMonitorView2.prototype.onValueUpdate_ = function() {
+              this.update();
+            };
+            return SingleLogMonitorView2;
+          }(view_1.View);
+          exports2.SingleLogMonitorView = SingleLogMonitorView;
+        },
+        "./src/main/js/view/root.ts": function(module2, exports2, __webpack_require__) {
+          "use strict";
+          var __extends = this && this.__extends || function() {
+            var extendStatics = function(d, b) {
+              extendStatics = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(d2, b2) {
+                d2.__proto__ = b2;
+              } || function(d2, b2) {
+                for (var p in b2)
+                  if (b2.hasOwnProperty(p))
+                    d2[p] = b2[p];
+              };
+              return extendStatics(d, b);
+            };
+            return function(d, b) {
+              extendStatics(d, b);
+              function __() {
+                this.constructor = d;
+              }
+              d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+            };
+          }();
+          Object.defineProperty(exports2, "__esModule", { value: true });
+          exports2.RootView = void 0;
+          var class_name_1 = __webpack_require__("./src/main/js/misc/class-name.ts");
+          var DisposingUtil = __webpack_require__("./src/main/js/misc/disposing-util.ts");
+          var pane_error_1 = __webpack_require__("./src/main/js/misc/pane-error.ts");
+          var view_1 = __webpack_require__("./src/main/js/view/view.ts");
+          var className = class_name_1.ClassName("rot");
+          var RootView = function(_super) {
+            __extends(RootView2, _super);
+            function RootView2(document2, config) {
+              var _this = _super.call(this, document2, config) || this;
+              _this.onFolderChange_ = _this.onFolderChange_.bind(_this);
+              _this.folder_ = config.folder;
+              if (_this.folder_) {
+                _this.folder_.emitter.on("change", _this.onFolderChange_);
+              }
+              _this.element.classList.add(className());
+              var folder = _this.folder_;
+              if (folder) {
+                var titleElem = document2.createElement("button");
+                titleElem.classList.add(className("t"));
+                titleElem.textContent = folder.title;
+                _this.element.appendChild(titleElem);
+                var markElem = document2.createElement("div");
+                markElem.classList.add(className("m"));
+                titleElem.appendChild(markElem);
+                _this.titleElem_ = titleElem;
+              }
+              var containerElem = document2.createElement("div");
+              containerElem.classList.add(className("c"));
+              _this.element.appendChild(containerElem);
+              _this.containerElem_ = containerElem;
+              _this.applyModel_();
+              config.model.emitter.on("dispose", function() {
+                _this.containerElem_ = DisposingUtil.disposeElement(_this.containerElem_);
+                _this.folder_ = null;
+                _this.titleElem_ = DisposingUtil.disposeElement(_this.titleElem_);
+              });
+              return _this;
+            }
+            Object.defineProperty(RootView2.prototype, "titleElement", {
+              get: function() {
+                return this.titleElem_;
+              },
+              enumerable: false,
+              configurable: true
+            });
+            Object.defineProperty(RootView2.prototype, "containerElement", {
+              get: function() {
+                if (!this.containerElem_) {
+                  throw pane_error_1.PaneError.alreadyDisposed();
+                }
+                return this.containerElem_;
+              },
+              enumerable: false,
+              configurable: true
+            });
+            RootView2.prototype.applyModel_ = function() {
+              var containerElem = this.containerElem_;
+              if (!containerElem) {
+                throw pane_error_1.PaneError.alreadyDisposed();
+              }
+              var expanded = this.folder_ ? this.folder_.styleExpanded : true;
+              var expandedClass = className(void 0, "expanded");
+              if (expanded) {
+                this.element.classList.add(expandedClass);
+              } else {
+                this.element.classList.remove(expandedClass);
+              }
+              containerElem.style.height = this.folder_ ? this.folder_.styleHeight : "auto";
+            };
+            RootView2.prototype.onFolderChange_ = function() {
+              this.applyModel_();
+            };
+            return RootView2;
+          }(view_1.View);
+          exports2.RootView = RootView;
+        },
+        "./src/main/js/view/separator.ts": function(module2, exports2, __webpack_require__) {
+          "use strict";
+          var __extends = this && this.__extends || function() {
+            var extendStatics = function(d, b) {
+              extendStatics = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(d2, b2) {
+                d2.__proto__ = b2;
+              } || function(d2, b2) {
+                for (var p in b2)
+                  if (b2.hasOwnProperty(p))
+                    d2[p] = b2[p];
+              };
+              return extendStatics(d, b);
+            };
+            return function(d, b) {
+              extendStatics(d, b);
+              function __() {
+                this.constructor = d;
+              }
+              d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+            };
+          }();
+          Object.defineProperty(exports2, "__esModule", { value: true });
+          exports2.SeparatorView = void 0;
+          var class_name_1 = __webpack_require__("./src/main/js/misc/class-name.ts");
+          var view_1 = __webpack_require__("./src/main/js/view/view.ts");
+          var className = class_name_1.ClassName("spt");
+          var SeparatorView = function(_super) {
+            __extends(SeparatorView2, _super);
+            function SeparatorView2(document2, config) {
+              var _this = _super.call(this, document2, config) || this;
+              _this.element.classList.add(className());
+              var hrElem = document2.createElement("hr");
+              hrElem.classList.add(className("r"));
+              _this.element.appendChild(hrElem);
+              return _this;
+            }
+            return SeparatorView2;
+          }(view_1.View);
+          exports2.SeparatorView = SeparatorView;
+        },
+        "./src/main/js/view/view.ts": function(module2, exports2, __webpack_require__) {
+          "use strict";
+          Object.defineProperty(exports2, "__esModule", { value: true });
+          exports2.View = void 0;
+          var class_name_1 = __webpack_require__("./src/main/js/misc/class-name.ts");
+          var DisposingUtil = __webpack_require__("./src/main/js/misc/disposing-util.ts");
+          var pane_error_1 = __webpack_require__("./src/main/js/misc/pane-error.ts");
+          var ViewPositions = __webpack_require__("./src/main/js/model/view-positions.ts");
+          var className = class_name_1.ClassName("");
+          var View = function() {
+            function View2(document2, config) {
+              this.onChange_ = this.onChange_.bind(this);
+              this.onDispose_ = this.onDispose_.bind(this);
+              this.model_ = config.model;
+              this.model_.emitter.on("change", this.onChange_);
+              this.model_.emitter.on("dispose", this.onDispose_);
+              this.doc_ = document2;
+              this.elem_ = this.doc_.createElement("div");
+              this.elem_.classList.add(className());
+            }
+            Object.defineProperty(View2.prototype, "document", {
+              get: function() {
+                if (!this.doc_) {
+                  throw pane_error_1.PaneError.alreadyDisposed();
+                }
+                return this.doc_;
+              },
+              enumerable: false,
+              configurable: true
+            });
+            Object.defineProperty(View2.prototype, "element", {
+              get: function() {
+                if (!this.elem_) {
+                  throw pane_error_1.PaneError.alreadyDisposed();
+                }
+                return this.elem_;
+              },
+              enumerable: false,
+              configurable: true
+            });
+            View2.prototype.onDispose_ = function() {
+              this.doc_ = null;
+              this.elem_ = DisposingUtil.disposeElement(this.elem_);
+            };
+            View2.prototype.onChange_ = function(ev) {
+              var elem = this.elem_;
+              if (!elem) {
+                throw pane_error_1.PaneError.alreadyDisposed();
+              }
+              if (ev.propertyName === "hidden") {
+                var hiddenClass = className(void 0, "hidden");
+                if (this.model_.hidden) {
+                  elem.classList.add(hiddenClass);
+                } else {
+                  elem.classList.remove(hiddenClass);
+                }
+              } else if (ev.propertyName === "positions") {
+                ViewPositions.getAll().forEach(function(pos) {
+                  elem.classList.remove(className(void 0, pos));
+                });
+                this.model_.positions.forEach(function(pos) {
+                  elem.classList.add(className(void 0, pos));
+                });
+              }
+            };
+            return View2;
+          }();
+          exports2.View = View;
+        },
+        "./src/main/sass/bundle.scss": function(module2, exports2, __webpack_require__) {
+          exports2 = module2.exports = __webpack_require__("./node_modules/css-loader/lib/css-base.js")(false);
+          exports2.push([module2.i, ".tp-fldv_t,.tp-rotv_t{-webkit-appearance:none;-moz-appearance:none;appearance:none;background-color:transparent;border-width:0;font-family:inherit;font-size:inherit;font-weight:inherit;margin:0;outline:none;padding:0;background-color:var(--folder-background-color);color:var(--folder-foreground-color);cursor:pointer;display:block;height:24px;line-height:24px;overflow:hidden;padding-left:30px;position:relative;text-align:left;text-overflow:ellipsis;white-space:nowrap;width:100%;transition:border-radius .2s ease-in-out .2s}.tp-fldv_t:hover,.tp-rotv_t:hover{background-color:var(--folder-background-color-hover)}.tp-fldv_t:focus,.tp-rotv_t:focus{background-color:var(--folder-background-color-focus)}.tp-fldv_t:active,.tp-rotv_t:active{background-color:var(--folder-background-color-active)}.tp-fldv_m,.tp-rotv_m{background:linear-gradient(to left, var(--folder-foreground-color), var(--folder-foreground-color) 2px, transparent 2px, transparent 4px, var(--folder-foreground-color) 4px);border-radius:2px;bottom:0;content:'';display:block;height:6px;left:12px;margin:auto;position:absolute;top:0;transform:rotate(90deg);transition:transform .2s ease-in-out;width:6px}.tp-fldv.tp-fldv-expanded>.tp-fldv_t>.tp-fldv_m,.tp-rotv.tp-rotv-expanded .tp-rotv_m{transform:none}.tp-fldv_c,.tp-rotv_c{box-sizing:border-box;height:0;opacity:0;overflow:hidden;padding-bottom:0;padding-top:0;position:relative;transition:height .2s ease-in-out,opacity .2s linear,padding .2s ease-in-out}.tp-fldv_c>.tp-fldv.tp-v-first,.tp-rotv_c>.tp-fldv.tp-v-first{margin-top:-4px}.tp-fldv_c>.tp-fldv.tp-v-last,.tp-rotv_c>.tp-fldv.tp-v-last{margin-bottom:-4px}.tp-fldv_c>*:not(.tp-v-first),.tp-rotv_c>*:not(.tp-v-first){margin-top:4px}.tp-fldv_c>.tp-fldv:not(.tp-v-hidden)+.tp-fldv,.tp-rotv_c>.tp-fldv:not(.tp-v-hidden)+.tp-fldv{margin-top:0}.tp-fldv_c>.tp-sptv:not(.tp-v-hidden)+.tp-sptv,.tp-rotv_c>.tp-sptv:not(.tp-v-hidden)+.tp-sptv{margin-top:0}.tp-fldv.tp-fldv-expanded>.tp-fldv_c,.tp-rotv.tp-rotv-expanded .tp-rotv_c{opacity:1;padding-bottom:4px;padding-top:4px;transform:none;overflow:visible;transition:height .2s ease-in-out,opacity .2s linear .2s,padding .2s ease-in-out}.tp-btnv{padding:0 4px}.tp-btnv_b{-webkit-appearance:none;-moz-appearance:none;appearance:none;background-color:transparent;border-width:0;font-family:inherit;font-size:inherit;font-weight:inherit;margin:0;outline:none;padding:0;background-color:var(--button-background-color);border-radius:2px;color:var(--button-foreground-color);cursor:pointer;display:block;font-weight:bold;height:20px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;width:100%}.tp-btnv_b:hover{background-color:var(--button-background-color-hover)}.tp-btnv_b:focus{background-color:var(--button-background-color-focus)}.tp-btnv_b:active{background-color:var(--button-background-color-active)}.tp-dfwv{position:absolute;top:8px;right:8px;width:256px}.tp-fldv.tp-fldv-expanded .tp-fldv_t{transition:border-radius 0s}.tp-fldv_c{border-left:var(--folder-background-color) solid 4px}.tp-fldv_t:hover+.tp-fldv_c{border-left-color:var(--folder-background-color-hover)}.tp-fldv_t:focus+.tp-fldv_c{border-left-color:var(--folder-background-color-focus)}.tp-fldv_t:active+.tp-fldv_c{border-left-color:var(--folder-background-color-active)}.tp-fldv_c>.tp-fldv{margin-left:4px}.tp-fldv_c>.tp-fldv>.tp-fldv_t{border-top-left-radius:2px;border-bottom-left-radius:2px}.tp-fldv_c>.tp-fldv.tp-fldv-expanded>.tp-fldv_t{border-bottom-left-radius:0}.tp-fldv_c .tp-fldv>.tp-fldv_c{border-bottom-left-radius:2px}.tp-ckbiv_l{display:block;position:relative}.tp-ckbiv_i{-webkit-appearance:none;-moz-appearance:none;appearance:none;background-color:transparent;border-width:0;font-family:inherit;font-size:inherit;font-weight:inherit;margin:0;outline:none;padding:0;background:red;left:0;opacity:0;position:absolute;top:0}.tp-ckbiv_m{background-color:var(--input-background-color);border-radius:2px;cursor:pointer;display:block;height:20px;position:relative;width:20px}.tp-ckbiv_m::before{background-color:var(--input-foreground-color);border-radius:2px;bottom:4px;content:'';display:block;left:4px;opacity:0;position:absolute;right:4px;top:4px}.tp-ckbiv_i:hover+.tp-ckbiv_m{background-color:var(--input-background-color-hover)}.tp-ckbiv_i:focus+.tp-ckbiv_m{background-color:var(--input-background-color-focus)}.tp-ckbiv_i:active+.tp-ckbiv_m{background-color:var(--input-background-color-active)}.tp-ckbiv_i:checked+.tp-ckbiv_m::before{opacity:1}.tp-cctxtsiv{display:flex;width:100%}.tp-cctxtsiv_m{margin-right:4px;position:relative}.tp-cctxtsiv_ms{-webkit-appearance:none;-moz-appearance:none;appearance:none;background-color:transparent;border-width:0;font-family:inherit;font-size:inherit;font-weight:inherit;margin:0;outline:none;padding:0;border-radius:2px;color:var(--label-foreground-color);cursor:pointer;height:20px;line-height:20px;padding:0 18px 0 4px}.tp-cctxtsiv_ms:hover{background-color:var(--input-background-color-hover)}.tp-cctxtsiv_ms:focus{background-color:var(--input-background-color-focus)}.tp-cctxtsiv_ms:active{background-color:var(--input-background-color-active)}.tp-cctxtsiv_mm{border-color:var(--label-foreground-color) transparent transparent;border-style:solid;border-width:3px;box-sizing:border-box;height:6px;pointer-events:none;width:6px;bottom:0;margin:auto;position:absolute;right:6px;top:3px}.tp-cctxtsiv_w{display:flex;flex:1}.tp-cctxtsiv_i{-webkit-appearance:none;-moz-appearance:none;appearance:none;background-color:transparent;border-width:0;font-family:inherit;font-size:inherit;font-weight:inherit;margin:0;outline:none;padding:0;background-color:var(--input-background-color);border-radius:2px;box-sizing:border-box;color:var(--input-foreground-color);font-family:inherit;height:20px;line-height:20px;min-width:0;width:100%;border-radius:0;flex:1;padding:0 4px}.tp-cctxtsiv_i:hover{background-color:var(--input-background-color-hover)}.tp-cctxtsiv_i:focus{background-color:var(--input-background-color-focus)}.tp-cctxtsiv_i:active{background-color:var(--input-background-color-active)}.tp-cctxtsiv_i:first-child{border-bottom-left-radius:2px;border-top-left-radius:2px}.tp-cctxtsiv_i:last-child{border-bottom-right-radius:2px;border-top-right-radius:2px}.tp-cctxtsiv_i+.tp-cctxtsiv_i{margin-left:2px}.tp-clpiv{background-color:var(--base-background-color);border-radius:6px;box-shadow:0 2px 4px var(--base-shadow-color);display:none;padding:4px;position:relative;visibility:hidden;z-index:1000}.tp-clpiv.tp-clpiv-expanded{display:block;visibility:visible}.tp-clpiv_h,.tp-clpiv_ap{margin-left:6px;margin-right:6px}.tp-clpiv_h{margin-top:4px}.tp-clpiv_rgb{display:flex;margin-top:4px;width:100%}.tp-clpiv_a{display:flex;margin-top:4px;padding-top:8px;position:relative}.tp-clpiv_a:before{background-color:var(--separator-color);content:'';height:4px;left:-4px;position:absolute;right:-4px;top:0}.tp-clpiv_ap{flex:3}.tp-clpiv_at{flex:1;margin-left:4px}.tp-svpiv{border-radius:2px;outline:none;overflow:hidden;position:relative}.tp-svpiv_c{cursor:crosshair;display:block;height:80px;width:100%}.tp-svpiv_m{border-radius:100%;border:rgba(255,255,255,0.75) solid 2px;box-sizing:border-box;filter:drop-shadow(0 0 1px rgba(0,0,0,0.3));height:12px;margin-left:-6px;margin-top:-6px;pointer-events:none;position:absolute;width:12px}.tp-svpiv:focus .tp-svpiv_m{border-color:#fff}.tp-hpliv{cursor:pointer;height:20px;outline:none;position:relative}.tp-hpliv_c{background-image:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAAABCAYAAABubagXAAAAQ0lEQVQoU2P8z8Dwn0GCgQEDi2OK/RBgYHjBgIpfovFh8j8YBIgzFGQxuqEgPhaDOT5gOhPkdCxOZeBg+IDFZZiGAgCaSSMYtcRHLgAAAABJRU5ErkJggg==);background-position:left top;background-repeat:no-repeat;background-size:100% 100%;border-radius:2px;display:block;height:4px;left:0;margin-top:-2px;position:absolute;top:50%;width:100%}.tp-hpliv_m{border-radius:2px;border:rgba(255,255,255,0.75) solid 2px;box-shadow:0 0 2px rgba(0,0,0,0.1);box-sizing:border-box;height:12px;left:50%;margin-left:-6px;margin-top:-6px;pointer-events:none;position:absolute;top:50%;width:12px}.tp-hpliv:focus .tp-hpliv_m{border-color:#fff}.tp-apliv{cursor:pointer;height:20px;outline:none;position:relative}.tp-apliv_b{background-image:linear-gradient(to top right, #ddd 25%, transparent 25%, transparent 75%, #ddd 75%),linear-gradient(to top right, #ddd 25%, transparent 25%, transparent 75%, #ddd 75%);background-size:4px 4px;background-position:0 0,2px 2px;background-color:#fff;border-radius:2px;display:block;height:4px;left:0;margin-top:-2px;overflow:hidden;position:absolute;top:50%;width:100%}.tp-apliv_c{bottom:0;left:0;position:absolute;right:0;top:0}.tp-apliv_m{background-image:linear-gradient(to top right, #ddd 25%, transparent 25%, transparent 75%, #ddd 75%),linear-gradient(to top right, #ddd 25%, transparent 25%, transparent 75%, #ddd 75%);background-size:12px 12px;background-position:0 0,6px 6px;background-color:#fff;border-radius:2px;box-shadow:0 0 2px rgba(0,0,0,0.1);height:12px;left:50%;margin-left:-6px;margin-top:-6px;overflow:hidden;pointer-events:none;position:absolute;top:50%;width:12px}.tp-apliv_p{border-radius:2px;border:rgba(255,255,255,0.75) solid 2px;box-sizing:border-box;bottom:0;left:0;position:absolute;right:0;top:0}.tp-apliv:focus .tp-apliv_p{border-color:#fff}.tp-lstiv{display:block;padding:0;position:relative}.tp-lstiv_s{-webkit-appearance:none;-moz-appearance:none;appearance:none;background-color:transparent;border-width:0;font-family:inherit;font-size:inherit;font-weight:inherit;margin:0;outline:none;padding:0;background-color:var(--button-background-color);border-radius:2px;color:var(--button-foreground-color);cursor:pointer;display:block;height:20px;line-height:20px;padding:0 4px;width:100%}.tp-lstiv_s:hover{background-color:var(--button-background-color-hover)}.tp-lstiv_s:focus{background-color:var(--button-background-color-focus)}.tp-lstiv_s:active{background-color:var(--button-background-color-active)}.tp-lstiv_m{border-color:var(--button-foreground-color) transparent transparent;border-style:solid;border-width:3px;box-sizing:border-box;height:6px;pointer-events:none;width:6px;bottom:0;margin:auto;position:absolute;right:6px;top:3px}.tp-p2dpadiv{background-color:var(--base-background-color);border-radius:6px;box-shadow:0 2px 4px var(--base-shadow-color);display:none;padding:4px 4px 4px 28px;position:relative;visibility:hidden;z-index:1000}.tp-p2dpadiv.tp-p2dpadiv-expanded{display:block;visibility:visible}.tp-p2dpadiv_p{-webkit-appearance:none;-moz-appearance:none;appearance:none;background-color:transparent;border-width:0;font-family:inherit;font-size:inherit;font-weight:inherit;margin:0;outline:none;padding:0;background-color:var(--input-background-color);border-radius:2px;box-sizing:border-box;color:var(--input-foreground-color);font-family:inherit;height:20px;line-height:20px;min-width:0;width:100%;cursor:crosshair;height:0;overflow:hidden;padding-bottom:100%;position:relative}.tp-p2dpadiv_p:hover{background-color:var(--input-background-color-hover)}.tp-p2dpadiv_p:focus{background-color:var(--input-background-color-focus)}.tp-p2dpadiv_p:active{background-color:var(--input-background-color-active)}.tp-p2dpadiv_g{display:block;height:100%;left:0;pointer-events:none;position:absolute;top:0;width:100%}.tp-p2dpadiv_ax{stroke:var(--input-guide-color)}.tp-p2dpadiv_l{stroke:var(--input-foreground-color);stroke-linecap:round;stroke-dasharray:1px 3px}.tp-p2dpadiv_m{fill:var(--input-foreground-color)}.tp-p2dpadtxtiv{display:flex;position:relative}.tp-p2dpadtxtiv_b{-webkit-appearance:none;-moz-appearance:none;appearance:none;background-color:transparent;border-width:0;font-family:inherit;font-size:inherit;font-weight:inherit;margin:0;outline:none;padding:0;background-color:var(--button-background-color);border-radius:2px;color:var(--button-foreground-color);cursor:pointer;display:block;font-weight:bold;height:20px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;height:20px;position:relative;width:20px}.tp-p2dpadtxtiv_b:hover{background-color:var(--button-background-color-hover)}.tp-p2dpadtxtiv_b:focus{background-color:var(--button-background-color-focus)}.tp-p2dpadtxtiv_b:active{background-color:var(--button-background-color-active)}.tp-p2dpadtxtiv_b svg{display:block;height:16px;left:50%;margin-left:-8px;margin-top:-8px;position:absolute;top:50%;width:16px}.tp-p2dpadtxtiv_p{left:-4px;position:absolute;right:-4px;top:20px}.tp-p2dpadtxtiv_t{margin-left:4px}.tp-p2dtxtiv{display:flex}.tp-p2dtxtiv_w{align-items:center;display:flex}.tp-p2dtxtiv_w+.tp-p2dtxtiv_w{margin-left:2px}.tp-p2dtxtiv_i{-webkit-appearance:none;-moz-appearance:none;appearance:none;background-color:transparent;border-width:0;font-family:inherit;font-size:inherit;font-weight:inherit;margin:0;outline:none;padding:0;background-color:var(--input-background-color);border-radius:2px;box-sizing:border-box;color:var(--input-foreground-color);font-family:inherit;height:20px;line-height:20px;min-width:0;width:100%;padding:0 4px;width:100%}.tp-p2dtxtiv_i:hover{background-color:var(--input-background-color-hover)}.tp-p2dtxtiv_i:focus{background-color:var(--input-background-color-focus)}.tp-p2dtxtiv_i:active{background-color:var(--input-background-color-active)}.tp-p2dtxtiv_w:nth-child(1) .tp-p2dtxtiv_i{border-top-right-radius:0;border-bottom-right-radius:0}.tp-p2dtxtiv_w:nth-child(2) .tp-p2dtxtiv_i{border-top-left-radius:0;border-bottom-left-radius:0}.tp-sldiv{display:block;padding:0}.tp-sldiv_o{box-sizing:border-box;cursor:pointer;height:20px;margin:0 6px;outline:none;position:relative}.tp-sldiv_o::before{background-color:var(--input-background-color);border-radius:1px;bottom:0;content:'';display:block;height:2px;left:0;margin:auto;position:absolute;right:0;top:0}.tp-sldiv_i{height:100%;left:0;position:absolute;top:0}.tp-sldiv_i::before{background-color:var(--button-background-color);border-radius:2px;bottom:0;content:'';display:block;height:12px;margin:auto;position:absolute;right:-6px;top:0;width:12px}.tp-sldiv_o:hover .tp-sldiv_i::before{background-color:var(--button-background-color-hover)}.tp-sldiv_o:focus .tp-sldiv_i::before{background-color:var(--button-background-color-focus)}.tp-sldiv_o:active .tp-sldiv_i::before{background-color:var(--button-background-color-active)}.tp-txtiv{display:block;padding:0}.tp-txtiv_i{-webkit-appearance:none;-moz-appearance:none;appearance:none;background-color:transparent;border-width:0;font-family:inherit;font-size:inherit;font-weight:inherit;margin:0;outline:none;padding:0;background-color:var(--input-background-color);border-radius:2px;box-sizing:border-box;color:var(--input-foreground-color);font-family:inherit;height:20px;line-height:20px;min-width:0;width:100%;padding:0 4px}.tp-txtiv_i:hover{background-color:var(--input-background-color-hover)}.tp-txtiv_i:focus{background-color:var(--input-background-color-focus)}.tp-txtiv_i:active{background-color:var(--input-background-color-active)}.tp-cswiv{background-image:linear-gradient(to top right, #ddd 25%, transparent 25%, transparent 75%, #ddd 75%),linear-gradient(to top right, #ddd 25%, transparent 25%, transparent 75%, #ddd 75%);background-size:10px 10px;background-position:0 0,5px 5px;background-color:#fff;border-radius:2px}.tp-cswiv_sw{-webkit-appearance:none;-moz-appearance:none;appearance:none;background-color:transparent;border-width:0;font-family:inherit;font-size:inherit;font-weight:inherit;margin:0;outline:none;padding:0;background-color:var(--input-background-color);border-radius:2px;box-sizing:border-box;color:var(--input-foreground-color);font-family:inherit;height:20px;line-height:20px;min-width:0;width:100%}.tp-cswiv_sw:hover{background-color:var(--input-background-color-hover)}.tp-cswiv_sw:focus{background-color:var(--input-background-color-focus)}.tp-cswiv_sw:active{background-color:var(--input-background-color-active)}.tp-cswiv_b{-webkit-appearance:none;-moz-appearance:none;appearance:none;background-color:transparent;border-width:0;cursor:pointer;display:block;height:20px;left:0;margin:0;outline:none;padding:0;position:absolute;top:0;width:20px}.tp-cswiv_b:focus::after{border:rgba(255,255,255,0.75) solid 2px;border-radius:2px;bottom:0;content:'';display:block;left:0;position:absolute;right:0;top:0}.tp-cswiv_p{left:-4px;position:absolute;right:-4px;top:20px}.tp-cswtxtiv{display:flex;position:relative}.tp-cswtxtiv_s{flex-grow:0;flex-shrink:0;width:20px}.tp-cswtxtiv_t{flex:1;margin-left:4px}.tp-sldtxtiv{display:flex}.tp-sldtxtiv_s{flex:2}.tp-sldtxtiv_t{flex:1;margin-left:4px}.tp-lblv{align-items:center;display:flex;padding-left:4px;padding-right:4px}.tp-lblv_l{color:var(--label-foreground-color);flex:1;-webkit-hyphens:auto;-ms-hyphens:auto;hyphens:auto;overflow:hidden;padding-left:4px;padding-right:16px}.tp-lblv_v{align-self:flex-start;flex-grow:0;flex-shrink:0;width:160px}.tp-grpmv{display:block;padding:0;position:relative}.tp-grpmv_g{-webkit-appearance:none;-moz-appearance:none;appearance:none;background-color:transparent;border-width:0;font-family:inherit;font-size:inherit;font-weight:inherit;margin:0;outline:none;padding:0;background-color:var(--monitor-background-color);border-radius:2px;box-sizing:border-box;color:var(--monitor-foreground-color);height:20px;width:100%;display:block;height:60px}.tp-grpmv_g polyline{fill:none;stroke:var(--monitor-foreground-color);stroke-linejoin:round}.tp-grpmv_t{color:var(--monitor-foreground-color);font-size:0.9em;left:0;pointer-events:none;position:absolute;text-indent:4px;top:0;visibility:hidden}.tp-grpmv_t.tp-grpmv_t-valid{visibility:visible}.tp-grpmv_t::before{background-color:var(--monitor-foreground-color);border-radius:100%;content:'';display:block;height:4px;left:-2px;position:absolute;top:-2px;width:4px}.tp-sglmv_i{-webkit-appearance:none;-moz-appearance:none;appearance:none;background-color:transparent;border-width:0;font-family:inherit;font-size:inherit;font-weight:inherit;margin:0;outline:none;padding:0;background-color:var(--monitor-background-color);border-radius:2px;box-sizing:border-box;color:var(--monitor-foreground-color);height:20px;width:100%;padding:0 4px}.tp-mllmv_i{-webkit-appearance:none;-moz-appearance:none;appearance:none;background-color:transparent;border-width:0;font-family:inherit;font-size:inherit;font-weight:inherit;margin:0;outline:none;padding:0;background-color:var(--monitor-background-color);border-radius:2px;box-sizing:border-box;color:var(--monitor-foreground-color);height:20px;width:100%;display:block;height:60px;line-height:20px;padding:0 4px;resize:none;white-space:pre}.tp-cswmv_sw{-webkit-appearance:none;-moz-appearance:none;appearance:none;background-color:transparent;border-width:0;font-family:inherit;font-size:inherit;font-weight:inherit;margin:0;outline:none;padding:0;background-color:var(--monitor-background-color);border-radius:2px;box-sizing:border-box;color:var(--monitor-foreground-color);height:20px;width:100%}.tp-rotv{--font-family: var(--tp-font-family, Roboto Mono,Source Code Pro,Menlo,Courier,monospace);--base-background-color: var(--tp-base-background-color, #2f3137);--base-shadow-color: var(--tp-base-shadow-color, rgba(0,0,0,0.2));--button-background-color: var(--tp-button-background-color, #adafb8);--button-background-color-active: var(--tp-button-background-color-active, #d6d7db);--button-background-color-focus: var(--tp-button-background-color-focus, #c8cad0);--button-background-color-hover: var(--tp-button-background-color-hover, #bbbcc4);--button-foreground-color: var(--tp-button-foreground-color, #2f3137);--folder-background-color: var(--tp-folder-background-color, rgba(200,202,208,0.1));--folder-background-color-active: var(--tp-folder-background-color-active, rgba(200,202,208,0.25));--folder-background-color-focus: var(--tp-folder-background-color-focus, rgba(200,202,208,0.2));--folder-background-color-hover: var(--tp-folder-background-color-hover, rgba(200,202,208,0.15));--folder-foreground-color: var(--tp-folder-foreground-color, #c8cad0);--input-background-color: var(--tp-input-background-color, rgba(200,202,208,0.15));--input-background-color-active: var(--tp-input-background-color-active, rgba(200,202,208,0.35));--input-background-color-focus: var(--tp-input-background-color-focus, rgba(200,202,208,0.25));--input-background-color-hover: var(--tp-input-background-color-hover, rgba(200,202,208,0.15));--input-foreground-color: var(--tp-input-foreground-color, #c8cad0);--input-guide-color: var(--tp-input-guide-color, rgba(47,49,55,0.5));--label-foreground-color: var(--tp-label-foreground-color, rgba(200,202,208,0.8));--monitor-background-color: var(--tp-monitor-background-color, rgba(24,24,27,0.5));--monitor-foreground-color: var(--tp-monitor-foreground-color, rgba(200,202,208,0.7));--separator-color: var(--tp-separator-color, rgba(24,24,27,0.3));background-color:var(--base-background-color);border-radius:6px;box-shadow:0 2px 4px var(--base-shadow-color);font-family:var(--font-family);font-size:11px;font-weight:500;text-align:left}.tp-rotv_t{border-bottom-left-radius:6px;border-bottom-right-radius:6px;border-top-left-radius:6px;border-top-right-radius:6px}.tp-rotv.tp-rotv-expanded .tp-rotv_t{border-bottom-left-radius:0;border-bottom-right-radius:0}.tp-rotv_m{transition:none}.tp-rotv_c>.tp-fldv:last-child>.tp-fldv_c{border-bottom-left-radius:6px;border-bottom-right-radius:6px}.tp-rotv_c>.tp-fldv:last-child:not(.tp-fldv-expanded)>.tp-fldv_t{border-bottom-left-radius:6px;border-bottom-right-radius:6px}.tp-rotv_c>.tp-fldv:first-child>.tp-fldv_t{border-top-left-radius:6px;border-top-right-radius:6px}.tp-sptv_r{background-color:var(--separator-color);border-width:0;display:block;height:4px;margin:0;width:100%}.tp-v.tp-v-hidden{display:none}\n", ""]);
+        }
+      })["default"];
     });
   }
 });
@@ -33237,7 +35243,6 @@ async function main() {
   }
 }
 main();
-/*! Tweakpane 1.6.1 (c) 2016 cocopon, licensed under the MIT license. */
 /**
  * @license
  * Copyright (c) 2017 The Polymer Project Authors. All rights reserved.
