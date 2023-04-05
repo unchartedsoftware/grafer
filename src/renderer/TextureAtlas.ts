@@ -1,10 +1,8 @@
-import {DataMappings, packData, printDataGL} from '../data/DataTools';
+import {DataMappings, packData} from '../data/DataTools';
 import {GraferContext} from './GraferContext';
 import potpack from 'potpack';
 import {GLDataTypes} from './Renderable';
-import PicoGL, {App, Texture} from 'picogl';
-import testVS from './shaders/LabelAtlas.test.vs.glsl';
-import testFS from './shaders/noop.fs.glsl';
+import PicoGL, { Texture} from 'picogl';
 
 export const kImageMargin = 12;
 const INF = 1e20;

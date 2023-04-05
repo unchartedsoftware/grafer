@@ -4,7 +4,7 @@ import dataVS from './CurvedPath.data.vs.glsl';
 
 import {App, DrawCall, PicoGL, Program, VertexArray, VertexBuffer} from 'picogl';
 import {GraferInputColor} from '../../../renderer/colors/ColorRegistry';
-import {DataMappings, DataShader, kDataMappingFlatten, printDataGL} from '../../../data/DataTools';
+import {DataMappings, DataShader, kDataMappingFlatten} from '../../../data/DataTools';
 import {
     GLDataTypes,
     RenderableShaders,

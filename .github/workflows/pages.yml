@@ -1,45 +1,49 @@
+---
+# Build and Deploy the github pages
 name: pages
 on:
     push:
         branches:
             - main
-jobs:
-    clean-lint-build-test:
 
-        runs-on: ubuntu-latest
+permissions:
+    contents: write
+
+jobs:
+    build-and-deploy-pages:
+        runs-on: ubuntu-22.04
 
         strategy:
             matrix:
-                node-version: [14.x]
+                node-version: [14.x, 16.x, 18.x]
 
         steps:
-            - name: checkout
-              uses: actions/checkout@v2
+            - name: Checkout thhe code
+              uses: actions/checkout@v3
 
             - name: Use Node.js ${{ matrix.node-version }}
-              uses: actions/setup-node@v1
+              uses: actions/setup-node@v3
               with:
                   node-version: ${{ matrix.node-version }}
-            - run: npm install -g yarn
+                  cache: 'yarn'
 
-            - name: install
-              run: yarn
+            - name: YARN Install
+              run: yarn install --immutable
 
-            - name: clean
+            - name: YARN Clean
               run: yarn clean
 
-            - name: lint
+            - name: Lint the code
               run: yarn lint
 
-            - name: build
+            - name: Build the examples
               run: yarn examples
 
-            - name: test
+            - name: Test
               run: yarn test
 
             - name: Deploy
-              uses: JamesIves/github-pages-deploy-action@3.6.2
+              uses: JamesIves/github-pages-deploy-action@v4.4.1
               with:
-                GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-                BRANCH: gh-pages
-                FOLDER: build/examples
+                  branch: gh-pages
+                  folder: build/examples

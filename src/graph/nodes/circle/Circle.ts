@@ -6,7 +6,7 @@ import pickingFS from './Circle.picking.fs.glsl';
 import {BasicNodeData, kBasicNodeDataTypes, Nodes} from '../Nodes';
 import {App, DrawCall, PicoGL, Program, VertexArray, VertexBuffer} from 'picogl';
 import {GraphPoints} from '../../../data/GraphPoints';
-import {DataMappings, DataShader, printDataGL} from '../../../data/DataTools';
+import {DataMappings, DataShader} from '../../../data/DataTools';
 import {PickingColors, PickingEvent, PickingManager} from '../../../UX/picking/PickingManager';
 import {MouseCallback} from '../../../UX/mouse/MouseHandler';
 import {

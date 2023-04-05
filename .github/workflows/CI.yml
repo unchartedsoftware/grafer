@@ -1,31 +1,37 @@
-
+---
+# Main build and test CI
 name: CI
 
 on: [push, pull_request] # Run on Push and Pull Requests
 
 jobs:
     clean-lint-build-test:
-
-        runs-on: ubuntu-latest
+        runs-on: ubuntu-22.04
 
         strategy:
             matrix:
-                node-version: [14.x]
+                node-version: [14.x, 16.x, 18.x]
 
         steps:
-            - uses: actions/checkout@v2
+            - uses: actions/checkout@v3
+
             - name: Use Node.js ${{ matrix.node-version }}
-              uses: actions/setup-node@v1
+              uses: actions/setup-node@v3
               with:
                   node-version: ${{ matrix.node-version }}
-            - run: npm install -g yarn
-            - name: install
+                  cache: 'yarn'
+
+            - name: Install dependencies
               run: yarn
-            - name: clean
+
+            - name: Clean build directories
               run: yarn clean
-            - name: lint
+
+            - name: Lint the code
               run: yarn lint
-            - name: build
+
+            - name: Build
               run: yarn build
-            - name: test
+
+            - name: Run Tests
               run: yarn test
