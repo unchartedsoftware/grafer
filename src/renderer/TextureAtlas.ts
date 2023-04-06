@@ -74,7 +74,7 @@ export class TextureAtlas {
         const canvas = document.createElement('canvas');
         canvas.setAttribute('style', 'font-smooth: never;-webkit-font-smoothing : none;');
 
-        const ctx = canvas.getContext('2d', { willReadFrequently: true });
+        const ctx = canvas.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
 
         const boxes = Array.from(this.boxes.values());
         const pack = potpack(boxes);
