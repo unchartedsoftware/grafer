@@ -61,6 +61,7 @@ All documentaton, including API reference, is available [here](./docs/table-of-c
 
 ### Publishing Instructions
 
-1. `yarn run prepack` to run build and validation scripts
+1. Remove all uncommitted changes from the `src` directory
 2. `npm version <new_version_num>` to update the version number
-3. `npm publish` to publish to NPM
+3. `yarn run prepack` to run build and validation scripts
+4. `npm publish` to publish to NPM
