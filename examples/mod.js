@@ -30054,6 +30054,59 @@ var DebugMenu = class {
   }
 };
 
+// src/utilities/mod.ts
+var mod_exports14 = {};
+__export(mod_exports14, {
+  ColorManager: () => ColorManager,
+  generateGradient: () => generateGradient
+});
+
+// src/utilities/ColorManager.ts
+var ColorManager = class {
+  constructor(colorMap = {}) {
+    this.keyArray = Object.keys(colorMap);
+    this.colorArray = Object.values(colorMap);
+  }
+  addColor(id, color) {
+    if (!this.keyArray.includes(id)) {
+      this.keyArray.push(id);
+      this.colorArray.push(color);
+    }
+  }
+  getIndexByKey(id) {
+    const index = this.keyArray.indexOf(id);
+    if (index === -1) {
+      throw Error(`Color with key ${id} not found`);
+    }
+    return index;
+  }
+};
+
+// src/utilities/gradient.ts
+function generateGradient(colorList, samples) {
+  const hexRgbList = [];
+  const samplesPerPair = Math.ceil((samples - colorList.length) / (colorList.length - 1));
+  for (let i = 0; i < colorList.length - 1; i++) {
+    const startColor = colorList[i];
+    const endColor = colorList[i + 1];
+    hexRgbList.push(startColor);
+    const startR = parseInt(startColor.substring(1, 3), 16);
+    const startG = parseInt(startColor.substring(3, 5), 16);
+    const startB = parseInt(startColor.substring(5, 7), 16);
+    const endR = parseInt(endColor.substring(1, 3), 16);
+    const endG = parseInt(endColor.substring(3, 5), 16);
+    const endB = parseInt(endColor.substring(5, 7), 16);
+    for (let j = 1; j < samplesPerPair + 1; j++) {
+      const interR = Math.round(startR + (endR - startR) / (samplesPerPair + 1) * j).toString(16).padStart(2, "0");
+      const interG = Math.round(startG + (endG - startG) / (samplesPerPair + 1) * j).toString(16).padStart(2, "0");
+      const interB = Math.round(startB + (endB - startB) / (samplesPerPair + 1) * j).toString(16).padStart(2, "0");
+      hexRgbList.push(`#${interR}${interG}${interB}`);
+    }
+  }
+  hexRgbList.push(colorList[colorList.length - 1]);
+  return hexRgbList.slice(0, samples);
+}
+
 // src/graph/Layer.ts
 var Layer = class extends EventEmitter {
   constructor(nodes, edges, labels, name = "Layer") {
@@ -30865,8 +30918,8 @@ async function playground(container) {
 }
 
 // examples/src/basic/mod.ts
-var mod_exports14 = {};
-__export(mod_exports14, {
+var mod_exports15 = {};
+__export(mod_exports15, {
   edgeColors: () => edgeColors,
   minimal: () => minimal,
   minimal3D: () => minimal3D,
@@ -31066,8 +31119,8 @@ async function nodeID(container) {
 }
 
 // examples/src/data/mod.ts
-var mod_exports15 = {};
-__export(mod_exports15, {
+var mod_exports16 = {};
+__export(mod_exports16, {
   addPoints: () => addPoints,
   colorRegistryIndexed: () => colorRegistryIndexed,
   colors: () => colors,
@@ -31363,8 +31416,8 @@ async function mappings(container) {
 }
 
 // examples/src/nodes/mod.ts
-var mod_exports16 = {};
-__export(mod_exports16, {
+var mod_exports17 = {};
+__export(mod_exports17, {
   box: () => box,
   circle: () => circle,
   cross: () => cross4,
@@ -31718,8 +31771,8 @@ async function custom(container) {
 }
 
 // examples/src/edges/mod.ts
-var mod_exports17 = {};
-__export(mod_exports17, {
+var mod_exports18 = {};
+__export(mod_exports18, {
   bundling: () => bundling,
   circuitBoard: () => circuitBoard,
   curvedPaths: () => curvedPaths,
@@ -32032,8 +32085,8 @@ async function bundling(container) {
 }
 
 // examples/src/labels/mod.ts
-var mod_exports18 = {};
-__export(mod_exports18, {
+var mod_exports19 = {};
+__export(mod_exports19, {
   circularLabel: () => circularLabel,
   pointLabel: () => pointLabel,
   ringLabel: () => ringLabel
@@ -32206,8 +32259,8 @@ async function ringLabel(container) {
 }
 
 // examples/src/UX/mod.ts
-var mod_exports19 = {};
-__export(mod_exports19, {
+var mod_exports20 = {};
+__export(mod_exports20, {
   animation: () => animation,
   embedded: () => embedded,
   overlay: () => overlay,
@@ -32711,8 +32764,8 @@ async function animation(container) {
 }
 
 // examples/src/quickstart/mod.ts
-var mod_exports20 = {};
-__export(mod_exports20, {
+var mod_exports21 = {};
+__export(mod_exports21, {
   quickstart1: () => quickstart1,
   quickstart2: () => quickstart2,
   quickstart3: () => quickstart3,
@@ -33552,8 +33605,8 @@ async function quickstart4(container) {
 }
 
 // examples/src/benchmarks/mod.ts
-var mod_exports21 = {};
-__export(mod_exports21, {
+var mod_exports22 = {};
+__export(mod_exports22, {
   benchmarkEdge: () => benchmarkEdge,
   benchmarkLabel: () => benchmarkLabel,
   benchmarkNode: () => benchmarkNode
@@ -33798,8 +33851,8 @@ async function benchmarkLabel(container) {
 }
 
 // examples/src/aske/mod.ts
-var mod_exports22 = {};
-__export(mod_exports22, {
+var mod_exports23 = {};
+__export(mod_exports23, {
   bundledEdgesLoader: () => bundledEdgesLoader,
   knowledgeViewLoader: () => knowledgeViewLoader
 });
@@ -35231,15 +35284,15 @@ MouseInteractions = __decorateClass([
 
 // examples/src/mod.ts
 var examples = {
-  basic: mod_exports14,
-  data: mod_exports15,
-  nodes: mod_exports16,
-  edges: mod_exports17,
-  labels: mod_exports18,
-  UX: mod_exports19,
-  quickstart: mod_exports20,
-  benchmarks: mod_exports21,
-  aske: mod_exports22,
+  basic: mod_exports15,
+  data: mod_exports16,
+  nodes: mod_exports17,
+  edges: mod_exports18,
+  labels: mod_exports19,
+  UX: mod_exports20,
+  quickstart: mod_exports21,
+  benchmarks: mod_exports22,
+  aske: mod_exports23,
   playground
 };
 function getExample(examples2, path) {
