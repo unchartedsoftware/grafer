@@ -17102,7 +17102,7 @@ var GraphPoints = class extends DataTexture {
       max: vec3_exports.fromValues(Number.MIN_SAFE_INTEGER, Number.MIN_SAFE_INTEGER, Number.MIN_SAFE_INTEGER)
     };
     this.bbCenter = vec3_exports.create();
-    this._dataBuffer = this.packData(data, mappings2, true);
+    this._dataBuffer = this.packData(data, mappings2, true, true);
     this._dataView = new DataView(this._dataBuffer);
     const diagonalVec = vec3_exports.sub(vec3_exports.create(), this.bb.max, this.bb.min);
     this.bbDiagonal = vec3_exports.length(diagonalVec);
@@ -17154,11 +17154,24 @@ var GraphPoints = class extends DataTexture {
   getPointByID(id) {
     return this.getPointByIndex(this.getPointIndex(id));
   }
+  setPointByIndex(index, data, mappings2 = {}) {
+    const setBuffer = this.packData([data], mappings2, false, false);
+    const setView = new Float32Array(setBuffer);
+    const dataView = this._dataView;
+    dataView.setFloat32(index * 16, setView[0], true);
+    dataView.setFloat32(index * 16 + 4, setView[1], true);
+    dataView.setFloat32(index * 16 + 8, setView[2], true);
+    dataView.setFloat32(index * 16 + 12, setView[3], true);
+    this.dirty = true;
+  }
+  setPointByID(id, data, mappings2 = {}) {
+    return this.setPointByIndex(this.getPointIndex(id), data, mappings2);
+  }
   addPoints(data, mappings2 = {}) {
     this.resizeTexture(this._length + data.length);
     const mergeBuffer = new ArrayBuffer(this.capacity * 16);
     const mergeBytes = new Uint8Array(mergeBuffer);
-    const dataBuffer = this.packData(data, mappings2, false);
+    const dataBuffer = this.packData(data, mappings2, false, true);
     const dataBytes = new Uint8Array(dataBuffer);
     const oldBytes = new Uint8Array(this._dataBuffer, 0, this._length * 16);
     mergeBytes.set(oldBytes);
@@ -17173,10 +17186,11 @@ var GraphPoints = class extends DataTexture {
       internalFormat: picogl_default.RGBA32F
     });
   }
-  packData(data, mappings2, potLength) {
+  packData(data, mappings2, potLength, addMapEntry) {
     const dataMappings = Object.assign({}, kDefaultMappings, mappings2);
     return packData(data, dataMappings, kGLTypes, potLength, (i, entry) => {
-      this.map.set(entry.id, this._length + i);
+      if (addMapEntry)
+        this.map.set(entry.id, this._length + i);
       this.bb.min[0] = Math.min(this.bb.min[0], entry.x - entry.radius);
       this.bb.min[1] = Math.min(this.bb.min[1], entry.y - entry.radius);
       this.bb.min[2] = Math.min(this.bb.min[2], entry.z);
@@ -17734,29 +17748,22 @@ var RectObserver = class {
   }
   observe(element) {
     this.elementTarget = element;
-    this.elementTarget.addEventListener("mouseenter", this.handleMouseEnter.bind(this), false);
-    this.elementTarget.addEventListener("mouseleave", this.handleMouseLeave.bind(this), false);
     this.rect = this.elementTarget.getBoundingClientRect();
-  }
-  disconnect() {
-    clearInterval(this.poll);
-    this.elementTarget.removeEventListener("mouseenter", this.handleMouseEnter.bind(this), false);
-    this.elementTarget.removeEventListener("mouseleave", this.handleMouseLeave.bind(this), false);
-  }
-  handleMouseEnter() {
     this.pollElement();
     this.poll = setInterval(this.pollElement.bind(this), POLLING_RATE);
   }
+  disconnect() {
+    clearInterval(this.poll);
+  }
   pollElement() {
     const rect = this.elementTarget.getBoundingClientRect();
+    if (!this.elementTarget.isConnected) {
+      this.disconnect();
+    }
     if (!this.rectEqual(this.rect, rect)) {
       this.rect = rect;
       this.callback(this.rect);
     }
-  }
-  handleMouseLeave() {
-    this.pollElement();
-    clearInterval(this.poll);
   }
   rectEqual(prev, curr) {
     return prev.width === curr.width && prev.height === curr.height && prev.top === curr.top && prev.left === curr.left;
@@ -17897,7 +17904,7 @@ var TextureAtlas = class {
     this.dirty = false;
     const canvas = document.createElement("canvas");
     canvas.setAttribute("style", "font-smooth: never;-webkit-font-smoothing : none;");
-    const ctx = canvas.getContext("2d");
+    const ctx = canvas.getContext("2d", { willReadFrequently: true });
     const boxes = Array.from(this.boxes.values());
     const pack = potpack(boxes);
     if (!keyList) {
@@ -17915,7 +17922,9 @@ var TextureAtlas = class {
     const boxesBuffer = packData(boxes, kCharBoxDataMappings, kCharBoxDataTypes, true);
     this._boxesTexture = this.createTextureForBuffer(this.context, new Uint16Array(boxesBuffer), boxes.length, picogl_default.RGBA16UI);
     this._atlasTexture = this.context.createTexture2D(finalImage, {
-      flipY: true
+      flipY: true,
+      magFilter: picogl_default.NEAREST,
+      minFilter: picogl_default.NEAREST
     });
     const labelDataMappings = {
       texture: (entry) => this.textureKeyMap.get(entry)
@@ -18429,7 +18438,7 @@ var LayerRenderable = class extends PointsReaderEmitter {
     context.depthRange(this.nearDepth, this.farDepth);
     switch (renderMode) {
       case RenderMode.PICKING:
-        context.depthMask(true);
+        context.depthMask(false);
         context.disable(PicoGL.BLEND);
         break;
       case RenderMode.HIGH_PASS_2:
@@ -28930,7 +28939,7 @@ var kOffsetDataTypes = {
 var LabelAtlas = class extends TextureAtlas {
   constructor(context, data, mappings2, font, bold = false, charSpacing = 0) {
     super(context);
-    this.letterSpacing = 5;
+    this.letterSpacing = 2;
     this.fontSizeStep = 25;
     this.spaceSizeMap = new Map();
     this.labelMap = new Map();
@@ -28947,11 +28956,11 @@ var LabelAtlas = class extends TextureAtlas {
   async processData(context, data, mappings2, font, bold, charSpacing) {
     const canvas = document.createElement("canvas");
     canvas.setAttribute("style", "font-smooth: never;-webkit-font-smoothing : none;");
-    const ctx = canvas.getContext("2d");
+    const ctx = canvas.getContext("2d", { willReadFrequently: true });
     const boxMap = new Map();
     const labels = [];
     const offsets = [];
-    const charNegMargin = (1 - charSpacing) * this.letterSpacing;
+    const charNegMargin = (1 - charSpacing * this.labelPixelRatio) * this.letterSpacing;
     for (const [, entry] of dataIterator(data, mappings2)) {
       if (typeof entry.label === "string") {
         const renderSize = Math.max(entry.fontSize, Math.floor(entry.fontSize / this.fontSizeStep) * this.fontSizeStep);
@@ -29944,6 +29953,21 @@ var Coordinate = class {
     const y = projected[1] / projected[3] * size[1] * 0.5 + size[1] * 0.5;
     return vec2_exports.set(vec2_exports.create(), x, y);
   }
+  static relativePixelCoordinateToWorldPoint(controller, point) {
+    const camera = controller.viewport.camera;
+    const projectionMatrixInverse = mat4_exports.invert(mat4_exports.create(), camera.projectionMatrix);
+    const viewMatrixInverse = mat4_exports.invert(mat4_exports.create(), camera.viewMatrix);
+    const graphMatrixInverse = mat4_exports.invert(mat4_exports.create(), controller.viewport.graph.matrix);
+    const size = controller.viewport.size;
+    const x = point[0];
+    const y = point[1];
+    const deviceSpaceCoord = vec4_exports.set(vec4_exports.create(), (x / (size[0] * 0.5) - 1) * 1, (y / (size[1] * 0.5) - 1) * 1, 0, 1);
+    const worldSpaceCoord = vec4_exports.create();
+    vec4_exports.transformMat4(worldSpaceCoord, deviceSpaceCoord, projectionMatrixInverse);
+    vec4_exports.transformMat4(worldSpaceCoord, worldSpaceCoord, viewMatrixInverse);
+    vec4_exports.transformMat4(worldSpaceCoord, worldSpaceCoord, graphMatrixInverse);
+    return worldSpaceCoord;
+  }
 };
 
 // src/UX/debug/DebugMenu.ts
@@ -30242,29 +30266,33 @@ var GraferController = class extends EventEmitter {
   get hasColors() {
     return this._hasColors;
   }
+  get interactionModules() {
+    return this._interactionModules;
+  }
   constructor(canvas, data, options) {
     super();
     const opts = Object.assign({}, kDefaultOptions3, options);
     this._viewport = new Viewport(canvas, opts.viewport);
     this._loadTexturesAsync = Boolean(opts.loadTexturesAsync);
     this._generateIdPrev = 0;
+    this._interactionModules = {};
     if (this._viewport.camera.mode === CameraMode["2D"]) {
-      const translate2 = new DragTranslate(this._viewport);
-      translate2.enabled = true;
-      const scale6 = new ScrollScale(this._viewport);
-      scale6.enabled = true;
+      this._interactionModules.translate = new DragTranslate(this._viewport);
+      this._interactionModules.translate.enabled = true;
+      this._interactionModules.scale = new ScrollScale(this._viewport);
+      this._interactionModules.scale.enabled = true;
     } else {
-      const dolly = new ScrollDolly(this._viewport);
-      dolly.enabled = true;
-      const truck = new DragTruck(this._viewport);
-      truck.button = "primary";
-      truck.enabled = true;
-      const rotation = new DragRotation(this._viewport);
-      rotation.button = "secondary";
-      rotation.enabled = true;
-      const pan = new DragPan(this._viewport);
-      pan.button = "auxiliary";
-      pan.enabled = true;
+      this._interactionModules.dolly = new ScrollDolly(this._viewport);
+      this._interactionModules.dolly.enabled = true;
+      this._interactionModules.truck = new DragTruck(this._viewport);
+      this._interactionModules.truck.button = "primary";
+      this._interactionModules.truck.enabled = true;
+      this._interactionModules.rotation = new DragRotation(this._viewport);
+      this._interactionModules.rotation.button = "secondary";
+      this._interactionModules.rotation.enabled = true;
+      this._interactionModules.pan = new DragPan(this._viewport);
+      this._interactionModules.pan.button = "auxiliary";
+      this._interactionModules.pan.enabled = true;
     }
     if (data) {
       this.loadData(data);
