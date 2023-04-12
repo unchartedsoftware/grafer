@@ -76,7 +76,7 @@ export class GraphPoints extends DataTexture {
         };
         this.bbCenter = vec3.create();
 
-        this._dataBuffer = this.packData(data, mappings, true);
+        this._dataBuffer = this.packData(data, mappings, true, true);
         this._dataView = new DataView(this._dataBuffer);
 
         const diagonalVec = vec3.sub(vec3.create(), this.bb.max, this.bb.min);
@@ -124,13 +124,30 @@ export class GraphPoints extends DataTexture {
         return this.getPointByIndex(this.getPointIndex(id));
     }
 
+    public setPointByIndex(index: number, data: unknown, mappings: Partial<PointDataMappings> = {}): void {
+        const setBuffer = this.packData([data], mappings, false, false);
+        const setView = new Float32Array(setBuffer);
+
+        const dataView = this._dataView;
+        dataView.setFloat32(index * 16, setView[0], true);
+        dataView.setFloat32(index * 16 + 4, setView[1], true);
+        dataView.setFloat32(index * 16 + 8, setView[2], true);
+        dataView.setFloat32(index * 16 + 12, setView[3], true);
+
+        this.dirty = true;
+    }
+
+    public setPointByID(id: number | string, data: unknown, mappings: Partial<PointDataMappings> = {}): void {
+        return this.setPointByIndex(this.getPointIndex(id), data, mappings);
+    }
+
     public addPoints(data: unknown[], mappings: Partial<PointDataMappings> = {}): void {
         this.resizeTexture(this._length + data.length);
 
         const mergeBuffer = new ArrayBuffer(this.capacity * 16); // 16 bytes for 4 floats
         const mergeBytes = new Uint8Array(mergeBuffer);
 
-        const dataBuffer = this.packData(data, mappings, false);
+        const dataBuffer = this.packData(data, mappings, false, true);
         const dataBytes = new Uint8Array(dataBuffer);
         const oldBytes = new Uint8Array(this._dataBuffer, 0, this._length * 16);
 
@@ -149,10 +166,10 @@ export class GraphPoints extends DataTexture {
         });
     }
 
-    protected packData(data: unknown[], mappings: Partial<PointDataMappings>, potLength: boolean): ArrayBuffer {
+    protected packData(data: unknown[], mappings: Partial<PointDataMappings>, potLength: boolean, addMapEntry: boolean): ArrayBuffer {
         const dataMappings: PointDataMappings = Object.assign({}, kDefaultMappings, mappings);
         return packData(data, dataMappings, kGLTypes, potLength, (i, entry) => {
-            this.map.set(entry.id, this._length + i);
+            if(addMapEntry) this.map.set(entry.id, this._length + i);
 
             this.bb.min[0] = Math.min(this.bb.min[0], entry.x - entry.radius);
             this.bb.min[1] = Math.min(this.bb.min[1], entry.y - entry.radius);

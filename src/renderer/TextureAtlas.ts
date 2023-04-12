@@ -72,7 +72,7 @@ export class TextureAtlas {
         const canvas = document.createElement('canvas');
         canvas.setAttribute('style', 'font-smooth: never;-webkit-font-smoothing : none;');
 
-        const ctx = canvas.getContext('2d');
+        const ctx = canvas.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
 
         const boxes = Array.from(this.boxes.values());
         const pack = potpack(boxes);
@@ -95,8 +95,8 @@ export class TextureAtlas {
         this._atlasTexture = this.context.createTexture2D(finalImage as unknown as HTMLImageElement, {
             flipY: true,
             // premultiplyAlpha: true,
-            // magFilter: PicoGL.NEAREST,
-            // minFilter: PicoGL.NEAREST,
+            magFilter: PicoGL.NEAREST,
+            minFilter: PicoGL.NEAREST,
         });
 
         const labelDataMappings: DataMappings<{ texture: number }> = {

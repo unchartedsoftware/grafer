@@ -9,10 +9,16 @@ The Grafer controller ingests data to be displayed in addition to configuration 
 The GraferController constructor ingests graph data in addition to configuration options.
 
 ### Parameters
-#### `canvas`
+#### `element`
 ###### HTMLElement \| HTMLCanvasElement
 
 An HTML element which Grafer will render the graph into. If a canvas element is provided Grafer will render into that, otherwise a canvas element will be created as a child of the provided HTML element.
+
+**Warning**: Grafer assumes that the dimensions of the canvas element, whether it be created by the user or by Grafer, will be limited by either the CSS properties of the canvas itself, or the parent of the canvas. In other words, the canvas size should not be able to effect the dimensions of its parent element.
+
+Note that this requirement is not met by using a grid item as the parent without limiting the ability of the grid element to overflow the grid. Neither is it met using a flex item as the parent without limiting the ability of the flex item to overflow its bounds. In either case, this can be fixed by adding the CSS property `min-[height/width]: 0` to the parent. See [here](https://css-tricks.com/preventing-a-grid-blowout/) for more information on grid behaviour and [here](https://css-tricks.com/preventing-a-grid-blowout/) for more information on flex behaviour.
+
+Failure to meet this requirement can result in unexpected behaviour from Grafer, such as infinite growth of the canvas dimensions.
 
 #### `data`
 ###### GraferControllerData
@@ -42,6 +48,11 @@ Instance of the PicoGL renderer used by Grafer for rendering.
 ###### boolean - *read only*
 
 Indication of whether a colors array was provided to the grafer controller during initialization.
+
+### `interactionModules`
+###### InteractionModules - *read only*
+
+Contains references to instances of all interaction modules active on the graph. Interaction modules are the classes responsible for moving the camera. A 2D camera requires different interaction modules compared to a 3D camera. See [InteractionModules](./interaction-modules.md) for more information.
 
 <br>
 

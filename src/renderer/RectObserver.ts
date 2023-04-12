@@ -15,34 +15,27 @@ export default class RectObserver {
     public observe(element: HTMLElement): void {
         this.elementTarget = element;
 
-        this.elementTarget.addEventListener("mouseenter", this.handleMouseEnter.bind(this), false);
-        this.elementTarget.addEventListener("mouseleave", this.handleMouseLeave.bind(this), false);
-
         this.rect = this.elementTarget.getBoundingClientRect();
-    }
-
-    public disconnect(): void {
-        clearInterval(this.poll);
-        this.elementTarget.removeEventListener("mouseenter", this.handleMouseEnter.bind(this), false);
-        this.elementTarget.removeEventListener("mouseleave", this.handleMouseLeave.bind(this), false);
-    }
-
-    private handleMouseEnter(): void {
         this.pollElement();
         this.poll = setInterval(this.pollElement.bind(this), POLLING_RATE);
     }
 
+    public disconnect(): void {
+        clearInterval(this.poll);
+    }
+
     private pollElement(): void {
         const rect = this.elementTarget.getBoundingClientRect();
+
+        // remove observer if element is removed
+        if(!this.elementTarget.isConnected) {
+            this.disconnect();
+        }
+
         if(!this.rectEqual(this.rect, rect)) {
             this.rect = rect;
             this.callback(this.rect);
         }
-    }
-
-    private handleMouseLeave(): void {
-        this.pollElement();
-        clearInterval(this.poll);
     }
 
     public rectEqual(prev: DOMRectReadOnly, curr: DOMRectReadOnly): boolean {

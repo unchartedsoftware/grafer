@@ -99,7 +99,7 @@ export abstract class LayerRenderable<T_SRC, T_TGT> extends PointsReaderEmitter<
 
         switch (renderMode) {
             case RenderMode.PICKING:
-                context.depthMask(true);
+                context.depthMask(false);
                 context.disable(PicoGL.BLEND);
                 break;
 

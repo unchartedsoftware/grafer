@@ -32,7 +32,7 @@ export const kOffsetDataTypes: GLDataTypes<DataMappings<{ offset: number }>> = {
 };
 
 export class LabelAtlas extends TextureAtlas {
-    protected readonly letterSpacing = 5;
+    protected readonly letterSpacing = 2;
     protected readonly fontSizeStep: number = 25;
     protected readonly spaceSizeMap: Map<string, number> = new Map();
     public readonly labelMap: Map<number | string, LabelRenderInfo>;
@@ -62,11 +62,11 @@ export class LabelAtlas extends TextureAtlas {
         const canvas = document.createElement('canvas');
         canvas.setAttribute('style', 'font-smooth: never;-webkit-font-smoothing : none;');
 
-        const ctx = canvas.getContext('2d');
+        const ctx = canvas.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
         const boxMap = new Map<string, any>();
         const labels = [];
         const offsets = [];
-        const charNegMargin = (1 - charSpacing) * this.letterSpacing;
+        const charNegMargin = (1 - charSpacing * this.labelPixelRatio) * this.letterSpacing;
 
         for (const [, entry] of dataIterator(data, mappings)) {
             if (typeof entry.label === 'string') {
