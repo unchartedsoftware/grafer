@@ -50,3 +50,9 @@ The loaders object contains functions which are used to parse data from differen
 ### `renderer`
 
 The renderer object contains type definitions and enums related to the rendering.
+
+### `utilities`
+
+Various utility classes or functions designed to make Grafer easier to use that are not built into Grafer.
+
+See [utilities](./utilities.md) for more information.
