@@ -18,6 +18,7 @@ import {GLCircleNodeTypes} from '../../nodes/circle/Circle';
 import {GraferContext} from '../../../renderer/GraferContext';
 import {kLabelMappings, LabelAtlas, LabelData} from '../LabelAtlas';
 import {GraferInputColor} from '../../../renderer/colors/ColorRegistry';
+import {PixelRatioObserver} from '../../../renderer/PixelRatioObserver';
 
 export interface LabelNodeData extends Omit<LabelData, 'label'> {
     point: number | string;
@@ -148,6 +149,24 @@ export class PointLabel extends Nodes<LabelNodeData, GLLabelNodeTypes> {
             this.labelAtlas = labelAtlas;
         } else {
             this.labelAtlas = new LabelAtlas(context, data, mappings as Partial<DataMappings<LabelData>>, font, bold, charSpacing);
+            new PixelRatioObserver(() => {
+                this.labelAtlas = new LabelAtlas(context, data, mappings as Partial<DataMappings<LabelData>>, font, bold, charSpacing);
+                super.initialize(context, points, data, mappings, pickingManager);
+
+                this.nodesVAO = context.createVertexArray().vertexAttributeBuffer(0, this.verticesVBO);
+                this.configureTargetVAO(this.nodesVAO);
+
+                this.drawCall = context.createDrawCall(this.program, this.nodesVAO).primitive(PicoGL.TRIANGLE_STRIP);
+
+                this.compute(context, {
+                    uGraphPoints: this.dataTexture,
+                });
+
+                this.localUniforms.uLabelIndices = this.labelAtlas.indicesTexture;
+                this.localUniforms.uCharBoxes = this.labelAtlas.boxesTexture;
+                this.localUniforms.uCharTexture = this.labelAtlas.atlasTexture;
+                this.localUniforms.uLabelOffsets = this.labelAtlas.offsetsTexture;
+            });
         }
 
         super.initialize(context, points, data, mappings, pickingManager);

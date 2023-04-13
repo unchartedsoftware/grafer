@@ -32,6 +32,7 @@ export const kOffsetDataTypes: GLDataTypes<DataMappings<{ offset: number }>> = {
 };
 
 export class LabelAtlas extends TextureAtlas {
+    protected readonly labelPixelRatio = window.devicePixelRatio;
     protected readonly letterSpacing = 2;
     protected readonly fontSizeStep: number = 25;
     protected readonly spaceSizeMap: Map<string, number> = new Map();

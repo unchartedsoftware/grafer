@@ -31,7 +31,6 @@ export const kLabelDataTypes: GLDataTypes<DataMappings<{ texture: number }>> = {
 export class TextureAtlas {
     private dirty = false;
     private context: GraferContext;
-    public readonly labelPixelRatio: number = window.devicePixelRatio;
     public readonly textureKeyMap: Map<string, number> = new Map();
     private readonly boxes: Map<string, BoxObject> = new Map();
     private boxesKeys: {[key: string]: number} = {};
