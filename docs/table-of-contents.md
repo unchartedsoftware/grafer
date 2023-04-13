@@ -22,7 +22,7 @@ A brief overview of how to access various parts of the Grafer library is provide
         - [animation](./api/animation.md)
             - [AnimationManager](./api/animation-manager.md)
             - [PropertyInterpolator](./api/animation.md#propertyinterpolator)
-        - [coordination](./api/coordinate.md)
+        - [coordinate](./api/coordinate.md)
             - [Coordinate](./api/ccoordinate.md)
             - [PixelCoordXPosition](./api/pixel-coord-x-position.md)
             - [PixelCoordYPosition](./api/pixel-coord-y-position.md)
@@ -45,3 +45,6 @@ A brief overview of how to access various parts of the Grafer library is provide
             - [PointLabelPlacement](./api/point-label-placement.md)
     - [loaders](./api/top-level.md#loaders)
     - [renderer](./api/top-level.md#renderer)
+    - [utilities][./api/utilities.md]
+        - [ColorManager](./api/color-manager.md)
+        - [generateGradient](./api/utilities.md#generategradient)
