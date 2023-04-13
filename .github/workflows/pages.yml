@@ -13,18 +13,14 @@ jobs:
     build-and-deploy-pages:
         runs-on: ubuntu-22.04
 
-        strategy:
-            matrix:
-                node-version: [14.x, 16.x, 18.x]
-
         steps:
             - name: Checkout thhe code
               uses: actions/checkout@v3
 
-            - name: Use Node.js ${{ matrix.node-version }}
+            - name: Use Node.js 18
               uses: actions/setup-node@v3
               with:
-                  node-version: ${{ matrix.node-version }}
+                  node-version: 18
                   cache: 'yarn'
 
             - name: YARN Install
