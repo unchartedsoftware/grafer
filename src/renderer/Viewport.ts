@@ -10,6 +10,7 @@ import {ColorRegistryIndexed} from './colors/ColorRegistryIndexed';
 import RectObserver from './RectObserver';
 import {ColorRegistryMapped} from './colors/ColorRegistryMapped';
 import {TextureRegistry} from './textures/TextureRegistry';
+import {PixelRatioObserver} from './PixelRatioObserver';
 
 export interface ViewportOptions {
     colorRegistryType?: ColorRegistryType;
@@ -84,6 +85,9 @@ export class Viewport {
         this.context.enable(PicoGL.POLYGON_OFFSET_FILL);
         this.context.depthFunc(PicoGL.LESS);
         this.context.pixelRatio = pixelRatio;
+        new PixelRatioObserver(pixelRatio => {
+            this.context.pixelRatio = pixelRatio;
+        });
 
         this.mouseHandler = new MouseHandler(this.canvas, this.rect, this.pixelRatio);
 

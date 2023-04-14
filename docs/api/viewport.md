@@ -73,7 +73,7 @@ Get and set the background color of the graph. The color is formatted as a [vec4
 #### `pixelRatio`
 ###### number - *read-only*
 
-Retrieves the [pixel ratio](https://developer.mozilla.org/en-US/docs/Web/API/Window/devicePixelRatio) used by Grafer.
+Retrieves the [pixel ratio](https://developer.mozilla.org/en-US/docs/Web/API/Window/devicePixelRatio) used by Grafer. Note that this is updated automatically as the browser pixel ratio changes due to browser level zoom etc.
 
 <br>
 

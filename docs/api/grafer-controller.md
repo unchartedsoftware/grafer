@@ -28,7 +28,7 @@ An object holding the information needed to render the graph, including an array
 #### `options`
 ###### GraferControllerOptions - *optional*
 
-An object containing options specifying how the renderer operates. See [GraferControllerOptions](./grafer-controller.options.md) for more information.
+An object containing options specifying how the renderer operates. See [GraferControllerOptions](./grafer-controller-options.md) for more information.
 
 <br>
 
