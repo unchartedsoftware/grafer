@@ -17875,7 +17875,6 @@ var kLabelDataTypes = {
 var TextureAtlas = class {
   constructor(context) {
     this.dirty = false;
-    this.labelPixelRatio = window.devicePixelRatio;
     this.textureKeyMap = new Map();
     this.boxes = new Map();
     this.boxesKeys = {};
@@ -18057,6 +18056,31 @@ var TextureRegistry = class extends TextureAtlas {
   }
 };
 
+// src/renderer/PixelRatioObserver.ts
+var subscriberSet = new Set();
+function listenOnDevicePixelRatio() {
+  function onChange() {
+    for (const subscriberFn of subscriberSet.values()) {
+      subscriberFn(window.devicePixelRatio);
+    }
+    listenOnDevicePixelRatio();
+  }
+  matchMedia(`(resolution: ${window.devicePixelRatio}dppx)`).addEventListener("change", onChange, { once: true });
+}
+listenOnDevicePixelRatio();
+var PixelRatioObserver = class {
+  constructor(callback) {
+    this.callback = (pixelRatio) => {
+      this.devicePixelRatio = pixelRatio;
+      callback(pixelRatio);
+    };
+    subscriberSet.add(callback);
+  }
+  disconnect() {
+    subscriberSet.delete(this.callback);
+  }
+};
+
 // src/renderer/Viewport.ts
 var kDefaultOptions2 = {
   colorRegistryType: ColorRegistryType.mapped,
@@ -18093,6 +18117,9 @@ var Viewport = class {
     this.context.enable(PicoGL.POLYGON_OFFSET_FILL);
     this.context.depthFunc(PicoGL.LESS);
     this.context.pixelRatio = pixelRatio;
+    new PixelRatioObserver((pixelRatio2) => {
+      this.context.pixelRatio = pixelRatio2;
+    });
     this.mouseHandler = new MouseHandler(this.canvas, this.rect, this.pixelRatio);
     this.size = vec2_exports.fromValues(this.canvas.width, this.canvas.height);
     this.camera = new Camera(this.size, opts.camera);
@@ -28939,6 +28966,7 @@ var kOffsetDataTypes = {
 var LabelAtlas = class extends TextureAtlas {
   constructor(context, data, mappings2, font, bold = false, charSpacing = 0) {
     super(context);
+    this.labelPixelRatio = window.devicePixelRatio;
     this.letterSpacing = 2;
     this.fontSizeStep = 25;
     this.spaceSizeMap = new Map();
@@ -29119,6 +29147,20 @@ var PointLabel = class extends Nodes {
       this.labelAtlas = labelAtlas;
     } else {
       this.labelAtlas = new LabelAtlas(context, data, mappings2, font, bold, charSpacing);
+      new PixelRatioObserver(() => {
+        this.labelAtlas = new LabelAtlas(context, data, mappings2, font, bold, charSpacing);
+        super.initialize(context, points2, data, mappings2, pickingManager);
+        this.nodesVAO = context.createVertexArray().vertexAttributeBuffer(0, this.verticesVBO);
+        this.configureTargetVAO(this.nodesVAO);
+        this.drawCall = context.createDrawCall(this.program, this.nodesVAO).primitive(picogl_default.TRIANGLE_STRIP);
+        this.compute(context, {
+          uGraphPoints: this.dataTexture
+        });
+        this.localUniforms.uLabelIndices = this.labelAtlas.indicesTexture;
+        this.localUniforms.uCharBoxes = this.labelAtlas.boxesTexture;
+        this.localUniforms.uCharTexture = this.labelAtlas.atlasTexture;
+        this.localUniforms.uLabelOffsets = this.labelAtlas.offsetsTexture;
+      });
     }
     super.initialize(context, points2, data, mappings2, pickingManager);
     this.verticesVBO = context.createVertexBuffer(picogl_default.FLOAT, 2, new Float32Array([
