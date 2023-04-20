@@ -2,6 +2,7 @@ import {LabelNodeData, PointLabel} from '../point/PointLabel';
 import {RenderableShaders} from '../../../renderer/Renderable';
 import nodeVS from './CircularLabel.vs.glsl';
 import nodeFS from './CircularLabel.fs.glsl';
+import pickingFS from './CircularLabel.picking.fs.glsl';
 import {GraferContext} from '../../../renderer/GraferContext';
 import {GraphPoints} from '../../../data/GraphPoints';
 import {DataMappings} from '../../../data/DataTools';
@@ -83,6 +84,12 @@ export class CircularLabel extends PointLabel {
         return {
             vs: nodeVS,
             fs: nodeFS,
+        };
+    }
+    protected getPickingShaders(): RenderableShaders {
+        return {
+            vs: nodeVS,
+            fs: pickingFS,
         };
     }
 }
