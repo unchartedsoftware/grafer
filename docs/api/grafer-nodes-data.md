@@ -48,9 +48,9 @@ An array of node objects to be rendered as part of this layer. Note that the dat
 | radius | number - *optional* | Radius of node. |
 
 ### `mappings`
-###### PointDataMappings - *optional*
+###### NodeDataMappings - *optional*
 
-Data [mappings](../guides/mappings.md) are used to compute data properties at runtime using information provided in the data array. The default mappings use property names specified in the PointData datatype. See data property for explanations of properties mapped.
+Data [mappings](../guides/mappings.md) are used to compute data properties at runtime using information provided in the data array. The default mappings use property names specified in the BasicNodeData datatype. See data property for explanations of properties mapped.
 
 ### `options`
 ###### { [key: string]: any } - *optional*
