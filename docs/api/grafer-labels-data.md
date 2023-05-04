@@ -16,7 +16,7 @@ A string indicating the type of label to render. Renders the "PointLabel" type b
 See [label types]() for more information.
 
 ### `data`
-###### BasicNodeData[] - *optional*
+###### LabelData[] - *optional*
 
 An array of label objects to be rendered as part of this layer.
 
@@ -29,7 +29,7 @@ An array of label objects to be rendered as part of this layer.
 
 ### `mappings`
 
-Data [mappings](../guides/mappings.md) are used to compute data properties at runtime using information provided in the data array. The default mappings use property names specified in the PointData datatype. See data property for explanations of properties mapped.
+Data [mappings](../guides/mappings.md) are used to compute data properties at runtime using information provided in the data array. The default mappings use property names specified in the LabelData datatype. See data property for explanations of properties mapped.
 
 ### `options`
 ###### { [key: string]: any } - *optional*
