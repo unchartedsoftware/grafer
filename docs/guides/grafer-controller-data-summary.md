@@ -1,3 +1,8 @@
+# Grafer Controller Data
+
+Diagram summarizing the data provided to the Grafer controller describing the graph to be rendered.
+
+
 ```mermaid
 classDiagram
 
