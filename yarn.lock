@@ -473,7 +473,7 @@ __metadata:
     karma: 6.3.4
     karma-chai: 0.1.0
     karma-chrome-launcher: 3.1.0
-    karma-esbuild: 2.2.0
+    karma-esbuild: 2.2.5
     karma-mocha: 2.0.1
     karma-mocha-reporter: 2.2.5
     lit-element: 2.5.1
@@ -3999,15 +3999,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"karma-esbuild@npm:2.2.0":
-  version: 2.2.0
-  resolution: "karma-esbuild@npm:2.2.0"
+"karma-esbuild@npm:2.2.5":
+  version: 2.2.5
+  resolution: "karma-esbuild@npm:2.2.5"
   dependencies:
     chokidar: ^3.5.1
     source-map: 0.6.1
   peerDependencies:
     esbuild: ">=0.8.45"
-  checksum: b88484d05cdfdb242ee8a65700911107bbb4494d191c71cf17bb230956d967178e5a5bd4f565155a3f54b05b6debaa3275c0336365969ac2794ba69f7a3f51d2
+  checksum: 6db251dcaa1fef7ff506d3faa0315c02797386e7ebad8d073405e127c31946ff631984b2c2e9ace65ada096ce69d763e38183815dde12ede14b0cfb6788064d5
   languageName: node
   linkType: hard
 

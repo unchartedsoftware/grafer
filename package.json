@@ -65,7 +65,7 @@
         "karma": "6.3.4",
         "karma-chai": "0.1.0",
         "karma-chrome-launcher": "3.1.0",
-        "karma-esbuild": "2.2.0",
+        "karma-esbuild": "2.2.5",
         "karma-mocha": "2.0.1",
         "karma-mocha-reporter": "2.2.5",
         "lit-element": "2.5.1",
