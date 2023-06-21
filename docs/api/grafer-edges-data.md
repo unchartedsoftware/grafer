@@ -19,7 +19,7 @@ A string indicating the type of edge to render. Renders the "Straight" type by d
 See [edge types]() for more information.
 
 ### `data`
-###### BasicNodeData[] - *optional*
+###### BasicEdgeData[] - *optional*
 
 An array of edge objects to be rendered as part of this layer.
 
@@ -33,9 +33,9 @@ An array of edge objects to be rendered as part of this layer.
 | control | number \| number[] - *optional* | Only valid for "StraightPath" and "CurvedPath" edge types. Ordered list of control (waypoint) nodes between the source and the target. |
 
 ### `mappings`
-###### PointDataMappings - *optional*
+###### EdgeDataMappings - *optional*
 
-Data [mappings](../guides/mappings.md) are used to compute data properties at runtime using information provided in the data array. The default mappings use property names specified in the BasicNodeData datatype. See data property for explanations of properties mapped.
+Data [mappings](../guides/mappings.md) are used to compute data properties at runtime using information provided in the data array. The default mappings use property names specified in the BasicEdgeData datatype. See data property for explanations of properties mapped.
 
 ### `options`
 ###### { [key: string]: any } - *optional*
