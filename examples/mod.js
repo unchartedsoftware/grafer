@@ -18465,7 +18465,8 @@ var LayerRenderable = class extends PointsReaderEmitter {
     context.depthRange(this.nearDepth, this.farDepth);
     switch (renderMode) {
       case RenderMode.PICKING:
-        context.depthMask(false);
+        context.clear();
+        context.depthMask(true);
         context.disable(PicoGL.BLEND);
         break;
       case RenderMode.HIGH_PASS_2:
@@ -32407,6 +32408,7 @@ async function ringLabel(container) {
 var mod_exports20 = {};
 __export(mod_exports20, {
   animation: () => animation,
+  drag: () => drag,
   embedded: () => embedded,
   overlay: () => overlay,
   picking: () => picking,
@@ -32906,6 +32908,83 @@ async function animation(container) {
     const point = controller.viewport.graph.getPointByID(detail.id);
     animate(controller, animationManager, point);
   });
+}
+
+// examples/src/UX/drag.ts
+async function drag(container) {
+  render(html`<canvas class="grafer_container"></canvas><mouse-interactions></mouse-interactions>`, container);
+  const canvas = document.querySelector(".grafer_container");
+  let hoveredNodeIndex = 0;
+  let selectedNodeIndex = 0;
+  const points2 = {
+    data: [
+      { id: "left", x: -8.6, y: 5 },
+      { id: "right", x: 8.6, y: 5 },
+      { id: "bottom", x: 0, y: -10 },
+      { id: "center", x: 0, y: 0 }
+    ]
+  };
+  const nodes = {
+    data: [
+      { point: "left" },
+      { point: "right" },
+      { point: "bottom" },
+      { point: "center" }
+    ]
+  };
+  const edges = {
+    data: [
+      { source: "left", target: "right" },
+      { source: "right", target: "bottom" },
+      { source: "bottom", target: "left" },
+      { source: "center", target: "left" },
+      { source: "center", target: "right" },
+      { source: "center", target: "bottom" }
+    ]
+  };
+  const layers = [
+    { name: "Awesomeness", nodes, edges }
+  ];
+  const controller = new GraferController(canvas, { points: points2, layers });
+  controller.on(mod_exports13.picking.PickingManager.events.hoverOn, onHoverEvent);
+  controller.on(mod_exports13.picking.PickingManager.events.hoverOff, onHoverOffEvent2);
+  function onHoverEvent(_, detail) {
+    if (detail.type === "node") {
+      hoveredNodeIndex = detail.id;
+      document.addEventListener("mousedown", mousedownEvent);
+    }
+  }
+  function onHoverOffEvent2() {
+    document.removeEventListener("mousedown", mousedownEvent);
+  }
+  function mousemoveEvent(e) {
+    const rect = e.target.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = rect.height - e.clientY + rect.top;
+    const newPointCoords = mod_exports13.coordinate.Coordinate.relativePixelCoordinateToWorldPoint(controller, [x * devicePixelRatio, y * devicePixelRatio]);
+    const point = controller.viewport.graph.getPointByIndex(selectedNodeIndex);
+    controller.viewport.graph.setPointByIndex(selectedNodeIndex, {
+      x: newPointCoords[0],
+      y: newPointCoords[1],
+      z: 0,
+      radius: point[3]
+    });
+    controller.viewport.graph.update();
+    controller.render();
+  }
+  function mousedownEvent() {
+    document.addEventListener("mouseup", mouseupEvent);
+    canvas.addEventListener("mousemove", mousemoveEvent);
+    controller.interactionModules.translate.enabled = false;
+    selectedNodeIndex = hoveredNodeIndex;
+  }
+  function mouseupEvent() {
+    document.removeEventListener("mouseup", mouseupEvent);
+    canvas.removeEventListener("mousemove", mousemoveEvent);
+    controller.interactionModules.translate.enabled = true;
+  }
+  document.addEventListener("mousedown", mousedownEvent);
+  document.addEventListener("mouseup", mouseupEvent);
 }
 
 // examples/src/quickstart/mod.ts
