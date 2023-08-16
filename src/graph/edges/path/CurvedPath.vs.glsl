@@ -7,6 +7,9 @@ layout(location=3) in vec3 iControl;
 layout(location=4) in uint iColorA;
 layout(location=5) in uint iColorB;
 layout(location=6) in vec2 iColorMix;
+layout(location=7) in uvec4 iPickingColor;
+
+uniform bool uPicking;
 
 uniform mat4 uViewMatrix;
 uniform mat4 uSceneMatrix;
@@ -19,6 +22,7 @@ uniform float uLineWidth;
 uniform float uSegments;
 
 flat out float fLineWidth;
+flat out vec4 fPickingColor;
 out vec3 vColor;
 out vec2 vProjectedPosition;
 out float vProjectedW;
@@ -35,6 +39,8 @@ vec3 bezier(vec3 p0, vec3 p1, vec3 p2, float t) {
 }
 
 void main() {
+    fPickingColor = uPicking ? vec4(iPickingColor) / 255.0 : vec4(0.0);
+
     // bezier works fine with 0 > t > 1
     float t0 = aVertex.y / uSegments;
     float t1 = (aVertex.y + 1.0) / uSegments;
@@ -57,7 +63,7 @@ void main() {
     vec2 normal = vec2(-direction.y, direction.x);
 
     // calculate the pixel offset
-    fLineWidth = uLineWidth * uPixelRatio;
+    fLineWidth = (uPicking ? uLineWidth * 8. : uLineWidth) * uPixelRatio;
     float offsetWidth = fLineWidth + 0.5;
     vec4 offset = vec4(((aVertex.x * normal * offsetWidth) / uViewportSize) * b0Projected.w, 0.0, 0.0);
 
