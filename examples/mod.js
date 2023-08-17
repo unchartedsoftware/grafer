@@ -18465,8 +18465,7 @@ var LayerRenderable = class extends PointsReaderEmitter {
     context.depthRange(this.nearDepth, this.farDepth);
     switch (renderMode) {
       case RenderMode.PICKING:
-        context.clear();
-        context.depthMask(true);
+        context.depthMask(false);
         context.disable(PicoGL.BLEND);
         break;
       case RenderMode.HIGH_PASS_2:
