@@ -16,6 +16,7 @@ uniform mat4 uSceneMatrix;
 uniform mat4 uProjectionMatrix;
 uniform vec2 uViewportSize;
 uniform float uPixelRatio;
+uniform float uPickingWidth;
 uniform sampler2D uColorPalette;
 
 uniform float uLineWidth;
@@ -63,7 +64,7 @@ void main() {
     vec2 normal = vec2(-direction.y, direction.x);
 
     // calculate the pixel offset
-    fLineWidth = (uPicking ? uLineWidth * 8. : uLineWidth) * uPixelRatio;
+    fLineWidth = (uPicking ? uLineWidth * uPickingWidth : uLineWidth) * uPixelRatio;
     float offsetWidth = fLineWidth + 0.5;
     vec4 offset = vec4(((aVertex.x * normal * offsetWidth) / uViewportSize) * b0Projected.w, 0.0, 0.0);
 
