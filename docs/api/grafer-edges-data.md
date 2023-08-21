@@ -52,4 +52,5 @@ An object containing configuration options for the edges.
 | brightness | number | Takes a range between -1 to 1. Defaults to 0. |
 | nearDepth | number | Takes a range between 0 to 1. Defaults to 0. Controls camera near depth. |
 | farDepth | number | Takes a range between 0 to 1. Defaults to 1. Controls camera far depth. |
-| lineWidth | number | Sets the line width of the edges in the layer |
+| lineWidth | number | Sets the line width of the edges in the layer. Defaults to 1.5. |
+| pickingWidth | number | Sets the width of the edge picking area in the layer where applicable, as a multiplier of the `lineWidth`. Defaults to 8. |
