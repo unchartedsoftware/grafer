@@ -1,5 +1,6 @@
 import edgeVS from './StraightPath.vs.glsl';
 import edgeFS from './StraightPath.fs.glsl';
+import pickingFS from './StraightPath.picking.fs.glsl';
 import dataVS from './StraightPath.data.vs.glsl';
 
 import {CurvedPathEdgeData, GLCurvedPathEdgeTypes, kCurvedPathEdgeMappings} from './CurvedPath';
@@ -15,7 +16,8 @@ import {DataMappings, DataShader, kDataMappingFlatten} from '../../../data/DataT
 import {BasicEdgeData, Edges} from '../Edges';
 import {GraferContext} from '../../../renderer/GraferContext';
 import {GraphPoints} from '../../../data/GraphPoints';
-import {PickingManager} from '../../../UX/picking/PickingManager';
+import {PickingColors, PickingEvent, PickingManager} from '../../../UX/picking/PickingManager';
+import { MouseCallback } from 'src/UX/mouse/MouseHandler';
 
 export const kStraightPathEdgeDataTypes: GLDataTypes<CurvedPathEdgeData> = {
     source: PicoGL.UNSIGNED_INT,
@@ -23,6 +25,7 @@ export const kStraightPathEdgeDataTypes: GLDataTypes<CurvedPathEdgeData> = {
     control: [PicoGL.UNSIGNED_INT, PicoGL.UNSIGNED_INT],
     sourceColor: PicoGL.UNSIGNED_INT,
     targetColor: PicoGL.UNSIGNED_INT,
+    pickingColor: [PicoGL.UNSIGNED_INT, PicoGL.UNSIGNED_INT, PicoGL.UNSIGNED_INT, PicoGL.UNSIGNED_INT],
 };
 
 export const kGLStraightPathEdgeTypes = {
@@ -31,12 +34,18 @@ export const kGLStraightPathEdgeTypes = {
     sourceColor: PicoGL.UNSIGNED_INT,
     targetColor: PicoGL.UNSIGNED_INT,
     colorMix: [PicoGL.FLOAT, PicoGL.FLOAT],
+    pickingColor: [PicoGL.UNSIGNED_INT, PicoGL.UNSIGNED_INT, PicoGL.UNSIGNED_INT, PicoGL.UNSIGNED_INT],
 } as const;
 export type GLStraightPathEdgeTypes = typeof kGLStraightPathEdgeTypes;
 
 export class StraightPath extends Edges<CurvedPathEdgeData, GLCurvedPathEdgeTypes> {
     protected program: Program;
     protected drawCall: DrawCall;
+
+    protected pickingProgram: Program;
+    protected pickingDrawCall: DrawCall;
+    protected pickingColors: PickingColors;
+    protected pickingHandler: MouseCallback;
 
     protected verticesVBO: VertexBuffer;
     protected edgesVAO: VertexArray;
@@ -57,6 +66,8 @@ export class StraightPath extends Edges<CurvedPathEdgeData, GLCurvedPathEdgeType
             1, 1,
         ]));
 
+        this.pickingHandler = this.handlePickingEvent.bind(this);
+
         this.edgesVAO = context.createVertexArray().vertexAttributeBuffer(0, this.verticesVBO);
         this.configureTargetVAO(this.edgesVAO);
 
@@ -64,15 +75,41 @@ export class StraightPath extends Edges<CurvedPathEdgeData, GLCurvedPathEdgeType
         this.program = context.createProgram(shaders.vs, shaders.fs);
         this.drawCall = context.createDrawCall(this.program, this.edgesVAO).primitive(PicoGL.TRIANGLE_STRIP);
 
+        const pickingShaders = this.getPickingShaders();
+        this.pickingProgram = context.createProgram(pickingShaders.vs, pickingShaders.fs);
+        this.pickingDrawCall = context.createDrawCall(this.pickingProgram, this.edgesVAO).primitive(PicoGL.TRIANGLE_STRIP);
+
         this.compute(context, {
             uGraphPoints: this.dataTexture,
         });
 
         // printDataGL(context, this.targetVBO, data.length, kGLStraightPathEdgeTypes);
+        this.pickingManager.on(PickingManager.events.hoverOn, this.pickingHandler);
+        this.pickingManager.on(PickingManager.events.hoverOff, this.pickingHandler);
+        this.pickingManager.on(PickingManager.events.click, this.pickingHandler);
     }
 
     public destroy(): void {
         // TODO: Implement destroy method
+    }
+
+    protected ingestData(context: App, data: unknown[], mappings: Partial<DataMappings<CurvedPathEdgeData>>): void {
+        this.pickingColors = this.pickingManager.allocatePickingColors(data.length);
+        super.ingestData(context, data, mappings);
+    }
+
+    protected packDataCB(): any {
+        return (index, entry): void => {
+            this.idArray.push(entry.id);
+
+            const indexStart = 4 * index;
+            entry.pickingColor = [
+                this.pickingColors.colors[indexStart],
+                this.pickingColors.colors[indexStart + 1],
+                this.pickingColors.colors[indexStart + 2],
+                this.pickingColors.colors[indexStart + 3],
+            ];
+        };
     }
 
     public render(context:App, mode: RenderMode, uniforms: RenderUniforms): void {
@@ -83,7 +120,10 @@ export class StraightPath extends Edges<CurvedPathEdgeData, GLCurvedPathEdgeType
 
         switch (mode) {
             case RenderMode.PICKING:
-                // this.pickingDrawCall.draw();
+                setDrawCallUniforms(this.pickingDrawCall, uniforms);
+                setDrawCallUniforms(this.pickingDrawCall, this.localUniforms);
+                this.pickingDrawCall.uniform('uPicking', true);
+                this.pickingDrawCall.draw();
                 break;
 
             default:
@@ -102,7 +142,7 @@ export class StraightPath extends Edges<CurvedPathEdgeData, GLCurvedPathEdgeType
     protected getPickingShaders(): RenderableShaders {
         return {
             vs: edgeVS,
-            fs: null, // pickingFS,
+            fs: pickingFS,
         };
     }
 
@@ -117,7 +157,7 @@ export class StraightPath extends Edges<CurvedPathEdgeData, GLCurvedPathEdgeType
     protected getDataShader(): DataShader {
         return {
             vs: dataVS,
-            varyings: [ 'fSource', 'fTarget', 'fSourceColor', 'fTargetColor', 'fColorMix' ],
+            varyings: [ 'fSource', 'fTarget', 'fSourceColor', 'fTargetColor', 'fColorMix', 'fPickingColor' ],
         };
     }
 
@@ -155,5 +195,12 @@ export class StraightPath extends Edges<CurvedPathEdgeData, GLCurvedPathEdgeType
         };
 
         return edgesMappings;
+    }
+
+    protected handlePickingEvent(event: PickingEvent, colorID: number): void {
+        if (this.picking && this.pickingColors.map.has(colorID)) {
+            const id = this.idArray[this.pickingColors.map.get(colorID)];
+            this.emit(event, id);
+        }
     }
 }

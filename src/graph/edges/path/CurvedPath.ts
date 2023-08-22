@@ -26,8 +26,10 @@ export interface CurvedPathEdgeData {
     control: number | number[];
     sourceColor?: GraferInputColor,
     targetColor?: GraferInputColor,
+    pickingColor?: number | [number, number, number, number];
 }
 
+const pickingColorNoOpMapping = (): null => null;
 export const kCurvedPathEdgeMappings: DataMappings<CurvedPathEdgeData> = {
     id: (entry: CurvedPathEdgeData, i) => 'id' in entry ? entry.id : i,
     source: (entry: CurvedPathEdgeData) => entry.source,
@@ -35,6 +37,7 @@ export const kCurvedPathEdgeMappings: DataMappings<CurvedPathEdgeData> = {
     control: (entry: CurvedPathEdgeData) => entry.control,
     sourceColor: (entry: CurvedPathEdgeData) => 'sourceColor' in entry ? entry.sourceColor : 0, // first registered color
     targetColor: (entry: CurvedPathEdgeData) => 'targetColor' in entry ? entry.targetColor : 0, // first registered color
+    pickingColor: pickingColorNoOpMapping,
 };
 
 export const kCurvedPathEdgeDataTypes: GLDataTypes<CurvedPathEdgeData> = {
@@ -43,6 +46,7 @@ export const kCurvedPathEdgeDataTypes: GLDataTypes<CurvedPathEdgeData> = {
     control: [PicoGL.UNSIGNED_INT, PicoGL.UNSIGNED_INT, PicoGL.UNSIGNED_INT],
     sourceColor: PicoGL.UNSIGNED_INT,
     targetColor: PicoGL.UNSIGNED_INT,
+    pickingColor: [PicoGL.UNSIGNED_INT, PicoGL.UNSIGNED_INT, PicoGL.UNSIGNED_INT, PicoGL.UNSIGNED_INT],
 };
 
 export const kGLCurvedPathEdgeTypes = {
@@ -52,6 +56,7 @@ export const kGLCurvedPathEdgeTypes = {
     sourceColor: PicoGL.UNSIGNED_INT,
     targetColor: PicoGL.UNSIGNED_INT,
     colorMix: [PicoGL.FLOAT, PicoGL.FLOAT],
+    pickingColor: [PicoGL.UNSIGNED_INT, PicoGL.UNSIGNED_INT, PicoGL.UNSIGNED_INT, PicoGL.UNSIGNED_INT],
 } as const;
 export type GLCurvedPathEdgeTypes = typeof kGLCurvedPathEdgeTypes;
 
@@ -62,7 +67,6 @@ export class CurvedPath extends Edges<CurvedPathEdgeData, GLCurvedPathEdgeTypes>
     protected pickingProgram: Program;
     protected pickingDrawCall: DrawCall;
     protected pickingColors: PickingColors;
-    protected pickingVBO: VertexBuffer;
     protected pickingHandler: MouseCallback;
 
     protected verticesVBO: VertexBuffer;
@@ -97,15 +101,11 @@ export class CurvedPath extends Edges<CurvedPathEdgeData, GLCurvedPathEdgeTypes>
             );
         }
 
-        this.verticesVBO = context.createVertexBuffer(PicoGL.FLOAT, 2, new Float32Array(segmentVertices));
-
         this.pickingHandler = this.handlePickingEvent.bind(this);
-        this.pickingColors = this.pickingManager.allocatePickingColors(data.length);
-        this.pickingVBO = context.createVertexBuffer(PicoGL.UNSIGNED_BYTE, 4, this.pickingColors.colors);
 
+        this.verticesVBO = context.createVertexBuffer(PicoGL.FLOAT, 2, new Float32Array(segmentVertices));
         this.edgesVAO = context.createVertexArray().vertexAttributeBuffer(0, this.verticesVBO);
         this.configureTargetVAO(this.edgesVAO);
-        this.edgesVAO.instanceAttributeBuffer(7, this.pickingVBO);
 
         const shaders = this.getDrawShaders();
         this.program = context.createProgram(shaders.vs, shaders.fs);
@@ -120,12 +120,34 @@ export class CurvedPath extends Edges<CurvedPathEdgeData, GLCurvedPathEdgeTypes>
         });
 
         // printDataGL(context, this.targetVBO, data.length, kGLCurvedPathEdgeTypes);
+        this.pickingManager.on(PickingManager.events.hoverOn, this.pickingHandler);
+        this.pickingManager.on(PickingManager.events.hoverOff, this.pickingHandler);
+        this.pickingManager.on(PickingManager.events.click, this.pickingHandler);
 
         this.localUniforms.uSegments = segments;
     }
 
     public destroy(): void {
         // TODO: Implement destroy method
+    }
+
+    protected ingestData(context: App, data: unknown[], mappings: Partial<DataMappings<CurvedPathEdgeData>>): void {
+        this.pickingColors = this.pickingManager.allocatePickingColors(data.length);
+        super.ingestData(context, data, mappings);
+    }
+
+    protected packDataCB(): any {
+        return (index, entry): void => {
+            this.idArray.push(entry.id);
+
+            const indexStart = 4 * index;
+            entry.pickingColor = [
+                this.pickingColors.colors[indexStart],
+                this.pickingColors.colors[indexStart + 1],
+                this.pickingColors.colors[indexStart + 2],
+                this.pickingColors.colors[indexStart + 3],
+            ];
+        };
     }
 
     public render(context:App, mode: RenderMode, uniforms: RenderUniforms): void {
@@ -173,7 +195,7 @@ export class CurvedPath extends Edges<CurvedPathEdgeData, GLCurvedPathEdgeTypes>
     protected getDataShader(): DataShader {
         return {
             vs: dataVS,
-            varyings: [ 'vSource', 'vTarget', 'vControl', 'vSourceColor', 'vTargetColor', 'vColorMix' ],
+            varyings: [ 'vSource', 'vTarget', 'vControl', 'vSourceColor', 'vTargetColor', 'vColorMix', 'vPickingColor' ],
         };
     }
 
