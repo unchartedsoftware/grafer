@@ -1,5 +1,6 @@
 import edgeVS from './ClusterBundle.vs.glsl';
 import edgeFS from './ClusterBundle.fs.glsl';
+import pickingFS from './ClusterBundle.picking.fs.glsl';
 import dataVS from './ClusterBundle.data.vs.glsl';
 
 import {App, DrawCall, PicoGL, Program, VertexArray, VertexBuffer} from 'picogl';
@@ -14,7 +15,8 @@ import {
 } from '../../../renderer/Renderable';
 import {Edges} from '../Edges';
 import {GraphPoints} from '../../../data/GraphPoints';
-import {PickingManager} from '../../../UX/picking/PickingManager';
+import {PickingColors, PickingEvent, PickingManager} from '../../../UX/picking/PickingManager';
+import { MouseCallback } from 'src/UX/mouse/MouseHandler';
 import {GraferContext} from '../../../renderer/GraferContext';
 
 export interface ClusterBundleEdgeData {
@@ -26,8 +28,10 @@ export interface ClusterBundleEdgeData {
     sourceColor?: GraferInputColor,
     targetColor?: GraferInputColor,
     hyperEdgeStats?: [number, number],
+    pickingColor?: number | [number, number, number, number];
 }
 
+const pickingColorNoOpMapping = (): null => null;
 const kClusterBundleEdgeNoOpMapping = (): null => null;
 export const kClusterBundleEdgeMappings: DataMappings<ClusterBundleEdgeData & { index: number[] }> = {
     id: (entry: ClusterBundleEdgeData, i) => 'id' in entry ? entry.id : i,
@@ -39,6 +43,7 @@ export const kClusterBundleEdgeMappings: DataMappings<ClusterBundleEdgeData & { 
     targetColor: (entry: ClusterBundleEdgeData) => 'targetColor' in entry ? entry.targetColor : 0, // first registered color
     hyperEdgeStats: kClusterBundleEdgeNoOpMapping, // this will be replaced in `computeMappings`
     index: () => [0, 1, 2],
+    pickingColor: pickingColorNoOpMapping,
 };
 
 export const kClusterBundleEdgeDataTypes: GLDataTypes<ClusterBundleEdgeData & { index: number[] }> = {
@@ -50,6 +55,7 @@ export const kClusterBundleEdgeDataTypes: GLDataTypes<ClusterBundleEdgeData & { 
     targetColor: PicoGL.UNSIGNED_INT,
     hyperEdgeStats: [PicoGL.UNSIGNED_INT, PicoGL.UNSIGNED_INT],
     index: PicoGL.UNSIGNED_INT,
+    pickingColor: [PicoGL.UNSIGNED_INT, PicoGL.UNSIGNED_INT, PicoGL.UNSIGNED_INT, PicoGL.UNSIGNED_INT],
 };
 
 export const kGLClusterBundleEdgeTypes = {
@@ -59,6 +65,7 @@ export const kGLClusterBundleEdgeTypes = {
     sourceColor: PicoGL.UNSIGNED_INT,
     targetColor: PicoGL.UNSIGNED_INT,
     colorMix: [PicoGL.FLOAT, PicoGL.FLOAT],
+    pickingColor: [PicoGL.UNSIGNED_INT, PicoGL.UNSIGNED_INT, PicoGL.UNSIGNED_INT, PicoGL.UNSIGNED_INT],
 } as const;
 export type GLClusterBundleEdgeTypes = typeof kGLClusterBundleEdgeTypes;
 
@@ -67,6 +74,11 @@ export class ClusterBundle extends Edges<ClusterBundleEdgeData, GLClusterBundleE
 
     protected program: Program;
     protected drawCall: DrawCall;
+
+    protected pickingProgram: Program;
+    protected pickingDrawCall: DrawCall;
+    protected pickingColors: PickingColors;
+    protected pickingHandler: MouseCallback;
 
     protected verticesVBO: VertexBuffer;
     protected edgesVAO: VertexArray;
@@ -100,6 +112,8 @@ export class ClusterBundle extends Edges<ClusterBundleEdgeData, GLClusterBundleE
             );
         }
 
+        this.pickingHandler = this.handlePickingEvent.bind(this);
+
         this.verticesVBO = context.createVertexBuffer(PicoGL.FLOAT, 2, new Float32Array(segmentVertices));
         this.edgesVAO = context.createVertexArray().vertexAttributeBuffer(0, this.verticesVBO);
         this.configureTargetVAO(this.edgesVAO);
@@ -108,17 +122,30 @@ export class ClusterBundle extends Edges<ClusterBundleEdgeData, GLClusterBundleE
         this.program = context.createProgram(shaders.vs, shaders.fs);
         this.drawCall = context.createDrawCall(this.program, this.edgesVAO).primitive(PicoGL.TRIANGLE_STRIP);
 
+        const pickingShaders = this.getPickingShaders();
+        this.pickingProgram = context.createProgram(pickingShaders.vs, pickingShaders.fs);
+        this.pickingDrawCall = context.createDrawCall(this.pickingProgram, this.edgesVAO).primitive(PicoGL.TRIANGLE_STRIP);
+
         this.compute(context, {
             uGraphPoints: this.dataTexture,
         });
 
         // printDataGL(context, this.targetVBO, data.length, kGLClusterBundleEdgeTypes);
 
+        this.pickingManager.on(PickingManager.events.hoverOn, this.pickingHandler);
+        this.pickingManager.on(PickingManager.events.hoverOff, this.pickingHandler);
+        this.pickingManager.on(PickingManager.events.click, this.pickingHandler);
+
         this.localUniforms.uSegments = segments;
     }
 
     public destroy(): void {
         // TODO: Implement destroy method
+    }
+
+    protected ingestData(context: App, data: unknown[], mappings: Partial<DataMappings<ClusterBundleEdgeData>>): void {
+        this.pickingColors = this.pickingManager.allocatePickingColors(data.length);
+        super.ingestData(context, data, mappings);
     }
 
     public render(context:App, mode: RenderMode, uniforms: RenderUniforms): void {
@@ -129,7 +156,10 @@ export class ClusterBundle extends Edges<ClusterBundleEdgeData, GLClusterBundleE
 
         switch (mode) {
             case RenderMode.PICKING:
-                // this.pickingDrawCall.draw();
+                setDrawCallUniforms(this.pickingDrawCall, uniforms);
+                setDrawCallUniforms(this.pickingDrawCall, this.localUniforms);
+                this.pickingDrawCall.uniform('uPicking', true);
+                this.pickingDrawCall.draw();
                 break;
 
             default:
@@ -148,7 +178,7 @@ export class ClusterBundle extends Edges<ClusterBundleEdgeData, GLClusterBundleE
     protected getPickingShaders(): RenderableShaders {
         return {
             vs: edgeVS,
-            fs: null, // pickingFS,
+            fs: pickingFS,
         };
     }
 
@@ -163,7 +193,7 @@ export class ClusterBundle extends Edges<ClusterBundleEdgeData, GLClusterBundleE
     protected getDataShader(): DataShader {
         return {
             vs: dataVS,
-            varyings: [ 'vSource', 'vTarget', 'vControl', 'vSourceColor', 'vTargetColor', 'vColorMix' ],
+            varyings: [ 'vSource', 'vTarget', 'vControl', 'vSourceColor', 'vTargetColor', 'vColorMix', 'vPickingColor' ],
         };
     }
 
@@ -207,6 +237,16 @@ export class ClusterBundle extends Edges<ClusterBundleEdgeData, GLClusterBundleE
             }
             this.hyperEdgeStats.set(key, count + 1);
             entry.hyperEdgeStats[0] = count;
+
+            this.idArray.push(entry.id);
+
+            const indexStart = 4 * i;
+            entry.pickingColor = [
+                this.pickingColors.colors[indexStart],
+                this.pickingColors.colors[indexStart + 1],
+                this.pickingColors.colors[indexStart + 2],
+                this.pickingColors.colors[indexStart + 3],
+            ];
         };
 
         const cb2 = (i: number, entry: ClusterBundleEdgeData): void => {
@@ -218,5 +258,12 @@ export class ClusterBundle extends Edges<ClusterBundleEdgeData, GLClusterBundleE
             cb1,
             cb2,
         ];
+    }
+
+    protected handlePickingEvent(event: PickingEvent, colorID: number): void {
+        if (this.picking && this.pickingColors.map.has(colorID)) {
+            const id = this.idArray[this.pickingColors.map.get(colorID)];
+            this.emit(event, id);
+        }
     }
 }

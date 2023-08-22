@@ -8,6 +8,7 @@ layout(location=4) in uint aSourceColor;
 layout(location=5) in uint aTargetColor;
 layout(location=6) in uvec2 aHyperEdgeStats;
 layout(location=7) in uint aIndex;
+layout(location=8) in uvec4 aPickingColor;
 
 uniform sampler2D uGraphPoints;
 
@@ -17,8 +18,16 @@ out vec3 vControl;
 flat out uint vSourceColor;
 flat out uint vTargetColor;
 out vec2 vColorMix;
+flat out uvec4 vPickingColor;
 
-#pragma glslify: valueForIndex = require(../../../renderer/shaders/valueForIndex.glsl)
+// manual import from ../../../renderer/shaders/valueForIndex.glsl
+// to avoid uvec4 pragma error
+vec4 valueForIndex(sampler2D tex, int index) {
+    int texWidth = textureSize(tex, 0).x;
+    int col = index % texWidth;
+    int row = index / texWidth;
+    return texelFetch(tex, ivec2(col, row), 0);
+}
 
 void main() {
     vec4 source = valueForIndex(uGraphPoints, int(aSourceIndex));
@@ -94,4 +103,6 @@ void main() {
     vTargetColor = aTargetColor;
 
     vColorMix = vec2(float(aIndex) * 0.25, float(aIndex + 1u) * 0.25);
+
+    vPickingColor = aPickingColor;
 }
