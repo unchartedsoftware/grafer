@@ -14,6 +14,7 @@ uniform mat4 uSceneMatrix;
 uniform mat4 uProjectionMatrix;
 uniform vec2 uViewportSize;
 uniform float uPixelRatio;
+uniform float uPickingWidth;
 uniform sampler2D uGraphPoints;
 uniform sampler2D uColorPalette;
 
@@ -57,7 +58,7 @@ void main() {
     vec2 screenDirection = normalize(bScreen - aScreen);
     vec2 perp = vec2(-screenDirection.y, screenDirection.x);
 
-    fLineWidth = (uPicking ? uLineWidth * 8. : uLineWidth) * uPixelRatio;
+    fLineWidth = (uPicking ? uLineWidth * uPickingWidth : uLineWidth) * uPixelRatio;
     float offsetWidth = fLineWidth + 0.5;
     vec4 position = aProjected * multA + bProjected * multB;
     vec4 offset = vec4(((aVertex.x * perp * offsetWidth) / uViewportSize) * position.w, 0.0, 0.0);
