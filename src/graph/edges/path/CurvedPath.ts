@@ -5,7 +5,7 @@ import dataVS from './CurvedPath.data.vs.glsl';
 
 import {App, DrawCall, PicoGL, Program, VertexArray, VertexBuffer} from 'picogl';
 import {GraferInputColor} from '../../../renderer/colors/ColorRegistry';
-import {DataMappings, DataShader, kDataMappingFlatten, printDataGL} from '../../../data/DataTools';
+import {DataMappings, DataShader, kDataMappingFlatten} from '../../../data/DataTools';
 import {
     GLDataTypes,
     RenderableShaders,
@@ -26,7 +26,7 @@ export interface CurvedPathEdgeData {
     control: number | number[];
     sourceColor?: GraferInputColor,
     targetColor?: GraferInputColor,
-    pickingColor?: [number, number, number, number];
+    pickingColor?: number | [number, number, number, number];
 }
 
 const pickingColorNoOpMapping = (): null => null;
