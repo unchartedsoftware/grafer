@@ -19390,23 +19390,26 @@ var CurvedPath_fs_default = "#version 300 es\nprecision highp float;\n#define GL
 var CurvedPath_picking_fs_default = "#version 300 es\nprecision highp float;\n#define GLSLIFY 1\n\nflat in vec4 fPickingColor;\n\nout vec4 fragColor;\n\nvoid main() {\n    fragColor = fPickingColor;\n}\n";
 
 // src/graph/edges/path/CurvedPath.data.vs.glsl
-var CurvedPath_data_vs_default = "#version 300 es\n\nlayout(location=0) in uint aSourceIndex;\nlayout(location=1) in uint aTargetIndex;\nlayout(location=2) in uvec3 aControl;\nlayout(location=3) in uint aSourceColor;\nlayout(location=4) in uint aTargetColor;\n\nuniform sampler2D uGraphPoints;\n\nout vec3 vSource;\nout vec3 vTarget;\nout vec3 vControl;\nflat out uint vSourceColor;\nflat out uint vTargetColor;\nout vec2 vColorMix;\n\nprecision lowp usampler2D;\n#define GLSLIFY 1\n\nvec4 valueForIndex(sampler2D tex, int index) {\n    int texWidth = textureSize(tex, 0).x;\n    int col = index % texWidth;\n    int row = index / texWidth;\n    return texelFetch(tex, ivec2(col, row), 0);\n}\n\nuvec4 uvalueForIndex(usampler2D tex, int index) {\n    int texWidth = textureSize(tex, 0).x;\n    int col = index % texWidth;\n    int row = index / texWidth;\n    return texelFetch(tex, ivec2(col, row), 0);\n}\n\nuint uivalueForIndex(usampler2D tex, int index) {\n    int texWidth = textureSize(tex, 0).x;\n    int col = index % texWidth;\n    int row = index / texWidth;\n    return texelFetch(tex, ivec2(col, row), 0)[0];\n}\n\nvoid main() {\n    vec4 source = valueForIndex(uGraphPoints, int(aSourceIndex));\n    vec4 target = valueForIndex(uGraphPoints, int(aTargetIndex));\n    vec4 control = valueForIndex(uGraphPoints, int(aControl[0]));\n\n    // TODO: Optimize this to avoid branches. (If performance becomes a problem)\n    if (aControl[1] == 0u) {\n        vSource = source.xyz;\n    } else {\n        vSource = (source.xyz + control.xyz) / 2.0;\n    }\n\n    if (aControl[1] == aControl[2] - 1u) {\n        vTarget = target.xyz;\n    } else {\n        vTarget = (target.xyz + control.xyz) / 2.0;\n    }\n\n    vControl = control.xyz;\n\n    vSourceColor = aSourceColor;\n    vTargetColor = aTargetColor;\n\n    vColorMix = vec2(float(aControl[1]) / float(aControl[2]), float(aControl[1] + 1u) / float(aControl[2]));\n}\n";
+var CurvedPath_data_vs_default = "#version 300 es\n#define GLSLIFY 1\n\nlayout(location=0) in uint aSourceIndex;\nlayout(location=1) in uint aTargetIndex;\nlayout(location=2) in uvec3 aControl;\nlayout(location=3) in uint aSourceColor;\nlayout(location=4) in uint aTargetColor;\nlayout(location=5) in uvec4 aPickingColor;\n\nuniform sampler2D uGraphPoints;\n\nout vec3 vSource;\nout vec3 vTarget;\nout vec3 vControl;\nflat out uint vSourceColor;\nflat out uint vTargetColor;\nout vec2 vColorMix;\nflat out uvec4 vPickingColor;\n\n// manual import from ../../../renderer/shaders/valueForIndex.glsl\n// to avoid uvec4 pragma error\nvec4 valueForIndex(sampler2D tex, int index) {\n    int texWidth = textureSize(tex, 0).x;\n    int col = index % texWidth;\n    int row = index / texWidth;\n    return texelFetch(tex, ivec2(col, row), 0);\n}\n\nvoid main() {\n    vec4 source = valueForIndex(uGraphPoints, int(aSourceIndex));\n    vec4 target = valueForIndex(uGraphPoints, int(aTargetIndex));\n    vec4 control = valueForIndex(uGraphPoints, int(aControl[0]));\n\n    // TODO: Optimize this to avoid branches. (If performance becomes a problem)\n    if (aControl[1] == 0u) {\n        vSource = source.xyz;\n    } else {\n        vSource = (source.xyz + control.xyz) / 2.0;\n    }\n\n    if (aControl[1] == aControl[2] - 1u) {\n        vTarget = target.xyz;\n    } else {\n        vTarget = (target.xyz + control.xyz) / 2.0;\n    }\n\n    vControl = control.xyz;\n\n    vSourceColor = aSourceColor;\n    vTargetColor = aTargetColor;\n\n    vColorMix = vec2(float(aControl[1]) / float(aControl[2]), float(aControl[1] + 1u) / float(aControl[2]));\n\n    vPickingColor = aPickingColor;\n}\n";
 
 // src/graph/edges/path/CurvedPath.ts
+var pickingColorNoOpMapping = () => null;
 var kCurvedPathEdgeMappings = {
   id: (entry, i) => "id" in entry ? entry.id : i,
   source: (entry) => entry.source,
   target: (entry) => entry.target,
   control: (entry) => entry.control,
   sourceColor: (entry) => "sourceColor" in entry ? entry.sourceColor : 0,
-  targetColor: (entry) => "targetColor" in entry ? entry.targetColor : 0
+  targetColor: (entry) => "targetColor" in entry ? entry.targetColor : 0,
+  pickingColor: pickingColorNoOpMapping
 };
 var kCurvedPathEdgeDataTypes = {
   source: PicoGL.UNSIGNED_INT,
   target: PicoGL.UNSIGNED_INT,
   control: [PicoGL.UNSIGNED_INT, PicoGL.UNSIGNED_INT, PicoGL.UNSIGNED_INT],
   sourceColor: PicoGL.UNSIGNED_INT,
-  targetColor: PicoGL.UNSIGNED_INT
+  targetColor: PicoGL.UNSIGNED_INT,
+  pickingColor: [PicoGL.UNSIGNED_INT, PicoGL.UNSIGNED_INT, PicoGL.UNSIGNED_INT, PicoGL.UNSIGNED_INT]
 };
 var kGLCurvedPathEdgeTypes = {
   source: [PicoGL.FLOAT, PicoGL.FLOAT, PicoGL.FLOAT],
@@ -19414,7 +19417,8 @@ var kGLCurvedPathEdgeTypes = {
   control: [PicoGL.FLOAT, PicoGL.FLOAT, PicoGL.FLOAT],
   sourceColor: PicoGL.UNSIGNED_INT,
   targetColor: PicoGL.UNSIGNED_INT,
-  colorMix: [PicoGL.FLOAT, PicoGL.FLOAT]
+  colorMix: [PicoGL.FLOAT, PicoGL.FLOAT],
+  pickingColor: [PicoGL.UNSIGNED_INT, PicoGL.UNSIGNED_INT, PicoGL.UNSIGNED_INT, PicoGL.UNSIGNED_INT]
 };
 var CurvedPath = class extends Edges {
   constructor(context, points2, data, mappings2, pickingManager, segments = 16) {
@@ -19426,13 +19430,10 @@ var CurvedPath = class extends Edges {
     for (let i = 0; i <= segments; ++i) {
       segmentVertices.push(-1, i, 1, i);
     }
-    this.verticesVBO = context.createVertexBuffer(PicoGL.FLOAT, 2, new Float32Array(segmentVertices));
     this.pickingHandler = this.handlePickingEvent.bind(this);
-    this.pickingColors = this.pickingManager.allocatePickingColors(data.length);
-    this.pickingVBO = context.createVertexBuffer(PicoGL.UNSIGNED_BYTE, 4, this.pickingColors.colors);
+    this.verticesVBO = context.createVertexBuffer(PicoGL.FLOAT, 2, new Float32Array(segmentVertices));
     this.edgesVAO = context.createVertexArray().vertexAttributeBuffer(0, this.verticesVBO);
     this.configureTargetVAO(this.edgesVAO);
-    this.edgesVAO.instanceAttributeBuffer(7, this.pickingVBO);
     const shaders = this.getDrawShaders();
     this.program = context.createProgram(shaders.vs, shaders.fs);
     this.drawCall = context.createDrawCall(this.program, this.edgesVAO).primitive(PicoGL.TRIANGLE_STRIP);
@@ -19442,9 +19443,28 @@ var CurvedPath = class extends Edges {
     this.compute(context, {
       uGraphPoints: this.dataTexture
     });
+    this.pickingManager.on(PickingManager.events.hoverOn, this.pickingHandler);
+    this.pickingManager.on(PickingManager.events.hoverOff, this.pickingHandler);
+    this.pickingManager.on(PickingManager.events.click, this.pickingHandler);
     this.localUniforms.uSegments = segments;
   }
   destroy() {
+  }
+  ingestData(context, data, mappings2) {
+    this.pickingColors = this.pickingManager.allocatePickingColors(data.length);
+    super.ingestData(context, data, mappings2);
+  }
+  packDataCB() {
+    return (index, entry) => {
+      this.idArray.push(entry.id);
+      const indexStart = 4 * index;
+      entry.pickingColor = [
+        this.pickingColors.colors[indexStart],
+        this.pickingColors.colors[indexStart + 1],
+        this.pickingColors.colors[indexStart + 2],
+        this.pickingColors.colors[indexStart + 3]
+      ];
+    };
   }
   render(context, mode, uniforms) {
     setDrawCallUniforms(this.drawCall, uniforms);
@@ -19483,7 +19503,7 @@ var CurvedPath = class extends Edges {
   getDataShader() {
     return {
       vs: CurvedPath_data_vs_default,
-      varyings: ["vSource", "vTarget", "vControl", "vSourceColor", "vTargetColor", "vColorMix"]
+      varyings: ["vSource", "vTarget", "vControl", "vSourceColor", "vTargetColor", "vColorMix", "vPickingColor"]
     };
   }
   computeMappings(mappings2) {
@@ -19514,13 +19534,16 @@ var CurvedPath = class extends Edges {
 };
 
 // src/graph/edges/path/StraightPath.vs.glsl
-var StraightPath_vs_default = "#version 300 es\n\nlayout(location=0) in vec3 aVertex;\nlayout(location=1) in uint iPointA;\nlayout(location=2) in uint iPointB;\nlayout(location=3) in uint iColorA;\nlayout(location=4) in uint iColorB;\nlayout(location=5) in vec2 iColorMix;\n\nuniform mat4 uViewMatrix;\nuniform mat4 uSceneMatrix;\nuniform mat4 uProjectionMatrix;\nuniform vec2 uViewportSize;\nuniform float uPixelRatio;\nuniform sampler2D uGraphPoints;\nuniform sampler2D uColorPalette;\n\nuniform float uLineWidth;\n\nflat out float fLineWidth;\nout vec3 vColor;\nout vec2 vProjectedPosition;\nout float vProjectedW;\n\nprecision lowp usampler2D;\n#define GLSLIFY 1\n\nvec4 valueForIndex(sampler2D tex, int index) {\n    int texWidth = textureSize(tex, 0).x;\n    int col = index % texWidth;\n    int row = index / texWidth;\n    return texelFetch(tex, ivec2(col, row), 0);\n}\n\nuvec4 uvalueForIndex(usampler2D tex, int index) {\n    int texWidth = textureSize(tex, 0).x;\n    int col = index % texWidth;\n    int row = index / texWidth;\n    return texelFetch(tex, ivec2(col, row), 0);\n}\n\nuint uivalueForIndex(usampler2D tex, int index) {\n    int texWidth = textureSize(tex, 0).x;\n    int col = index % texWidth;\n    int row = index / texWidth;\n    return texelFetch(tex, ivec2(col, row), 0)[0];\n}\n\nvoid main() {\n    float multA = aVertex.y;\n    float multB = 1.0 - aVertex.y;\n\n    mat4 renderMatrix = uProjectionMatrix * uViewMatrix * uSceneMatrix;\n\n    vec3 offsetA = valueForIndex(uGraphPoints, int(iPointA)).xyz;\n    vec3 offsetB = valueForIndex(uGraphPoints, int(iPointB)).xyz;\n\n    vec4 aProjected = renderMatrix * vec4(offsetA, 1.0);\n    vec2 aScreen = aProjected.xy / aProjected.w * uViewportSize * 0.5;\n\n    vec4 bProjected = renderMatrix * vec4(offsetB, 1.0);\n    vec2 bScreen = bProjected.xy / bProjected.w * uViewportSize * 0.5;\n\n    vec2 direction = normalize(bScreen - aScreen);\n    vec2 perp = vec2(-direction.y, direction.x);\n\n    fLineWidth = uLineWidth * uPixelRatio;\n    float offsetWidth = fLineWidth + 0.5;\n    vec4 position = aProjected * multA + bProjected * multB;\n    vec4 offset = vec4(((aVertex.x * perp * offsetWidth) / uViewportSize) * position.w, 0.0, 0.0);\n    gl_Position = position + offset;\n\n    vProjectedPosition = position.xy;\n    vProjectedW = position.w;\n\n    // calculate the color\n    vec4 colorA = valueForIndex(uColorPalette, int(iColorA));\n    vec4 colorB = valueForIndex(uColorPalette, int(iColorB));\n    vec3 mixColorA = mix(colorA.rgb, colorB.rgb, iColorMix[1]);\n    vec3 mixColorB = mix(colorA.rgb, colorB.rgb, iColorMix[0]);\n    vColor = mixColorA.rgb * multB + mixColorB.rgb * multA;\n}\n";
+var StraightPath_vs_default = "#version 300 es\n#define GLSLIFY 1\n\nlayout(location=0) in vec3 aVertex;\nlayout(location=1) in uint iPointA;\nlayout(location=2) in uint iPointB;\nlayout(location=3) in uint iColorA;\nlayout(location=4) in uint iColorB;\nlayout(location=5) in vec2 iColorMix;\nlayout(location=6) in uvec4 iPickingColor;\n\nuniform bool uPicking;\n\nuniform mat4 uViewMatrix;\nuniform mat4 uSceneMatrix;\nuniform mat4 uProjectionMatrix;\nuniform vec2 uViewportSize;\nuniform float uPixelRatio;\nuniform float uPickingWidth;\nuniform sampler2D uGraphPoints;\nuniform sampler2D uColorPalette;\n\nuniform float uLineWidth;\n\nflat out float fLineWidth;\nflat out vec4 fPickingColor;\nout vec3 vColor;\nout vec2 vProjectedPosition;\nout float vProjectedW;\n\n// manual import from ../../../renderer/shaders/valueForIndex.glsl\n// to avoid uvec4 pragma error\nvec4 valueForIndex(sampler2D tex, int index) {\n    int texWidth = textureSize(tex, 0).x;\n    int col = index % texWidth;\n    int row = index / texWidth;\n    return texelFetch(tex, ivec2(col, row), 0);\n}\n\nvoid main() {\n    fPickingColor = uPicking ? vec4(iPickingColor) / 255.0 : vec4(0.0);\n\n    float multA = aVertex.y;\n    float multB = 1.0 - aVertex.y;\n\n    mat4 renderMatrix = uProjectionMatrix * uViewMatrix * uSceneMatrix;\n\n    vec3 offsetA = valueForIndex(uGraphPoints, int(iPointA)).xyz;\n    vec3 offsetB = valueForIndex(uGraphPoints, int(iPointB)).xyz;\n\n    vec4 aProjected = renderMatrix * vec4(offsetA, 1.0);\n    vec2 aScreen = aProjected.xy / aProjected.w * uViewportSize * 0.5;\n\n    vec4 bProjected = renderMatrix * vec4(offsetB, 1.0);\n    vec2 bScreen = bProjected.xy / bProjected.w * uViewportSize * 0.5;\n\n    vec2 direction = normalize(bScreen - aScreen);\n    vec2 perp = vec2(-direction.y, direction.x);\n\n    fLineWidth = (uPicking ? uLineWidth * uPickingWidth : uLineWidth) * uPixelRatio;\n    float offsetWidth = fLineWidth + 0.5;\n    vec4 position = aProjected * multA + bProjected * multB;\n    vec4 offset = vec4(((aVertex.x * perp * offsetWidth) / uViewportSize) * position.w, 0.0, 0.0);\n    gl_Position = position + offset;\n\n    vProjectedPosition = position.xy;\n    vProjectedW = position.w;\n\n    // calculate the color\n    vec4 colorA = valueForIndex(uColorPalette, int(iColorA));\n    vec4 colorB = valueForIndex(uColorPalette, int(iColorB));\n    vec3 mixColorA = mix(colorA.rgb, colorB.rgb, iColorMix[1]);\n    vec3 mixColorB = mix(colorA.rgb, colorB.rgb, iColorMix[0]);\n    vColor = mixColorA.rgb * multB + mixColorB.rgb * multA;\n}\n";
 
 // src/graph/edges/path/StraightPath.fs.glsl
 var StraightPath_fs_default = "#version 300 es\nprecision highp float;\n#define GLSLIFY 1\n\n// from https://en.wikipedia.org/wiki/SRGB#The_reverse_transformation\nfloat luminance_x_1540259130(float x) {\n    return x <= 0.04045 ? x / 12.92 : pow((x + 0.055) / 1.055, 2.4);\n}\nfloat color_l_1540259130(float l) {\n    return min(1.0, max(0.0, l <= 0.0031308 ? l * 12.92 : pow(l * 1.055, 1.0 / 2.4) - 0.055));\n}\n\n// from https://en.wikipedia.org/wiki/Relative_luminance\nfloat rgb2luminance(vec3 color) {\n    // relative luminance\n    // see http://www.w3.org/TR/2008/REC-WCAG20-20081211/#relativeluminancedef\n    float r = luminance_x_1540259130(color.r);\n    float g = luminance_x_1540259130(color.g);\n    float b = luminance_x_1540259130(color.b);\n    return 0.2126 * r + 0.7152 * g + 0.0722 * b;\n}\n\nvec3 setLuminance(vec3 color, float luminance) {\n    float r = luminance_x_1540259130(color.r) * 0.2126;\n    float g = luminance_x_1540259130(color.g) * 0.7152;\n    float b = luminance_x_1540259130(color.b) * 0.0722;\n    float colorLuminance = r + g + b;\n\n    float tr = luminance * (r / colorLuminance);\n    float tg = luminance * (g / colorLuminance);\n    float tb = luminance * (b / colorLuminance);\n\n    float rr = color_l_1540259130(tr / 0.2126);\n    float rg = color_l_1540259130(tg / 0.7152);\n    float rb = color_l_1540259130(tb / 0.0722);\n\n    return vec3(rr, rg, rb );\n}\n\n// https://www.w3.org/TR/WCAG20/#contrast-ratiodef\n// (L1 + 0.05) / (L2 + 0.05), where\n// - L1 is the relative luminance of the lighter of the colors, and\n// - L2 is the relative luminance of the darker of the colors.\nfloat findDarker(float luminance, float contrast) {\n    return (contrast * luminance) + (0.05 * contrast) - 0.05;\n}\nfloat findLighter(float luminance, float contrast) {\n    return (luminance + 0.05 - (0.05 * contrast)) / contrast;\n}\n\nvec3 contrastingColor(vec3 color, float contrast) {\n    float luminance = rgb2luminance(color);\n    float darker = findDarker(luminance, contrast);\n    float lighter = findLighter(luminance, contrast);\n\n    float targetLuminance;\n    if (darker < 0.0 || darker > 1.0) {\n        targetLuminance = lighter;\n    } else if (lighter < 0.0 || lighter > 1.0) {\n        targetLuminance = darker;\n    } else {\n        targetLuminance = abs(luminance - lighter) < abs(darker - luminance) ? lighter : darker;\n    }\n\n    return setLuminance(color, targetLuminance);\n}\n\nvec3 desaturateColor(vec3 color, float amount) {\n    float l = rgb2luminance(color);\n    vec3 gray = vec3(l, l, l);\n    return mix(color, gray, amount);\n}\n\nuniform vec4 uClearColor;\nuniform float uDesaturate;\nuniform float uBrightness;\nuniform float uFade;\nuniform float uAlpha;\n\nvec4 outputColor(vec4 color) {\n    // desaturate => fade => alpha\n    vec3 ret = mix(color.rgb, vec3(uBrightness + 1.0 / 2.0), abs(uBrightness));\n    ret = vec3(desaturateColor(ret, uDesaturate));\n    ret = mix(ret, uClearColor.rgb, uFade);\n    return vec4(ret, color.a * uAlpha);\n}\n\n#define MODE_DRAFT 0u\n#define MODE_MEDIUM 1u\n#define MODE_HIGH 2u\n#define MODE_HIGH_PASS_1 3u\n#define MODE_HIGH_PASS_2 4u\n#define MODE_PICKING 5u\n\n#define ONE_ALPHA 0.00392156862 // 1.0 / 255.0\n\nfloat lineAlpha(vec2 position, float w, vec2 viewportSize, float lineWidth) {\n    vec2 lineCenter = ((position / w) * 0.5 + 0.5) * viewportSize;\n    float distOffset = (lineWidth - 1.0) * 0.5;\n    float dist = smoothstep(lineWidth * 0.5 - 0.5, lineWidth * 0.5 + 0.5, distance(lineCenter, gl_FragCoord.xy));\n    return (1.0 - dist);\n}\n\nvec4 lineColor(vec3 color, vec2 position, float w, vec2 viewportSize, uint mode, float lineWidth) {\n    if (mode < MODE_HIGH_PASS_1) {\n        return outputColor(vec4(color, 1.0));\n    }\n\n    float a = lineAlpha(position, w, viewportSize, lineWidth);\n\n    if (mode == MODE_HIGH_PASS_1) {\n        if (a == 1.0) {\n            return outputColor(vec4(color, a));\n        } else {\n            discard;\n        }\n    }\n\n    // Possible optimization.\n    // Edges run into fill rate issues because too many of them overlap, discarging pixels below a certain alpha\n    // threshold might help speed things up a bit.\n    if (a < ONE_ALPHA) {\n        discard;\n    }\n\n    return outputColor(vec4(color, a));\n}\n\nuniform vec2 uViewportSize;\nuniform uint uRenderMode;\n\nflat in float fLineWidth;\nin vec3 vColor;\nin vec2 vProjectedPosition;\nin float vProjectedW;\n\nout vec4 fragColor;\n\nvoid main() {\n    fragColor = lineColor(vColor, vProjectedPosition, vProjectedW, uViewportSize, uRenderMode, fLineWidth);\n}\n";
 
+// src/graph/edges/path/StraightPath.picking.fs.glsl
+var StraightPath_picking_fs_default = "#version 300 es\nprecision highp float;\n#define GLSLIFY 1\n\nflat in vec4 fPickingColor;\n\nout vec4 fragColor;\n\nvoid main() {\n    fragColor = fPickingColor;\n}\n";
+
 // src/graph/edges/path/StraightPath.data.vs.glsl
-var StraightPath_data_vs_default = "#version 300 es\n#define GLSLIFY 1\n\nlayout(location=0) in uint aSourceIndex;\nlayout(location=1) in uint aTargetIndex;\nlayout(location=2) in uvec2 aControl;\nlayout(location=3) in uint aSourceColor;\nlayout(location=4) in uint aTargetColor;\n\nuniform sampler2D uGraphPoints;\n\nflat out uint fSource;\nflat out uint fTarget;\nflat out uint fSourceColor;\nflat out uint fTargetColor;\nflat out vec2 fColorMix;\n\nvoid main() {\n    fSource = aSourceIndex;\n    fTarget = aTargetIndex;\n\n    fSourceColor = aSourceColor;\n    fTargetColor = aTargetColor;\n\n    fColorMix = vec2(float(aControl[0]) / float(aControl[1]), float(aControl[0] + 1u) / float(aControl[1]));\n}\n";
+var StraightPath_data_vs_default = "#version 300 es\n#define GLSLIFY 1\n\nlayout(location=0) in uint aSourceIndex;\nlayout(location=1) in uint aTargetIndex;\nlayout(location=2) in uvec2 aControl;\nlayout(location=3) in uint aSourceColor;\nlayout(location=4) in uint aTargetColor;\nlayout(location=5) in uvec4 aPickingColor;\n\nuniform sampler2D uGraphPoints;\n\nflat out uint fSource;\nflat out uint fTarget;\nflat out uint fSourceColor;\nflat out uint fTargetColor;\nflat out vec2 fColorMix;\nflat out uvec4 fPickingColor;\n\nvoid main() {\n    fSource = aSourceIndex;\n    fTarget = aTargetIndex;\n\n    fSourceColor = aSourceColor;\n    fTargetColor = aTargetColor;\n\n    fColorMix = vec2(float(aControl[0]) / float(aControl[1]), float(aControl[0] + 1u) / float(aControl[1]));\n\n    fPickingColor = aPickingColor;\n}\n";
 
 // src/graph/edges/path/StraightPath.ts
 var kStraightPathEdgeDataTypes = {
@@ -19528,14 +19551,16 @@ var kStraightPathEdgeDataTypes = {
   target: PicoGL.UNSIGNED_INT,
   control: [PicoGL.UNSIGNED_INT, PicoGL.UNSIGNED_INT],
   sourceColor: PicoGL.UNSIGNED_INT,
-  targetColor: PicoGL.UNSIGNED_INT
+  targetColor: PicoGL.UNSIGNED_INT,
+  pickingColor: [PicoGL.UNSIGNED_INT, PicoGL.UNSIGNED_INT, PicoGL.UNSIGNED_INT, PicoGL.UNSIGNED_INT]
 };
 var kGLStraightPathEdgeTypes = {
   source: PicoGL.UNSIGNED_INT,
   target: PicoGL.UNSIGNED_INT,
   sourceColor: PicoGL.UNSIGNED_INT,
   targetColor: PicoGL.UNSIGNED_INT,
-  colorMix: [PicoGL.FLOAT, PicoGL.FLOAT]
+  colorMix: [PicoGL.FLOAT, PicoGL.FLOAT],
+  pickingColor: [PicoGL.UNSIGNED_INT, PicoGL.UNSIGNED_INT, PicoGL.UNSIGNED_INT, PicoGL.UNSIGNED_INT]
 };
 var StraightPath = class extends Edges {
   initialize(context, points2, data, mappings2, pickingManager) {
@@ -19550,16 +19575,39 @@ var StraightPath = class extends Edges {
       1,
       1
     ]));
+    this.pickingHandler = this.handlePickingEvent.bind(this);
     this.edgesVAO = context.createVertexArray().vertexAttributeBuffer(0, this.verticesVBO);
     this.configureTargetVAO(this.edgesVAO);
     const shaders = this.getDrawShaders();
     this.program = context.createProgram(shaders.vs, shaders.fs);
     this.drawCall = context.createDrawCall(this.program, this.edgesVAO).primitive(PicoGL.TRIANGLE_STRIP);
+    const pickingShaders = this.getPickingShaders();
+    this.pickingProgram = context.createProgram(pickingShaders.vs, pickingShaders.fs);
+    this.pickingDrawCall = context.createDrawCall(this.pickingProgram, this.edgesVAO).primitive(PicoGL.TRIANGLE_STRIP);
     this.compute(context, {
       uGraphPoints: this.dataTexture
     });
+    this.pickingManager.on(PickingManager.events.hoverOn, this.pickingHandler);
+    this.pickingManager.on(PickingManager.events.hoverOff, this.pickingHandler);
+    this.pickingManager.on(PickingManager.events.click, this.pickingHandler);
   }
   destroy() {
+  }
+  ingestData(context, data, mappings2) {
+    this.pickingColors = this.pickingManager.allocatePickingColors(data.length);
+    super.ingestData(context, data, mappings2);
+  }
+  packDataCB() {
+    return (index, entry) => {
+      this.idArray.push(entry.id);
+      const indexStart = 4 * index;
+      entry.pickingColor = [
+        this.pickingColors.colors[indexStart],
+        this.pickingColors.colors[indexStart + 1],
+        this.pickingColors.colors[indexStart + 2],
+        this.pickingColors.colors[indexStart + 3]
+      ];
+    };
   }
   render(context, mode, uniforms) {
     this.configureRenderContext(context, mode);
@@ -19567,6 +19615,10 @@ var StraightPath = class extends Edges {
     setDrawCallUniforms(this.drawCall, this.localUniforms);
     switch (mode) {
       case RenderMode.PICKING:
+        setDrawCallUniforms(this.pickingDrawCall, uniforms);
+        setDrawCallUniforms(this.pickingDrawCall, this.localUniforms);
+        this.pickingDrawCall.uniform("uPicking", true);
+        this.pickingDrawCall.draw();
         break;
       default:
         this.drawCall.draw();
@@ -19582,7 +19634,7 @@ var StraightPath = class extends Edges {
   getPickingShaders() {
     return {
       vs: StraightPath_vs_default,
-      fs: null
+      fs: StraightPath_picking_fs_default
     };
   }
   getGLSourceTypes() {
@@ -19594,7 +19646,7 @@ var StraightPath = class extends Edges {
   getDataShader() {
     return {
       vs: StraightPath_data_vs_default,
-      varyings: ["fSource", "fTarget", "fSourceColor", "fTargetColor", "fColorMix"]
+      varyings: ["fSource", "fTarget", "fSourceColor", "fTargetColor", "fColorMix", "fPickingColor"]
     };
   }
   computeMappings(mappings2) {
@@ -19625,6 +19677,12 @@ var StraightPath = class extends Edges {
     };
     return edgesMappings;
   }
+  handlePickingEvent(event, colorID) {
+    if (this.picking && this.pickingColors.map.has(colorID)) {
+      const id = this.idArray[this.pickingColors.map.get(colorID)];
+      this.emit(event, id);
+    }
+  }
 };
 
 // src/graph/edges/bundle/ClusterBundle.vs.glsl
@@ -19633,10 +19691,14 @@ var ClusterBundle_vs_default = "#version 300 es\n#define GLSLIFY 1\n\nlayout(loc
 // src/graph/edges/bundle/ClusterBundle.fs.glsl
 var ClusterBundle_fs_default = "#version 300 es\nprecision highp float;\n#define GLSLIFY 1\n\n// from https://en.wikipedia.org/wiki/SRGB#The_reverse_transformation\nfloat luminance_x_1540259130(float x) {\n    return x <= 0.04045 ? x / 12.92 : pow((x + 0.055) / 1.055, 2.4);\n}\nfloat color_l_1540259130(float l) {\n    return min(1.0, max(0.0, l <= 0.0031308 ? l * 12.92 : pow(l * 1.055, 1.0 / 2.4) - 0.055));\n}\n\n// from https://en.wikipedia.org/wiki/Relative_luminance\nfloat rgb2luminance(vec3 color) {\n    // relative luminance\n    // see http://www.w3.org/TR/2008/REC-WCAG20-20081211/#relativeluminancedef\n    float r = luminance_x_1540259130(color.r);\n    float g = luminance_x_1540259130(color.g);\n    float b = luminance_x_1540259130(color.b);\n    return 0.2126 * r + 0.7152 * g + 0.0722 * b;\n}\n\nvec3 setLuminance(vec3 color, float luminance) {\n    float r = luminance_x_1540259130(color.r) * 0.2126;\n    float g = luminance_x_1540259130(color.g) * 0.7152;\n    float b = luminance_x_1540259130(color.b) * 0.0722;\n    float colorLuminance = r + g + b;\n\n    float tr = luminance * (r / colorLuminance);\n    float tg = luminance * (g / colorLuminance);\n    float tb = luminance * (b / colorLuminance);\n\n    float rr = color_l_1540259130(tr / 0.2126);\n    float rg = color_l_1540259130(tg / 0.7152);\n    float rb = color_l_1540259130(tb / 0.0722);\n\n    return vec3(rr, rg, rb );\n}\n\n// https://www.w3.org/TR/WCAG20/#contrast-ratiodef\n// (L1 + 0.05) / (L2 + 0.05), where\n// - L1 is the relative luminance of the lighter of the colors, and\n// - L2 is the relative luminance of the darker of the colors.\nfloat findDarker(float luminance, float contrast) {\n    return (contrast * luminance) + (0.05 * contrast) - 0.05;\n}\nfloat findLighter(float luminance, float contrast) {\n    return (luminance + 0.05 - (0.05 * contrast)) / contrast;\n}\n\nvec3 contrastingColor(vec3 color, float contrast) {\n    float luminance = rgb2luminance(color);\n    float darker = findDarker(luminance, contrast);\n    float lighter = findLighter(luminance, contrast);\n\n    float targetLuminance;\n    if (darker < 0.0 || darker > 1.0) {\n        targetLuminance = lighter;\n    } else if (lighter < 0.0 || lighter > 1.0) {\n        targetLuminance = darker;\n    } else {\n        targetLuminance = abs(luminance - lighter) < abs(darker - luminance) ? lighter : darker;\n    }\n\n    return setLuminance(color, targetLuminance);\n}\n\nvec3 desaturateColor(vec3 color, float amount) {\n    float l = rgb2luminance(color);\n    vec3 gray = vec3(l, l, l);\n    return mix(color, gray, amount);\n}\n\nuniform vec4 uClearColor;\nuniform float uDesaturate;\nuniform float uBrightness;\nuniform float uFade;\nuniform float uAlpha;\n\nvec4 outputColor(vec4 color) {\n    // desaturate => fade => alpha\n    vec3 ret = mix(color.rgb, vec3(uBrightness + 1.0 / 2.0), abs(uBrightness));\n    ret = vec3(desaturateColor(ret, uDesaturate));\n    ret = mix(ret, uClearColor.rgb, uFade);\n    return vec4(ret, color.a * uAlpha);\n}\n\n#define MODE_DRAFT 0u\n#define MODE_MEDIUM 1u\n#define MODE_HIGH 2u\n#define MODE_HIGH_PASS_1 3u\n#define MODE_HIGH_PASS_2 4u\n#define MODE_PICKING 5u\n\n#define ONE_ALPHA 0.00392156862 // 1.0 / 255.0\n\nfloat lineAlpha(vec2 position, float w, vec2 viewportSize, float lineWidth) {\n    vec2 lineCenter = ((position / w) * 0.5 + 0.5) * viewportSize;\n    float distOffset = (lineWidth - 1.0) * 0.5;\n    float dist = smoothstep(lineWidth * 0.5 - 0.5, lineWidth * 0.5 + 0.5, distance(lineCenter, gl_FragCoord.xy));\n    return (1.0 - dist);\n}\n\nvec4 lineColor(vec3 color, vec2 position, float w, vec2 viewportSize, uint mode, float lineWidth) {\n    if (mode < MODE_HIGH_PASS_1) {\n        return outputColor(vec4(color, 1.0));\n    }\n\n    float a = lineAlpha(position, w, viewportSize, lineWidth);\n\n    if (mode == MODE_HIGH_PASS_1) {\n        if (a == 1.0) {\n            return outputColor(vec4(color, a));\n        } else {\n            discard;\n        }\n    }\n\n    // Possible optimization.\n    // Edges run into fill rate issues because too many of them overlap, discarging pixels below a certain alpha\n    // threshold might help speed things up a bit.\n    if (a < ONE_ALPHA) {\n        discard;\n    }\n\n    return outputColor(vec4(color, a));\n}\n\nuniform vec2 uViewportSize;\nuniform uint uRenderMode;\n\nflat in float fLineWidth;\nin vec3 vColor;\nin vec2 vProjectedPosition;\nin float vProjectedW;\n\nout vec4 fragColor;\n\nvoid main() {\n    fragColor = lineColor(vColor, vProjectedPosition, vProjectedW, uViewportSize, uRenderMode, fLineWidth);\n}\n\n";
 
+// src/graph/edges/bundle/ClusterBundle.picking.fs.glsl
+var ClusterBundle_picking_fs_default = "#version 300 es\nprecision highp float;\n#define GLSLIFY 1\n\nflat in vec4 fPickingColor;\n\nout vec4 fragColor;\n\nvoid main() {\n    fragColor = fPickingColor;\n}\n\n";
+
 // src/graph/edges/bundle/ClusterBundle.data.vs.glsl
-var ClusterBundle_data_vs_default = "#version 300 es\n\nlayout(location=0) in uint aSourceIndex;\nlayout(location=1) in uint aTargetIndex;\nlayout(location=2) in uint aSourceClusterIndex;\nlayout(location=3) in uint aTargetClusterIndex;\nlayout(location=4) in uint aSourceColor;\nlayout(location=5) in uint aTargetColor;\nlayout(location=6) in uvec2 aHyperEdgeStats;\nlayout(location=7) in uint aIndex;\n\nuniform sampler2D uGraphPoints;\n\nout vec3 vSource;\nout vec3 vTarget;\nout vec3 vControl;\nflat out uint vSourceColor;\nflat out uint vTargetColor;\nout vec2 vColorMix;\n\nprecision lowp usampler2D;\n#define GLSLIFY 1\n\nvec4 valueForIndex(sampler2D tex, int index) {\n    int texWidth = textureSize(tex, 0).x;\n    int col = index % texWidth;\n    int row = index / texWidth;\n    return texelFetch(tex, ivec2(col, row), 0);\n}\n\nuvec4 uvalueForIndex(usampler2D tex, int index) {\n    int texWidth = textureSize(tex, 0).x;\n    int col = index % texWidth;\n    int row = index / texWidth;\n    return texelFetch(tex, ivec2(col, row), 0);\n}\n\nuint uivalueForIndex(usampler2D tex, int index) {\n    int texWidth = textureSize(tex, 0).x;\n    int col = index % texWidth;\n    int row = index / texWidth;\n    return texelFetch(tex, ivec2(col, row), 0)[0];\n}\n\nvoid main() {\n    vec4 source = valueForIndex(uGraphPoints, int(aSourceIndex));\n    vec4 target = valueForIndex(uGraphPoints, int(aTargetIndex));\n    vec4 sourceCluster = valueForIndex(uGraphPoints, int(aSourceClusterIndex));\n    vec4 targetCluster = valueForIndex(uGraphPoints, int(aTargetClusterIndex));\n\n    vec3 direction = normalize(vec3(targetCluster.xy, 0.0) - vec3(sourceCluster.xy, 0.0));\n    // assume 2D and ignore Z, future Dario, make this 3D!\n    vec3 perp = vec3(-direction.y, direction.x, direction.z);\n    float minClusterRadius = min(sourceCluster[3], targetCluster[3]);\n    float edgeWidth = minClusterRadius * 0.0005; // magic number\n    float maxOffset = minClusterRadius * 0.1; // magic number\n    float offsetLength = min(maxOffset, edgeWidth * float(aHyperEdgeStats[1]));\n    vec3 offset = (-perp * offsetLength * 0.5) + (perp * (offsetLength / float(aHyperEdgeStats[1])) * float(aHyperEdgeStats[0]));\n\n    vec3 sourceClusterEdge = sourceCluster.xyz + direction * sourceCluster[3] + offset;\n    vec3 targetClusterEdge = targetCluster.xyz - direction * targetCluster[3] + offset;\n\n    float edgeToEdge = length(targetClusterEdge - sourceClusterEdge);\n    vec3 bundlePoint = sourceClusterEdge + direction * (edgeToEdge * 0.5);\n\n    vec3 sourceEdgeToNode = sourceClusterEdge - source.xyz - direction * source[3];\n    float sourceNodeAdjacent = dot(normalize(sourceEdgeToNode), direction) * length(sourceEdgeToNode);\n    vec3 sourceClusterControl = sourceClusterEdge - direction * min(sourceNodeAdjacent * 0.75, sourceCluster[3]);\n    vec3 sourceControlDirection = normalize(sourceClusterControl - source.xyz);\n    vec3 sourcePoint = source.xyz + sourceControlDirection * source[3];\n\n    vec3 targetEdgeToNode = target.xyz - targetClusterEdge - direction * target[3];\n    float targetNodeAdjacent = dot(normalize(targetEdgeToNode), direction) * length(targetEdgeToNode);\n    vec3 targetClusterControl = targetClusterEdge + direction * min(targetNodeAdjacent * 0.75, targetCluster[3]);\n    vec3 targetControlDirection = normalize(targetClusterControl - target.xyz);\n    vec3 targetPoint = target.xyz + targetControlDirection * target[3];\n\n    // TODO: Optimize this to avoid branches. (If performance becomes a problem)\n    if (aIndex == 0u) {\n        if (aSourceIndex == aSourceClusterIndex) {\n            vSource = sourcePoint;\n            vControl = sourcePoint;\n            vTarget = sourcePoint;\n        } else {\n            vSource = sourcePoint;\n            vControl = sourceClusterControl;\n            vTarget = (sourceClusterControl + bundlePoint) / 2.0;\n        }\n    } else if (aIndex == 1u) {\n        if (aSourceIndex == aSourceClusterIndex) {\n            vSource = sourcePoint;\n        } else {\n            vSource = (sourceClusterControl + bundlePoint) / 2.0;\n        }\n\n        vControl = bundlePoint;\n\n        if (aTargetIndex == aTargetClusterIndex) {\n            vTarget = targetPoint;\n        } else {\n            vTarget = (bundlePoint + targetClusterControl) / 2.0;\n        }\n    } else {\n        if (aTargetIndex == aTargetClusterIndex) {\n            vSource = targetPoint;\n            vControl = targetPoint;\n            vTarget = targetPoint;\n        } else {\n            vSource = (bundlePoint + targetClusterControl) / 2.0;\n            vControl = targetClusterControl;\n            vTarget = targetPoint;\n        }\n    }\n\n    vSourceColor = aSourceColor;\n    vTargetColor = aTargetColor;\n\n    vColorMix = vec2(float(aIndex) * 0.25, float(aIndex + 1u) * 0.25);\n}\n";
+var ClusterBundle_data_vs_default = "#version 300 es\n#define GLSLIFY 1\n\nlayout(location=0) in uint aSourceIndex;\nlayout(location=1) in uint aTargetIndex;\nlayout(location=2) in uint aSourceClusterIndex;\nlayout(location=3) in uint aTargetClusterIndex;\nlayout(location=4) in uint aSourceColor;\nlayout(location=5) in uint aTargetColor;\nlayout(location=6) in uvec2 aHyperEdgeStats;\nlayout(location=7) in uint aIndex;\nlayout(location=8) in uvec4 aPickingColor;\n\nuniform sampler2D uGraphPoints;\n\nout vec3 vSource;\nout vec3 vTarget;\nout vec3 vControl;\nflat out uint vSourceColor;\nflat out uint vTargetColor;\nout vec2 vColorMix;\nflat out uvec4 vPickingColor;\n\n// manual import from ../../../renderer/shaders/valueForIndex.glsl\n// to avoid uvec4 pragma error\nvec4 valueForIndex(sampler2D tex, int index) {\n    int texWidth = textureSize(tex, 0).x;\n    int col = index % texWidth;\n    int row = index / texWidth;\n    return texelFetch(tex, ivec2(col, row), 0);\n}\n\nvoid main() {\n    vec4 source = valueForIndex(uGraphPoints, int(aSourceIndex));\n    vec4 target = valueForIndex(uGraphPoints, int(aTargetIndex));\n    vec4 sourceCluster = valueForIndex(uGraphPoints, int(aSourceClusterIndex));\n    vec4 targetCluster = valueForIndex(uGraphPoints, int(aTargetClusterIndex));\n\n    vec3 direction = normalize(vec3(targetCluster.xy, 0.0) - vec3(sourceCluster.xy, 0.0));\n    // assume 2D and ignore Z, future Dario, make this 3D!\n    vec3 perp = vec3(-direction.y, direction.x, direction.z);\n    float minClusterRadius = min(sourceCluster[3], targetCluster[3]);\n    float edgeWidth = minClusterRadius * 0.0005; // magic number\n    float maxOffset = minClusterRadius * 0.1; // magic number\n    float offsetLength = min(maxOffset, edgeWidth * float(aHyperEdgeStats[1]));\n    vec3 offset = (-perp * offsetLength * 0.5) + (perp * (offsetLength / float(aHyperEdgeStats[1])) * float(aHyperEdgeStats[0]));\n\n    vec3 sourceClusterEdge = sourceCluster.xyz + direction * sourceCluster[3] + offset;\n    vec3 targetClusterEdge = targetCluster.xyz - direction * targetCluster[3] + offset;\n\n    float edgeToEdge = length(targetClusterEdge - sourceClusterEdge);\n    vec3 bundlePoint = sourceClusterEdge + direction * (edgeToEdge * 0.5);\n\n    vec3 sourceEdgeToNode = sourceClusterEdge - source.xyz - direction * source[3];\n    float sourceNodeAdjacent = dot(normalize(sourceEdgeToNode), direction) * length(sourceEdgeToNode);\n    vec3 sourceClusterControl = sourceClusterEdge - direction * min(sourceNodeAdjacent * 0.75, sourceCluster[3]);\n    vec3 sourceControlDirection = normalize(sourceClusterControl - source.xyz);\n    vec3 sourcePoint = source.xyz + sourceControlDirection * source[3];\n\n    vec3 targetEdgeToNode = target.xyz - targetClusterEdge - direction * target[3];\n    float targetNodeAdjacent = dot(normalize(targetEdgeToNode), direction) * length(targetEdgeToNode);\n    vec3 targetClusterControl = targetClusterEdge + direction * min(targetNodeAdjacent * 0.75, targetCluster[3]);\n    vec3 targetControlDirection = normalize(targetClusterControl - target.xyz);\n    vec3 targetPoint = target.xyz + targetControlDirection * target[3];\n\n    // TODO: Optimize this to avoid branches. (If performance becomes a problem)\n    if (aIndex == 0u) {\n        if (aSourceIndex == aSourceClusterIndex) {\n            vSource = sourcePoint;\n            vControl = sourcePoint;\n            vTarget = sourcePoint;\n        } else {\n            vSource = sourcePoint;\n            vControl = sourceClusterControl;\n            vTarget = (sourceClusterControl + bundlePoint) / 2.0;\n        }\n    } else if (aIndex == 1u) {\n        if (aSourceIndex == aSourceClusterIndex) {\n            vSource = sourcePoint;\n        } else {\n            vSource = (sourceClusterControl + bundlePoint) / 2.0;\n        }\n\n        vControl = bundlePoint;\n\n        if (aTargetIndex == aTargetClusterIndex) {\n            vTarget = targetPoint;\n        } else {\n            vTarget = (bundlePoint + targetClusterControl) / 2.0;\n        }\n    } else {\n        if (aTargetIndex == aTargetClusterIndex) {\n            vSource = targetPoint;\n            vControl = targetPoint;\n            vTarget = targetPoint;\n        } else {\n            vSource = (bundlePoint + targetClusterControl) / 2.0;\n            vControl = targetClusterControl;\n            vTarget = targetPoint;\n        }\n    }\n\n    vSourceColor = aSourceColor;\n    vTargetColor = aTargetColor;\n\n    vColorMix = vec2(float(aIndex) * 0.25, float(aIndex + 1u) * 0.25);\n\n    vPickingColor = aPickingColor;\n}\n";
 
 // src/graph/edges/bundle/ClusterBundle.ts
+var pickingColorNoOpMapping2 = () => null;
 var kClusterBundleEdgeNoOpMapping = () => null;
 var kClusterBundleEdgeMappings = {
   id: (entry, i) => "id" in entry ? entry.id : i,
@@ -19647,7 +19709,8 @@ var kClusterBundleEdgeMappings = {
   sourceColor: (entry) => "sourceColor" in entry ? entry.sourceColor : 0,
   targetColor: (entry) => "targetColor" in entry ? entry.targetColor : 0,
   hyperEdgeStats: kClusterBundleEdgeNoOpMapping,
-  index: () => [0, 1, 2]
+  index: () => [0, 1, 2],
+  pickingColor: pickingColorNoOpMapping2
 };
 var kClusterBundleEdgeDataTypes = {
   source: PicoGL.UNSIGNED_INT,
@@ -19657,7 +19720,8 @@ var kClusterBundleEdgeDataTypes = {
   sourceColor: PicoGL.UNSIGNED_INT,
   targetColor: PicoGL.UNSIGNED_INT,
   hyperEdgeStats: [PicoGL.UNSIGNED_INT, PicoGL.UNSIGNED_INT],
-  index: PicoGL.UNSIGNED_INT
+  index: PicoGL.UNSIGNED_INT,
+  pickingColor: [PicoGL.UNSIGNED_INT, PicoGL.UNSIGNED_INT, PicoGL.UNSIGNED_INT, PicoGL.UNSIGNED_INT]
 };
 var kGLClusterBundleEdgeTypes = {
   source: [PicoGL.FLOAT, PicoGL.FLOAT, PicoGL.FLOAT],
@@ -19665,7 +19729,8 @@ var kGLClusterBundleEdgeTypes = {
   control: [PicoGL.FLOAT, PicoGL.FLOAT, PicoGL.FLOAT],
   sourceColor: PicoGL.UNSIGNED_INT,
   targetColor: PicoGL.UNSIGNED_INT,
-  colorMix: [PicoGL.FLOAT, PicoGL.FLOAT]
+  colorMix: [PicoGL.FLOAT, PicoGL.FLOAT],
+  pickingColor: [PicoGL.UNSIGNED_INT, PicoGL.UNSIGNED_INT, PicoGL.UNSIGNED_INT, PicoGL.UNSIGNED_INT]
 };
 var ClusterBundle = class extends Edges {
   constructor(context, points2, data, mappings2, pickingManager, segments = 16) {
@@ -19678,18 +19743,29 @@ var ClusterBundle = class extends Edges {
     for (let i = 0; i <= segments; ++i) {
       segmentVertices.push(-1, i, 1, i);
     }
+    this.pickingHandler = this.handlePickingEvent.bind(this);
     this.verticesVBO = context.createVertexBuffer(PicoGL.FLOAT, 2, new Float32Array(segmentVertices));
     this.edgesVAO = context.createVertexArray().vertexAttributeBuffer(0, this.verticesVBO);
     this.configureTargetVAO(this.edgesVAO);
     const shaders = this.getDrawShaders();
     this.program = context.createProgram(shaders.vs, shaders.fs);
     this.drawCall = context.createDrawCall(this.program, this.edgesVAO).primitive(PicoGL.TRIANGLE_STRIP);
+    const pickingShaders = this.getPickingShaders();
+    this.pickingProgram = context.createProgram(pickingShaders.vs, pickingShaders.fs);
+    this.pickingDrawCall = context.createDrawCall(this.pickingProgram, this.edgesVAO).primitive(PicoGL.TRIANGLE_STRIP);
     this.compute(context, {
       uGraphPoints: this.dataTexture
     });
+    this.pickingManager.on(PickingManager.events.hoverOn, this.pickingHandler);
+    this.pickingManager.on(PickingManager.events.hoverOff, this.pickingHandler);
+    this.pickingManager.on(PickingManager.events.click, this.pickingHandler);
     this.localUniforms.uSegments = segments;
   }
   destroy() {
+  }
+  ingestData(context, data, mappings2) {
+    this.pickingColors = this.pickingManager.allocatePickingColors(data.length);
+    super.ingestData(context, data, mappings2);
   }
   render(context, mode, uniforms) {
     setDrawCallUniforms(this.drawCall, uniforms);
@@ -19697,6 +19773,10 @@ var ClusterBundle = class extends Edges {
     this.configureRenderContext(context, mode);
     switch (mode) {
       case RenderMode.PICKING:
+        setDrawCallUniforms(this.pickingDrawCall, uniforms);
+        setDrawCallUniforms(this.pickingDrawCall, this.localUniforms);
+        this.pickingDrawCall.uniform("uPicking", true);
+        this.pickingDrawCall.draw();
         break;
       default:
         this.drawCall.draw();
@@ -19712,7 +19792,7 @@ var ClusterBundle = class extends Edges {
   getPickingShaders() {
     return {
       vs: ClusterBundle_vs_default,
-      fs: null
+      fs: ClusterBundle_picking_fs_default
     };
   }
   getGLSourceTypes() {
@@ -19724,7 +19804,7 @@ var ClusterBundle = class extends Edges {
   getDataShader() {
     return {
       vs: ClusterBundle_data_vs_default,
-      varyings: ["vSource", "vTarget", "vControl", "vSourceColor", "vTargetColor", "vColorMix"]
+      varyings: ["vSource", "vTarget", "vControl", "vSourceColor", "vTargetColor", "vColorMix", "vPickingColor"]
     };
   }
   computeMappings(mappings2) {
@@ -19760,6 +19840,14 @@ var ClusterBundle = class extends Edges {
       }
       this.hyperEdgeStats.set(key2, count + 1);
       entry.hyperEdgeStats[0] = count;
+      this.idArray.push(entry.id);
+      const indexStart = 4 * i;
+      entry.pickingColor = [
+        this.pickingColors.colors[indexStart],
+        this.pickingColors.colors[indexStart + 1],
+        this.pickingColors.colors[indexStart + 2],
+        this.pickingColors.colors[indexStart + 3]
+      ];
     };
     const cb2 = (i, entry) => {
       const key2 = `${entry.sourceCluster}=>${entry.targetCluster}`;
@@ -19769,6 +19857,12 @@ var ClusterBundle = class extends Edges {
       cb1,
       cb2
     ];
+  }
+  handlePickingEvent(event, colorID) {
+    if (this.picking && this.pickingColors.map.has(colorID)) {
+      const id = this.idArray[this.pickingColors.map.get(colorID)];
+      this.emit(event, id);
+    }
   }
 };
 
