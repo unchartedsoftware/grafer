@@ -11,9 +11,12 @@ uniform mat4 uSceneMatrix;
 uniform mat4 uProjectionMatrix;
 uniform vec2 uViewportSize;
 uniform float uPixelRatio;
+uniform float uLineWidth;
 uniform float uGravity;
 uniform sampler2D uColorPalette;
+uniform sampler2D uGraphPoints;
 
+flat out float fLineWidth;
 out vec3 vColor;
 out vec2 vProjectedPosition;
 out float vProjectedW;
@@ -38,6 +41,8 @@ void main() {
 
     float toCenter = length(middle);
     vec3 towardsCenter = (middle * -1.0) / toCenter;
+
+    fLineWidth = uLineWidth * uPixelRatio;
 
     vec3 gravity = middle + towardsCenter * min(toCenter, distance * uGravity);
     vec3 position = gravity + pow(multB, 2.0) * (offsetB - gravity) + pow(multA, 2.0) * (offsetA - gravity);
