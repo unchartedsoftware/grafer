@@ -1,12 +1,13 @@
 import edgeVS from './Gravity.vs.glsl';
 import edgeFS from './Gravity.fs.glsl';
+import pickingFS from './Gravity.picking.fs.glsl';
 import dataVS from './Gravity.data.vs.glsl';
 
 import {App, DrawCall, PicoGL, Program, VertexArray, VertexBuffer} from 'picogl';
 import {BasicEdgeData, Edges, kBasicEdgeDataTypes} from '../Edges';
 import {GraphPoints} from '../../../data/GraphPoints';
 import {DataMappings, DataShader} from '../../../data/DataTools';
-import {PickingManager} from '../../../UX/picking/PickingManager';
+import {PickingColors, PickingEvent, PickingManager} from '../../../UX/picking/PickingManager';
 import {GLStraightEdgeTypes, kGLStraightEdgeTypes} from '../straight/Straight';
 import {
     GLDataTypes,
@@ -15,6 +16,7 @@ import {
     RenderUniforms,
     setDrawCallUniforms,
 } from '../../../renderer/Renderable';
+import {MouseCallback} from '../../../UX/mouse/MouseHandler';
 import {GraferContext} from '../../../renderer/GraferContext';
 
 export const kGLGravityEdgeTypes = {
@@ -28,6 +30,12 @@ export type GLGravityEdgeTypes = typeof kGLGravityEdgeTypes;
 export class Gravity extends Edges<BasicEdgeData, GLGravityEdgeTypes> {
     protected program: Program;
     protected drawCall: DrawCall;
+
+    protected pickingProgram: Program;
+    protected pickingDrawCall: DrawCall;
+    protected pickingColors: PickingColors;
+    protected pickingVBO: VertexBuffer;
+    protected pickingHandler: MouseCallback;
 
     protected verticesVBO: VertexBuffer;
     protected edgesVAO: VertexArray;
@@ -68,14 +76,28 @@ export class Gravity extends Edges<BasicEdgeData, GLGravityEdgeTypes> {
         }
 
         this.verticesVBO = context.createVertexBuffer(PicoGL.FLOAT, 2, new Float32Array(segmentVertices));
+
+        this.pickingHandler = this.handlePickingEvent.bind(this);
+        this.pickingColors = this.pickingManager.allocatePickingColors(data.length);
+        this.pickingVBO = context.createVertexBuffer(PicoGL.UNSIGNED_BYTE, 4, this.pickingColors.colors);
+
         this.edgesVAO = context.createVertexArray().vertexAttributeBuffer(0, this.verticesVBO);
         this.configureTargetVAO(this.edgesVAO);
+        this.edgesVAO.instanceAttributeBuffer(5, this.pickingVBO);
 
         const shaders = this.getDrawShaders();
         this.program = context.createProgram(shaders.vs, shaders.fs);
         this.drawCall = context.createDrawCall(this.program, this.edgesVAO).primitive(PicoGL.LINE_STRIP);
 
+        const pickingShaders = this.getPickingShaders();
+        this.pickingProgram = context.createProgram(pickingShaders.vs, pickingShaders.fs);
+        this.pickingDrawCall = context.createDrawCall(this.pickingProgram, this.edgesVAO).primitive(PicoGL.TRIANGLE_STRIP);
+
         this.compute(context, {});
+
+        this.pickingManager.on(PickingManager.events.hoverOn, this.pickingHandler);
+        this.pickingManager.on(PickingManager.events.hoverOff, this.pickingHandler);
+        this.pickingManager.on(PickingManager.events.click, this.pickingHandler);
 
         // printDataGL(context, this.targetVBO, data.length, kGLStraightEdgeTypes);
     }
@@ -85,19 +107,21 @@ export class Gravity extends Edges<BasicEdgeData, GLGravityEdgeTypes> {
     }
 
     public render(context:App, mode: RenderMode, uniforms: RenderUniforms): void {
-        setDrawCallUniforms(this.drawCall, uniforms);
-        setDrawCallUniforms(this.drawCall, this.localUniforms);
-
         this.configureRenderContext(context, mode);
 
         switch (mode) {
             case RenderMode.PICKING:
-                // this.pickingDrawCall.draw();
+                setDrawCallUniforms(this.pickingDrawCall, uniforms);
+                setDrawCallUniforms(this.pickingDrawCall, this.localUniforms);
+                this.pickingDrawCall.uniform('uPicking', true);
+                this.pickingDrawCall.draw();
                 break;
 
             default:
+                setDrawCallUniforms(this.drawCall, uniforms);
+                setDrawCallUniforms(this.drawCall, this.localUniforms);
+                this.drawCall.uniform('uPicking', false);
                 this.drawCall.draw();
-                break;
         }
     }
 
@@ -111,7 +135,7 @@ export class Gravity extends Edges<BasicEdgeData, GLGravityEdgeTypes> {
     protected getPickingShaders(): RenderableShaders {
         return {
             vs: edgeVS,
-            fs: null, // pickingFS,
+            fs: pickingFS,
         };
     }
 
@@ -128,5 +152,12 @@ export class Gravity extends Edges<BasicEdgeData, GLGravityEdgeTypes> {
             vs: dataVS,
             varyings: [ 'fSource', 'fTarget', 'fSourceColor', 'fTargetColor' ],
         };
+    }
+
+    protected handlePickingEvent(event: PickingEvent, colorID: number): void {
+        if (this.picking && this.pickingColors.map.has(colorID)) {
+            const id = this.idArray[this.pickingColors.map.get(colorID)];
+            this.emit(event, id);
+        }
     }
 }
