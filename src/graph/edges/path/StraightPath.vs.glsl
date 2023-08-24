@@ -28,7 +28,7 @@ out vec2 vProjectedPosition;
 out float vProjectedW;
 
 // manual import from ../../../renderer/shaders/valueForIndex.glsl
-// to avoid uvec4 pragma error
+// to avoid uvec4 glslify error
 vec4 valueForIndex(sampler2D tex, int index) {
     int texWidth = textureSize(tex, 0).x;
     int col = index % texWidth;

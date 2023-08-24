@@ -111,7 +111,6 @@ export class Gravity extends Edges<BasicEdgeData, GLGravityEdgeTypes> {
 
         switch (mode) {
             case RenderMode.PICKING:
-                // this.pickingDrawCall.draw();
                 setDrawCallUniforms(this.pickingDrawCall, uniforms);
                 setDrawCallUniforms(this.pickingDrawCall, this.localUniforms);
                 this.pickingDrawCall.uniform('uPicking', true);
@@ -123,7 +122,6 @@ export class Gravity extends Edges<BasicEdgeData, GLGravityEdgeTypes> {
                 setDrawCallUniforms(this.drawCall, this.localUniforms);
                 this.drawCall.uniform('uPicking', false);
                 this.drawCall.draw();
-                break;
         }
     }
 
