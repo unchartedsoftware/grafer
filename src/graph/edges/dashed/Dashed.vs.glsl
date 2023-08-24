@@ -5,12 +5,16 @@ layout(location=1) in uint iPointA;
 layout(location=2) in uint iPointB;
 layout(location=3) in uint iColorA;
 layout(location=4) in uint iColorB;
+layout(location=5) in uvec4 iPickingColor;
+
+uniform bool uPicking;
 
 uniform mat4 uViewMatrix;
 uniform mat4 uSceneMatrix;
 uniform mat4 uProjectionMatrix;
 uniform vec2 uViewportSize;
 uniform float uPixelRatio;
+uniform float uPickingWidth;
 uniform sampler2D uGraphPoints;
 uniform sampler2D uColorPalette;
 uniform uint uDashLength;
@@ -18,14 +22,24 @@ uniform uint uDashLength;
 uniform float uLineWidth;
 
 flat out float fLineWidth;
+flat out vec4 fPickingColor;
 out vec3 vColor;
 out float vDashLength;
 out vec2 vProjectedPosition;
 out float vProjectedW;
 
-#pragma glslify: valueForIndex = require(../../../renderer/shaders/valueForIndex.glsl)
+// manual import from ../../../renderer/shaders/valueForIndex.glsl
+// to avoid uvec4 glslify error
+vec4 valueForIndex(sampler2D tex, int index) {
+    int texWidth = textureSize(tex, 0).x;
+    int col = index % texWidth;
+    int row = index / texWidth;
+    return texelFetch(tex, ivec2(col, row), 0);
+}
 
 void main() {
+    fPickingColor = uPicking ? vec4(iPickingColor) / 255.0 : vec4(0.0);
+
     vec4 pointA = valueForIndex(uGraphPoints, int(iPointA));
     vec4 pointB = valueForIndex(uGraphPoints, int(iPointB));
 
@@ -53,7 +67,7 @@ void main() {
     vec2 screenDirection = normalize(bScreen - aScreen);
     vec2 perp = vec2(-screenDirection.y, screenDirection.x);
 
-    fLineWidth = uLineWidth * uPixelRatio;
+    fLineWidth = (uPicking ? uLineWidth * uPickingWidth : uLineWidth) * uPixelRatio;
     float offsetWidth = fLineWidth + 0.5;
     vec4 position = aProjected * multA + bProjected * multB;
     vec4 offset = vec4(((aVertex.x * perp * offsetWidth) / uViewportSize) * position.w, 0.0, 0.0);
