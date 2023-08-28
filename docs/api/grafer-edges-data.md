@@ -30,7 +30,12 @@ An array of edge objects to be rendered as part of this layer.
 | target |  number \| string | Index of the node which the edge ends at in either the points array or the node array. Note that it is not recommended to omit the points array if more than one layer is used. |
 | sourceColor | GraferInputColor - *optional* | Color of the start point of the edge given as a [GraferInputColor](./grafer-input-color.md). A linear gradient will be generated between the start and end points of the edge using the SourceColor and TargetColor provided. |
 | targetColor | GraferInputColor - *optional* | Color of the end point of the edge given as a [GraferInputColor](./grafer-input-color.md). A linear gradient will be generated between the start and end points of the edge using the SourceColor and TargetColor provided. |
-| control | number \| number[] - *optional* | Only valid for "StraightPath" and "CurvedPath" edge types. Ordered list of control (waypoint) nodes between the source and the target. |
+| control | number \| number[] | Only valid for "StraightPath" and "CurvedPath" edge types. Ordered list of control (waypoint) nodes between the source and the target. If valid, cannot be left undefined. |
+| sourceCluster | number \| string | Only valid for "ClusterBundling" edge types. ID of source point used to make edge path for cluster bundling. |
+| targetCluster | number \| string | Only valid for "ClusterBundling" edge types. ID of target point used to make edge path for cluster bundling. |
+| width | number - *optional* | Width of the edge. Will default to 1.5. |
+| dashLength | number - *optional* | Only valid for "Dashed" edge types. Changes the length of the dash. Will default to 10. |
+| gravity | number - *optional* | Only valid for "Gravity" edge types. Changes the gravity strength. Will default to -0.2. |
 
 ### `mappings`
 ###### EdgeDataMappings - *optional*
@@ -52,5 +57,4 @@ An object containing configuration options for the edges.
 | brightness | number | Takes a range between -1 to 1. Defaults to 0. |
 | nearDepth | number | Takes a range between 0 to 1. Defaults to 0. Controls camera near depth. |
 | farDepth | number | Takes a range between 0 to 1. Defaults to 1. Controls camera far depth. |
-| lineWidth | number | Sets the line width of the edges in the layer. Defaults to 1.5. |
-| pickingWidth | number | Sets the width of the edge picking area in the layer where applicable, as a multiplier of the `lineWidth`. Defaults to 8. |
+| pickingWidth | number | Sets the width of the edge picking area in the layer where applicable, as a multiplier of the edge `width`. Defaults to 8. |
