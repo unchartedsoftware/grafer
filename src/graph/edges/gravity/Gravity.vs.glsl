@@ -5,7 +5,8 @@ layout(location=1) in uint iPointA;
 layout(location=2) in uint iPointB;
 layout(location=3) in uint iColorA;
 layout(location=4) in uint iColorB;
-layout(location=5) in uvec4 iPickingColor;
+layout(location=5) in float iWidth;
+layout(location=6) in uvec4 iPickingColor;
 
 uniform bool uPicking;
 
@@ -15,7 +16,6 @@ uniform mat4 uProjectionMatrix;
 uniform vec2 uViewportSize;
 uniform float uPixelRatio;
 uniform float uPickingWidth;
-uniform float uLineWidth;
 uniform float uGravity;
 uniform sampler2D uColorPalette;
 uniform sampler2D uGraphPoints;
@@ -56,7 +56,7 @@ void main() {
     float toCenter = length(middle);
     vec3 towardsCenter = (middle * -1.0) / toCenter;
 
-    fLineWidth = (uPicking ? uLineWidth * uPickingWidth : uLineWidth) * uPixelRatio;
+    fLineWidth = (uPicking ? iWidth * uPickingWidth : iWidth) * uPixelRatio;
 
     vec3 gravity = middle + towardsCenter * min(toCenter, distance * uGravity);
     vec3 position = gravity + pow(multB, 2.0) * (offsetB - gravity) + pow(multA, 2.0) * (offsetA - gravity);

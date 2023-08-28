@@ -24,6 +24,7 @@ export const kGLGravityEdgeTypes = {
     target: PicoGL.UNSIGNED_INT,
     sourceColor: PicoGL.UNSIGNED_INT,
     targetColor: PicoGL.UNSIGNED_INT,
+    width: PicoGL.FLOAT,
 } as const;
 export type GLGravityEdgeTypes = typeof kGLGravityEdgeTypes;
 
@@ -83,7 +84,7 @@ export class Gravity extends Edges<BasicEdgeData, GLGravityEdgeTypes> {
 
         this.edgesVAO = context.createVertexArray().vertexAttributeBuffer(0, this.verticesVBO);
         this.configureTargetVAO(this.edgesVAO);
-        this.edgesVAO.instanceAttributeBuffer(5, this.pickingVBO);
+        this.edgesVAO.instanceAttributeBuffer(6, this.pickingVBO);
 
         const shaders = this.getDrawShaders();
         this.program = context.createProgram(shaders.vs, shaders.fs);
@@ -150,7 +151,7 @@ export class Gravity extends Edges<BasicEdgeData, GLGravityEdgeTypes> {
     protected getDataShader(): DataShader {
         return {
             vs: dataVS,
-            varyings: [ 'fSource', 'fTarget', 'fSourceColor', 'fTargetColor' ],
+            varyings: [ 'fSource', 'fTarget', 'fSourceColor', 'fTargetColor', 'fWidth' ],
         };
     }
 

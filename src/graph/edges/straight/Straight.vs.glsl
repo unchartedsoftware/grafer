@@ -5,7 +5,8 @@ layout(location=1) in uint iPointA;
 layout(location=2) in uint iPointB;
 layout(location=3) in uint iColorA;
 layout(location=4) in uint iColorB;
-layout(location=5) in uvec4 iPickingColor;
+layout(location=5) in float iWidth;
+layout(location=6) in uvec4 iPickingColor;
 
 uniform bool uPicking;
 
@@ -17,8 +18,6 @@ uniform float uPixelRatio;
 uniform float uPickingWidth;
 uniform sampler2D uGraphPoints;
 uniform sampler2D uColorPalette;
-
-uniform float uLineWidth;
 
 flat out float fLineWidth;
 flat out vec4 fPickingColor;
@@ -58,7 +57,7 @@ void main() {
     vec2 screenDirection = normalize(bScreen - aScreen);
     vec2 perp = vec2(-screenDirection.y, screenDirection.x);
 
-    fLineWidth = (uPicking ? uLineWidth * uPickingWidth : uLineWidth) * uPixelRatio;
+    fLineWidth = (uPicking ? iWidth * uPickingWidth : iWidth) * uPixelRatio;
     float offsetWidth = fLineWidth + 0.5;
     vec4 position = aProjected * multA + bProjected * multB;
     vec4 offset = vec4(((aVertex.x * perp * offsetWidth) / uViewportSize) * position.w, 0.0, 0.0);

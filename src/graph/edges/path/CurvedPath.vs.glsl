@@ -7,7 +7,8 @@ layout(location=3) in vec3 iControl;
 layout(location=4) in uint iColorA;
 layout(location=5) in uint iColorB;
 layout(location=6) in vec2 iColorMix;
-layout(location=7) in uvec4 iPickingColor;
+layout(location=7) in float iWidth;
+layout(location=8) in uvec4 iPickingColor;
 
 uniform bool uPicking;
 
@@ -64,7 +65,7 @@ void main() {
     vec2 normal = vec2(-direction.y, direction.x);
 
     // calculate the pixel offset
-    fLineWidth = (uPicking ? uLineWidth * uPickingWidth : uLineWidth) * uPixelRatio;
+    fLineWidth = (uPicking ? iWidth * uPickingWidth : iWidth) * uPixelRatio;
     float offsetWidth = fLineWidth + 0.5;
     vec4 offset = vec4(((aVertex.x * normal * offsetWidth) / uViewportSize) * b0Projected.w, 0.0, 0.0);
 
