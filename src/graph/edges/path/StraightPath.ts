@@ -25,6 +25,7 @@ export const kStraightPathEdgeDataTypes: GLDataTypes<CurvedPathEdgeData> = {
     control: [PicoGL.UNSIGNED_INT, PicoGL.UNSIGNED_INT],
     sourceColor: PicoGL.UNSIGNED_INT,
     targetColor: PicoGL.UNSIGNED_INT,
+    width: PicoGL.FLOAT,
     pickingColor: [PicoGL.UNSIGNED_INT, PicoGL.UNSIGNED_INT, PicoGL.UNSIGNED_INT, PicoGL.UNSIGNED_INT],
 };
 
@@ -34,6 +35,7 @@ export const kGLStraightPathEdgeTypes = {
     sourceColor: PicoGL.UNSIGNED_INT,
     targetColor: PicoGL.UNSIGNED_INT,
     colorMix: [PicoGL.FLOAT, PicoGL.FLOAT],
+    width: PicoGL.FLOAT,
     pickingColor: [PicoGL.UNSIGNED_INT, PicoGL.UNSIGNED_INT, PicoGL.UNSIGNED_INT, PicoGL.UNSIGNED_INT],
 } as const;
 export type GLStraightPathEdgeTypes = typeof kGLStraightPathEdgeTypes;
@@ -157,7 +159,7 @@ export class StraightPath extends Edges<CurvedPathEdgeData, GLCurvedPathEdgeType
     protected getDataShader(): DataShader {
         return {
             vs: dataVS,
-            varyings: [ 'fSource', 'fTarget', 'fSourceColor', 'fTargetColor', 'fColorMix', 'fPickingColor' ],
+            varyings: [ 'fSource', 'fTarget', 'fSourceColor', 'fTargetColor', 'fColorMix', 'fWidth', 'fPickingColor' ],
         };
     }
 

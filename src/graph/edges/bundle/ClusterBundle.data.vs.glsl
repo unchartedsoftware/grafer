@@ -6,9 +6,10 @@ layout(location=2) in uint aSourceClusterIndex;
 layout(location=3) in uint aTargetClusterIndex;
 layout(location=4) in uint aSourceColor;
 layout(location=5) in uint aTargetColor;
-layout(location=6) in uvec2 aHyperEdgeStats;
-layout(location=7) in uint aIndex;
-layout(location=8) in uvec4 aPickingColor;
+layout(location=6) in float aWidth;
+layout(location=7) in uvec2 aHyperEdgeStats;
+layout(location=8) in uint aIndex;
+layout(location=9) in uvec4 aPickingColor;
 
 uniform sampler2D uGraphPoints;
 
@@ -18,6 +19,7 @@ out vec3 vControl;
 flat out uint vSourceColor;
 flat out uint vTargetColor;
 out vec2 vColorMix;
+flat out float vWidth;
 flat out uvec4 vPickingColor;
 
 // manual import from ../../../renderer/shaders/valueForIndex.glsl
@@ -104,5 +106,6 @@ void main() {
 
     vColorMix = vec2(float(aIndex) * 0.25, float(aIndex + 1u) * 0.25);
 
+    vWidth = aWidth;
     vPickingColor = aPickingColor;
 }

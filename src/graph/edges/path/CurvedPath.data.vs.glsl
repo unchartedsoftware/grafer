@@ -5,7 +5,8 @@ layout(location=1) in uint aTargetIndex;
 layout(location=2) in uvec3 aControl;
 layout(location=3) in uint aSourceColor;
 layout(location=4) in uint aTargetColor;
-layout(location=5) in uvec4 aPickingColor;
+layout(location=5) in float aWidth;
+layout(location=6) in uvec4 aPickingColor;
 
 uniform sampler2D uGraphPoints;
 
@@ -15,6 +16,7 @@ out vec3 vControl;
 flat out uint vSourceColor;
 flat out uint vTargetColor;
 out vec2 vColorMix;
+flat out float vWidth;
 flat out uvec4 vPickingColor;
 
 // manual import from ../../../renderer/shaders/valueForIndex.glsl
@@ -51,5 +53,6 @@ void main() {
 
     vColorMix = vec2(float(aControl[1]) / float(aControl[2]), float(aControl[1] + 1u) / float(aControl[2]));
 
+    vWidth = aWidth;
     vPickingColor = aPickingColor;
 }

@@ -26,6 +26,7 @@ export interface CurvedPathEdgeData {
     control: number | number[];
     sourceColor?: GraferInputColor,
     targetColor?: GraferInputColor,
+    width?: number,
     pickingColor?: number | [number, number, number, number];
 }
 
@@ -37,6 +38,7 @@ export const kCurvedPathEdgeMappings: DataMappings<CurvedPathEdgeData> = {
     control: (entry: CurvedPathEdgeData) => entry.control,
     sourceColor: (entry: CurvedPathEdgeData) => 'sourceColor' in entry ? entry.sourceColor : 0, // first registered color
     targetColor: (entry: CurvedPathEdgeData) => 'targetColor' in entry ? entry.targetColor : 0, // first registered color
+    width: (entry: CurvedPathEdgeData) => entry.width ?? 1.5,
     pickingColor: pickingColorNoOpMapping,
 };
 
@@ -46,6 +48,7 @@ export const kCurvedPathEdgeDataTypes: GLDataTypes<CurvedPathEdgeData> = {
     control: [PicoGL.UNSIGNED_INT, PicoGL.UNSIGNED_INT, PicoGL.UNSIGNED_INT],
     sourceColor: PicoGL.UNSIGNED_INT,
     targetColor: PicoGL.UNSIGNED_INT,
+    width: PicoGL.FLOAT,
     pickingColor: [PicoGL.UNSIGNED_INT, PicoGL.UNSIGNED_INT, PicoGL.UNSIGNED_INT, PicoGL.UNSIGNED_INT],
 };
 
@@ -56,6 +59,7 @@ export const kGLCurvedPathEdgeTypes = {
     sourceColor: PicoGL.UNSIGNED_INT,
     targetColor: PicoGL.UNSIGNED_INT,
     colorMix: [PicoGL.FLOAT, PicoGL.FLOAT],
+    width: PicoGL.FLOAT,
     pickingColor: [PicoGL.UNSIGNED_INT, PicoGL.UNSIGNED_INT, PicoGL.UNSIGNED_INT, PicoGL.UNSIGNED_INT],
 } as const;
 export type GLCurvedPathEdgeTypes = typeof kGLCurvedPathEdgeTypes;
@@ -195,7 +199,7 @@ export class CurvedPath extends Edges<CurvedPathEdgeData, GLCurvedPathEdgeTypes>
     protected getDataShader(): DataShader {
         return {
             vs: dataVS,
-            varyings: [ 'vSource', 'vTarget', 'vControl', 'vSourceColor', 'vTargetColor', 'vColorMix', 'vPickingColor' ],
+            varyings: [ 'vSource', 'vTarget', 'vControl', 'vSourceColor', 'vTargetColor', 'vColorMix', 'vWidth', 'vPickingColor' ],
         };
     }
 

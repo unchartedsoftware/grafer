@@ -27,6 +27,7 @@ export interface ClusterBundleEdgeData {
     targetCluster: number;
     sourceColor?: GraferInputColor,
     targetColor?: GraferInputColor,
+    width?: number,
     hyperEdgeStats?: [number, number],
     pickingColor?: number | [number, number, number, number];
 }
@@ -41,6 +42,7 @@ export const kClusterBundleEdgeMappings: DataMappings<ClusterBundleEdgeData & { 
     targetCluster: (entry: ClusterBundleEdgeData) => entry.targetCluster,
     sourceColor: (entry: ClusterBundleEdgeData) => 'sourceColor' in entry ? entry.sourceColor : 0, // first registered color
     targetColor: (entry: ClusterBundleEdgeData) => 'targetColor' in entry ? entry.targetColor : 0, // first registered color
+    width: (entry: ClusterBundleEdgeData) => entry.width ?? 1.5,
     hyperEdgeStats: kClusterBundleEdgeNoOpMapping, // this will be replaced in `computeMappings`
     index: () => [0, 1, 2],
     pickingColor: pickingColorNoOpMapping,
@@ -53,6 +55,7 @@ export const kClusterBundleEdgeDataTypes: GLDataTypes<ClusterBundleEdgeData & { 
     targetCluster: PicoGL.UNSIGNED_INT,
     sourceColor: PicoGL.UNSIGNED_INT,
     targetColor: PicoGL.UNSIGNED_INT,
+    width: PicoGL.FLOAT,
     hyperEdgeStats: [PicoGL.UNSIGNED_INT, PicoGL.UNSIGNED_INT],
     index: PicoGL.UNSIGNED_INT,
     pickingColor: [PicoGL.UNSIGNED_INT, PicoGL.UNSIGNED_INT, PicoGL.UNSIGNED_INT, PicoGL.UNSIGNED_INT],
@@ -65,6 +68,7 @@ export const kGLClusterBundleEdgeTypes = {
     sourceColor: PicoGL.UNSIGNED_INT,
     targetColor: PicoGL.UNSIGNED_INT,
     colorMix: [PicoGL.FLOAT, PicoGL.FLOAT],
+    width: PicoGL.FLOAT,
     pickingColor: [PicoGL.UNSIGNED_INT, PicoGL.UNSIGNED_INT, PicoGL.UNSIGNED_INT, PicoGL.UNSIGNED_INT],
 } as const;
 export type GLClusterBundleEdgeTypes = typeof kGLClusterBundleEdgeTypes;
@@ -193,7 +197,7 @@ export class ClusterBundle extends Edges<ClusterBundleEdgeData, GLClusterBundleE
     protected getDataShader(): DataShader {
         return {
             vs: dataVS,
-            varyings: [ 'vSource', 'vTarget', 'vControl', 'vSourceColor', 'vTargetColor', 'vColorMix', 'vPickingColor' ],
+            varyings: [ 'vSource', 'vTarget', 'vControl', 'vSourceColor', 'vTargetColor', 'vColorMix', 'vWidth', 'vPickingColor' ],
         };
     }
 

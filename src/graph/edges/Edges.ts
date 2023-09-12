@@ -13,6 +13,7 @@ export interface BasicEdgeData {
     target: number;
     sourceColor?: GraferInputColor,
     targetColor?: GraferInputColor,
+    width?: number,
 }
 
 export const kBasicEdgeMappings: DataMappings<BasicEdgeData> = {
@@ -21,6 +22,7 @@ export const kBasicEdgeMappings: DataMappings<BasicEdgeData> = {
     target: (entry: any) => entry.target,
     sourceColor: (entry: any) => 'sourceColor' in entry ? entry.sourceColor : 0, // first registered color
     targetColor: (entry: any) => 'targetColor' in entry ? entry.targetColor : 0, // first registered color
+    width: (entry: any) => entry.width ?? 1.5,
 };
 
 export const kBasicEdgeDataTypes: GLDataTypes<BasicEdgeData> = {
@@ -28,6 +30,7 @@ export const kBasicEdgeDataTypes: GLDataTypes<BasicEdgeData> = {
     target: PicoGL.UNSIGNED_INT,
     sourceColor: PicoGL.UNSIGNED_INT,
     targetColor: PicoGL.UNSIGNED_INT,
+    width: PicoGL.FLOAT,
 };
 
 export abstract class Edges<T_SRC extends BasicEdgeData, T_TGT> extends LayerRenderable<T_SRC, T_TGT> {
@@ -35,13 +38,6 @@ export abstract class Edges<T_SRC extends BasicEdgeData, T_TGT> extends LayerRen
 
     public static get defaultMappings(): DataMappings<BasicEdgeData> {
         return kBasicEdgeMappings;
-    }
-
-    public get lineWidth(): number {
-        return this.localUniforms.uLineWidth as number;
-    }
-    public set lineWidth(value: number) {
-        this.localUniforms.uLineWidth = value;
     }
 
     public get pickingWidth(): number {
@@ -55,7 +51,6 @@ export abstract class Edges<T_SRC extends BasicEdgeData, T_TGT> extends LayerRen
         super.initialize(...args);
         this.localUniforms = Object.assign({}, this.localUniforms, {
             uGraphPoints: this.dataTexture,
-            uLineWidth: 1.5,
             uPickingWidth: 8,
         });
     }
