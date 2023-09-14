@@ -123,18 +123,25 @@ export class GraphPoints extends DataTexture {
         return this.map.get(id);
     }
 
-    public getPointByIndex(index: number): [number, number, number, number] {
-        let startIndex = index * 4;
+    public getPointByIndex(index: number, isRelative = false): [number, number, number, number] {
+        if(isRelative) {
+            return [
+                this._pointView.getFloat32(index * 16, true),
+                this._pointView.getFloat32(index * 16 + 4, true),
+                this._pointView.getFloat32(index * 16 + 8, true),
+                this._pointView.getFloat32(index * 16 + 12, true),
+            ];
+        }
         return [
-            this._dataArrayBuffer[startIndex++],
-            this._dataArrayBuffer[startIndex++],
-            this._dataArrayBuffer[startIndex++],
-            this._dataArrayBuffer[startIndex],
+            this._dataArrayBuffer[index],
+            this._dataArrayBuffer[index + 1],
+            this._dataArrayBuffer[index + 2],
+            this._dataArrayBuffer[index + 3],
         ];
     }
 
-    public getPointByID(id: number | string): [number, number, number, number] {
-        return this.getPointByIndex(this.getPointIndex(id));
+    public getPointByID(id: number | string, isRelative = false): [number, number, number, number] {
+        return this.getPointByIndex(this.getPointIndex(id), isRelative);
     }
 
     public setPointByIndex(index: number, data: unknown, mappings: Partial<PointDataMappings> = {}): void {
