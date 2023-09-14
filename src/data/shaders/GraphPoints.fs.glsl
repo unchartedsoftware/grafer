@@ -1,6 +1,6 @@
 #version 300 es
 precision highp float;
-precision highp isampler2D;
+precision lowp isampler2D;
 
 in vec2 vUv;
 
@@ -9,19 +9,7 @@ out vec4 fragColor;
 uniform sampler2D uPointTexture;
 uniform isampler2D uClassTexture;
 
-vec4 valueForIndex(sampler2D tex, int index) {
-    int texWidth = textureSize(tex, 0).x;
-    int col = index % texWidth;
-    int row = index / texWidth;
-    return texelFetch(tex, ivec2(col, row), 0);
-}
-
-ivec4 ivalueForIndex(isampler2D tex, int index) {
-    int texWidth = textureSize(tex, 0).x;
-    int col = index % texWidth;
-    int row = index / texWidth;
-    return texelFetch(tex, ivec2(col, row), 0);
-}
+#pragma glslify: import(../../renderer/shaders/valueForIndex.glsl)
 
 void main() {
     vec2 texSize = vec2(textureSize(uPointTexture, 0).xy);
