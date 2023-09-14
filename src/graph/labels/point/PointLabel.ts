@@ -225,7 +225,7 @@ export class PointLabel extends Nodes<LabelNodeData, GLLabelNodeTypes> {
     }
 
     public render(context: App, mode: RenderMode, uniforms: RenderUniforms): void {
-        this.configureRenderContext(context, mode);
+        super.render(context, mode, uniforms);
 
         switch (mode) {
             case RenderMode.PICKING:

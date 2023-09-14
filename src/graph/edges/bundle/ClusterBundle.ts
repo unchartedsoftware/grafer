@@ -153,10 +153,10 @@ export class ClusterBundle extends Edges<ClusterBundleEdgeData, GLClusterBundleE
     }
 
     public render(context:App, mode: RenderMode, uniforms: RenderUniforms): void {
+        super.render(context, mode, uniforms);
+
         setDrawCallUniforms(this.drawCall, uniforms);
         setDrawCallUniforms(this.drawCall, this.localUniforms);
-
-        this.configureRenderContext(context, mode);
 
         switch (mode) {
             case RenderMode.PICKING:

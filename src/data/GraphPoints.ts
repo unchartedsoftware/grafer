@@ -1,13 +1,14 @@
-import PicoGL, {App, Texture} from 'picogl';
-import testVS from './shaders/GraphPoints.test.vs.glsl';
-import testFS from './shaders/noop.fs.glsl';
+import PicoGL, {App, Framebuffer, Texture} from 'picogl';
+import pointsVS from './shaders/GraphPoints.vs.glsl';
+import pointsFS from './shaders/GraphPoints.fs.glsl';
 import {GLDataTypes} from '../renderer/Renderable';
-import {DataMappings, concatenateData, packData, printDataGL} from './DataTools';
-import {vec3} from 'gl-matrix';
+import {DataMappings, concatenateData, packData} from './DataTools';
+import {vec2, vec3} from 'gl-matrix';
 import {DataTexture} from '../renderer/DataTexture';
 
 export interface PointData {
     id?: number | string;
+    class?: number | string;
     x: number;
     y: number;
     z?: number;
@@ -18,6 +19,7 @@ export type PointDataMappings = DataMappings<PointData>;
 
 const kDefaultMappings: PointDataMappings = {
     id: (entry: any, i) => 'id' in entry ? entry.id : i,
+    class: (entry: any) => entry.class ?? null,
     x: (entry: any) => entry.x,
     y: (entry: any) => entry.y,
     z: (entry: any) => 'z' in entry ? entry.z : 0.0,
@@ -42,15 +44,17 @@ export class GraphPoints extends DataTexture {
         return <R>(new this(context, points));
     }
 
-    private _dataBuffer: ArrayBuffer;
-    public get dataBuffer(): ArrayBuffer {
-        return this._dataBuffer;
-    }
+    private _frameBuffer: Framebuffer;
+    private _colorTarget: Texture;
 
-    private _dataView: DataView;
-    public get dataView(): DataView {
-        return this._dataView;
-    }
+    private _classBuffer: ArrayBuffer;
+    private _classView: DataView;
+    private _classTexture: Texture;
+    private _pointBuffer: ArrayBuffer;
+    private _pointView: DataView;
+    private _pointTexture: Texture;
+
+    private _dataArrayBuffer: Float32Array;
 
     private _length: number = 0;
     public get length(): number {
@@ -76,8 +80,13 @@ export class GraphPoints extends DataTexture {
         };
         this.bbCenter = vec3.create();
 
-        this._dataBuffer = this.packData(data, mappings, true, true);
-        this._dataView = new DataView(this._dataBuffer);
+        const [pointBuffer, classBuffer] = this.packData(data, mappings, true, true);
+
+        this._classBuffer = classBuffer;
+        this._classView = new DataView(this._classBuffer);
+
+        this._pointBuffer = pointBuffer;
+        this._pointView = new DataView(this._pointBuffer);
 
         const diagonalVec = vec3.sub(vec3.create(), this.bb.max, this.bb.min);
         this.bbDiagonal = vec3.length(diagonalVec);
@@ -87,22 +96,25 @@ export class GraphPoints extends DataTexture {
 
         // set the dirty flag so the texture is updated next time it is requested
         this.dirty = true;
-
-        // this.testFeedback(context);
     }
 
     public destroy(): void {
         super.destroy();
         this.map.clear();
 
-        this._dataBuffer = null;
+        this._classBuffer = null;
+        this._pointBuffer = null;
         this.map = null;
     }
 
     public update(): void {
         if (this.dirty) {
-            const float32 = new Float32Array(this._dataBuffer);
-            this._texture.data(float32);
+            const classInt32 = new Int32Array(this._classBuffer);
+            this._classTexture.data(classInt32);
+            const pointFloat32 = new Float32Array(this._pointBuffer);
+            this._pointTexture.data(pointFloat32);
+
+            this._texture = this.processData(this.context);
         }
         this.dirty = false;
     }
@@ -112,11 +124,12 @@ export class GraphPoints extends DataTexture {
     }
 
     public getPointByIndex(index: number): [number, number, number, number] {
+        let startIndex = index * 4;
         return [
-            this._dataView.getFloat32(index * 16, true),
-            this._dataView.getFloat32(index * 16 + 4, true),
-            this._dataView.getFloat32(index * 16 + 8, true),
-            this._dataView.getFloat32(index * 16 + 12, true),
+            this._dataArrayBuffer[startIndex++],
+            this._dataArrayBuffer[startIndex++],
+            this._dataArrayBuffer[startIndex++],
+            this._dataArrayBuffer[startIndex],
         ];
     }
 
@@ -125,14 +138,16 @@ export class GraphPoints extends DataTexture {
     }
 
     public setPointByIndex(index: number, data: unknown, mappings: Partial<PointDataMappings> = {}): void {
-        const setBuffer = this.packData([data], mappings, false, false);
-        const setView = new Float32Array(setBuffer);
+        const [pointBuffer, classBuffer] = this.packData([data], mappings, false, false);
 
-        const dataView = this._dataView;
-        dataView.setFloat32(index * 16, setView[0], true);
-        dataView.setFloat32(index * 16 + 4, setView[1], true);
-        dataView.setFloat32(index * 16 + 8, setView[2], true);
-        dataView.setFloat32(index * 16 + 12, setView[3], true);
+        const pointView = new Float32Array(pointBuffer);
+        this._pointView.setFloat32(index * 16, pointView[0], true);
+        this._pointView.setFloat32(index * 16 + 4, pointView[1], true);
+        this._pointView.setFloat32(index * 16 + 8, pointView[2], true);
+        this._pointView.setFloat32(index * 16 + 12, pointView[3], true);
+
+        const setView = new Float32Array(classBuffer);
+        this._classView.setInt32(index * 4, setView[0], true);
 
         this.dirty = true;
     }
@@ -143,32 +158,73 @@ export class GraphPoints extends DataTexture {
 
     public addPoints(data: unknown[], mappings: Partial<PointDataMappings> = {}): void {
         this.resizeTexture(this._length + data.length);
+        const [pointBuffer, classBuffer] = this.packData(data, mappings, false, true);
 
-        const mergeBuffer = new ArrayBuffer(this.capacity * 16); // 16 bytes for 4 floats
-        const mergeBytes = new Uint8Array(mergeBuffer);
+        // create and populate points buffer
+        const pointBytes = new Uint32Array(pointBuffer);
+        const pointBytesOld = new Uint32Array(this._pointBuffer, 0, this._length * 4);
+        this._pointBuffer = new ArrayBuffer(this.capacity * 16); // 16 bytes for 4 floats
+        this._pointView = new DataView(this._pointBuffer);
+        const pointBytesMerge = new Uint32Array(this._pointBuffer);
+        pointBytesMerge.set(pointBytesOld);
+        pointBytesMerge.set(pointBytes, pointBytesOld.length);
 
-        const dataBuffer = this.packData(data, mappings, false, true);
-        const dataBytes = new Uint8Array(dataBuffer);
-        const oldBytes = new Uint8Array(this._dataBuffer, 0, this._length * 16);
+        // create and populate class buffer
+        const classBytes = new Uint32Array(classBuffer);
+        const classBytesOld = new Uint32Array(this._classBuffer, 0, this._length);
+        this._classBuffer = new ArrayBuffer(this.capacity * 4); // 4 bytes for 1 float
+        this._classView = new DataView(this._classBuffer);
+        const classBytesMerge = new Uint32Array(this._classBuffer);
+        classBytesMerge.set(classBytesOld);
+        classBytesMerge.set(classBytes, classBytesOld.length);
 
-        mergeBytes.set(oldBytes);
-        mergeBytes.set(dataBytes, oldBytes.length);
-
-        this._dataBuffer = mergeBuffer;
-        this._dataView = new DataView(this._dataBuffer);
         this._length += data.length;
         this.dirty = true;
     }
 
-    protected createTexture(width: number, height: number): Texture {
-        return this.context.createTexture2D(width, height, {
-            internalFormat: PicoGL.RGBA32F,
-        });
+    protected resizeTexture(capacity: number): void {
+        if (this.capacity < capacity) {
+            const textureWidth = Math.pow(2, Math.ceil(Math.log2(Math.ceil(Math.sqrt(capacity)))));
+            const textureHeight = Math.pow(2, Math.ceil(Math.log2(Math.ceil(capacity / textureWidth))));
+            this.textureSize = vec2.fromValues(textureWidth, textureHeight);
+
+            // resize / create class texture
+            if (this._classTexture) {
+                this._classTexture.resize(textureWidth, textureHeight);
+            } else {
+                this._classTexture = this.context.createTexture2D(textureWidth, textureHeight, {
+                    internalFormat: PicoGL.R32I,
+                    magFilter: PicoGL.NEAREST,
+                    minFilter: PicoGL.NEAREST,
+                });
+            }
+
+            // resize / create point texture
+            if (this._pointTexture) {
+                this._pointTexture.resize(textureWidth, textureHeight);
+            } else {
+                this._pointTexture = this.context.createTexture2D(textureWidth, textureHeight, {
+                    internalFormat: PicoGL.RGBA32F,
+                    magFilter: PicoGL.NEAREST,
+                    minFilter: PicoGL.NEAREST,
+                });
+            }
+
+            // resize / create color target and initialize frame buffer if needed
+            if (this._colorTarget) {
+                this._colorTarget.resize(textureWidth, textureHeight);
+            } else {
+                this._frameBuffer = this.context.createFramebuffer();
+                this._colorTarget = this.context.createTexture2D(textureWidth, textureHeight, {
+                    internalFormat: PicoGL.RGBA32F,
+                });
+            }
+        }
     }
 
-    protected packData(data: unknown[], mappings: Partial<PointDataMappings>, potLength: boolean, addMapEntry: boolean): ArrayBuffer {
+    protected packData(data: unknown[], mappings: Partial<PointDataMappings>, potLength: boolean, addMapEntry: boolean): [ArrayBuffer, ArrayBuffer] {
         const dataMappings: PointDataMappings = Object.assign({}, kDefaultMappings, mappings);
-        return packData(data, dataMappings, kGLTypes, potLength, (i, entry) => {
+        const pointData = packData(data, dataMappings, kGLTypes, potLength, (i, entry) => {
             if(addMapEntry) this.map.set(entry.id, this._length + i);
 
             this.bb.min[0] = Math.min(this.bb.min[0], entry.x - entry.radius);
@@ -179,34 +235,67 @@ export class GraphPoints extends DataTexture {
             this.bb.max[1] = Math.max(this.bb.max[1], entry.y + entry.radius);
             this.bb.max[2] = Math.max(this.bb.max[2], entry.z);
         });
+        const classData = packData(data, dataMappings, { class: PicoGL.INT }, potLength, (i, entry) => {
+            if(entry.class === null) {
+                entry.class = -1;
+            } else {
+                entry.class = this.map.get(entry.class) ?? -1;
+            }
+        });
+
+        return [pointData, classData];
     }
 
-    private testFeedback(context: App): void {
-        const program = context.createProgram(testVS, testFS, { transformFeedbackVaryings: [ 'vPosition', 'vRadius', 'vYolo' ], transformFeedbackMode: PicoGL.INTERLEAVED_ATTRIBS });
-        const pointsTarget = context.createVertexBuffer(PicoGL.FLOAT, 4, 40);
-        const pointsIndices = context.createVertexBuffer(PicoGL.UNSIGNED_BYTE, 1, new Uint8Array([
-            0,
-            1,
-            2,
-            3,
-            4,
-            5,
+    protected processData(context: App): Texture {
+        const {gl} = context;
+
+        // resize viewport to data texture size and save original viewport size
+        const savedViewport = gl.getParameter(gl.VIEWPORT);
+        context.viewport(0, 0, ...this.textureSize as [number, number]);
+
+        // reset necessary context flags
+        this.context.disable(PicoGL.BLEND);
+
+        // create program with single mesh covering clip space
+        const program = context.createProgram(pointsVS, pointsFS);
+        const verticesVBO = context.createVertexBuffer(PicoGL.FLOAT, 2, new Float32Array([
+            -1, -1,
+            1, -1,
+            -1, 1,
+            1, 1,
         ]));
+        const pointsVAO = context.createVertexArray()
+            .vertexAttributeBuffer(0, verticesVBO);
 
-        const transformFeedback = context.createTransformFeedback().feedbackBuffer(0, pointsTarget);
-        const vertexArray = context.createVertexArray().vertexAttributeBuffer(0, pointsIndices);
+        // bind frame buffer to context
+        context.readFramebuffer(this._frameBuffer);
+        this._frameBuffer.colorTarget(0, this._colorTarget);
+        context.drawFramebuffer(this._frameBuffer)
+            .clearColor(0, 0, 0, 0)
+            .clear()
+            .depthMask(false);
 
-        const drawCall = context.createDrawCall(program, vertexArray).transformFeedback(transformFeedback);
-        drawCall.primitive(PicoGL.POINTS);
-        drawCall.texture('uDataTexture', this.texture);
-        context.enable(PicoGL.RASTERIZER_DISCARD);
-        drawCall.draw();
-        context.disable(PicoGL.RASTERIZER_DISCARD);
+        // create and initiate draw call
+        context.createDrawCall(program, pointsVAO)
+            .primitive(PicoGL.TRIANGLE_STRIP)
+            .texture('uPointTexture', this._pointTexture)
+            .texture('uClassTexture', this._classTexture)
+            .draw();
 
-        printDataGL(context, pointsTarget, 6, {
-            position: [PicoGL.FLOAT, PicoGL.FLOAT, PicoGL.FLOAT],
-            radius: PicoGL.FLOAT,
-            yolo: PicoGL.FLOAT,
+        // read points texture into stored buffer for point coordinates readback
+        this.readTextureAsync(this._frameBuffer.colorAttachments[0]).then(texArrayBuffer => {
+            this._dataArrayBuffer = texArrayBuffer;
         });
+
+        // debug print out
+        // console.log(this.readTexture(this._pointTexture));
+        // this._dataArrayBuffer = this.readTexture(this._frameBuffer.colorAttachments[0]);
+        // console.log(this._dataArrayBuffer);
+
+        // switch back to canvas frame buffer and restore original viewport size
+        context.defaultDrawFramebuffer();
+        context.viewport(...savedViewport as [number, number, number, number]);
+
+        return this._frameBuffer.colorAttachments[0];
     }
 }
