@@ -1,10 +1,20 @@
 import PicoGL, {App, Framebuffer, Texture} from 'picogl';
 import pointsVS from './shaders/GraphPoints.vs.glsl';
 import pointsFS from './shaders/GraphPoints.fs.glsl';
-import {GLDataTypes} from '../renderer/Renderable';
+import {GLDataTypes, setDrawCallUniforms} from '../renderer/Renderable';
 import {DataMappings, concatenateData, packData} from './DataTools';
 import {vec2, vec3} from 'gl-matrix';
 import {DataTexture} from '../renderer/DataTexture';
+
+export enum ClassModes {
+    NONE,
+    ADD,
+}
+
+export interface PointOptions {
+    positionClassMode?: ClassModes
+    radiusClassMode?: ClassModes
+}
 
 export interface PointData {
     id?: number | string;
@@ -58,11 +68,29 @@ export class GraphPoints extends DataTexture {
     private _pointView: DataView;
     private _pointTexture: Texture;
 
+    private _localUniforms = {
+        uPositionClassMode: ClassModes.ADD,
+        uRadiusClassMode: ClassModes.NONE,
+    };
     private _dataArrayBuffer: Float32Array;
 
     private _length: number = 0;
     public get length(): number {
         return this._length;
+    }
+
+    public get positionClassMode(): ClassModes {
+        return this._localUniforms.uPositionClassMode;
+    }
+    public set positionClassMode(value: ClassModes) {
+        this._localUniforms.uPositionClassMode = value;
+    }
+
+    public get radiusClassMode(): ClassModes {
+        return this._localUniforms.uRadiusClassMode;
+    }
+    public set radiusClassMode(value: ClassModes) {
+        this._localUniforms.uRadiusClassMode = value;
     }
 
     private map: Map<number | string, number>;
@@ -288,11 +316,13 @@ export class GraphPoints extends DataTexture {
             .depthMask(false);
 
         // create and initiate draw call
-        context.createDrawCall(program, pointsVAO)
-            .primitive(PicoGL.TRIANGLE_STRIP)
-            .texture('uPointTexture', this._pointTexture)
-            .texture('uClassTexture', this._classTexture)
-            .draw();
+        const drawCall = context.createDrawCall(program, pointsVAO)
+            .primitive(PicoGL.TRIANGLE_STRIP);
+        setDrawCallUniforms(drawCall, Object.assign({}, this._localUniforms, {
+            uPointTexture: this._pointTexture,
+            uClassTexture: this._classTexture,
+        }));
+        drawCall.draw();
 
         // read points texture into stored buffer for point coordinates readback
         this.readTextureAsync(this._frameBuffer.colorAttachments[0]).then(texArrayBuffer => {

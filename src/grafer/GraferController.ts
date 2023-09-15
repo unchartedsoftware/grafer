@@ -1,5 +1,5 @@
 import {Viewport, ViewportOptions} from '../renderer/Viewport';
-import {PointDataMappings} from '../data/GraphPoints';
+import {PointOptions, PointDataMappings} from '../data/GraphPoints';
 import {nodes as GraphNodes, edges as GraphEdges, labels as GraphLabels, Graph} from '../graph/mod';
 import {Layer} from '../graph/Layer';
 import {DragTruck} from '../UX/mouse/drag/DragTruck';
@@ -31,6 +31,7 @@ export type GraferLabelsType = keyof typeof GraphLabels.types;
 export interface GraferDataInput<T> {
     data: unknown[],
     mappings?: Partial<T>,
+    options?: PointOptions,
 }
 
 export type GraferPointsData = GraferDataInput<PointDataMappings>;
@@ -413,6 +414,16 @@ export class GraferController extends EventEmitter {
             const mappings = Object.assign({}, pointsRadiusMapping, data.points.mappings);
             this._viewport.graph = new Graph(this._viewport.context, data.points.data, mappings);
             this._viewport.graph.picking = new PickingManager(this._viewport.context, this._viewport.mouseHandler);
+
+            if ('options' in data.points) {
+                const options = data.points.options;
+                const keys = Object.keys(options);
+                for (const key of keys) {
+                    if (key in this._viewport.graph) {
+                        this._viewport.graph[key] = options[key];
+                    }
+                }
+            }
         }
     }
 
