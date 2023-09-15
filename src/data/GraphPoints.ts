@@ -26,11 +26,15 @@ const kDefaultMappings: PointDataMappings = {
     radius: (entry: any) => 'radius' in entry ? entry.radius : 0.0,
 };
 
-const kGLTypes: GLDataTypes<PointData> = {
+const kGLTypesPoint: GLDataTypes<PointData> = {
     x: PicoGL.FLOAT,
     y: PicoGL.FLOAT,
     z: PicoGL.FLOAT,
     radius: PicoGL.FLOAT,
+};
+
+const kGLTypesClass: GLDataTypes<PointData> = {
+    class: PicoGL.INT,
 };
 
 export class GraphPoints extends DataTexture {
@@ -102,8 +106,13 @@ export class GraphPoints extends DataTexture {
         super.destroy();
         this.map.clear();
 
+        this._classTexture.delete();
+        this._pointTexture.delete();
+        this._colorTarget.delete();
+
         this._classBuffer = null;
         this._pointBuffer = null;
+        this._dataArrayBuffer = null;
         this.map = null;
     }
 
@@ -153,8 +162,8 @@ export class GraphPoints extends DataTexture {
         this._pointView.setFloat32(index * 16 + 8, pointView[2], true);
         this._pointView.setFloat32(index * 16 + 12, pointView[3], true);
 
-        const setView = new Float32Array(classBuffer);
-        this._classView.setInt32(index * 4, setView[0], true);
+        const classView = new Float32Array(classBuffer);
+        this._classView.setInt32(index * 4, classView[0], true);
 
         this.dirty = true;
     }
@@ -201,8 +210,6 @@ export class GraphPoints extends DataTexture {
             } else {
                 this._classTexture = this.context.createTexture2D(textureWidth, textureHeight, {
                     internalFormat: PicoGL.R32I,
-                    magFilter: PicoGL.NEAREST,
-                    minFilter: PicoGL.NEAREST,
                 });
             }
 
@@ -212,8 +219,6 @@ export class GraphPoints extends DataTexture {
             } else {
                 this._pointTexture = this.context.createTexture2D(textureWidth, textureHeight, {
                     internalFormat: PicoGL.RGBA32F,
-                    magFilter: PicoGL.NEAREST,
-                    minFilter: PicoGL.NEAREST,
                 });
             }
 
@@ -231,7 +236,7 @@ export class GraphPoints extends DataTexture {
 
     protected packData(data: unknown[], mappings: Partial<PointDataMappings>, potLength: boolean, addMapEntry: boolean): [ArrayBuffer, ArrayBuffer] {
         const dataMappings: PointDataMappings = Object.assign({}, kDefaultMappings, mappings);
-        const pointData = packData(data, dataMappings, kGLTypes, potLength, (i, entry) => {
+        const pointData = packData(data, dataMappings, kGLTypesPoint, potLength, (i, entry) => {
             if(addMapEntry) this.map.set(entry.id, this._length + i);
 
             this.bb.min[0] = Math.min(this.bb.min[0], entry.x - entry.radius);
@@ -242,7 +247,7 @@ export class GraphPoints extends DataTexture {
             this.bb.max[1] = Math.max(this.bb.max[1], entry.y + entry.radius);
             this.bb.max[2] = Math.max(this.bb.max[2], entry.z);
         });
-        const classData = packData(data, dataMappings, { class: PicoGL.INT }, potLength, (i, entry) => {
+        const classData = packData(data, dataMappings, kGLTypesClass, potLength, (i, entry) => {
             if(entry.class === null) {
                 entry.class = -1;
             } else {
