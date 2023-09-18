@@ -14,6 +14,7 @@ export enum ClassModes {
 export interface PointOptions {
     positionClassMode?: ClassModes
     radiusClassMode?: ClassModes
+    maxHierarchyDepth?: number
 }
 
 export interface PointData {
@@ -71,6 +72,7 @@ export class GraphPoints extends DataTexture {
     private _localUniforms = {
         uPositionClassMode: ClassModes.ADD,
         uRadiusClassMode: ClassModes.NONE,
+        uMaxHierarchyDepth: 100,
     };
     private _dataArrayBuffer: Float32Array;
 
@@ -91,6 +93,13 @@ export class GraphPoints extends DataTexture {
     }
     public set radiusClassMode(value: ClassModes) {
         this._localUniforms.uRadiusClassMode = value;
+    }
+
+    public get maxHierarchyDepth(): number {
+        return this._localUniforms.uMaxHierarchyDepth;
+    }
+    public set maxHierarchyDepth(value: number) {
+        this._localUniforms.uMaxHierarchyDepth = value;
     }
 
     private map: Map<number | string, number>;

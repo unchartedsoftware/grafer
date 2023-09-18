@@ -11,6 +11,7 @@ uniform isampler2D uClassTexture;
 
 uniform uint uPositionClassMode;
 uniform uint uRadiusClassMode;
+uniform uint uMaxHierarchyDepth;
 
 #pragma glslify: import(../../renderer/shaders/valueForIndex.glsl)
 #pragma glslify: import(./classMode.glsl)
@@ -20,9 +21,9 @@ void main() {
     ivec2 coords = ivec2(vUv * texSize);
     fragColor = texelFetch(uPointTexture, coords, 0);
 
-    int i = 0;
+    uint i = 0u;
     int classIndex = texelFetch(uClassTexture, coords, 0).x;
-    while(classIndex != -1 && i++ < 500) {
+    while(classIndex != -1 && i++ < uMaxHierarchyDepth) {
         vec4 point = valueForIndex(uPointTexture, classIndex);
         if(uPositionClassMode == MODE_ADD) {
             fragColor.xyz += point.xyz;
