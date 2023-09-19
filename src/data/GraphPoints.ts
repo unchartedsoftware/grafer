@@ -12,8 +12,8 @@ export enum HierarchyTypes {
 }
 
 export interface PointOptions {
-    positionClassMode?: HierarchyTypes
-    radiusClassMode?: HierarchyTypes
+    positionHierarchyType?: HierarchyTypes
+    radiusHierarchyType?: HierarchyTypes
     maxHierarchyDepth?: number
 }
 
