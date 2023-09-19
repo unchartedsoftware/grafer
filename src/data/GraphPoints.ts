@@ -3,7 +3,7 @@ import pointsVS from './shaders/GraphPoints.vs.glsl';
 import pointsFS from './shaders/GraphPoints.fs.glsl';
 import {GLDataTypes, setDrawCallUniforms} from '../renderer/Renderable';
 import {DataMappings, concatenateData, packData} from './DataTools';
-import {vec2, vec3} from 'gl-matrix';
+import {vec3} from 'gl-matrix';
 import {DataTexture} from '../renderer/DataTexture';
 
 export enum ClassModes {
@@ -60,7 +60,6 @@ export class GraphPoints extends DataTexture {
     }
 
     private _frameBuffer: Framebuffer;
-    private _colorTarget: Texture;
 
     private _classBuffer: ArrayBuffer;
     private _classView: DataView;
@@ -145,7 +144,6 @@ export class GraphPoints extends DataTexture {
 
         this._classTexture.delete();
         this._pointTexture.delete();
-        this._colorTarget.delete();
 
         this._classBuffer = null;
         this._pointBuffer = null;
@@ -160,7 +158,7 @@ export class GraphPoints extends DataTexture {
             const pointFloat32 = new Float32Array(this._pointBuffer);
             this._pointTexture.data(pointFloat32);
 
-            this._texture = this.processData(this.context);
+            this.processData(this.context);
         }
         this.dirty = false;
     }
@@ -199,7 +197,7 @@ export class GraphPoints extends DataTexture {
         this._pointView.setFloat32(index * 16 + 8, pointView[2], true);
         this._pointView.setFloat32(index * 16 + 12, pointView[3], true);
 
-        const classView = new Float32Array(classBuffer);
+        const classView = new Int32Array(classBuffer);
         this._classView.setInt32(index * 4, classView[0], true);
 
         this.dirty = true;
@@ -235,11 +233,17 @@ export class GraphPoints extends DataTexture {
         this.dirty = true;
     }
 
+    protected createTexture(width: number, height: number): Texture {
+        this._frameBuffer = this.context.createFramebuffer();
+        return this.context.createTexture2D(width, height, {
+            internalFormat: PicoGL.RGBA32F,
+        });
+    }
+
     protected resizeTexture(capacity: number): void {
         if (this.capacity < capacity) {
-            const textureWidth = Math.pow(2, Math.ceil(Math.log2(Math.ceil(Math.sqrt(capacity)))));
-            const textureHeight = Math.pow(2, Math.ceil(Math.log2(Math.ceil(capacity / textureWidth))));
-            this.textureSize = vec2.fromValues(textureWidth, textureHeight);
+            super.resizeTexture(capacity);
+            const [textureWidth, textureHeight] = this.textureSize;
 
             // resize / create class texture
             if (this._classTexture) {
@@ -255,16 +259,6 @@ export class GraphPoints extends DataTexture {
                 this._pointTexture.resize(textureWidth, textureHeight);
             } else {
                 this._pointTexture = this.context.createTexture2D(textureWidth, textureHeight, {
-                    internalFormat: PicoGL.RGBA32F,
-                });
-            }
-
-            // resize / create color target and initialize frame buffer if needed
-            if (this._colorTarget) {
-                this._colorTarget.resize(textureWidth, textureHeight);
-            } else {
-                this._frameBuffer = this.context.createFramebuffer();
-                this._colorTarget = this.context.createTexture2D(textureWidth, textureHeight, {
                     internalFormat: PicoGL.RGBA32F,
                 });
             }
@@ -318,7 +312,7 @@ export class GraphPoints extends DataTexture {
 
         // bind frame buffer to context
         context.readFramebuffer(this._frameBuffer);
-        this._frameBuffer.colorTarget(0, this._colorTarget);
+        this._frameBuffer.colorTarget(0, this._texture);
         context.drawFramebuffer(this._frameBuffer)
             .clearColor(0, 0, 0, 0)
             .clear()
@@ -346,7 +340,5 @@ export class GraphPoints extends DataTexture {
         // switch back to canvas frame buffer and restore original viewport size
         context.defaultDrawFramebuffer();
         context.viewport(...savedViewport as [number, number, number, number]);
-
-        return this._frameBuffer.colorAttachments[0];
     }
 }

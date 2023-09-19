@@ -76,7 +76,6 @@ export abstract class LayerRenderable<T_SRC, T_TGT> extends PointsReaderEmitter<
     public render(context: App, mode: RenderMode, uniforms: RenderUniforms): void;
     public render(context: App, mode: RenderMode): void {
         this.configureRenderContext(context, mode);
-        this.updatePoints();
     }
 
     protected initialize(...args: any[]): void;
@@ -96,12 +95,6 @@ export abstract class LayerRenderable<T_SRC, T_TGT> extends PointsReaderEmitter<
             uBrightness: 0.0,
         });
         super.initialize(context, points, data, mappings);
-    }
-
-    protected updatePoints(): void {
-        if(this.dataTexture !== this.localUniforms.uGraphPoints) {
-            this.localUniforms.uGraphPoints = this.dataTexture;
-        }
     }
 
     protected configureRenderContext(context: App, renderMode: RenderMode): void {
