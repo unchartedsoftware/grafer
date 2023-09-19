@@ -6,20 +6,20 @@ import {DataMappings, concatenateData, packData} from './DataTools';
 import {vec3} from 'gl-matrix';
 import {DataTexture} from '../renderer/DataTexture';
 
-export enum ClassModes {
+export enum HierarchyTypes {
     NONE,
     ADD,
 }
 
 export interface PointOptions {
-    positionClassMode?: ClassModes
-    radiusClassMode?: ClassModes
+    positionClassMode?: HierarchyTypes
+    radiusClassMode?: HierarchyTypes
     maxHierarchyDepth?: number
 }
 
 export interface PointData {
     id?: number | string;
-    class?: number | string;
+    parentId?: number | string;
     x: number;
     y: number;
     z?: number;
@@ -30,7 +30,7 @@ export type PointDataMappings = DataMappings<PointData>;
 
 const kDefaultMappings: PointDataMappings = {
     id: (entry: any, i) => 'id' in entry ? entry.id : i,
-    class: (entry: any) => entry.class ?? null,
+    parentId: (entry: any) => entry.parentId ?? null,
     x: (entry: any) => entry.x,
     y: (entry: any) => entry.y,
     z: (entry: any) => 'z' in entry ? entry.z : 0.0,
@@ -45,7 +45,7 @@ const kGLTypesPoint: GLDataTypes<PointData> = {
 };
 
 const kGLTypesClass: GLDataTypes<PointData> = {
-    class: PicoGL.INT,
+    parentId: PicoGL.INT,
 };
 
 export class GraphPoints extends DataTexture {
@@ -61,16 +61,16 @@ export class GraphPoints extends DataTexture {
 
     private _frameBuffer: Framebuffer;
 
-    private _classBuffer: ArrayBuffer;
-    private _classView: DataView;
-    private _classTexture: Texture;
+    private _parentBuffer: ArrayBuffer;
+    private _parentView: DataView;
+    private _parentTexture: Texture;
     private _pointBuffer: ArrayBuffer;
     private _pointView: DataView;
     private _pointTexture: Texture;
 
     private _localUniforms = {
-        uPositionClassMode: ClassModes.ADD,
-        uRadiusClassMode: ClassModes.NONE,
+        uPositionHierarchyType: HierarchyTypes.ADD,
+        uRadiusHierarchyType: HierarchyTypes.NONE,
         uMaxHierarchyDepth: 100,
     };
     private _dataArrayBuffer: Float32Array;
@@ -80,18 +80,18 @@ export class GraphPoints extends DataTexture {
         return this._length;
     }
 
-    public get positionClassMode(): ClassModes {
-        return this._localUniforms.uPositionClassMode;
+    public get positionHierarchyType(): HierarchyTypes {
+        return this._localUniforms.uPositionHierarchyType;
     }
-    public set positionClassMode(value: ClassModes) {
-        this._localUniforms.uPositionClassMode = value;
+    public set positionHierarchyType(value: HierarchyTypes) {
+        this._localUniforms.uPositionHierarchyType = value;
     }
 
-    public get radiusClassMode(): ClassModes {
-        return this._localUniforms.uRadiusClassMode;
+    public get radiusHierarchyType(): HierarchyTypes {
+        return this._localUniforms.uRadiusHierarchyType;
     }
-    public set radiusClassMode(value: ClassModes) {
-        this._localUniforms.uRadiusClassMode = value;
+    public set radiusHierarchyType(value: HierarchyTypes) {
+        this._localUniforms.uRadiusHierarchyType = value;
     }
 
     public get maxHierarchyDepth(): number {
@@ -120,10 +120,10 @@ export class GraphPoints extends DataTexture {
         };
         this.bbCenter = vec3.create();
 
-        const [pointBuffer, classBuffer] = this.packData(data, mappings, true, true);
+        const [pointBuffer, parentBuffer] = this.packData(data, mappings, true, true);
 
-        this._classBuffer = classBuffer;
-        this._classView = new DataView(this._classBuffer);
+        this._parentBuffer = parentBuffer;
+        this._parentView = new DataView(this._parentBuffer);
 
         this._pointBuffer = pointBuffer;
         this._pointView = new DataView(this._pointBuffer);
@@ -142,10 +142,10 @@ export class GraphPoints extends DataTexture {
         super.destroy();
         this.map.clear();
 
-        this._classTexture.delete();
+        this._parentTexture.delete();
         this._pointTexture.delete();
 
-        this._classBuffer = null;
+        this._parentBuffer = null;
         this._pointBuffer = null;
         this._dataArrayBuffer = null;
         this.map = null;
@@ -153,8 +153,8 @@ export class GraphPoints extends DataTexture {
 
     public update(): void {
         if (this.dirty) {
-            const classInt32 = new Int32Array(this._classBuffer);
-            this._classTexture.data(classInt32);
+            const parentInt32 = new Int32Array(this._parentBuffer);
+            this._parentTexture.data(parentInt32);
             const pointFloat32 = new Float32Array(this._pointBuffer);
             this._pointTexture.data(pointFloat32);
 
@@ -197,8 +197,8 @@ export class GraphPoints extends DataTexture {
         this._pointView.setFloat32(index * 16 + 8, pointView[2], true);
         this._pointView.setFloat32(index * 16 + 12, pointView[3], true);
 
-        const classView = new Int32Array(classBuffer);
-        this._classView.setInt32(index * 4, classView[0], true);
+        const parentView = new Int32Array(classBuffer);
+        this._parentView.setInt32(index * 4, parentView[0], true);
 
         this.dirty = true;
     }
@@ -209,7 +209,7 @@ export class GraphPoints extends DataTexture {
 
     public addPoints(data: unknown[], mappings: Partial<PointDataMappings> = {}): void {
         this.resizeTexture(this._length + data.length);
-        const [pointBuffer, classBuffer] = this.packData(data, mappings, false, true);
+        const [pointBuffer, parentBuffer] = this.packData(data, mappings, false, true);
 
         // create and populate points buffer
         const pointBytes = new Uint32Array(pointBuffer);
@@ -220,14 +220,14 @@ export class GraphPoints extends DataTexture {
         pointBytesMerge.set(pointBytesOld);
         pointBytesMerge.set(pointBytes, pointBytesOld.length);
 
-        // create and populate class buffer
-        const classBytes = new Uint32Array(classBuffer);
-        const classBytesOld = new Uint32Array(this._classBuffer, 0, this._length);
-        this._classBuffer = new ArrayBuffer(this.capacity * 4); // 4 bytes for 1 float
-        this._classView = new DataView(this._classBuffer);
-        const classBytesMerge = new Uint32Array(this._classBuffer);
-        classBytesMerge.set(classBytesOld);
-        classBytesMerge.set(classBytes, classBytesOld.length);
+        // create and populate parent buffer
+        const parentBytes = new Uint32Array(parentBuffer);
+        const parentBytesOld = new Uint32Array(this._parentBuffer, 0, this._length);
+        this._parentBuffer = new ArrayBuffer(this.capacity * 4); // 4 bytes for 1 float
+        this._parentView = new DataView(this._parentBuffer);
+        const parentBytesMerge = new Uint32Array(this._parentBuffer);
+        parentBytesMerge.set(parentBytesOld);
+        parentBytesMerge.set(parentBytes, parentBytesOld.length);
 
         this._length += data.length;
         this.dirty = true;
@@ -245,11 +245,11 @@ export class GraphPoints extends DataTexture {
             super.resizeTexture(capacity);
             const [textureWidth, textureHeight] = this.textureSize;
 
-            // resize / create class texture
-            if (this._classTexture) {
-                this._classTexture.resize(textureWidth, textureHeight);
+            // resize / create parent texture
+            if (this._parentTexture) {
+                this._parentTexture.resize(textureWidth, textureHeight);
             } else {
-                this._classTexture = this.context.createTexture2D(textureWidth, textureHeight, {
+                this._parentTexture = this.context.createTexture2D(textureWidth, textureHeight, {
                     internalFormat: PicoGL.R32I,
                 });
             }
@@ -278,18 +278,18 @@ export class GraphPoints extends DataTexture {
             this.bb.max[1] = Math.max(this.bb.max[1], entry.y + entry.radius);
             this.bb.max[2] = Math.max(this.bb.max[2], entry.z);
         });
-        const classData = packData(data, dataMappings, kGLTypesClass, potLength, (i, entry) => {
-            if(entry.class === null) {
-                entry.class = -1;
+        const parentData = packData(data, dataMappings, kGLTypesClass, potLength, (i, entry) => {
+            if(entry.parentId === null) {
+                entry.parentId = -1;
             } else {
-                entry.class = this.map.get(entry.class) ?? -1;
+                entry.parentId = this.map.get(entry.parentId) ?? -1;
             }
         });
 
-        return [pointData, classData];
+        return [pointData, parentData];
     }
 
-    protected processData(context: App): Texture {
+    protected processData(context: App): void {
         const {gl} = context;
 
         // resize viewport to data texture size and save original viewport size
@@ -323,12 +323,12 @@ export class GraphPoints extends DataTexture {
             .primitive(PicoGL.TRIANGLE_STRIP);
         setDrawCallUniforms(drawCall, Object.assign({}, this._localUniforms, {
             uPointTexture: this._pointTexture,
-            uClassTexture: this._classTexture,
+            uParentTexture: this._parentTexture,
         }));
         drawCall.draw();
 
         // read points texture into stored buffer for point coordinates readback
-        this.readTextureAsync(this._frameBuffer.colorAttachments[0]).then(texArrayBuffer => {
+        this.readTextureAsync(this._texture).then(texArrayBuffer => {
             this._dataArrayBuffer = texArrayBuffer;
         });
 

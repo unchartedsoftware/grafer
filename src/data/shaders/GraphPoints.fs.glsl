@@ -7,10 +7,10 @@ in vec2 vUv;
 out vec4 fragColor;
 
 uniform sampler2D uPointTexture;
-uniform isampler2D uClassTexture;
+uniform isampler2D uParentTexture;
 
-uniform uint uPositionClassMode;
-uniform uint uRadiusClassMode;
+uniform uint uPositionHierarchyType;
+uniform uint uRadiusHierarchyType;
 uniform uint uMaxHierarchyDepth;
 
 #pragma glslify: import(../../renderer/shaders/valueForIndex.glsl)
@@ -22,15 +22,15 @@ void main() {
     fragColor = texelFetch(uPointTexture, coords, 0);
 
     uint i = 0u;
-    int classIndex = texelFetch(uClassTexture, coords, 0).x;
+    int classIndex = texelFetch(uParentTexture, coords, 0).x;
     while(classIndex != -1 && i++ < uMaxHierarchyDepth) {
         vec4 point = valueForIndex(uPointTexture, classIndex);
-        if(uPositionClassMode == MODE_ADD) {
+        if(uPositionHierarchyType == MODE_ADD) {
             fragColor.xyz += point.xyz;
         }
-        if(uRadiusClassMode == MODE_ADD) {
+        if(uRadiusHierarchyType == MODE_ADD) {
             fragColor.w += point.w;
         }
-        classIndex = ivalueForIndex(uClassTexture, classIndex).x;
+        classIndex = ivalueForIndex(uParentTexture, classIndex).x;
     }
 }
