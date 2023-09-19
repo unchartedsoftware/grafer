@@ -114,12 +114,11 @@ export abstract class DataTexture {
             gl.TEXTURE_2D, texture.texture, 0);
         const canRead = gl.checkFramebufferStatus(gl.FRAMEBUFFER) == gl.FRAMEBUFFER_COMPLETE;
         if(canRead) {
-            gl.bindFramebuffer(gl.FRAMEBUFFER, fbRead);
             const buffer = new Float32Array(textureWidth * textureHeight * 4);
             gl.readPixels(0, 0, textureWidth, textureHeight, gl.RGBA, gl.FLOAT, buffer);
-            gl.bindFramebuffer(gl.FRAMEBUFFER, null);
             return buffer;
         }
+        gl.bindFramebuffer(gl.FRAMEBUFFER, null);
 
         return new Float32Array();
     }
@@ -138,12 +137,11 @@ export abstract class DataTexture {
             gl.TEXTURE_2D, texture.texture, 0);
         const canRead = gl.checkFramebufferStatus(gl.FRAMEBUFFER) == gl.FRAMEBUFFER_COMPLETE;
         if(canRead) {
-            gl.bindFramebuffer(gl.FRAMEBUFFER, fbRead);
             const buffer = new Float32Array(textureWidth * textureHeight * 4);
             await readPixelsAsync(gl as WebGL2RenderingContext, 0, 0, textureWidth, textureHeight, gl.RGBA, gl.FLOAT, buffer);
-            gl.bindFramebuffer(gl.FRAMEBUFFER, null);
             return buffer;
         }
+        gl.bindFramebuffer(gl.FRAMEBUFFER, null);
 
         return new Float32Array();
     }
