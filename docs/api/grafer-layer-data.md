@@ -48,3 +48,4 @@ An object containing configuration options for the layer.
 | enabled | boolean | Hides or shows the layer. |
 | nearDepth | number | Takes a range between 0 - 1. Defaults to 0. Controls camera near depth. |
 | farDepth | number | Takes a range between 0 - 1. Defaults to 1. Controls camera far depth. |
+| glow | number | Takes a range between 0 - 1. Defaults to 0. Controls strength of the glow effect applied to all elements in the layer. If 0 no glow affect is applied. The larger the number the more diffuse the glow effect becomes. |
