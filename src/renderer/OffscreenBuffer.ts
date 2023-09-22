@@ -11,9 +11,9 @@ export class OffscreenBuffer {
     }
 
     private context: App;
-    protected colorTarget: Texture;
-    protected depthTarget: Renderbuffer;
-    protected frameBuffer: Framebuffer;
+    public colorTarget: Texture;
+    private depthTarget: Renderbuffer;
+    private frameBuffer: Framebuffer;
 
     constructor(context: App) {
         this.context = context;
