@@ -16,6 +16,10 @@ Object.freeze(kEvents);
 
 export type GraphEventsMap = { [K in keyof typeof kEvents]: ReturnType<() => { readonly 0: unique symbol }[0]> };
 
+// Configuration constants for Post Processing
+const DOWNSAMPLED_RATIO = 1/7; // determines the fraction of the full size texture dimensions to downsample to
+const MAX_BLUR_PASSES = 20; // determines the maximum number of blurring passes used when glow is most diffuse
+
 export class Graph extends EventEmitter.mixin(GraphPoints) implements Renderable {
     public static get events(): GraphEventsMap {
         return kEvents as GraphEventsMap;
@@ -76,7 +80,7 @@ export class Graph extends EventEmitter.mixin(GraphPoints) implements Renderable
     public render(context:App, mode: RenderMode, uniforms: RenderUniforms): void {
         this.emit(kEvents.preRender, this, mode, uniforms);
 
-        const isPicking = mode === RenderMode.PICKING && this.picking && this.picking.enabled;
+        const isPicking = mode === RenderMode.PICKING && this.picking?.enabled;
         if (isPicking) {
             this.picking.offscreenBuffer.prepareContext(context);
         }
@@ -103,11 +107,9 @@ export class Graph extends EventEmitter.mixin(GraphPoints) implements Renderable
                 const renderFrameTexture = this._renderBuffer.colorTarget;
                 context.disable(PicoGL.BLEND);
 
-                const downsampledRatio = 1/7; // magic number
-                const maxBlurPasses = 20;
                 const downsampledSize: [number, number] = [
-                    Math.round(context.width * downsampledRatio),
-                    Math.round(context.height * downsampledRatio),
+                    Math.round(context.width * DOWNSAMPLED_RATIO),
+                    Math.round(context.height * DOWNSAMPLED_RATIO),
                 ];
                 outputTexture1.resize(...downsampledSize);
                 outputBuffer1.colorTarget(0, outputTexture1);
@@ -117,7 +119,7 @@ export class Graph extends EventEmitter.mixin(GraphPoints) implements Renderable
                 this.context.drawFramebuffer(outputBuffer1);
                 this._postProcess.resample(downsampledSize, renderFrameTexture);
 
-                for(let i = 0; i < Math.round(glow * maxBlurPasses) + 1; i++) {
+                for(let i = 0; i <= Math.round(glow * MAX_BLUR_PASSES); i++) {
                     this.context.drawFramebuffer(outputBuffer2);
                     this._postProcess.blur(outputTexture1, true);
                     this.context.drawFramebuffer(outputBuffer1);

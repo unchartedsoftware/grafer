@@ -11,7 +11,7 @@ export class OffscreenBuffer {
     }
 
     private context: App;
-    public colorTarget: Texture;
+    readonly colorTarget: Texture;
     private depthTarget: Renderbuffer;
     private frameBuffer: Framebuffer;
 
