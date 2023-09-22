@@ -5795,11 +5795,11 @@ send@latest:
   linkType: hard
 
 "set-getter@npm:^0.1.0":
-  version: 0.1.0
-  resolution: "set-getter@npm:0.1.0"
+  version: 0.1.1
+  resolution: "set-getter@npm:0.1.1"
   dependencies:
     to-object-path: ^0.3.0
-  checksum: 00b9cd529bc56d09d9522f69e9abfd229565483e06dd5147e598986bef194286bff7294e8f8a7da4c379926c661fd3a81ac55ca60825cd5d3b762b0b1d1cf20b
+  checksum: 04bc8ffff286d7b36a3adc675d2858db3d6768f0290dce98ca5d481d5361936f4fa1e2570833de3511424adf534fc9e48f4b420163906b0d6ca45f38074f5108
   languageName: node
   linkType: hard
 
