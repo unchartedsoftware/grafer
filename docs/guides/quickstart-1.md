@@ -3,7 +3,7 @@
 
 In the first step, we will focus on just getting the data on the screen, to quickly get an idea about what we are dealing with. Thus we aim to write the minimum required code to parse the dataset and generate the visualization.
 
-Thus, we will parse the node and edge lists into [GraferNodesData](../api/grafer-nodes-data.md), [GraferEdgesData](../api/grafer-edges-data.md), and [GraferLabelsData](../api/grafer-edges-data.md) objects.
+Thus, we will parse the node and edge lists into [GraferNodesData](../api/grafer-nodes-data.md), [GraferEdgesData](../api/grafer-edges-data.md), and [GraferLabelsData](../api/grafer-labels-data.md) objects.
 
 The node list provides the x and y coordinates using the properties `x` and `y`, which means that the `nodesArray` can be simply assigned to [data](../api/grafer-nodes-data.md#data) and Grafer will parse the relevant information out.
 
