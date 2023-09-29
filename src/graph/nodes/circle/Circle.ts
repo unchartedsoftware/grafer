@@ -104,7 +104,7 @@ export class Circle extends Nodes<BasicNodeData, GLCircleNodeTypes> {
     }
 
     public render(context:App, mode: RenderMode, uniforms: RenderUniforms): void {
-        this.configureRenderContext(context, mode);
+        super.render(context, mode, uniforms);
 
         switch (mode) {
             case RenderMode.PICKING:

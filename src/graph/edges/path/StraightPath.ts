@@ -115,7 +115,7 @@ export class StraightPath extends Edges<CurvedPathEdgeData, GLCurvedPathEdgeType
     }
 
     public render(context:App, mode: RenderMode, uniforms: RenderUniforms): void {
-        this.configureRenderContext(context, mode);
+        super.render(context, mode, uniforms);
 
         setDrawCallUniforms(this.drawCall, uniforms);
         setDrawCallUniforms(this.drawCall, this.localUniforms);

@@ -73,7 +73,10 @@ export abstract class LayerRenderable<T_SRC, T_TGT> extends PointsReaderEmitter<
         super(...args);
     }
 
-    public abstract render(context: App, mode: RenderMode, uniforms: RenderUniforms): void;
+    public render(context: App, mode: RenderMode, uniforms: RenderUniforms): void;
+    public render(context: App, mode: RenderMode): void {
+        this.configureRenderContext(context, mode);
+    }
 
     protected initialize(...args: any[]): void;
     protected initialize(
