@@ -119,12 +119,10 @@ export class Graph extends EventEmitter.mixin(GraphPoints) implements Renderable
                 this.context.drawFramebuffer(outputBuffer1);
                 this._postProcess.resample(downsampledSize, renderFrameTexture);
 
-                for(let i = 0; i <= Math.round(glow * MAX_BLUR_PASSES); i++) {
-                    this.context.drawFramebuffer(outputBuffer2);
-                    this._postProcess.blur(outputTexture1, true);
-                    this.context.drawFramebuffer(outputBuffer1);
-                    this._postProcess.blur(outputTexture2, false);
-                }
+                this.context.drawFramebuffer(outputBuffer2);
+                this._postProcess.blur(outputTexture1, true, glow);
+                this.context.drawFramebuffer(outputBuffer1);
+                this._postProcess.blur(outputTexture2, false, glow);
 
                 outputTexture2.resize(context.width, context.height);
                 outputBuffer2.colorTarget(0, outputTexture2);
@@ -136,9 +134,9 @@ export class Graph extends EventEmitter.mixin(GraphPoints) implements Renderable
                 outputBuffer1.colorTarget(0, outputTexture1);
 
                 this.context.drawFramebuffer(outputBuffer1);
-                this._postProcess.blur(outputTexture2, true);
+                this._postProcess.blur(outputTexture2, true, glow);
                 this.context.drawFramebuffer(outputBuffer2);
-                this._postProcess.blur(outputTexture1, false);
+                this._postProcess.blur(outputTexture1, false, glow);
 
                 context.defaultDrawFramebuffer();
                 this._postProcess.blend(renderFrameTexture, outputTexture2);

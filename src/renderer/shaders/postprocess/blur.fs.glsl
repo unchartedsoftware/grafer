@@ -7,23 +7,23 @@ out vec4 fragColor;
 
 uniform sampler2D uFrameTexture;
 uniform vec2 uDirection;
+uniform float uStrength;
+
+float gaussian(float x, float a) {
+    float exponent = (x * x) / (2. * a * a);
+    exponent = -exponent;
+    return exp(exponent) / sqrt(3.141 * 2. * a);
+}
 
 void main() {
     vec2 texSize = 1. / vec2(textureSize(uFrameTexture, 0).xy);
 
-    float blurOffsets[3];
-    blurOffsets[0] = 0.0;
-    blurOffsets[1] = 1.3846153846;
-    blurOffsets[2] = 3.2307692308;
-
-    float blurWeights[3];
-    blurWeights[0] = 0.22697126013264554;
-    blurWeights[1] = 0.31613854089904203;
-    blurWeights[2] = 0.070253009088676;
-
-    fragColor = texture(uFrameTexture, vUv) * blurWeights[0];
-    for (int i = 1; i < 3; ++i) {
-        fragColor += texture(uFrameTexture, vUv + (uDirection * texSize * blurOffsets[i])) * blurWeights[i];
-        fragColor += texture(uFrameTexture, vUv - (uDirection * texSize * blurOffsets[i])) * blurWeights[i];
+    float strength = mix(1.5, 3., uStrength);
+    vec3 result = texture(uFrameTexture, vUv).rgb * gaussian(0., strength);
+    for (int i = 1; i < 10; ++i) {
+        result += texture(uFrameTexture, vUv + vec2(uDirection * texSize * float(i))).rgb * gaussian(float(i), strength);
+        result += texture(uFrameTexture, vUv - vec2(uDirection * texSize * float(i))).rgb * gaussian(float(i), strength);
     }
+
+    fragColor = vec4(result, 1.0);
 }

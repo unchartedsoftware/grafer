@@ -73,10 +73,11 @@ export class PostProcess {
         this.drawCallDownsample.draw();
     }
 
-    public blur(sourceTexture: Texture, isHorizontal: boolean): void {
+    public blur(sourceTexture: Texture, isHorizontal: boolean, strength: number): void {
         setDrawCallUniforms(this.drawCallBlur, {
             uFrameTexture: sourceTexture,
             uDirection: isHorizontal ? [1, 0] : [0, 1],
+            uStrength: strength,
         });
         this.drawCallBlur.draw();
     }
