@@ -18230,19 +18230,22 @@ var OffscreenBuffer = class {
   set clearColor(value) {
     vec4_exports.copy(this._clearColor, value);
   }
+  get colorTarget() {
+    return this._colorTarget;
+  }
   resize(context) {
     if (this.frameBuffer) {
       this.frameBuffer.delete();
     }
-    if (this.colorTarget) {
-      this.colorTarget.delete();
+    if (this._colorTarget) {
+      this._colorTarget.delete();
     }
     if (this.depthTarget) {
       this.depthTarget.delete();
     }
-    this.colorTarget = context.createTexture2D(context.width, context.height);
+    this._colorTarget = context.createTexture2D(context.width, context.height);
     this.depthTarget = context.createRenderbuffer(context.width, context.height, PicoGL.DEPTH_COMPONENT16);
-    this.frameBuffer = context.createFramebuffer().colorTarget(0, this.colorTarget).depthTarget(this.depthTarget);
+    this.frameBuffer = context.createFramebuffer().colorTarget(0, this._colorTarget).depthTarget(this.depthTarget);
   }
   prepareContext(context) {
     context.readFramebuffer(this.frameBuffer);
@@ -18281,12 +18284,89 @@ __export(mod_exports7, {
   nodes: () => mod_exports4
 });
 
+// src/renderer/shaders/postprocess/postProcess.vs.glsl
+var postProcess_vs_default = "#version 300 es\n#define GLSLIFY 1\n\nlayout(location=0) in vec4 aVertex;\n\nout vec2 vUv;\n\nvoid main() {\n    vUv = (aVertex.xy + 1.) / 2.;\n    gl_Position = aVertex;\n}\n";
+
+// src/renderer/shaders/postprocess/blur.fs.glsl
+var blur_fs_default = "#version 300 es\nprecision lowp float;\n#define GLSLIFY 1\n\nin vec2 vUv;\n\nout vec4 fragColor;\n\nuniform sampler2D uFrameTexture;\nuniform vec2 uDirection;\nuniform float uStrength;\n\nfloat gaussian(float x, float a) {\n    float exponent = (x * x) / (2. * a * a);\n    exponent = -exponent;\n    return exp(exponent) / sqrt(3.141 * 2. * a);\n}\n\nvoid main() {\n    vec2 texSize = 1. / vec2(textureSize(uFrameTexture, 0).xy);\n\n    float strength = mix(1.5, 3., uStrength);\n    vec4 inputSample = texture(uFrameTexture, vUv);\n    vec3 result = inputSample.rgb * gaussian(0., strength);\n    for (int i = 1; i < 10; ++i) {\n        result += texture(uFrameTexture, vUv + vec2(uDirection * texSize * float(i))).rgb * gaussian(float(i), strength);\n        result += texture(uFrameTexture, vUv - vec2(uDirection * texSize * float(i))).rgb * gaussian(float(i), strength);\n    }\n\n    fragColor = vec4(result, inputSample.a);\n}\n";
+
+// src/renderer/shaders/postprocess/blend.fs.glsl
+var blend_fs_default = "#version 300 es\nprecision lowp float;\n#define GLSLIFY 1\n\nin vec2 vUv;\n\nout vec4 fragColor;\n\nuniform sampler2D uFrameTexture;\nuniform sampler2D uGlowTexture;\n\nvoid main() {\n    fragColor = texture(uFrameTexture, vUv).rgba;\n\n    if(fragColor.a == 0.) {\n        fragColor = texture(uGlowTexture, vUv).rgba;\n    }\n}\n";
+
+// src/renderer/shaders/postprocess/resample.fs.glsl
+var resample_fs_default = "#version 300 es\nprecision lowp float;\n#define GLSLIFY 1\n\nin vec2 vUv;\n\nout vec4 fragColor;\n\nuniform sampler2D uFrameTexture;\n\nvoid main() {\n    fragColor = texture(uFrameTexture, vUv);\n}\n";
+
+// src/renderer/PostProcess.ts
+var PostProcess = class {
+  get drawBuffer() {
+    return this._drawBuffer;
+  }
+  get targetTexture() {
+    return this._targetTexture;
+  }
+  constructor(context) {
+    this.context = context;
+    const verticesVBO = context.createVertexBuffer(picogl_default.FLOAT, 2, new Float32Array([
+      -1,
+      -1,
+      1,
+      -1,
+      -1,
+      1,
+      1,
+      1
+    ]));
+    const verticesVAO = context.createVertexArray().vertexAttributeBuffer(0, verticesVBO);
+    const programBlur = context.createProgram(postProcess_vs_default, blur_fs_default);
+    const drawCallBlur = context.createDrawCall(programBlur, verticesVAO).primitive(picogl_default.TRIANGLE_STRIP);
+    this.drawCallBlur = drawCallBlur;
+    const programResample = context.createProgram(postProcess_vs_default, resample_fs_default);
+    const drawCallDownsample = context.createDrawCall(programResample, verticesVAO).primitive(picogl_default.TRIANGLE_STRIP);
+    this.drawCallDownsample = drawCallDownsample;
+    const programBlend = context.createProgram(postProcess_vs_default, blend_fs_default);
+    const drawCallBlend = context.createDrawCall(programBlend, verticesVAO).primitive(picogl_default.TRIANGLE_STRIP);
+    this.drawCallBlend = drawCallBlend;
+    const textureSize = [context.width, context.height];
+    const textureOptions = { minFilter: picogl_default.LINEAR, magFilter: picogl_default.LINEAR, wrapT: picogl_default.CLAMP_TO_EDGE, wrapS: picogl_default.CLAMP_TO_EDGE };
+    this.outputTexture1 = context.createTexture2D(...textureSize, textureOptions);
+    this.outputBuffer1 = context.createFramebuffer().colorTarget(0, this.outputTexture1);
+    this.outputTexture2 = context.createTexture2D(...textureSize, textureOptions);
+    this.outputBuffer2 = context.createFramebuffer().colorTarget(0, this.outputTexture2);
+  }
+  resample(viewportSize, sourceTexture) {
+    this.context.viewport(0, 0, ...viewportSize);
+    setDrawCallUniforms(this.drawCallDownsample, {
+      uFrameTexture: sourceTexture
+    });
+    this.drawCallDownsample.draw();
+  }
+  blur(sourceTexture, isHorizontal, strength) {
+    setDrawCallUniforms(this.drawCallBlur, {
+      uFrameTexture: sourceTexture,
+      uDirection: isHorizontal ? [1, 0] : [0, 1],
+      uStrength: strength
+    });
+    this.drawCallBlur.draw();
+  }
+  blend(frameTexture, uGlowTexture) {
+    const { context } = this;
+    setDrawCallUniforms(this.drawCallBlend, {
+      uFrameTexture: frameTexture,
+      uGlowTexture
+    });
+    context.enable(picogl_default.BLEND);
+    context.blendFuncSeparate(picogl_default.ONE, picogl_default.ONE_MINUS_SRC_ALPHA, picogl_default.ONE, picogl_default.ONE);
+    this.drawCallBlend.draw();
+  }
+};
+
 // src/graph/Graph.ts
 var kEvents2 = {
   preRender: Symbol("grafer_graph_pre_render"),
   postRender: Symbol("grafer_graph_post_render")
 };
 Object.freeze(kEvents2);
+var DOWNSAMPLED_RATIO = 1 / 5;
 var Graph = class extends EventEmitter.mixin(GraphPoints) {
   constructor(context, data, mappings2 = {}) {
     super(context, data, mappings2);
@@ -18296,6 +18376,8 @@ var Graph = class extends EventEmitter.mixin(GraphPoints) {
     this._translation = vec3_exports.create();
     this._scale = vec3_exports.fromValues(1, 1, 1);
     this._matrix = mat4_exports.create();
+    this._renderBuffer = new OffscreenBuffer(context);
+    this._postProcess = new PostProcess(context);
   }
   static get events() {
     return kEvents2;
@@ -18323,8 +18405,10 @@ var Graph = class extends EventEmitter.mixin(GraphPoints) {
     vec3_exports.set(this._scale, value, value, value);
   }
   render(context, mode, uniforms) {
+    var _a2;
     this.emit(kEvents2.preRender, this, mode, uniforms);
-    if (mode === RenderMode.PICKING && this.picking && this.picking.enabled) {
+    const isPicking = mode === RenderMode.PICKING && ((_a2 = this.picking) == null ? void 0 : _a2.enabled);
+    if (isPicking) {
       this.picking.offscreenBuffer.prepareContext(context);
     }
     const localUniforms = [uniforms];
@@ -18333,16 +18417,52 @@ var Graph = class extends EventEmitter.mixin(GraphPoints) {
       localUniforms.push(Object.assign({}, uniforms, { uRenderMode: RenderMode.HIGH_PASS_2 }));
     }
     for (let i = 0, n = this._layers.length; i < n; ++i) {
+      const glow2 = Math.min(Math.max(this._layers[i].glow, 0), 1);
+      if (glow2 && !isPicking) {
+        this._renderBuffer.prepareContext(context);
+      }
       if (this._layers[i].enabled) {
         this._layers[i].render(context, mode, localUniforms, i);
       }
+      if (glow2 && !isPicking) {
+        const { outputBuffer1, outputBuffer2, outputTexture1, outputTexture2 } = this._postProcess;
+        const renderFrameTexture = this._renderBuffer.colorTarget;
+        context.disable(picogl_default.BLEND);
+        const downsampledSize = [
+          Math.round(context.width * DOWNSAMPLED_RATIO),
+          Math.round(context.height * DOWNSAMPLED_RATIO)
+        ];
+        outputTexture1.resize(...downsampledSize);
+        outputBuffer1.colorTarget(0, outputTexture1);
+        outputTexture2.resize(...downsampledSize);
+        outputBuffer2.colorTarget(0, outputTexture2);
+        this.context.drawFramebuffer(outputBuffer1);
+        this._postProcess.resample(downsampledSize, renderFrameTexture);
+        this.context.drawFramebuffer(outputBuffer2);
+        this._postProcess.blur(outputTexture1, true, glow2);
+        this.context.drawFramebuffer(outputBuffer1);
+        this._postProcess.blur(outputTexture2, false, glow2);
+        outputTexture2.resize(context.width, context.height);
+        outputBuffer2.colorTarget(0, outputTexture2);
+        this.context.drawFramebuffer(outputBuffer2);
+        this._postProcess.resample([context.width, context.height], outputTexture1);
+        outputTexture1.resize(context.width, context.height);
+        outputBuffer1.colorTarget(0, outputTexture1);
+        this.context.drawFramebuffer(outputBuffer1);
+        this._postProcess.blur(outputTexture2, true, glow2);
+        this.context.drawFramebuffer(outputBuffer2);
+        this._postProcess.blur(outputTexture1, false, glow2);
+        context.defaultDrawFramebuffer();
+        this._postProcess.blend(renderFrameTexture, outputTexture2);
+      }
     }
-    if (this.picking && this.picking.enabled && this.picking.debugRender) {
+    if (isPicking && this.picking.debugRender) {
       this.picking.offscreenBuffer.blitToScreen(context);
     }
     this.emit(kEvents2.postRender, this, mode, uniforms);
   }
   resize(context) {
+    this._renderBuffer.resize(context);
     if (this.picking) {
       this.picking.offscreenBuffer.resize(context);
     }
@@ -30414,6 +30534,7 @@ var Layer = class extends EventEmitter {
     this._labelsNearDepth = 0;
     this._labelsFarDepth = 1;
     this.enabled = true;
+    this.glow = 0;
     this._nodes = nodes;
     this._edges = edges;
     this._labels = labels;
@@ -31224,6 +31345,7 @@ async function playground(container) {
 var mod_exports15 = {};
 __export(mod_exports15, {
   edgeColors: () => edgeColors,
+  glow: () => glow,
   minimal: () => minimal,
   minimal3D: () => minimal3D,
   nodeColors: () => nodeColors,
@@ -31419,6 +31541,66 @@ async function nodeID(container) {
     { nodes, edges }
   ];
   new GraferController(canvas, { layers });
+}
+
+// examples/src/basic/glow.ts
+async function glow(container) {
+  render(html`<canvas class="grafer_container"></canvas><mouse-interactions></mouse-interactions>`, container);
+  const canvas = document.querySelector(".grafer_container");
+  const points2 = {
+    data: [
+      { id: 0, x: -8.6, y: 5 },
+      { id: 1, x: 8.6, y: 5 },
+      { id: 2, x: 0, y: -10 },
+      { id: 3, x: 0, y: 0 }
+    ],
+    options: {
+      positionClassMode: 1
+    }
+  };
+  const layers = [
+    {
+      nodes: { data: [
+        { point: 0, color: "lime" },
+        { point: 1, color: "teal" }
+      ] },
+      edges: {
+        data: [
+          { source: 0, target: 1, sourceColor: "lime", targetColor: "teal" },
+          { source: 1, target: 2 },
+          { source: 2, target: 0 }
+        ],
+        mappings: { width: () => 5 }
+      },
+      options: { glow: 0.1 }
+    },
+    {
+      nodes: { data: [
+        { point: 2 },
+        { point: 3 }
+      ] },
+      labels: {
+        data: [
+          { point: 0, label: "glow" },
+          { point: 1, label: "glow" },
+          { point: 2, label: "no glow" },
+          { point: 3, label: "no glow" }
+        ],
+        options: {
+          labelPlacement: mod_exports7.labels.PointLabelPlacement.TOP
+        }
+      },
+      edges: {
+        data: [
+          { source: 3, target: 0 },
+          { source: 3, target: 1 },
+          { source: 3, target: 2 }
+        ]
+      },
+      options: { glow: 0 }
+    }
+  ];
+  new GraferController(canvas, { points: points2, layers });
 }
 
 // examples/src/data/mod.ts
