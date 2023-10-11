@@ -11,9 +11,13 @@ export class OffscreenBuffer {
     }
 
     private context: App;
-    private colorTarget: Texture;
+    private _colorTarget: Texture;
     private depthTarget: Renderbuffer;
     private frameBuffer: Framebuffer;
+
+    get colorTarget(): Texture {
+        return this._colorTarget;
+    }
 
     constructor(context: App) {
         this.context = context;
@@ -25,18 +29,18 @@ export class OffscreenBuffer {
             this.frameBuffer.delete();
         }
 
-        if (this.colorTarget) {
-            this.colorTarget.delete();
+        if (this._colorTarget) {
+            this._colorTarget.delete();
         }
 
         if (this.depthTarget) {
             this.depthTarget.delete();
         }
 
-        this.colorTarget = context.createTexture2D(context.width, context.height);
+        this._colorTarget = context.createTexture2D(context.width, context.height);
         this.depthTarget = context.createRenderbuffer(context.width, context.height, PicoGL.DEPTH_COMPONENT16);
         this.frameBuffer = context.createFramebuffer()
-            .colorTarget(0, this.colorTarget)
+            .colorTarget(0, this._colorTarget)
             .depthTarget(this.depthTarget);
     }
 

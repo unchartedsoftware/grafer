@@ -99,6 +99,7 @@ export class Layer extends EventEmitter implements GraphRenderable {
     }
 
     public enabled: boolean = true;
+    public glow: number = 0;
     public name: string;
 
     public constructor(nodes: Nodes<any, any>, edges: Edges<any, any>, labels: LayerRenderable<any, any>, name = 'Layer') {
