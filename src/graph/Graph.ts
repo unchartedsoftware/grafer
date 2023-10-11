@@ -1,10 +1,12 @@
 import {Renderable, RenderMode, RenderUniforms} from '../renderer/Renderable';
-import {App} from 'picogl';
+import PicoGL, { App } from 'picogl';
 import {mat4, quat, vec3} from 'gl-matrix';
 import {Layer} from './Layer';
 import {GraphPoints, PointData, PointDataMappings} from '../data/GraphPoints';
 import {PickingManager} from '../UX/picking/PickingManager';
 import {EventEmitter} from '@dekkai/event-emitter/build/lib/EventEmitter';
+import { OffscreenBuffer } from 'src/renderer/OffscreenBuffer';
+import { PostProcess } from '../renderer/PostProcess';
 
 const kEvents  = {
     preRender: Symbol('grafer_graph_pre_render'),
@@ -14,6 +16,9 @@ Object.freeze(kEvents);
 
 export type GraphEventsMap = { [K in keyof typeof kEvents]: ReturnType<() => { readonly 0: unique symbol }[0]> };
 
+// Configuration constants for Post Processing
+const DOWNSAMPLED_RATIO = 1/5; // determines the fraction of the full size texture dimensions to downsample to
+
 export class Graph extends EventEmitter.mixin(GraphPoints) implements Renderable {
     public static get events(): GraphEventsMap {
         return kEvents as GraphEventsMap;
@@ -21,6 +26,9 @@ export class Graph extends EventEmitter.mixin(GraphPoints) implements Renderable
 
     public picking: PickingManager;
     public enabled: boolean = true;
+
+    private _renderBuffer: OffscreenBuffer;
+    private _postProcess: PostProcess;
 
     private readonly _matrix: mat4;
     public get matrix(): mat4 {
@@ -63,11 +71,16 @@ export class Graph extends EventEmitter.mixin(GraphPoints) implements Renderable
         this._translation = vec3.create();
         this._scale = vec3.fromValues(1, 1, 1);
         this._matrix = mat4.create();
+
+        this._renderBuffer = new OffscreenBuffer(context);
+        this._postProcess = new PostProcess(context);
     }
 
     public render(context:App, mode: RenderMode, uniforms: RenderUniforms): void {
         this.emit(kEvents.preRender, this, mode, uniforms);
-        if (mode === RenderMode.PICKING && this.picking && this.picking.enabled) {
+
+        const isPicking = mode === RenderMode.PICKING && this.picking?.enabled;
+        if (isPicking) {
             this.picking.offscreenBuffer.prepareContext(context);
         }
 
@@ -79,12 +92,57 @@ export class Graph extends EventEmitter.mixin(GraphPoints) implements Renderable
 
         // render layers, back to front
         for (let i = 0, n = this._layers.length; i < n; ++i) {
+            // clamp glow value
+            const glow = Math.min(Math.max(this._layers[i].glow, 0), 1);
+            if (glow && !isPicking) {
+                this._renderBuffer.prepareContext(context);
+            }
             if (this._layers[i].enabled) {
                 this._layers[i].render(context, mode, localUniforms, i);
             }
+            if (glow && !isPicking) {
+                const { outputBuffer1, outputBuffer2, outputTexture1, outputTexture2 } = this._postProcess;
+
+                const renderFrameTexture = this._renderBuffer.colorTarget;
+                context.disable(PicoGL.BLEND);
+
+                const downsampledSize: [number, number] = [
+                    Math.round(context.width * DOWNSAMPLED_RATIO),
+                    Math.round(context.height * DOWNSAMPLED_RATIO),
+                ];
+                outputTexture1.resize(...downsampledSize);
+                outputBuffer1.colorTarget(0, outputTexture1);
+                outputTexture2.resize(...downsampledSize);
+                outputBuffer2.colorTarget(0, outputTexture2);
+
+                this.context.drawFramebuffer(outputBuffer1);
+                this._postProcess.resample(downsampledSize, renderFrameTexture);
+
+                this.context.drawFramebuffer(outputBuffer2);
+                this._postProcess.blur(outputTexture1, true, glow);
+                this.context.drawFramebuffer(outputBuffer1);
+                this._postProcess.blur(outputTexture2, false, glow);
+
+                outputTexture2.resize(context.width, context.height);
+                outputBuffer2.colorTarget(0, outputTexture2);
+
+                this.context.drawFramebuffer(outputBuffer2);
+                this._postProcess.resample([context.width, context.height], outputTexture1);
+
+                outputTexture1.resize(context.width, context.height);
+                outputBuffer1.colorTarget(0, outputTexture1);
+
+                this.context.drawFramebuffer(outputBuffer1);
+                this._postProcess.blur(outputTexture2, true, glow);
+                this.context.drawFramebuffer(outputBuffer2);
+                this._postProcess.blur(outputTexture1, false, glow);
+
+                context.defaultDrawFramebuffer();
+                this._postProcess.blend(renderFrameTexture, outputTexture2);
+            }
         }
 
-        if (this.picking && this.picking.enabled && this.picking.debugRender) {
+        if (isPicking && this.picking.debugRender) {
             this.picking.offscreenBuffer.blitToScreen(context);
         }
 
@@ -92,6 +150,7 @@ export class Graph extends EventEmitter.mixin(GraphPoints) implements Renderable
     }
 
     public resize(context: App): void {
+        this._renderBuffer.resize(context);
         if (this.picking) {
             this.picking.offscreenBuffer.resize(context);
         }
