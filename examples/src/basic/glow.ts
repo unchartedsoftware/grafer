@@ -20,21 +20,12 @@ export async function glow(container: HTMLElement): Promise<void> {
     const layers = [
         {
             nodes: { data: [
-                { point: 0 },
-                { point: 1 },
+                { point: 0, color: 'lime' },
+                { point: 1, color: 'teal' },
             ]},
-            labels: {
-                data: [
-                    { point: 0, label: 'glow' },
-                    { point: 1, label: 'glow' },
-                ],
-                options: {
-                    labelPlacement: graph.labels.PointLabelPlacement.TOP,
-                },
-            },
             edges: {
                 data: [
-                    { source: 0, target: 1 },
+                    { source: 0, target: 1, sourceColor: 'lime', targetColor: 'teal' },
                     { source: 1, target: 2 },
                     { source: 2, target: 0 },
                 ],
@@ -49,6 +40,8 @@ export async function glow(container: HTMLElement): Promise<void> {
             ]},
             labels: {
                 data: [
+                    { point: 0, label: 'glow' },
+                    { point: 1, label: 'glow' },
                     { point: 2, label: 'no glow' },
                     { point: 3, label: 'no glow' },
                 ],

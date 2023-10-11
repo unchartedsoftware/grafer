@@ -19,11 +19,12 @@ void main() {
     vec2 texSize = 1. / vec2(textureSize(uFrameTexture, 0).xy);
 
     float strength = mix(1.5, 3., uStrength);
-    vec3 result = texture(uFrameTexture, vUv).rgb * gaussian(0., strength);
+    vec4 inputSample = texture(uFrameTexture, vUv);
+    vec3 result = inputSample.rgb * gaussian(0., strength);
     for (int i = 1; i < 10; ++i) {
         result += texture(uFrameTexture, vUv + vec2(uDirection * texSize * float(i))).rgb * gaussian(float(i), strength);
         result += texture(uFrameTexture, vUv - vec2(uDirection * texSize * float(i))).rgb * gaussian(float(i), strength);
     }
 
-    fragColor = vec4(result, 1.0);
+    fragColor = vec4(result, inputSample.a);
 }

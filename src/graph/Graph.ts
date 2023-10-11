@@ -18,7 +18,6 @@ export type GraphEventsMap = { [K in keyof typeof kEvents]: ReturnType<() => { r
 
 // Configuration constants for Post Processing
 const DOWNSAMPLED_RATIO = 1/5; // determines the fraction of the full size texture dimensions to downsample to
-const MAX_BLUR_PASSES = 20; // determines the maximum number of blurring passes used when glow is most diffuse
 
 export class Graph extends EventEmitter.mixin(GraphPoints) implements Renderable {
     public static get events(): GraphEventsMap {
