@@ -5,7 +5,7 @@ import {Layer} from './Layer';
 import {GraphPoints, PointData, PointDataMappings} from '../data/GraphPoints';
 import {PickingManager} from '../UX/picking/PickingManager';
 import {EventEmitter} from '@dekkai/event-emitter/build/lib/EventEmitter';
-import { OffscreenBuffer } from 'src/renderer/OffscreenBuffer';
+import { OffscreenBuffer } from '../renderer/OffscreenBuffer';
 import { PostProcess } from '../renderer/PostProcess';
 
 const kEvents  = {
