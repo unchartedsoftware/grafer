@@ -188,7 +188,7 @@ export class PointLabel extends Nodes<LabelNodeData, GLLabelNodeTypes> {
 
         this.pickingHandler = this.handlePickingEvent.bind(this);
         this.pickingColors = this.pickingManager.allocatePickingColors(data.length);
-        this.pickingVBO = context.createVertexBuffer(PicoGL.UNSIGNED_BYTE, 4, this.pickingColors.colors);
+        this.pickingVBO = context.createVertexBuffer(PicoGL.FLOAT, 4, new Float32Array(this.pickingColors.colors));
 
         this.nodesVAO = context.createVertexArray().vertexAttributeBuffer(0, this.verticesVBO);
         this.configureTargetVAO(this.nodesVAO);
