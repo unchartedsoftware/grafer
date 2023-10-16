@@ -20,11 +20,11 @@ void main() {
 
     float strength = mix(1.5, 3., uStrength);
     vec4 inputSample = texture(uFrameTexture, vUv);
-    vec3 result = inputSample.rgb * gaussian(0., strength);
+    vec4 result = inputSample * gaussian(0., strength);
     for (int i = 1; i < 10; ++i) {
-        result += texture(uFrameTexture, vUv + vec2(uDirection * texSize * float(i))).rgb * gaussian(float(i), strength);
-        result += texture(uFrameTexture, vUv - vec2(uDirection * texSize * float(i))).rgb * gaussian(float(i), strength);
+        result += texture(uFrameTexture, vUv + vec2(uDirection * texSize * float(i))) * gaussian(float(i), strength);
+        result += texture(uFrameTexture, vUv - vec2(uDirection * texSize * float(i))) * gaussian(float(i), strength);
     }
 
-    fragColor = vec4(result, inputSample.a);
+    fragColor = result;
 }
