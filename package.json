@@ -51,7 +51,7 @@
         "@types/mocha": "8.2.2",
         "@types/resize-observer-browser": "0.1.8",
         "@typescript-eslint/eslint-plugin": "6.8.0",
-        "@typescript-eslint/parser": "4.27.0",
+        "@typescript-eslint/parser": "6.8.0",
         "chai": "4.3.10",
         "copy": "0.3.2",
         "esbuild": "0.12.9",
