@@ -204,7 +204,7 @@ export class GraferController extends EventEmitter {
         }
     }
 
-    public addLayerAt(layerData: GraferLayerData, name: string, enablePicking: boolean = true, useColors?: boolean, index?: number): void {
+    public addLayerAt(layerData: GraferLayerData, name: string, useColors?: boolean, index?: number): void {
         if( useColors && !this.hasColors ) {
             throw new Error('No colors found.');
         }
@@ -259,8 +259,8 @@ export class GraferController extends EventEmitter {
         }
     }
 
-    public addLayer(layerData: GraferLayerData, name: string, enablePicking: boolean = true, useColors?: boolean): void {
-        this.addLayerAt(layerData, name, enablePicking, useColors);
+    public addLayer(layerData: GraferLayerData, name: string, useColors?: boolean): void {
+        this.addLayerAt(layerData, name, useColors);
     }
 
     public removeLayerByName(name: string): void {
