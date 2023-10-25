@@ -72,6 +72,16 @@ Initiates a graph render using the [viewport method](./viewport.md#render).
 |  name  | string | A string serving as an identifier for the layer to be added. Should be unique. |
 |  useColors  | boolean - *optional* | A boolean indicating if the nodes, edges, and labels in the layer should use colors stored in the grafer controller during rendering, otherwise use colors specified in the layer data. |
 
+### `addLayerAt`
+###### void
+
+| Parameter  | Type | Description |
+| :--- | :--- | :--- |
+|  layerData  | GraferLayerData | An object containing lists of nodes, edges, and labels. See [GraferLayerData](./grafer-layer-data.md) for more information. |
+|  name  | string | A string serving as an identifier for the layer to be added. Should be unique. |
+|  useColors  | boolean - *optional* | A boolean indicating if the nodes, edges, and labels in the layer should use colors stored in the grafer controller during rendering, otherwise use colors specified in the layer data. |
+| index | number - *optional* | A numeric value indicating at which position in the layer list should this layer be inserted into. If the index is out of range (i.e. layer.length < index < 0)  then it will simply append it to the end as would calling [addLayer](#addlayer). |
+
 ### `removeLayerByName`
 ###### void
 
