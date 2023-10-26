@@ -30838,7 +30838,7 @@ var GraferController = class extends EventEmitter {
       }
     }
   }
-  addLayer(layerData, name, useColors) {
+  addLayerAt(layerData, name, useColors, index) {
     if (useColors && !this.hasColors) {
       throw new Error("No colors found.");
     }
@@ -30854,9 +30854,17 @@ var GraferController = class extends EventEmitter {
     const edges = this.addEdges(edgesData, nodes, useColors);
     const labelsData = layerData.labels;
     const labels = this.addLabels(labelsData, useColors);
+    const layerName = name || `Layer_${index || graph.layers.length}`;
+    if (graph.layers.filter((l) => l.name === layerName).length > 0) {
+      throw new Error("A layer of this name already exists, remove existing layer first or change the name of this one!");
+    }
     if (nodes || edges || labels) {
-      const layer = new Layer(nodes, edges, labels, name);
-      graph.layers.push(layer);
+      const layer = new Layer(nodes, edges, labels, layerName);
+      if (index >= 0 && index <= graph.layers.length) {
+        graph.addLayerAt(layer, index);
+      } else {
+        graph.addLayer(layer);
+      }
       layer.on(EventEmitter.omniEvent, (...args) => this.emit(...args));
       if ("options" in layerData) {
         const options = layerData.options;
@@ -30868,6 +30876,9 @@ var GraferController = class extends EventEmitter {
         }
       }
     }
+  }
+  addLayer(layerData, name, useColors) {
+    this.addLayerAt(layerData, name, useColors);
   }
   removeLayerByName(name) {
     const { layers } = this._viewport.graph;
