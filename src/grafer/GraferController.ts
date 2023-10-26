@@ -204,7 +204,7 @@ export class GraferController extends EventEmitter {
         }
     }
 
-    public addLayer(layerData: GraferLayerData, name: string, useColors?: boolean): void {
+    public addLayerAt(layerData: GraferLayerData, name: string, useColors?: boolean, index?: number): void {
         if( useColors && !this.hasColors ) {
             throw new Error('No colors found.');
         }
@@ -225,10 +225,27 @@ export class GraferController extends EventEmitter {
         const labelsData = layerData.labels;
         const labels = this.addLabels(labelsData, useColors);
 
+        // make sure to set a default layer name if not provided
+        const layerName = name || `Layer_${index || graph.layers.length}`;
+        // check if name already taken, otherwise it will silent replace
+        // existing layer which is a hidden side effect
+        if(graph.layers.filter(l => l.name === layerName).length > 0) {
+            throw new Error('A layer of this name already exists, remove existing layer first or change the name of this one!');
+        }
+
         if (nodes || edges || labels) {
-            const layer = new Layer(nodes, edges, labels, name);
-            graph.layers.push(layer);
-            layer.on(EventEmitter.omniEvent, (...args) => this.emit(...args));
+            const layer = new Layer(nodes, edges, labels, layerName);
+
+            if (index >= 0 && index <= graph.layers.length) {
+                graph.addLayerAt(layer, index);
+            } else {
+                graph.addLayer(layer);
+            }
+
+            // selectively disabling this on a per layer basis does not seem to work
+            // if (enablePicking) {
+                layer.on(EventEmitter.omniEvent, (...args) => this.emit(...args));
+            // }
 
             if ('options' in layerData) {
                 const options = layerData.options;
@@ -240,6 +257,10 @@ export class GraferController extends EventEmitter {
                 }
             }
         }
+    }
+
+    public addLayer(layerData: GraferLayerData, name: string, useColors?: boolean): void {
+        this.addLayerAt(layerData, name, useColors);
     }
 
     public removeLayerByName(name: string): void {
