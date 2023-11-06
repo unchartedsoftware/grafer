@@ -283,7 +283,7 @@ export class MouseHandler extends EventEmitter.mixin(UXModule) {
         }
 
         this.newState.valid = Boolean(
-            canvas[0] >= rect.left && canvas[0] <= rect.right &&
+            canvas[0] >= 0 && canvas[0] <= rect.right &&
             canvas[1] >= 0 && canvas[1] <= rect.height
         );
 
