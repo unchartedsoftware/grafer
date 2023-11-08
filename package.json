@@ -42,7 +42,7 @@
         "watch": "run-p 'watch:*'",
         "watch:scripts": "yarn build:all --watch",
         "watch:types": "yarn build:types --watch",
-        "postinstall": "husky install",
+        "_postinstall": "husky install",
         "postpack": "pinst --enable"
     },
     "devDependencies": {
