@@ -17643,7 +17643,7 @@ var MouseHandler = class extends EventEmitter.mixin(UXModule) {
     } else {
       vec2_exports.set(delta, 0, 0);
     }
-    this.newState.valid = Boolean(canvas[0] >= rect.left && canvas[0] <= rect.right && canvas[1] >= 0 && canvas[1] <= rect.height);
+    this.newState.valid = Boolean(canvas[0] >= 0 && canvas[0] <= rect.width && canvas[1] >= 0 && canvas[1] <= rect.height);
     this.newState.buttons.primary = Boolean(e.buttons & 1);
     this.newState.buttons.secondary = Boolean(e.buttons & 2);
     this.newState.buttons.auxiliary = Boolean(e.buttons & 4);
