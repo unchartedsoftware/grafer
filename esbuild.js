@@ -1,6 +1,6 @@
 import esbuild from 'esbuild';
 import yargs from 'yargs';
-import globby from 'globby';
+import { globbySync } from 'globby';
 import { glslify } from 'esbuild-plugin-glslify';
 import path from 'path';
 import copy from 'copy';
@@ -96,7 +96,7 @@ function getExamplesBuild(watch) {
 
 function getLibBuild(watch) {
     const input = [];
-    globby.sync([
+    globbySync([
         path.join('src/', '/**/*.{ts,js}'),
         `!${path.join('src/', '/**/*.d.ts')}`,
     ]).forEach(file => {
