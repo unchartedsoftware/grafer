@@ -1,7 +1,7 @@
 // disable lint rule to allow use of function hoisting
 /* eslint-disable  @typescript-eslint/no-use-before-define */
 
-import {html, render} from 'lit-html';
+import {html, render} from 'lit';
 import {GraferController, UX} from '../../../src/mod';
 
 export async function drag(container: HTMLElement): Promise<void> {
@@ -65,7 +65,7 @@ export async function drag(container: HTMLElement): Promise<void> {
         const rect = e.target.getBoundingClientRect();
         const x = e.clientX - rect.left; // x position within the element.
         const y = (rect.height - e.clientY) + rect.top; // y position within the element.
-    
+
         // get world space coordinates at cursor
         const newPointCoords = UX.coordinate.Coordinate.relativePixelCoordinateToWorldPoint(
             controller,

@@ -1,4 +1,4 @@
-import {html, render} from 'lit-html';
+import {html, render} from 'lit';
 import {GraferController} from '../../../src/mod';
 
 export async function nodeID(container: HTMLElement): Promise<void> {

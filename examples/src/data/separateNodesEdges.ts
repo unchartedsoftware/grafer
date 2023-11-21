@@ -1,4 +1,4 @@
-import {html, render} from 'lit-html';
+import {html, render} from 'lit';
 import {GraferController} from '../../../src/grafer/GraferController';
 
 export async function separateNodesEdges(container: HTMLElement): Promise<void> {

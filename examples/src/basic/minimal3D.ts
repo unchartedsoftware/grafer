@@ -1,4 +1,4 @@
-import {html, render} from 'lit-html';
+import {html, render} from 'lit';
 import {CameraMode} from '../../../src/renderer/mod';
 import {GraferController} from '../../../src/mod';
 

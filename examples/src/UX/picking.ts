@@ -1,4 +1,4 @@
-import {html, render} from 'lit-html';
+import {html, render} from 'lit';
 import {GraferController, UX} from '../../../src/mod';
 
 export async function picking(container: HTMLElement): Promise<void> {

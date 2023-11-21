@@ -1,4 +1,4 @@
-import {html, render} from 'lit-html';
+import {html, render} from 'lit';
 import {GraferController} from '../../../src/mod';
 
 function generateRandomPointData(startIndex: number, count: number): unknown[] {
