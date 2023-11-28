@@ -1,4 +1,4 @@
-import {html, render} from 'lit-html';
+import {html, render} from 'lit';
 import {GraferController, GraferEdgesData, GraferLayerData} from '../../../src/grafer/GraferController';
 import {GraferInputColor} from '../../../src/renderer/colors/ColorRegistry';
 

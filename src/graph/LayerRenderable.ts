@@ -55,7 +55,7 @@ export abstract class LayerRenderable<T_SRC, T_TGT> extends PointsReaderEmitter<
     }
 
     public get opaque(): boolean {
-        return this.localUniforms.uAlpha >= 1.0 || this.blendMode === LayerRenderableBlendMode.NONE;
+        return this.alpha >= 1.0 || this.blendMode === LayerRenderableBlendMode.NONE;
     }
 
     protected pickingManager: PickingManager;

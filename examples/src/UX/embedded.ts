@@ -1,4 +1,4 @@
-import {html, render} from 'lit-html';
+import {html, render} from 'lit';
 import { mat4, vec4, vec2 } from 'gl-matrix';
 import {GraferController, UX} from '../../../src/mod';
 

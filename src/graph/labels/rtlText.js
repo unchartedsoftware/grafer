@@ -1,10 +1,12 @@
+/* eslint-disable */
+
 /*
     Copied from https://github.com/mapbox/mapbox-gl-rtl-text/blob/main/mapbox-gl-rtl-text.js
     Node and Shell loaders removed to prevent build errors
     Functions applyArabicShaping, processBidirectionalText, and processStyledBidirectionalText exported
-*/
 
-/* eslint-disable */
+    mapbox-gl-rtl-text copyright (c) 2017 Mapbox.
+*/
 
 var Module = {
     TOTAL_MEMORY: 8*1024*1024,
@@ -9037,8 +9039,8 @@ var Module = {
   Module['noExitRuntime'] = true;
   run();
   'use strict';
-  
-  
+
+
   /**
    * Takes logical input and replaces Arabic characters with the "presentation form"
    * of their initial/medial/final forms, based on their order in the input.
@@ -9051,66 +9053,66 @@ var Module = {
   export function applyArabicShaping(input) {
       if (!input)
           { return input; }
-  
+
       var nDataBytes = (input.length + 1) * 2;
       var stringInputPtr = Module._malloc(nDataBytes);
       Module.stringToUTF16(input, stringInputPtr, nDataBytes);
       var returnStringPtr = Module.ccall('ushape_arabic', 'number', ['number', 'number'], [stringInputPtr, input.length]);
       Module._free(stringInputPtr);
-  
+
       if (returnStringPtr === 0)
           { return input; }
-  
+
       var result = Module.UTF16ToString(returnStringPtr);
       Module._free(returnStringPtr);
-  
+
       return result;
   }
-  
+
   function mergeParagraphLineBreakPoints(lineBreakPoints, paragraphCount) {
       var mergedParagraphLineBreakPoints = [];
-  
+
       for (var i = 0; i < paragraphCount; i++) {
           var paragraphEndIndex = Module.ccall('bidi_getParagraphEndIndex', 'number', ['number'], [i]);
           // TODO: Handle error?
-  
+
           for (var i$1 = 0, list = lineBreakPoints; i$1 < list.length; i$1 += 1) {
               var lineBreakPoint = list[i$1];
-  
+
               if (lineBreakPoint < paragraphEndIndex &&
                   (!mergedParagraphLineBreakPoints[mergedParagraphLineBreakPoints.length - 1] || lineBreakPoint > mergedParagraphLineBreakPoints[mergedParagraphLineBreakPoints.length - 1]))
                   { mergedParagraphLineBreakPoints.push(lineBreakPoint); }
           }
           mergedParagraphLineBreakPoints.push(paragraphEndIndex);
       }
-  
+
       for (var i$2 = 0, list$1 = lineBreakPoints; i$2 < list$1.length; i$2 += 1) {
           var lineBreakPoint$1 = list$1[i$2];
-  
+
           if (lineBreakPoint$1 > mergedParagraphLineBreakPoints[mergedParagraphLineBreakPoints.length - 1])
               { mergedParagraphLineBreakPoints.push(lineBreakPoint$1); }
       }
-  
+
       return mergedParagraphLineBreakPoints;
   }
-  
+
   // This function is stateful: it sets a static BiDi paragaph object
   // on the "native" side
   function setParagraph(input, stringInputPtr, nDataBytes) {
       if (!input) {
           return null;
       }
-  
+
       Module.stringToUTF16(input, stringInputPtr, nDataBytes);
       var paragraphCount = Module.ccall('bidi_processText', 'number', ['number', 'number'], [stringInputPtr, input.length]);
-  
+
       if (paragraphCount === 0) {
           Module._free(stringInputPtr);
           return null;
       }
       return paragraphCount;
   }
-  
+
   /**
    * Takes input text in logical order and applies the BiDi algorithm using the chosen
    * line break point to generate a set of lines with the characters re-arranged into
@@ -9128,47 +9130,47 @@ var Module = {
       if (!paragraphCount) {
           return [input];
       }
-  
+
       var mergedParagraphLineBreakPoints = mergeParagraphLineBreakPoints(lineBreakPoints, paragraphCount);
-  
+
       var lineStartIndex = 0;
       var lines = [];
-  
+
       for (var i = 0, list = mergedParagraphLineBreakPoints; i < list.length; i += 1) {
           var lineBreakPoint = list[i];
-  
+
           var returnStringPtr = Module.ccall('bidi_getLine', 'number', ['number', 'number'], [lineStartIndex, lineBreakPoint]);
-  
+
           if (returnStringPtr === 0) {
               Module._free(stringInputPtr);
               return []; // TODO: throw exception?
           }
-  
+
           lines.push(Module.UTF16ToString(returnStringPtr));
           Module._free(returnStringPtr);
-  
+
           lineStartIndex = lineBreakPoint;
       }
-  
+
       Module._free(stringInputPtr); // Input string must live until getLine calls are finished
-  
+
       return lines;
   }
-  
+
   function createInt32Ptr() {
       return Module._malloc(4);
   }
-  
+
   function consumeInt32Ptr(ptr) {
       var heapView = new Int32Array(Module.HEAPU8.buffer, ptr, 1);
       var result = heapView[0];
       Module._free(ptr);
       return result;
   }
-  
+
   function writeReverse(stringInputPtr, logicalStart, logicalEnd) {
       var returnStringPtr = Module.ccall('bidi_writeReverse', 'number', ['number', 'number', 'number'], [stringInputPtr, logicalStart, logicalEnd - logicalStart]);
-  
+
       if (returnStringPtr === 0) {
           return null;
       }
@@ -9176,7 +9178,7 @@ var Module = {
       Module._free(returnStringPtr);
       return reversed;
   }
-  
+
   /**
    * Takes input text in logical order and applies the BiDi algorithm using the chosen
    * line break point to generate a set of lines with the characters re-arranged into
@@ -9202,29 +9204,29 @@ var Module = {
       if (!paragraphCount) {
           return [{text: text, styleIndices: styleIndices}];
       }
-  
+
       var mergedParagraphLineBreakPoints = mergeParagraphLineBreakPoints(lineBreakPoints, paragraphCount);
-  
+
       var lineStartIndex = 0;
       var lines = [];
-  
+
       for (var i$1 = 0, list = mergedParagraphLineBreakPoints; i$1 < list.length; i$1 += 1) {
           var lineBreakPoint = list[i$1];
-  
+
           var lineText = "";
           var lineStyleIndices = [];
           var runCount = Module.ccall('bidi_setLine', 'number', ['number', 'number'], [lineStartIndex, lineBreakPoint]);
-  
+
           if (!runCount) {
               Module._free(stringInputPtr);
               return []; // TODO: throw exception?
           }
-  
+
           for (var i = 0; i < runCount; i++) {
               var logicalStartPtr = createInt32Ptr();
               var logicalLengthPtr = createInt32Ptr();
               var isReversed = Module.ccall('bidi_getVisualRun', 'number', ['number', 'number', 'number'], [i, logicalStartPtr, logicalLengthPtr]);
-  
+
               var logicalStart = lineStartIndex + consumeInt32Ptr(logicalStartPtr);
               var logicalLength = consumeInt32Ptr(logicalLengthPtr);
               var logicalEnd = logicalStart + logicalLength;
@@ -9250,18 +9252,18 @@ var Module = {
                           styleRunStart = styleRunEnd;
                       }
                   }
-  
+
               } else {
                   lineText += text.substring(logicalStart, logicalEnd);
                   lineStyleIndices = lineStyleIndices.concat(styleIndices.slice(logicalStart, logicalEnd));
               }
           }
-  
+
           lines.push([lineText, lineStyleIndices]);
           lineStartIndex = lineBreakPoint;
       }
-  
+
       Module._free(stringInputPtr); // Input string must live until getLine calls are finished
-  
+
       return lines;
   }

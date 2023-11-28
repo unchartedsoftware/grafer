@@ -1,4 +1,5 @@
-import {css, CSSResult, customElement, html, LitElement} from 'lit-element';
+import {css, CSSResult, html, LitElement} from 'lit';
+import { customElement } from 'lit/decorators.js';
 
 @customElement('mouse-interactions')
 export class MouseInteractions extends LitElement {

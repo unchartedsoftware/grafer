@@ -1,4 +1,4 @@
-import {html, render} from 'lit-html';
+import {html, render} from 'lit';
 import {AnimationManager} from 'src/UX/animation/AnimationManager';
 import {GraferController, UX} from '../../../src/mod';
 

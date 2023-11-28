@@ -1,4 +1,4 @@
-import {html, render} from 'lit-html';
+import { html, render } from "lit";
 import {GraferController, graph} from '../../../src/mod';
 
 export async function glow(container: HTMLElement): Promise<void> {

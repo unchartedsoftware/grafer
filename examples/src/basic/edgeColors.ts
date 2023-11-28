@@ -1,4 +1,4 @@
-import {html, render} from 'lit-html';
+import {html, render} from 'lit';
 import {GraferController} from '../../../src/mod';
 
 export async function edgeColors(container: HTMLElement): Promise<void> {

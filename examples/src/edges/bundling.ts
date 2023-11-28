@@ -1,4 +1,4 @@
-import {html, render} from 'lit-html';
+import {html, render} from 'lit';
 import {GraferController} from '../../../src/grafer/GraferController';
 
 function createClusterNodePoints(cluster: string, x: number, y: number, r: number, count: number): any[] {

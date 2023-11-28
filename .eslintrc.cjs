@@ -29,16 +29,15 @@ module.exports = {
             ],
 
             rules: {
-                '@typescript-eslint/no-parameter-properties': 2,
-                '@typescript-eslint/no-explicit-any': 0,
-                '@typescript-eslint/no-var-requires': 2,
-                '@typescript-eslint/no-non-null-assertion': 2,
-                '@typescript-eslint/no-use-before-define': 2,
-                '@typescript-eslint/camelcase': 0,
-                '@typescript-eslint/no-empty-interface': 2,
-                '@typescript-eslint/explicit-function-return-type': 2,
-                '@typescript-eslint/ban-ts-ignore': 0,
-                '@typescript-eslint/no-inferrable-types': [2, {
+                '@typescript-eslint/no-explicit-any': 'off',
+                '@typescript-eslint/no-var-requires': 'error',
+                '@typescript-eslint/no-non-null-assertion': 'error',
+                '@typescript-eslint/no-use-before-define': 'error',
+                '@typescript-eslint/camelcase': 'off',
+                '@typescript-eslint/no-empty-interface': 'error',
+                '@typescript-eslint/explicit-function-return-type': 'error',
+                '@typescript-eslint/ban-ts-ignore': 'off',
+                '@typescript-eslint/no-inferrable-types': ['error', {
                     ignoreParameters: true,
                     ignoreProperties: true,
                 }],
@@ -53,8 +52,8 @@ module.exports = {
             ],
 
             rules: {
-                'import/no-namespace': 0,
-                'import/prefer-default-export': 0,
+                'import/no-namespace': 'off',
+                'import/prefer-default-export': 'off',
             },
         },
     ],
@@ -63,7 +62,7 @@ module.exports = {
         'no-console': process.env.NODE_ENV === 'production' ? 'err' : 'warn',
         'no-debugger': process.env.NODE_ENV === 'production' ? 'err' : 'warn',
         // enforce comma dangle
-        'comma-dangle': [2, {
+        'comma-dangle': ['error', {
             arrays: 'always-multiline',
             objects: 'always-multiline',
             imports: 'always-multiline',
@@ -71,8 +70,8 @@ module.exports = {
             functions: 'never'
         }],
         // semicolon stuff
-        'no-extra-semi': 2,
-        'semi-spacing': [1, { before: false, after: true }],
-        semi: [1, 'always'],
+        'no-extra-semi': 'error',
+        'semi-spacing': ['warn', { before: false, after: true }],
+        semi: ['warn', 'always'],
     },
 };

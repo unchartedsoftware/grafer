@@ -1,4 +1,4 @@
-import {html, render} from 'lit-html';
+import {html, render} from 'lit';
 import {GraferController, GraferControllerOptions, renderer} from '../../../src/mod';
 
 function getRandomColor(): string {
