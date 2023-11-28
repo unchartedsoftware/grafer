@@ -4,35 +4,36 @@ var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
 var __getOwnPropNames = Object.getOwnPropertyNames;
 var __getProtoOf = Object.getPrototypeOf;
 var __hasOwnProp = Object.prototype.hasOwnProperty;
-var __markAsModule = (target) => __defProp(target, "__esModule", { value: true });
-var __require = (x) => {
+var __require = /* @__PURE__ */ ((x2) => typeof require !== "undefined" ? require : typeof Proxy !== "undefined" ? new Proxy(x2, {
+  get: (a3, b3) => (typeof require !== "undefined" ? require : a3)[b3]
+}) : x2)(function(x2) {
   if (typeof require !== "undefined")
-    return require(x);
-  throw new Error('Dynamic require of "' + x + '" is not supported');
-};
+    return require.apply(this, arguments);
+  throw new Error('Dynamic require of "' + x2 + '" is not supported');
+});
 var __commonJS = (cb, mod) => function __require2() {
-  return mod || (0, cb[Object.keys(cb)[0]])((mod = { exports: {} }).exports, mod), mod.exports;
+  return mod || (0, cb[__getOwnPropNames(cb)[0]])((mod = { exports: {} }).exports, mod), mod.exports;
 };
 var __export = (target, all) => {
-  __markAsModule(target);
   for (var name in all)
     __defProp(target, name, { get: all[name], enumerable: true });
 };
-var __reExport = (target, module, desc) => {
-  if (module && typeof module === "object" || typeof module === "function") {
-    for (let key2 of __getOwnPropNames(module))
-      if (!__hasOwnProp.call(target, key2) && key2 !== "default")
-        __defProp(target, key2, { get: () => module[key2], enumerable: !(desc = __getOwnPropDesc(module, key2)) || desc.enumerable });
+var __copyProps = (to, from, except, desc) => {
+  if (from && typeof from === "object" || typeof from === "function") {
+    for (let key2 of __getOwnPropNames(from))
+      if (!__hasOwnProp.call(to, key2) && key2 !== except)
+        __defProp(to, key2, { get: () => from[key2], enumerable: !(desc = __getOwnPropDesc(from, key2)) || desc.enumerable });
   }
-  return target;
+  return to;
 };
-var __toModule = (module) => {
-  return __reExport(__markAsModule(__defProp(module != null ? __create(__getProtoOf(module)) : {}, "default", module && module.__esModule && "default" in module ? { get: () => module.default, enumerable: true } : { value: module, enumerable: true })), module);
-};
+var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__getProtoOf(mod)) : {}, __copyProps(
+  isNodeMode || !mod || !mod.__esModule ? __defProp(target, "default", { value: mod, enumerable: true }) : target,
+  mod
+));
 var __decorateClass = (decorators, target, key2, kind) => {
   var result = kind > 1 ? void 0 : kind ? __getOwnPropDesc(target, key2) : target;
-  for (var i = decorators.length - 1, decorator; i >= 0; i--)
-    if (decorator = decorators[i])
+  for (var i4 = decorators.length - 1, decorator; i4 >= 0; i4--)
+    if (decorator = decorators[i4])
       result = (kind ? decorator(target, key2, result) : decorator(result)) || result;
   if (kind && result)
     __defProp(target, key2, result);
@@ -87,7 +88,7 @@ var require_tweakpane = __commonJS({
             return value;
           if (mode & 4 && typeof value === "object" && value && value.__esModule)
             return value;
-          var ns = Object.create(null);
+          var ns = /* @__PURE__ */ Object.create(null);
           __webpack_require__.r(ns);
           Object.defineProperty(ns, "default", { enumerable: true, value });
           if (mode & 2 && typeof value != "string")
@@ -129,13 +130,13 @@ var require_tweakpane = __commonJS({
               if (typeof modules === "string")
                 modules = [[null, modules, ""]];
               var alreadyImportedModules = {};
-              for (var i = 0; i < this.length; i++) {
-                var id = this[i][0];
+              for (var i4 = 0; i4 < this.length; i4++) {
+                var id = this[i4][0];
                 if (typeof id === "number")
                   alreadyImportedModules[id] = true;
               }
-              for (i = 0; i < modules.length; i++) {
-                var item = modules[i];
+              for (i4 = 0; i4 < modules.length; i4++) {
+                var item = modules[i4];
                 if (typeof item[0] !== "number" || !alreadyImportedModules[item[0]]) {
                   if (mediaQuery && !item[2]) {
                     item[2] = mediaQuery;
@@ -186,7 +187,7 @@ var require_tweakpane = __commonJS({
               } else {
                 cachedSetTimeout = defaultSetTimout;
               }
-            } catch (e) {
+            } catch (e5) {
               cachedSetTimeout = defaultSetTimout;
             }
             try {
@@ -195,7 +196,7 @@ var require_tweakpane = __commonJS({
               } else {
                 cachedClearTimeout = defaultClearTimeout;
               }
-            } catch (e) {
+            } catch (e5) {
               cachedClearTimeout = defaultClearTimeout;
             }
           })();
@@ -209,29 +210,29 @@ var require_tweakpane = __commonJS({
             }
             try {
               return cachedSetTimeout(fun, 0);
-            } catch (e) {
+            } catch (e5) {
               try {
                 return cachedSetTimeout.call(null, fun, 0);
-              } catch (e2) {
+              } catch (e6) {
                 return cachedSetTimeout.call(this, fun, 0);
               }
             }
           }
-          function runClearTimeout(marker2) {
+          function runClearTimeout(marker) {
             if (cachedClearTimeout === clearTimeout) {
-              return clearTimeout(marker2);
+              return clearTimeout(marker);
             }
             if ((cachedClearTimeout === defaultClearTimeout || !cachedClearTimeout) && clearTimeout) {
               cachedClearTimeout = clearTimeout;
-              return clearTimeout(marker2);
+              return clearTimeout(marker);
             }
             try {
-              return cachedClearTimeout(marker2);
-            } catch (e) {
+              return cachedClearTimeout(marker);
+            } catch (e5) {
               try {
-                return cachedClearTimeout.call(null, marker2);
-              } catch (e2) {
-                return cachedClearTimeout.call(this, marker2);
+                return cachedClearTimeout.call(null, marker);
+              } catch (e6) {
+                return cachedClearTimeout.call(this, marker);
               }
             }
           }
@@ -278,8 +279,8 @@ var require_tweakpane = __commonJS({
           process2.nextTick = function(fun) {
             var args = new Array(arguments.length - 1);
             if (arguments.length > 1) {
-              for (var i = 1; i < arguments.length; i++) {
-                args[i - 1] = arguments[i];
+              for (var i4 = 1; i4 < arguments.length; i4++) {
+                args[i4 - 1] = arguments[i4];
               }
             }
             queue.push(new Item(fun, args));
@@ -361,8 +362,8 @@ var require_tweakpane = __commonJS({
           "use strict";
           Object.defineProperty(exports2, "__esModule", { value: true });
           exports2.folder = exports2.monitor = exports2.input = void 0;
-          function input(_a2) {
-            var binding = _a2.binding, eventName = _a2.eventName, handler = _a2.handler;
+          function input(_a6) {
+            var binding = _a6.binding, eventName = _a6.eventName, handler = _a6.handler;
             if (eventName === "change") {
               var emitter = binding.emitter;
               emitter.on("change", function(ev) {
@@ -371,8 +372,8 @@ var require_tweakpane = __commonJS({
             }
           }
           exports2.input = input;
-          function monitor(_a2) {
-            var binding = _a2.binding, eventName = _a2.eventName, handler = _a2.handler;
+          function monitor(_a6) {
+            var binding = _a6.binding, eventName = _a6.eventName, handler = _a6.handler;
             if (eventName === "update") {
               var emitter = binding.emitter;
               emitter.on("update", function(ev) {
@@ -381,8 +382,8 @@ var require_tweakpane = __commonJS({
             }
           }
           exports2.monitor = monitor;
-          function folder(_a2) {
-            var eventName = _a2.eventName, folder2 = _a2.folder, handler = _a2.handler, uiContainer = _a2.uiContainer;
+          function folder(_a6) {
+            var eventName = _a6.eventName, folder2 = _a6.folder, handler = _a6.handler, uiContainer = _a6.uiContainer;
             if (eventName === "change") {
               var emitter = uiContainer.emitter;
               emitter.on("inputchange", function(ev) {
@@ -412,14 +413,14 @@ var require_tweakpane = __commonJS({
         "./src/main/js/api/folder.ts": function(module2, exports2, __webpack_require__) {
           "use strict";
           var __assign = this && this.__assign || function() {
-            __assign = Object.assign || function(t) {
-              for (var s, i = 1, n = arguments.length; i < n; i++) {
-                s = arguments[i];
-                for (var p in s)
-                  if (Object.prototype.hasOwnProperty.call(s, p))
-                    t[p] = s[p];
+            __assign = Object.assign || function(t4) {
+              for (var s4, i4 = 1, n5 = arguments.length; i4 < n5; i4++) {
+                s4 = arguments[i4];
+                for (var p3 in s4)
+                  if (Object.prototype.hasOwnProperty.call(s4, p3))
+                    t4[p3] = s4[p3];
               }
-              return t;
+              return t4;
             };
             return __assign.apply(this, arguments);
           };
@@ -587,8 +588,8 @@ var require_tweakpane = __commonJS({
           exports2.importJson = exports2.exportJson = void 0;
           function exportJson(targets) {
             return targets.reduce(function(result, target) {
-              var _a2;
-              return Object.assign(result, (_a2 = {}, _a2[target.presetKey] = target.read(), _a2));
+              var _a6;
+              return Object.assign(result, (_a6 = {}, _a6[target.presetKey] = target.read(), _a6));
             }, {});
           }
           exports2.exportJson = exportJson;
@@ -605,14 +606,14 @@ var require_tweakpane = __commonJS({
         "./src/main/js/api/root.ts": function(module2, exports2, __webpack_require__) {
           "use strict";
           var __assign = this && this.__assign || function() {
-            __assign = Object.assign || function(t) {
-              for (var s, i = 1, n = arguments.length; i < n; i++) {
-                s = arguments[i];
-                for (var p in s)
-                  if (Object.prototype.hasOwnProperty.call(s, p))
-                    t[p] = s[p];
+            __assign = Object.assign || function(t4) {
+              for (var s4, i4 = 1, n5 = arguments.length; i4 < n5; i4++) {
+                s4 = arguments[i4];
+                for (var p3 in s4)
+                  if (Object.prototype.hasOwnProperty.call(s4, p3))
+                    t4[p3] = s4[p3];
               }
-              return t;
+              return t4;
             };
             return __assign.apply(this, arguments);
           };
@@ -828,7 +829,7 @@ var require_tweakpane = __commonJS({
                 this.value.append(this.reader_(targetValue));
               }
             };
-            MonitorBinding2.prototype.onTick_ = function(_) {
+            MonitorBinding2.prototype.onTick_ = function(_2) {
               this.read();
             };
             MonitorBinding2.prototype.onValueUpdate_ = function(ev) {
@@ -857,8 +858,8 @@ var require_tweakpane = __commonJS({
               configurable: true
             });
             CompositeConstraint2.prototype.constrain = function(value) {
-              return this.constraints_.reduce(function(result, c) {
-                return c.constrain(result);
+              return this.constraints_.reduce(function(result, c4) {
+                return c4.constrain(result);
               }, value);
             };
             return CompositeConstraint2;
@@ -944,8 +945,8 @@ var require_tweakpane = __commonJS({
               this.step = config.step;
             }
             StepConstraint2.prototype.constrain = function(value) {
-              var r = value < 0 ? -Math.round(-value / this.step) : Math.round(value / this.step);
-              return r * this.step;
+              var r5 = value < 0 ? -Math.round(-value / this.step) : Math.round(value / this.step);
+              return r5 * this.step;
             };
             return StepConstraint2;
           }();
@@ -957,12 +958,12 @@ var require_tweakpane = __commonJS({
           exports2.ConstraintUtil = void 0;
           var composite_1 = __webpack_require__("./src/main/js/constraint/composite.ts");
           exports2.ConstraintUtil = {
-            findConstraint: function(c, constraintClass) {
-              if (c instanceof constraintClass) {
-                return c;
+            findConstraint: function(c4, constraintClass) {
+              if (c4 instanceof constraintClass) {
+                return c4;
               }
-              if (c instanceof composite_1.CompositeConstraint) {
-                var result = c.constraints.reduce(function(tmpResult, sc) {
+              if (c4 instanceof composite_1.CompositeConstraint) {
+                var result = c4.constraints.reduce(function(tmpResult, sc) {
                   if (tmpResult) {
                     return tmpResult;
                   }
@@ -1003,8 +1004,8 @@ var require_tweakpane = __commonJS({
             });
           }
           function createController(document2, value) {
-            var c = value.constraint;
-            if (c && util_1.ConstraintUtil.findConstraint(c, list_1.ListConstraint)) {
+            var c4 = value.constraint;
+            if (c4 && util_1.ConstraintUtil.findConstraint(c4, list_1.ListConstraint)) {
               return new list_2.ListInputController(document2, {
                 viewModel: new view_model_1.ViewModel(),
                 stringifyValue: BooleanConverter.toString,
@@ -1026,8 +1027,8 @@ var require_tweakpane = __commonJS({
               reader: BooleanConverter.fromMixed,
               target,
               value,
-              writer: function(v) {
-                return v;
+              writer: function(v2) {
+                return v2;
               }
             });
             return new input_binding_1.InputBindingController(document2, {
@@ -1321,15 +1322,15 @@ var require_tweakpane = __commonJS({
             });
           }
           function createController(document2, value) {
-            var c = value.constraint;
-            if (c && util_1.ConstraintUtil.findConstraint(c, list_1.ListConstraint)) {
+            var c4 = value.constraint;
+            if (c4 && util_1.ConstraintUtil.findConstraint(c4, list_1.ListConstraint)) {
               return new list_2.ListInputController(document2, {
                 stringifyValue: NumberConverter.toString,
                 value,
                 viewModel: new view_model_1.ViewModel()
               });
             }
-            if (c && util_1.ConstraintUtil.findConstraint(c, range_1.RangeConstraint)) {
+            if (c4 && util_1.ConstraintUtil.findConstraint(c4, range_1.RangeConstraint)) {
               return new slider_text_1.SliderTextInputController(document2, {
                 formatter: new number_1.NumberFormatter(UiUtil.getSuitableDecimalDigits(value.constraint, value.rawValue)),
                 parser: string_number_1.StringNumberParser,
@@ -1354,8 +1355,8 @@ var require_tweakpane = __commonJS({
               reader: NumberConverter.fromMixed,
               target,
               value,
-              writer: function(v) {
-                return v;
+              writer: function(v2) {
+                return v2;
               }
             });
             var controller = createController(document2, value);
@@ -1486,8 +1487,8 @@ var require_tweakpane = __commonJS({
             });
           }
           function createController(document2, value, invertsY) {
-            var c = value.constraint;
-            if (!(c instanceof point_2d_1.Point2dConstraint)) {
+            var c4 = value.constraint;
+            if (!(c4 instanceof point_2d_1.Point2dConstraint)) {
               throw pane_error_1.PaneError.shouldNeverHappen();
             }
             return new point_2d_pad_text_1.Point2dPadTextInputController(document2, {
@@ -1495,23 +1496,23 @@ var require_tweakpane = __commonJS({
               parser: string_number_1.StringNumberParser,
               value,
               viewModel: new view_model_1.ViewModel(),
-              xFormatter: new number_1.NumberFormatter(UiUtil.getSuitableDecimalDigits(c.xConstraint, value.rawValue.x)),
-              yFormatter: new number_1.NumberFormatter(UiUtil.getSuitableDecimalDigits(c.yConstraint, value.rawValue.y))
+              xFormatter: new number_1.NumberFormatter(UiUtil.getSuitableDecimalDigits(c4.xConstraint, value.rawValue.x)),
+              yFormatter: new number_1.NumberFormatter(UiUtil.getSuitableDecimalDigits(c4.yConstraint, value.rawValue.y))
             });
           }
           function create7(document2, target, params) {
             var initialValue = target.read();
-            var p = any_point_2d_1.AnyPoint2dParser(initialValue);
-            if (!p) {
+            var p3 = any_point_2d_1.AnyPoint2dParser(initialValue);
+            if (!p3) {
               return null;
             }
-            var value = new input_value_1.InputValue(p, createConstraint(params));
+            var value = new input_value_1.InputValue(p3, createConstraint(params));
             var binding = new input_1.InputBinding({
               reader: Point2dConverter.fromMixed,
               target,
               value,
-              writer: function(v) {
-                return v.toObject();
+              writer: function(v2) {
+                return v2.toObject();
               }
             });
             var yParams = "y" in params ? params.y : void 0;
@@ -1553,8 +1554,8 @@ var require_tweakpane = __commonJS({
             });
           }
           function createController(document2, value) {
-            var c = value.constraint;
-            if (c && util_1.ConstraintUtil.findConstraint(c, list_1.ListConstraint)) {
+            var c4 = value.constraint;
+            if (c4 && util_1.ConstraintUtil.findConstraint(c4, list_1.ListConstraint)) {
               return new list_2.ListInputController(document2, {
                 stringifyValue: StringConverter.toString,
                 value,
@@ -1578,8 +1579,8 @@ var require_tweakpane = __commonJS({
               reader: StringConverter.fromMixed,
               target,
               value,
-              writer: function(v) {
-                return v;
+              writer: function(v2) {
+                return v2;
               }
             });
             var controller = createController(document2, value);
@@ -1775,10 +1776,10 @@ var require_tweakpane = __commonJS({
               DomUtil.insertElementAt(this.view.containerElement, ev.uiController.view.element, ev.index);
               this.applyUiContainerChange_();
             };
-            FolderController2.prototype.onUiContainerRemove_ = function(_) {
+            FolderController2.prototype.onUiContainerRemove_ = function(_2) {
               this.applyUiContainerChange_();
             };
-            FolderController2.prototype.onUiContainerItemLayout_ = function(_) {
+            FolderController2.prototype.onUiContainerItemLayout_ = function(_2) {
               this.applyUiContainerChange_();
             };
             FolderController2.prototype.onContainerTransitionEnd_ = function(ev) {
@@ -1844,11 +1845,11 @@ var require_tweakpane = __commonJS({
               this.ptHandler_.emitter.on("up", this.onPointerUp_);
               this.view.element.addEventListener("keydown", this.onKeyDown_);
             }
-            APaletteInputController2.prototype.handlePointerEvent_ = function(d) {
-              var alpha = d.px;
-              var c = this.value.rawValue;
-              var _a2 = c.getComponents("hsv"), h = _a2[0], s = _a2[1], v = _a2[2];
-              this.value.rawValue = new color_1.Color([h, s, v, alpha], "hsv");
+            APaletteInputController2.prototype.handlePointerEvent_ = function(d3) {
+              var alpha = d3.px;
+              var c4 = this.value.rawValue;
+              var _a6 = c4.getComponents("hsv"), h3 = _a6[0], s4 = _a6[1], v2 = _a6[2];
+              this.value.rawValue = new color_1.Color([h3, s4, v2, alpha], "hsv");
               this.view.update();
             };
             APaletteInputController2.prototype.onPointerDown_ = function(ev) {
@@ -1862,9 +1863,9 @@ var require_tweakpane = __commonJS({
             };
             APaletteInputController2.prototype.onKeyDown_ = function(ev) {
               var step = UiUtil.getStepForKey(UiUtil.getBaseStepForColor(true), UiUtil.getHorizontalStepKeys(ev));
-              var c = this.value.rawValue;
-              var _a2 = c.getComponents("hsv"), h = _a2[0], s = _a2[1], v = _a2[2], a = _a2[3];
-              this.value.rawValue = new color_1.Color([h, s, v, a + step], "hsv");
+              var c4 = this.value.rawValue;
+              var _a6 = c4.getComponents("hsv"), h3 = _a6[0], s4 = _a6[1], v2 = _a6[2], a3 = _a6[3];
+              this.value.rawValue = new color_1.Color([h3, s4, v2, a3 + step], "hsv");
             };
             return APaletteInputController2;
           }();
@@ -1887,8 +1888,8 @@ var require_tweakpane = __commonJS({
               });
               this.view.inputElement.addEventListener("change", this.onInputChange_);
             }
-            CheckboxInputController2.prototype.onInputChange_ = function(e) {
-              var inputElem = type_util_1.TypeUtil.forceCast(e.currentTarget);
+            CheckboxInputController2.prototype.onInputChange_ = function(e5) {
+              var inputElem = type_util_1.TypeUtil.forceCast(e5.currentTarget);
               this.value.rawValue = inputElem.checked;
               this.view.update();
             };
@@ -1932,9 +1933,9 @@ var require_tweakpane = __commonJS({
             });
             ColorComponentTextsInputController2.prototype.findIndexOfInputElem_ = function(inputElem) {
               var inputElems = this.view.inputElements;
-              for (var i = 0; i < inputElems.length; i++) {
-                if (inputElems[i] === inputElem) {
-                  return i;
+              for (var i4 = 0; i4 < inputElems.length; i4++) {
+                if (inputElems[i4] === inputElem) {
+                  return i4;
                 }
               }
               return null;
@@ -1942,14 +1943,14 @@ var require_tweakpane = __commonJS({
             ColorComponentTextsInputController2.prototype.updateComponent_ = function(index, newValue) {
               var mode = this.pickedColor.mode;
               var comps = this.value.rawValue.getComponents(mode);
-              var newComps = comps.map(function(comp, i) {
-                return i === index ? newValue : comp;
+              var newComps = comps.map(function(comp, i4) {
+                return i4 === index ? newValue : comp;
               });
               this.value.rawValue = new color_1.Color(newComps, mode);
               this.view.update();
             };
-            ColorComponentTextsInputController2.prototype.onInputChange_ = function(e) {
-              var inputElem = type_util_1.TypeUtil.forceCast(e.currentTarget);
+            ColorComponentTextsInputController2.prototype.onInputChange_ = function(e5) {
+              var inputElem = type_util_1.TypeUtil.forceCast(e5.currentTarget);
               var parsedValue = this.parser_(inputElem.value);
               if (type_util_1.TypeUtil.isEmpty(parsedValue)) {
                 return;
@@ -1960,13 +1961,13 @@ var require_tweakpane = __commonJS({
               }
               this.updateComponent_(compIndex, parsedValue);
             };
-            ColorComponentTextsInputController2.prototype.onInputKeyDown_ = function(e) {
-              var compIndex = this.findIndexOfInputElem_(e.currentTarget);
-              var step = UiUtil.getStepForKey(UiUtil.getBaseStepForColor(compIndex === 3), UiUtil.getVerticalStepKeys(e));
+            ColorComponentTextsInputController2.prototype.onInputKeyDown_ = function(e5) {
+              var compIndex = this.findIndexOfInputElem_(e5.currentTarget);
+              var step = UiUtil.getStepForKey(UiUtil.getBaseStepForColor(compIndex === 3), UiUtil.getVerticalStepKeys(e5));
               if (step === 0) {
                 return;
               }
-              var inputElem = type_util_1.TypeUtil.forceCast(e.currentTarget);
+              var inputElem = type_util_1.TypeUtil.forceCast(e5.currentTarget);
               var parsedValue = this.parser_(inputElem.value);
               if (type_util_1.TypeUtil.isEmpty(parsedValue)) {
                 return;
@@ -2037,8 +2038,8 @@ var require_tweakpane = __commonJS({
                     apply: function(from, to) {
                       to.rawValue = from.value.rawValue.getComponents()[3];
                     },
-                    emitter: function(m) {
-                      return m.value.emitter;
+                    emitter: function(m2) {
+                      return m2.value.emitter;
                     },
                     value: this.pickedColor
                   },
@@ -2048,8 +2049,8 @@ var require_tweakpane = __commonJS({
                       comps[3] = from.rawValue;
                       to.value.rawValue = new color_1.Color(comps, to.value.rawValue.mode);
                     },
-                    emitter: function(m) {
-                      return m.emitter;
+                    emitter: function(m2) {
+                      return m2.emitter;
                     },
                     value: this.alphaIcs_.text.value
                   }
@@ -2165,9 +2166,9 @@ var require_tweakpane = __commonJS({
               this.view.buttonElement.addEventListener("click", this.onButtonClick_);
               this.pickerIc_.triggerElement = this.view.buttonElement;
             }
-            ColorSwatchInputController2.prototype.onButtonBlur_ = function(e) {
+            ColorSwatchInputController2.prototype.onButtonBlur_ = function(e5) {
               var elem = this.view.element;
-              var nextTarget = type_util_1.TypeUtil.forceCast(e.relatedTarget);
+              var nextTarget = type_util_1.TypeUtil.forceCast(e5.relatedTarget);
               if (!nextTarget || !elem.contains(nextTarget)) {
                 this.pickerIc_.foldable.expanded = false;
               }
@@ -2209,11 +2210,11 @@ var require_tweakpane = __commonJS({
               this.ptHandler_.emitter.on("up", this.onPointerUp_);
               this.view.element.addEventListener("keydown", this.onKeyDown_);
             }
-            HPaletteInputController2.prototype.handlePointerEvent_ = function(d) {
-              var hue = number_util_1.NumberUtil.map(d.px, 0, 1, 0, 360);
-              var c = this.value.rawValue;
-              var _a2 = c.getComponents("hsv"), s = _a2[1], v = _a2[2], a = _a2[3];
-              this.value.rawValue = new color_1.Color([hue, s, v, a], "hsv");
+            HPaletteInputController2.prototype.handlePointerEvent_ = function(d3) {
+              var hue = number_util_1.NumberUtil.map(d3.px, 0, 1, 0, 360);
+              var c4 = this.value.rawValue;
+              var _a6 = c4.getComponents("hsv"), s4 = _a6[1], v2 = _a6[2], a3 = _a6[3];
+              this.value.rawValue = new color_1.Color([hue, s4, v2, a3], "hsv");
               this.view.update();
             };
             HPaletteInputController2.prototype.onPointerDown_ = function(ev) {
@@ -2227,9 +2228,9 @@ var require_tweakpane = __commonJS({
             };
             HPaletteInputController2.prototype.onKeyDown_ = function(ev) {
               var step = UiUtil.getStepForKey(UiUtil.getBaseStepForColor(false), UiUtil.getHorizontalStepKeys(ev));
-              var c = this.value.rawValue;
-              var _a2 = c.getComponents("hsv"), h = _a2[0], s = _a2[1], v = _a2[2], a = _a2[3];
-              this.value.rawValue = new color_1.Color([h + step, s, v, a], "hsv");
+              var c4 = this.value.rawValue;
+              var _a6 = c4.getComponents("hsv"), h3 = _a6[0], s4 = _a6[1], v2 = _a6[2], a3 = _a6[3];
+              this.value.rawValue = new color_1.Color([h3 + step, s4, v2, a3], "hsv");
             };
             return HPaletteInputController2;
           }();
@@ -2244,11 +2245,11 @@ var require_tweakpane = __commonJS({
           var type_util_1 = __webpack_require__("./src/main/js/misc/type-util.ts");
           var list_2 = __webpack_require__("./src/main/js/view/input/list.ts");
           function findListItems(value) {
-            var c = value.constraint ? util_1.ConstraintUtil.findConstraint(value.constraint, list_1.ListConstraint) : null;
-            if (!c) {
+            var c4 = value.constraint ? util_1.ConstraintUtil.findConstraint(value.constraint, list_1.ListConstraint) : null;
+            if (!c4) {
               return null;
             }
-            return c.options;
+            return c4.options;
           }
           var ListInputController = function() {
             function ListInputController2(document2, config) {
@@ -2278,8 +2279,8 @@ var require_tweakpane = __commonJS({
               enumerable: false,
               configurable: true
             });
-            ListInputController2.prototype.onSelectChange_ = function(e) {
-              var selectElem = type_util_1.TypeUtil.forceCast(e.currentTarget);
+            ListInputController2.prototype.onSelectChange_ = function(e5) {
+              var selectElem = type_util_1.TypeUtil.forceCast(e5.currentTarget);
               var optElem = selectElem.selectedOptions.item(0);
               if (!optElem) {
                 return;
@@ -2295,22 +2296,22 @@ var require_tweakpane = __commonJS({
         "./src/main/js/controller/input/number-text.ts": function(module2, exports2, __webpack_require__) {
           "use strict";
           var __extends = this && this.__extends || function() {
-            var extendStatics = function(d, b) {
-              extendStatics = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(d2, b2) {
-                d2.__proto__ = b2;
-              } || function(d2, b2) {
-                for (var p in b2)
-                  if (b2.hasOwnProperty(p))
-                    d2[p] = b2[p];
+            var extendStatics = function(d3, b3) {
+              extendStatics = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(d4, b4) {
+                d4.__proto__ = b4;
+              } || function(d4, b4) {
+                for (var p3 in b4)
+                  if (b4.hasOwnProperty(p3))
+                    d4[p3] = b4[p3];
               };
-              return extendStatics(d, b);
+              return extendStatics(d3, b3);
             };
-            return function(d, b) {
-              extendStatics(d, b);
+            return function(d3, b3) {
+              extendStatics(d3, b3);
               function __() {
-                this.constructor = d;
+                this.constructor = d3;
               }
-              d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+              d3.prototype = b3 === null ? Object.create(b3) : (__.prototype = b3.prototype, new __());
             };
           }();
           Object.defineProperty(exports2, "__esModule", { value: true });
@@ -2327,8 +2328,8 @@ var require_tweakpane = __commonJS({
               _this.view.inputElement.addEventListener("keydown", _this.onInputKeyDown_);
               return _this;
             }
-            NumberTextInputController2.prototype.onInputKeyDown_ = function(e) {
-              var step = UiUtil.getStepForKey(this.step_, UiUtil.getVerticalStepKeys(e));
+            NumberTextInputController2.prototype.onInputKeyDown_ = function(e5) {
+              var step = UiUtil.getStepForKey(this.step_, UiUtil.getVerticalStepKeys(e5));
               if (step !== 0) {
                 this.value.rawValue += step;
                 this.view.update();
@@ -2373,9 +2374,9 @@ var require_tweakpane = __commonJS({
               this.view.padButtonElement.addEventListener("click", this.onPadButtonClick_);
               this.padIc_.triggerElement = this.view.padButtonElement;
             }
-            Point2dPadTextInputController2.prototype.onPadButtonBlur_ = function(e) {
+            Point2dPadTextInputController2.prototype.onPadButtonBlur_ = function(e5) {
               var elem = this.view.element;
-              var nextTarget = type_util_1.TypeUtil.forceCast(e.relatedTarget);
+              var nextTarget = type_util_1.TypeUtil.forceCast(e5.relatedTarget);
               if (!nextTarget || !elem.contains(nextTarget)) {
                 this.padIc_.foldable.expanded = false;
               }
@@ -2416,9 +2417,9 @@ var require_tweakpane = __commonJS({
               this.foldable = new foldable_1.Foldable();
               this.maxValue_ = UiUtil.getSuitableMaxValueForPoint2dPad(this.value.constraint, this.value.rawValue);
               this.invertsY_ = config.invertsY;
-              var c = this.value.constraint;
-              this.xStep_ = UiUtil.getStepForTextInput(c instanceof point_2d_1.Point2dConstraint ? c.xConstraint : void 0);
-              this.yStep_ = UiUtil.getStepForTextInput(c instanceof point_2d_1.Point2dConstraint ? c.yConstraint : void 0);
+              var c4 = this.value.constraint;
+              this.xStep_ = UiUtil.getStepForTextInput(c4 instanceof point_2d_1.Point2dConstraint ? c4.xConstraint : void 0);
+              this.yStep_ = UiUtil.getStepForTextInput(c4 instanceof point_2d_1.Point2dConstraint ? c4.yConstraint : void 0);
               this.viewModel = config.viewModel;
               this.view = new point_2d_pad_1.Point2dPadInputView(document2, {
                 foldable: this.foldable,
@@ -2437,10 +2438,10 @@ var require_tweakpane = __commonJS({
                 elem.addEventListener("blur", _this.onFocusableElementBlur_);
               });
             }
-            Point2dPadInputController2.prototype.handlePointerEvent_ = function(d) {
+            Point2dPadInputController2.prototype.handlePointerEvent_ = function(d3) {
               var max4 = this.maxValue_;
-              var px = number_util_1.NumberUtil.map(d.px, 0, 1, -max4, +max4);
-              var py = number_util_1.NumberUtil.map(this.invertsY_ ? 1 - d.py : d.py, 0, 1, -max4, +max4);
+              var px = number_util_1.NumberUtil.map(d3.px, 0, 1, -max4, +max4);
+              var py = number_util_1.NumberUtil.map(this.invertsY_ ? 1 - d3.py : d3.py, 0, 1, -max4, +max4);
               this.value.rawValue = new point_2d_2.Point2d(px, py);
               this.view.update();
             };
@@ -2495,9 +2496,9 @@ var require_tweakpane = __commonJS({
               this.onInputKeyDown_ = this.onInputKeyDown_.bind(this);
               this.parser_ = config.parser;
               this.value = config.value;
-              var c = this.value.constraint;
-              this.xStep_ = UiUtil.getStepForTextInput(c instanceof point_2d_1.Point2dConstraint ? c.xConstraint : void 0);
-              this.yStep_ = UiUtil.getStepForTextInput(c instanceof point_2d_1.Point2dConstraint ? c.yConstraint : void 0);
+              var c4 = this.value.constraint;
+              this.xStep_ = UiUtil.getStepForTextInput(c4 instanceof point_2d_1.Point2dConstraint ? c4.xConstraint : void 0);
+              this.yStep_ = UiUtil.getStepForTextInput(c4 instanceof point_2d_1.Point2dConstraint ? c4.yConstraint : void 0);
               this.viewModel = config.viewModel;
               this.view = new point_2d_text_1.Point2dTextInputView(document2, {
                 model: this.viewModel,
@@ -2512,23 +2513,23 @@ var require_tweakpane = __commonJS({
             }
             Point2dTextInputController2.prototype.findIndexOfInputElem_ = function(inputElem) {
               var inputElems = this.view.inputElements;
-              for (var i = 0; i < inputElems.length; i++) {
-                if (inputElems[i] === inputElem) {
-                  return i;
+              for (var i4 = 0; i4 < inputElems.length; i4++) {
+                if (inputElems[i4] === inputElem) {
+                  return i4;
                 }
               }
               return null;
             };
             Point2dTextInputController2.prototype.updateComponent_ = function(index, newValue) {
               var comps = this.value.rawValue.getComponents();
-              var newComps = comps.map(function(comp, i) {
-                return i === index ? newValue : comp;
+              var newComps = comps.map(function(comp, i4) {
+                return i4 === index ? newValue : comp;
               });
               this.value.rawValue = new point_2d_2.Point2d(newComps[0], newComps[1]);
               this.view.update();
             };
-            Point2dTextInputController2.prototype.onInputChange_ = function(e) {
-              var inputElem = type_util_1.TypeUtil.forceCast(e.currentTarget);
+            Point2dTextInputController2.prototype.onInputChange_ = function(e5) {
+              var inputElem = type_util_1.TypeUtil.forceCast(e5.currentTarget);
               var parsedValue = this.parser_(inputElem.value);
               if (type_util_1.TypeUtil.isEmpty(parsedValue)) {
                 return;
@@ -2539,8 +2540,8 @@ var require_tweakpane = __commonJS({
               }
               this.updateComponent_(compIndex, parsedValue);
             };
-            Point2dTextInputController2.prototype.onInputKeyDown_ = function(e) {
-              var inputElem = type_util_1.TypeUtil.forceCast(e.currentTarget);
+            Point2dTextInputController2.prototype.onInputKeyDown_ = function(e5) {
+              var inputElem = type_util_1.TypeUtil.forceCast(e5.currentTarget);
               var parsedValue = this.parser_(inputElem.value);
               if (type_util_1.TypeUtil.isEmpty(parsedValue)) {
                 return;
@@ -2549,7 +2550,7 @@ var require_tweakpane = __commonJS({
               if (type_util_1.TypeUtil.isEmpty(compIndex)) {
                 return;
               }
-              var step = UiUtil.getStepForKey(compIndex === 0 ? this.xStep_ : this.yStep_, UiUtil.getVerticalStepKeys(e));
+              var step = UiUtil.getStepForKey(compIndex === 0 ? this.xStep_ : this.yStep_, UiUtil.getVerticalStepKeys(e5));
               if (step === 0) {
                 return;
               }
@@ -2616,14 +2617,14 @@ var require_tweakpane = __commonJS({
           var slider_1 = __webpack_require__("./src/main/js/view/input/slider.ts");
           var UiUtil = __webpack_require__("./src/main/js/controller/ui-util.ts");
           function findRange(value) {
-            var c = value.constraint ? util_1.ConstraintUtil.findConstraint(value.constraint, range_1.RangeConstraint) : null;
-            if (!c) {
+            var c4 = value.constraint ? util_1.ConstraintUtil.findConstraint(value.constraint, range_1.RangeConstraint) : null;
+            if (!c4) {
               return [void 0, void 0];
             }
-            return [c.minValue, c.maxValue];
+            return [c4.minValue, c4.maxValue];
           }
           function estimateSuitableRange(value) {
-            var _a2 = findRange(value), min4 = _a2[0], max4 = _a2[1];
+            var _a6 = findRange(value), min4 = _a6[0], max4 = _a6[1];
             return [
               type_util_1.TypeUtil.getOrDefault(min4, 0),
               type_util_1.TypeUtil.getOrDefault(max4, 100)
@@ -2637,7 +2638,7 @@ var require_tweakpane = __commonJS({
               this.onPointerUp_ = this.onPointerUp_.bind(this);
               this.value = config.value;
               this.step_ = UiUtil.getStepForTextInput(this.value.constraint);
-              var _a2 = estimateSuitableRange(this.value), min4 = _a2[0], max4 = _a2[1];
+              var _a6 = estimateSuitableRange(this.value), min4 = _a6[0], max4 = _a6[1];
               this.minValue_ = min4;
               this.maxValue_ = max4;
               this.viewModel = config.viewModel;
@@ -2653,8 +2654,8 @@ var require_tweakpane = __commonJS({
               this.ptHandler_.emitter.on("up", this.onPointerUp_);
               this.view.outerElement.addEventListener("keydown", this.onKeyDown_);
             }
-            SliderInputController2.prototype.handlePointerEvent_ = function(d) {
-              this.value.rawValue = number_util_1.NumberUtil.map(d.px, 0, 1, this.minValue_, this.maxValue_);
+            SliderInputController2.prototype.handlePointerEvent_ = function(d3) {
+              this.value.rawValue = number_util_1.NumberUtil.map(d3.px, 0, 1, this.minValue_, this.maxValue_);
             };
             SliderInputController2.prototype.onPointerDown_ = function(ev) {
               this.handlePointerEvent_(ev.data);
@@ -2699,11 +2700,11 @@ var require_tweakpane = __commonJS({
               this.ptHandler_.emitter.on("up", this.onPointerUp_);
               this.view.element.addEventListener("keydown", this.onKeyDown_);
             }
-            SvPaletteInputController2.prototype.handlePointerEvent_ = function(d) {
-              var saturation = number_util_1.NumberUtil.map(d.px, 0, 1, 0, 100);
-              var value = number_util_1.NumberUtil.map(d.py, 0, 1, 100, 0);
-              var _a2 = this.value.rawValue.getComponents("hsv"), h = _a2[0], a = _a2[3];
-              this.value.rawValue = new color_1.Color([h, saturation, value, a], "hsv");
+            SvPaletteInputController2.prototype.handlePointerEvent_ = function(d3) {
+              var saturation = number_util_1.NumberUtil.map(d3.px, 0, 1, 0, 100);
+              var value = number_util_1.NumberUtil.map(d3.py, 0, 1, 100, 0);
+              var _a6 = this.value.rawValue.getComponents("hsv"), h3 = _a6[0], a3 = _a6[3];
+              this.value.rawValue = new color_1.Color([h3, saturation, value, a3], "hsv");
               this.view.update();
             };
             SvPaletteInputController2.prototype.onPointerDown_ = function(ev) {
@@ -2719,13 +2720,13 @@ var require_tweakpane = __commonJS({
               if (UiUtil.isArrowKey(ev.keyCode)) {
                 ev.preventDefault();
               }
-              var _a2 = this.value.rawValue.getComponents("hsv"), h = _a2[0], s = _a2[1], v = _a2[2], a = _a2[3];
+              var _a6 = this.value.rawValue.getComponents("hsv"), h3 = _a6[0], s4 = _a6[1], v2 = _a6[2], a3 = _a6[3];
               var baseStep = UiUtil.getBaseStepForColor(false);
               this.value.rawValue = new color_1.Color([
-                h,
-                s + UiUtil.getStepForKey(baseStep, UiUtil.getHorizontalStepKeys(ev)),
-                v + UiUtil.getStepForKey(baseStep, UiUtil.getVerticalStepKeys(ev)),
-                a
+                h3,
+                s4 + UiUtil.getStepForKey(baseStep, UiUtil.getHorizontalStepKeys(ev)),
+                v2 + UiUtil.getStepForKey(baseStep, UiUtil.getVerticalStepKeys(ev)),
+                a3
               ], "hsv");
             };
             return SvPaletteInputController2;
@@ -2751,8 +2752,8 @@ var require_tweakpane = __commonJS({
               });
               this.view.inputElement.addEventListener("change", this.onInputChange_);
             }
-            TextInputController2.prototype.onInputChange_ = function(e) {
-              var inputElem = type_util_1.TypeUtil.forceCast(e.currentTarget);
+            TextInputController2.prototype.onInputChange_ = function(e5) {
+              var inputElem = type_util_1.TypeUtil.forceCast(e5.currentTarget);
               var value = inputElem.value;
               var parsedValue = this.parser_(value);
               if (!type_util_1.TypeUtil.isEmpty(parsedValue)) {
@@ -2822,10 +2823,10 @@ var require_tweakpane = __commonJS({
             GraphMonitorController2.prototype.onGraphMouseLeave_ = function() {
               this.cursor_.index = -1;
             };
-            GraphMonitorController2.prototype.onGraphMouseMove_ = function(e) {
+            GraphMonitorController2.prototype.onGraphMouseMove_ = function(e5) {
               var bounds = this.view.graphElement.getBoundingClientRect();
-              var x = e.offsetX;
-              this.cursor_.index = Math.floor(number_util_1.NumberUtil.map(x, 0, bounds.width, 0, this.value.totalCount));
+              var x2 = e5.offsetX;
+              this.cursor_.index = Math.floor(number_util_1.NumberUtil.map(x2, 0, bounds.width, 0, this.value.totalCount));
             };
             return GraphMonitorController2;
           }();
@@ -2947,10 +2948,10 @@ var require_tweakpane = __commonJS({
               DomUtil.insertElementAt(this.view.containerElement, ev.uiController.view.element, ev.index);
               this.applyUiContainerChange_();
             };
-            RootController2.prototype.onUiContainerRemove_ = function(_) {
+            RootController2.prototype.onUiContainerRemove_ = function(_2) {
               this.applyUiContainerChange_();
             };
-            RootController2.prototype.onUiContainerItemLayout_ = function(_) {
+            RootController2.prototype.onUiContainerItemLayout_ = function(_2) {
               this.applyUiContainerChange_();
             };
             RootController2.prototype.onTitleClick_ = function() {
@@ -3030,11 +3031,11 @@ var require_tweakpane = __commonJS({
           }
           exports2.findControllers = findControllers;
           function findStep(constraint) {
-            var c = constraint ? util_1.ConstraintUtil.findConstraint(constraint, step_1.StepConstraint) : null;
-            if (!c) {
+            var c4 = constraint ? util_1.ConstraintUtil.findConstraint(constraint, step_1.StepConstraint) : null;
+            if (!c4) {
               return null;
             }
-            return c.step;
+            return c4.step;
           }
           function getStepForTextInput(constraint) {
             var step = findStep(constraint);
@@ -3390,22 +3391,22 @@ var require_tweakpane = __commonJS({
         "./src/main/js/index.ts": function(module2, exports2, __webpack_require__) {
           "use strict";
           var __extends = this && this.__extends || function() {
-            var extendStatics = function(d, b) {
-              extendStatics = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(d2, b2) {
-                d2.__proto__ = b2;
-              } || function(d2, b2) {
-                for (var p in b2)
-                  if (b2.hasOwnProperty(p))
-                    d2[p] = b2[p];
+            var extendStatics = function(d3, b3) {
+              extendStatics = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(d4, b4) {
+                d4.__proto__ = b4;
+              } || function(d4, b4) {
+                for (var p3 in b4)
+                  if (b4.hasOwnProperty(p3))
+                    d4[p3] = b4[p3];
               };
-              return extendStatics(d, b);
+              return extendStatics(d3, b3);
             };
-            return function(d, b) {
-              extendStatics(d, b);
+            return function(d3, b3) {
+              extendStatics(d3, b3);
               function __() {
-                this.constructor = d;
+                this.constructor = d3;
               }
-              d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+              d3.prototype = b3 === null ? Object.create(b3) : (__.prototype = b3.prototype, new __());
             };
           }();
           Object.defineProperty(exports2, "__esModule", { value: true });
@@ -3465,97 +3466,97 @@ var require_tweakpane = __commonJS({
           Object.defineProperty(exports2, "__esModule", { value: true });
           exports2.convertMode = exports2.withAlpha = exports2.withoutAlpha = exports2.opaque = exports2.hsvToRgb = void 0;
           var number_util_1 = __webpack_require__("./src/main/js/misc/number-util.ts");
-          function rgbToHsl(r, g, b) {
-            var rp = number_util_1.NumberUtil.constrain(r / 255, 0, 1);
-            var gp = number_util_1.NumberUtil.constrain(g / 255, 0, 1);
-            var bp = number_util_1.NumberUtil.constrain(b / 255, 0, 1);
+          function rgbToHsl(r5, g2, b3) {
+            var rp = number_util_1.NumberUtil.constrain(r5 / 255, 0, 1);
+            var gp = number_util_1.NumberUtil.constrain(g2 / 255, 0, 1);
+            var bp = number_util_1.NumberUtil.constrain(b3 / 255, 0, 1);
             var cmax = Math.max(rp, gp, bp);
             var cmin = Math.min(rp, gp, bp);
-            var c = cmax - cmin;
-            var h = 0;
-            var s = 0;
-            var l = (cmin + cmax) / 2;
-            if (c !== 0) {
-              s = l > 0.5 ? c / (2 - cmin - cmax) : c / (cmax + cmin);
+            var c4 = cmax - cmin;
+            var h3 = 0;
+            var s4 = 0;
+            var l3 = (cmin + cmax) / 2;
+            if (c4 !== 0) {
+              s4 = l3 > 0.5 ? c4 / (2 - cmin - cmax) : c4 / (cmax + cmin);
               if (rp === cmax) {
-                h = (gp - bp) / c;
+                h3 = (gp - bp) / c4;
               } else if (gp === cmax) {
-                h = 2 + (bp - rp) / c;
+                h3 = 2 + (bp - rp) / c4;
               } else {
-                h = 4 + (rp - gp) / c;
+                h3 = 4 + (rp - gp) / c4;
               }
-              h = h / 6 + (h < 0 ? 1 : 0);
+              h3 = h3 / 6 + (h3 < 0 ? 1 : 0);
             }
-            return [h * 360, s * 100, l * 100];
+            return [h3 * 360, s4 * 100, l3 * 100];
           }
-          function hslToRgb(h, s, l) {
-            var _a2, _b, _c, _d, _e, _f;
-            var hp = (h % 360 + 360) % 360;
-            var sp = number_util_1.NumberUtil.constrain(s / 100, 0, 1);
-            var lp = number_util_1.NumberUtil.constrain(l / 100, 0, 1);
-            var c = (1 - Math.abs(2 * lp - 1)) * sp;
-            var x = c * (1 - Math.abs(hp / 60 % 2 - 1));
-            var m = lp - c / 2;
+          function hslToRgb(h3, s4, l3) {
+            var _a6, _b2, _c, _d, _e, _f;
+            var hp = (h3 % 360 + 360) % 360;
+            var sp = number_util_1.NumberUtil.constrain(s4 / 100, 0, 1);
+            var lp = number_util_1.NumberUtil.constrain(l3 / 100, 0, 1);
+            var c4 = (1 - Math.abs(2 * lp - 1)) * sp;
+            var x2 = c4 * (1 - Math.abs(hp / 60 % 2 - 1));
+            var m2 = lp - c4 / 2;
             var rp, gp, bp;
             if (hp >= 0 && hp < 60) {
-              _a2 = [c, x, 0], rp = _a2[0], gp = _a2[1], bp = _a2[2];
+              _a6 = [c4, x2, 0], rp = _a6[0], gp = _a6[1], bp = _a6[2];
             } else if (hp >= 60 && hp < 120) {
-              _b = [x, c, 0], rp = _b[0], gp = _b[1], bp = _b[2];
+              _b2 = [x2, c4, 0], rp = _b2[0], gp = _b2[1], bp = _b2[2];
             } else if (hp >= 120 && hp < 180) {
-              _c = [0, c, x], rp = _c[0], gp = _c[1], bp = _c[2];
+              _c = [0, c4, x2], rp = _c[0], gp = _c[1], bp = _c[2];
             } else if (hp >= 180 && hp < 240) {
-              _d = [0, x, c], rp = _d[0], gp = _d[1], bp = _d[2];
+              _d = [0, x2, c4], rp = _d[0], gp = _d[1], bp = _d[2];
             } else if (hp >= 240 && hp < 300) {
-              _e = [x, 0, c], rp = _e[0], gp = _e[1], bp = _e[2];
+              _e = [x2, 0, c4], rp = _e[0], gp = _e[1], bp = _e[2];
             } else {
-              _f = [c, 0, x], rp = _f[0], gp = _f[1], bp = _f[2];
+              _f = [c4, 0, x2], rp = _f[0], gp = _f[1], bp = _f[2];
             }
-            return [(rp + m) * 255, (gp + m) * 255, (bp + m) * 255];
+            return [(rp + m2) * 255, (gp + m2) * 255, (bp + m2) * 255];
           }
-          function rgbToHsv(r, g, b) {
-            var rp = number_util_1.NumberUtil.constrain(r / 255, 0, 1);
-            var gp = number_util_1.NumberUtil.constrain(g / 255, 0, 1);
-            var bp = number_util_1.NumberUtil.constrain(b / 255, 0, 1);
+          function rgbToHsv(r5, g2, b3) {
+            var rp = number_util_1.NumberUtil.constrain(r5 / 255, 0, 1);
+            var gp = number_util_1.NumberUtil.constrain(g2 / 255, 0, 1);
+            var bp = number_util_1.NumberUtil.constrain(b3 / 255, 0, 1);
             var cmax = Math.max(rp, gp, bp);
             var cmin = Math.min(rp, gp, bp);
-            var d = cmax - cmin;
-            var h;
-            if (d === 0) {
-              h = 0;
+            var d3 = cmax - cmin;
+            var h3;
+            if (d3 === 0) {
+              h3 = 0;
             } else if (cmax === rp) {
-              h = 60 * (((gp - bp) / d % 6 + 6) % 6);
+              h3 = 60 * (((gp - bp) / d3 % 6 + 6) % 6);
             } else if (cmax === gp) {
-              h = 60 * ((bp - rp) / d + 2);
+              h3 = 60 * ((bp - rp) / d3 + 2);
             } else {
-              h = 60 * ((rp - gp) / d + 4);
+              h3 = 60 * ((rp - gp) / d3 + 4);
             }
-            var s = cmax === 0 ? 0 : d / cmax;
-            var v = cmax;
-            return [h, s * 100, v * 100];
+            var s4 = cmax === 0 ? 0 : d3 / cmax;
+            var v2 = cmax;
+            return [h3, s4 * 100, v2 * 100];
           }
-          function hsvToRgb(h, s, v) {
-            var _a2, _b, _c, _d, _e, _f;
-            var hp = number_util_1.NumberUtil.loop(h, 360);
-            var sp = number_util_1.NumberUtil.constrain(s / 100, 0, 1);
-            var vp = number_util_1.NumberUtil.constrain(v / 100, 0, 1);
-            var c = vp * sp;
-            var x = c * (1 - Math.abs(hp / 60 % 2 - 1));
-            var m = vp - c;
+          function hsvToRgb(h3, s4, v2) {
+            var _a6, _b2, _c, _d, _e, _f;
+            var hp = number_util_1.NumberUtil.loop(h3, 360);
+            var sp = number_util_1.NumberUtil.constrain(s4 / 100, 0, 1);
+            var vp = number_util_1.NumberUtil.constrain(v2 / 100, 0, 1);
+            var c4 = vp * sp;
+            var x2 = c4 * (1 - Math.abs(hp / 60 % 2 - 1));
+            var m2 = vp - c4;
             var rp, gp, bp;
             if (hp >= 0 && hp < 60) {
-              _a2 = [c, x, 0], rp = _a2[0], gp = _a2[1], bp = _a2[2];
+              _a6 = [c4, x2, 0], rp = _a6[0], gp = _a6[1], bp = _a6[2];
             } else if (hp >= 60 && hp < 120) {
-              _b = [x, c, 0], rp = _b[0], gp = _b[1], bp = _b[2];
+              _b2 = [x2, c4, 0], rp = _b2[0], gp = _b2[1], bp = _b2[2];
             } else if (hp >= 120 && hp < 180) {
-              _c = [0, c, x], rp = _c[0], gp = _c[1], bp = _c[2];
+              _c = [0, c4, x2], rp = _c[0], gp = _c[1], bp = _c[2];
             } else if (hp >= 180 && hp < 240) {
-              _d = [0, x, c], rp = _d[0], gp = _d[1], bp = _d[2];
+              _d = [0, x2, c4], rp = _d[0], gp = _d[1], bp = _d[2];
             } else if (hp >= 240 && hp < 300) {
-              _e = [x, 0, c], rp = _e[0], gp = _e[1], bp = _e[2];
+              _e = [x2, 0, c4], rp = _e[0], gp = _e[1], bp = _e[2];
             } else {
-              _f = [c, 0, x], rp = _f[0], gp = _f[1], bp = _f[2];
+              _f = [c4, 0, x2], rp = _f[0], gp = _f[1], bp = _f[2];
             }
-            return [(rp + m) * 255, (gp + m) * 255, (bp + m) * 255];
+            return [(rp + m2) * 255, (gp + m2) * 255, (bp + m2) * 255];
           }
           exports2.hsvToRgb = hsvToRgb;
           function opaque(comps) {
@@ -3572,36 +3573,36 @@ var require_tweakpane = __commonJS({
           exports2.withAlpha = withAlpha;
           var MODE_CONVERTER_MAP = {
             hsl: {
-              hsl: function(h, s, l) {
-                return [h, s, l];
+              hsl: function(h3, s4, l3) {
+                return [h3, s4, l3];
               },
-              hsv: function(h, s, l) {
-                var _a2 = hslToRgb(h, s, l), r = _a2[0], g = _a2[1], b = _a2[2];
-                return rgbToHsv(r, g, b);
+              hsv: function(h3, s4, l3) {
+                var _a6 = hslToRgb(h3, s4, l3), r5 = _a6[0], g2 = _a6[1], b3 = _a6[2];
+                return rgbToHsv(r5, g2, b3);
               },
               rgb: hslToRgb
             },
             hsv: {
-              hsl: function(h, s, v) {
-                var _a2 = hsvToRgb(h, s, v), r = _a2[0], g = _a2[1], b = _a2[2];
-                return rgbToHsl(r, g, b);
+              hsl: function(h3, s4, v2) {
+                var _a6 = hsvToRgb(h3, s4, v2), r5 = _a6[0], g2 = _a6[1], b3 = _a6[2];
+                return rgbToHsl(r5, g2, b3);
               },
-              hsv: function(h, s, v) {
-                return [h, s, v];
+              hsv: function(h3, s4, v2) {
+                return [h3, s4, v2];
               },
               rgb: hsvToRgb
             },
             rgb: {
               hsl: rgbToHsl,
               hsv: rgbToHsv,
-              rgb: function(r, g, b) {
-                return [r, g, b];
+              rgb: function(r5, g2, b3) {
+                return [r5, g2, b3];
               }
             }
           };
           function convertMode(components, fromMode, toMode) {
-            var _a2;
-            return (_a2 = MODE_CONVERTER_MAP[fromMode])[toMode].apply(_a2, components);
+            var _a6;
+            return (_a6 = MODE_CONVERTER_MAP[fromMode])[toMode].apply(_a6, components);
           }
           exports2.convertMode = convertMode;
         },
@@ -3637,10 +3638,10 @@ var require_tweakpane = __commonJS({
             }
             exports2.forceReflow = forceReflow;
             function disableTransitionTemporarily(element, callback) {
-              var t = element.style.transition;
+              var t4 = element.style.transition;
               element.style.transition = "none";
               callback();
-              element.style.transition = t;
+              element.style.transition = t4;
             }
             exports2.disableTransitionTemporarily = disableTransitionTemporarily;
             function supportsTouch(document2) {
@@ -3745,8 +3746,8 @@ var require_tweakpane = __commonJS({
           exports2.NumberUtil = void 0;
           exports2.NumberUtil = {
             map: function(value, start1, end1, start2, end2) {
-              var p = (value - start1) / (end1 - start1);
-              return start2 + p * (end2 - start2);
+              var p3 = (value - start1) / (end1 - start1);
+              return start2 + p3 * (end2 - start2);
             },
             getDecimalDigits: function(value) {
               var text = String(value.toFixed(10));
@@ -3835,28 +3836,28 @@ var require_tweakpane = __commonJS({
                 py: offsetY / rect.height
               };
             };
-            PointerHandler2.prototype.onMouseDown_ = function(e) {
-              var _a2;
-              e.preventDefault();
-              (_a2 = e.currentTarget) === null || _a2 === void 0 ? void 0 : _a2.focus();
+            PointerHandler2.prototype.onMouseDown_ = function(e5) {
+              var _a6;
+              e5.preventDefault();
+              (_a6 = e5.currentTarget) === null || _a6 === void 0 ? void 0 : _a6.focus();
               this.pressed_ = true;
               this.emitter.emit("down", {
-                data: this.computePosition_(e.offsetX, e.offsetY),
+                data: this.computePosition_(e5.offsetX, e5.offsetY),
                 sender: this
               });
             };
-            PointerHandler2.prototype.onDocumentMouseMove_ = function(e) {
+            PointerHandler2.prototype.onDocumentMouseMove_ = function(e5) {
               if (!this.pressed_) {
                 return;
               }
               var win = this.document.defaultView;
               var rect = this.element.getBoundingClientRect();
               this.emitter.emit("move", {
-                data: this.computePosition_(e.pageX - ((win && win.scrollX || 0) + rect.left), e.pageY - ((win && win.scrollY || 0) + rect.top)),
+                data: this.computePosition_(e5.pageX - ((win && win.scrollX || 0) + rect.left), e5.pageY - ((win && win.scrollY || 0) + rect.top)),
                 sender: this
               });
             };
-            PointerHandler2.prototype.onDocumentMouseUp_ = function(e) {
+            PointerHandler2.prototype.onDocumentMouseUp_ = function(e5) {
               if (!this.pressed_) {
                 return;
               }
@@ -3864,21 +3865,21 @@ var require_tweakpane = __commonJS({
               var win = this.document.defaultView;
               var rect = this.element.getBoundingClientRect();
               this.emitter.emit("up", {
-                data: this.computePosition_(e.pageX - ((win && win.scrollX || 0) + rect.left), e.pageY - ((win && win.scrollY || 0) + rect.top)),
+                data: this.computePosition_(e5.pageX - ((win && win.scrollX || 0) + rect.left), e5.pageY - ((win && win.scrollY || 0) + rect.top)),
                 sender: this
               });
             };
-            PointerHandler2.prototype.onTouchStart_ = function(e) {
-              e.preventDefault();
-              var touch = e.targetTouches[0];
+            PointerHandler2.prototype.onTouchStart_ = function(e5) {
+              e5.preventDefault();
+              var touch = e5.targetTouches[0];
               var rect = this.element.getBoundingClientRect();
               this.emitter.emit("down", {
                 data: this.computePosition_(touch.clientX - rect.left, touch.clientY - rect.top),
                 sender: this
               });
             };
-            PointerHandler2.prototype.onTouchMove_ = function(e) {
-              var touch = e.targetTouches[0];
+            PointerHandler2.prototype.onTouchMove_ = function(e5) {
+              var touch = e5.targetTouches[0];
               var rect = this.element.getBoundingClientRect();
               this.emitter.emit("move", {
                 data: this.computePosition_(touch.clientX - rect.left, touch.clientY - rect.top),
@@ -3954,8 +3955,8 @@ var require_tweakpane = __commonJS({
           Object.defineProperty(exports2, "__esModule", { value: true });
           exports2.TypeUtil = void 0;
           exports2.TypeUtil = {
-            forceCast: function(v) {
-              return v;
+            forceCast: function(v2) {
+              return v2;
             },
             isEmpty: function(value) {
               return value === null || value === void 0;
@@ -3963,12 +3964,12 @@ var require_tweakpane = __commonJS({
             getOrDefault: function(value, defaultValue) {
               return !exports2.TypeUtil.isEmpty(value) ? value : defaultValue;
             },
-            deepEqualsArray: function(a1, a2) {
-              if (a1.length !== a2.length) {
+            deepEqualsArray: function(a1, a22) {
+              if (a1.length !== a22.length) {
                 return false;
               }
-              for (var i = 0; i < a1.length; i++) {
-                if (a1[i] !== a2[i]) {
+              for (var i4 = 0; i4 < a1.length; i4++) {
+                if (a1[i4] !== a22[i4]) {
                   return false;
                 }
               }
@@ -4384,8 +4385,8 @@ var require_tweakpane = __commonJS({
           "use strict";
           Object.defineProperty(exports2, "__esModule", { value: true });
           exports2.connect = void 0;
-          function connect(_a2) {
-            var primary = _a2.primary, secondary = _a2.secondary;
+          function connect(_a6) {
+            var primary = _a6.primary, secondary = _a6.secondary;
             primary.emitter(primary.value).on("change", function() {
               primary.apply(primary.value, secondary.value);
             });
@@ -4480,15 +4481,15 @@ var require_tweakpane = __commonJS({
           Object.defineProperty(exports2, "__esModule", { value: true });
           exports2.Point2d = void 0;
           var Point2d = function() {
-            function Point2d2(x, y) {
-              if (x === void 0) {
-                x = 0;
+            function Point2d2(x2, y3) {
+              if (x2 === void 0) {
+                x2 = 0;
               }
-              if (y === void 0) {
-                y = 0;
+              if (y3 === void 0) {
+                y3 = 0;
               }
-              this.x = x;
-              this.y = y;
+              this.x = x2;
+              this.y = y3;
             }
             Point2d2.prototype.getComponents = function() {
               return [this.x, this.y];
@@ -4599,7 +4600,7 @@ var require_tweakpane = __commonJS({
                 emitter.on("monitorupdate", this.onSubitemMonitorUpdate_);
               }
             };
-            UiContainer2.prototype.onListRemove_ = function(_) {
+            UiContainer2.prototype.onListRemove_ = function(_2) {
               this.emitter.emit("remove", {
                 sender: this
               });
@@ -4611,7 +4612,7 @@ var require_tweakpane = __commonJS({
                 });
               }
             };
-            UiContainer2.prototype.onListItemDispose_ = function(_) {
+            UiContainer2.prototype.onListItemDispose_ = function(_2) {
               var _this = this;
               var disposedUcs = this.ucList_.items.filter(function(uc) {
                 return uc.viewModel.disposed;
@@ -4643,7 +4644,7 @@ var require_tweakpane = __commonJS({
                 sender: this
               });
             };
-            UiContainer2.prototype.onSubitemLayout_ = function(_) {
+            UiContainer2.prototype.onSubitemLayout_ = function(_2) {
               this.emitter.emit("itemlayout", {
                 sender: this
               });
@@ -4760,12 +4761,12 @@ var require_tweakpane = __commonJS({
             if (type_util_1.TypeUtil.isEmpty(obj)) {
               return null;
             }
-            var x = obj.x;
-            var y = obj.y;
-            if (typeof x !== "number" || typeof y !== "number") {
+            var x2 = obj.x;
+            var y3 = obj.y;
+            if (typeof x2 !== "number" || typeof y3 !== "number") {
               return null;
             }
-            return new point_2d_1.Point2d(x, y);
+            return new point_2d_1.Point2d(x2, y3);
           };
         },
         "./src/main/js/parser/number-color.ts": function(module2, exports2, __webpack_require__) {
@@ -4793,11 +4794,11 @@ var require_tweakpane = __commonJS({
           var number_util_1 = __webpack_require__("./src/main/js/misc/number-util.ts");
           var color_1 = __webpack_require__("./src/main/js/model/color.ts");
           function parseCssNumberOrPercentage(text, maxValue) {
-            var m = text.match(/^(.+)%$/);
-            if (!m) {
+            var m2 = text.match(/^(.+)%$/);
+            if (!m2) {
               return Math.min(parseFloat(text), maxValue);
             }
-            return Math.min(parseFloat(m[1]) * 0.01 * maxValue, maxValue);
+            return Math.min(parseFloat(m2[1]) * 0.01 * maxValue, maxValue);
           }
           var ANGLE_TO_DEG_MAP = {
             deg: function(angle3) {
@@ -4814,24 +4815,24 @@ var require_tweakpane = __commonJS({
             }
           };
           function parseCssNumberOrAngle(text) {
-            var m = text.match(/^([0-9.]+?)(deg|grad|rad|turn)$/);
-            if (!m) {
+            var m2 = text.match(/^([0-9.]+?)(deg|grad|rad|turn)$/);
+            if (!m2) {
               return parseFloat(text);
             }
-            var angle3 = parseFloat(m[1]);
-            var unit = m[2];
+            var angle3 = parseFloat(m2[1]);
+            var unit = m2[2];
             return ANGLE_TO_DEG_MAP[unit](angle3);
           }
           var NOTATION_TO_PARSER_MAP = {
             "func.rgb": function(text) {
-              var m = text.match(/^rgb\(\s*([0-9A-Fa-f.]+%?)\s*,\s*([0-9A-Fa-f.]+%?)\s*,\s*([0-9A-Fa-f.]+%?)\s*\)$/);
-              if (!m) {
+              var m2 = text.match(/^rgb\(\s*([0-9A-Fa-f.]+%?)\s*,\s*([0-9A-Fa-f.]+%?)\s*,\s*([0-9A-Fa-f.]+%?)\s*\)$/);
+              if (!m2) {
                 return null;
               }
               var comps = [
-                parseCssNumberOrPercentage(m[1], 255),
-                parseCssNumberOrPercentage(m[2], 255),
-                parseCssNumberOrPercentage(m[3], 255)
+                parseCssNumberOrPercentage(m2[1], 255),
+                parseCssNumberOrPercentage(m2[2], 255),
+                parseCssNumberOrPercentage(m2[3], 255)
               ];
               if (isNaN(comps[0]) || isNaN(comps[1]) || isNaN(comps[2])) {
                 return null;
@@ -4839,15 +4840,15 @@ var require_tweakpane = __commonJS({
               return new color_1.Color(comps, "rgb");
             },
             "func.rgba": function(text) {
-              var m = text.match(/^rgba\(\s*([0-9A-Fa-f.]+%?)\s*,\s*([0-9A-Fa-f.]+%?)\s*,\s*([0-9A-Fa-f.]+%?)\s*,\s*([0-9A-Fa-f.]+%?)\s*\)$/);
-              if (!m) {
+              var m2 = text.match(/^rgba\(\s*([0-9A-Fa-f.]+%?)\s*,\s*([0-9A-Fa-f.]+%?)\s*,\s*([0-9A-Fa-f.]+%?)\s*,\s*([0-9A-Fa-f.]+%?)\s*\)$/);
+              if (!m2) {
                 return null;
               }
               var comps = [
-                parseCssNumberOrPercentage(m[1], 255),
-                parseCssNumberOrPercentage(m[2], 255),
-                parseCssNumberOrPercentage(m[3], 255),
-                parseCssNumberOrPercentage(m[4], 1)
+                parseCssNumberOrPercentage(m2[1], 255),
+                parseCssNumberOrPercentage(m2[2], 255),
+                parseCssNumberOrPercentage(m2[3], 255),
+                parseCssNumberOrPercentage(m2[4], 1)
               ];
               if (isNaN(comps[0]) || isNaN(comps[1]) || isNaN(comps[2]) || isNaN(comps[3])) {
                 return null;
@@ -4855,14 +4856,14 @@ var require_tweakpane = __commonJS({
               return new color_1.Color(comps, "rgb");
             },
             "func.hsl": function(text) {
-              var m = text.match(/^hsl\(\s*([0-9A-Fa-f.]+(?:deg|grad|rad|turn)?)\s*,\s*([0-9A-Fa-f.]+%?)\s*,\s*([0-9A-Fa-f.]+%?)\s*\)$/);
-              if (!m) {
+              var m2 = text.match(/^hsl\(\s*([0-9A-Fa-f.]+(?:deg|grad|rad|turn)?)\s*,\s*([0-9A-Fa-f.]+%?)\s*,\s*([0-9A-Fa-f.]+%?)\s*\)$/);
+              if (!m2) {
                 return null;
               }
               var comps = [
-                parseCssNumberOrAngle(m[1]),
-                parseCssNumberOrPercentage(m[2], 100),
-                parseCssNumberOrPercentage(m[3], 100)
+                parseCssNumberOrAngle(m2[1]),
+                parseCssNumberOrPercentage(m2[2], 100),
+                parseCssNumberOrPercentage(m2[3], 100)
               ];
               if (isNaN(comps[0]) || isNaN(comps[1]) || isNaN(comps[2])) {
                 return null;
@@ -4870,15 +4871,15 @@ var require_tweakpane = __commonJS({
               return new color_1.Color(comps, "hsl");
             },
             "func.hsla": function(text) {
-              var m = text.match(/^hsla\(\s*([0-9A-Fa-f.]+(?:deg|grad|rad|turn)?)\s*,\s*([0-9A-Fa-f.]+%?)\s*,\s*([0-9A-Fa-f.]+%?)\s*,\s*([0-9A-Fa-f.]+%?)\s*\)$/);
-              if (!m) {
+              var m2 = text.match(/^hsla\(\s*([0-9A-Fa-f.]+(?:deg|grad|rad|turn)?)\s*,\s*([0-9A-Fa-f.]+%?)\s*,\s*([0-9A-Fa-f.]+%?)\s*,\s*([0-9A-Fa-f.]+%?)\s*\)$/);
+              if (!m2) {
                 return null;
               }
               var comps = [
-                parseCssNumberOrAngle(m[1]),
-                parseCssNumberOrPercentage(m[2], 100),
-                parseCssNumberOrPercentage(m[3], 100),
-                parseCssNumberOrPercentage(m[4], 1)
+                parseCssNumberOrAngle(m2[1]),
+                parseCssNumberOrPercentage(m2[2], 100),
+                parseCssNumberOrPercentage(m2[3], 100),
+                parseCssNumberOrPercentage(m2[4], 1)
               ];
               if (isNaN(comps[0]) || isNaN(comps[1]) || isNaN(comps[2]) || isNaN(comps[3])) {
                 return null;
@@ -4957,22 +4958,22 @@ var require_tweakpane = __commonJS({
         "./src/main/js/tweakpane-without-style.ts": function(module2, exports2, __webpack_require__) {
           "use strict";
           var __extends = this && this.__extends || function() {
-            var extendStatics = function(d, b) {
-              extendStatics = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(d2, b2) {
-                d2.__proto__ = b2;
-              } || function(d2, b2) {
-                for (var p in b2)
-                  if (b2.hasOwnProperty(p))
-                    d2[p] = b2[p];
+            var extendStatics = function(d3, b3) {
+              extendStatics = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(d4, b4) {
+                d4.__proto__ = b4;
+              } || function(d4, b4) {
+                for (var p3 in b4)
+                  if (b4.hasOwnProperty(p3))
+                    d4[p3] = b4[p3];
               };
-              return extendStatics(d, b);
+              return extendStatics(d3, b3);
             };
-            return function(d, b) {
-              extendStatics(d, b);
+            return function(d3, b3) {
+              extendStatics(d3, b3);
               function __() {
-                this.constructor = d;
+                this.constructor = d3;
               }
-              d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+              d3.prototype = b3 === null ? Object.create(b3) : (__.prototype = b3.prototype, new __());
             };
           }();
           Object.defineProperty(exports2, "__esModule", { value: true });
@@ -5042,22 +5043,22 @@ var require_tweakpane = __commonJS({
         "./src/main/js/view/button.ts": function(module2, exports2, __webpack_require__) {
           "use strict";
           var __extends = this && this.__extends || function() {
-            var extendStatics = function(d, b) {
-              extendStatics = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(d2, b2) {
-                d2.__proto__ = b2;
-              } || function(d2, b2) {
-                for (var p in b2)
-                  if (b2.hasOwnProperty(p))
-                    d2[p] = b2[p];
+            var extendStatics = function(d3, b3) {
+              extendStatics = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(d4, b4) {
+                d4.__proto__ = b4;
+              } || function(d4, b4) {
+                for (var p3 in b4)
+                  if (b4.hasOwnProperty(p3))
+                    d4[p3] = b4[p3];
               };
-              return extendStatics(d, b);
+              return extendStatics(d3, b3);
             };
-            return function(d, b) {
-              extendStatics(d, b);
+            return function(d3, b3) {
+              extendStatics(d3, b3);
               function __() {
-                this.constructor = d;
+                this.constructor = d3;
               }
-              d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+              d3.prototype = b3 === null ? Object.create(b3) : (__.prototype = b3.prototype, new __());
             };
           }();
           Object.defineProperty(exports2, "__esModule", { value: true });
@@ -5100,22 +5101,22 @@ var require_tweakpane = __commonJS({
         "./src/main/js/view/folder.ts": function(module2, exports2, __webpack_require__) {
           "use strict";
           var __extends = this && this.__extends || function() {
-            var extendStatics = function(d, b) {
-              extendStatics = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(d2, b2) {
-                d2.__proto__ = b2;
-              } || function(d2, b2) {
-                for (var p in b2)
-                  if (b2.hasOwnProperty(p))
-                    d2[p] = b2[p];
+            var extendStatics = function(d3, b3) {
+              extendStatics = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(d4, b4) {
+                d4.__proto__ = b4;
+              } || function(d4, b4) {
+                for (var p3 in b4)
+                  if (b4.hasOwnProperty(p3))
+                    d4[p3] = b4[p3];
               };
-              return extendStatics(d, b);
+              return extendStatics(d3, b3);
             };
-            return function(d, b) {
-              extendStatics(d, b);
+            return function(d3, b3) {
+              extendStatics(d3, b3);
               function __() {
-                this.constructor = d;
+                this.constructor = d3;
               }
-              d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+              d3.prototype = b3 === null ? Object.create(b3) : (__.prototype = b3.prototype, new __());
             };
           }();
           Object.defineProperty(exports2, "__esModule", { value: true });
@@ -5196,22 +5197,22 @@ var require_tweakpane = __commonJS({
         "./src/main/js/view/input/a-palette.ts": function(module2, exports2, __webpack_require__) {
           "use strict";
           var __extends = this && this.__extends || function() {
-            var extendStatics = function(d, b) {
-              extendStatics = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(d2, b2) {
-                d2.__proto__ = b2;
-              } || function(d2, b2) {
-                for (var p in b2)
-                  if (b2.hasOwnProperty(p))
-                    d2[p] = b2[p];
+            var extendStatics = function(d3, b3) {
+              extendStatics = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(d4, b4) {
+                d4.__proto__ = b4;
+              } || function(d4, b4) {
+                for (var p3 in b4)
+                  if (b4.hasOwnProperty(p3))
+                    d4[p3] = b4[p3];
               };
-              return extendStatics(d, b);
+              return extendStatics(d3, b3);
             };
-            return function(d, b) {
-              extendStatics(d, b);
+            return function(d3, b3) {
+              extendStatics(d3, b3);
               function __() {
-                this.constructor = d;
+                this.constructor = d3;
               }
-              d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+              d3.prototype = b3 === null ? Object.create(b3) : (__.prototype = b3.prototype, new __());
             };
           }();
           Object.defineProperty(exports2, "__esModule", { value: true });
@@ -5259,8 +5260,8 @@ var require_tweakpane = __commonJS({
               if (!this.markerElem_ || !this.previewElem_ || !this.colorElem_) {
                 throw pane_error_1.PaneError.alreadyDisposed();
               }
-              var c = this.value.rawValue;
-              var rgbaComps = c.getComponents("rgb");
+              var c4 = this.value.rawValue;
+              var rgbaComps = c4.getComponents("rgb");
               var leftColor = new color_1.Color([rgbaComps[0], rgbaComps[1], rgbaComps[2], 0], "rgb");
               var rightColor = new color_1.Color([rgbaComps[0], rgbaComps[1], rgbaComps[2], 255], "rgb");
               var gradientComps = [
@@ -5269,7 +5270,7 @@ var require_tweakpane = __commonJS({
                 ColorConverter.toFunctionalRgbaString(rightColor)
               ];
               this.colorElem_.style.background = "linear-gradient(" + gradientComps.join(",") + ")";
-              this.previewElem_.style.backgroundColor = ColorConverter.toFunctionalRgbaString(c);
+              this.previewElem_.style.backgroundColor = ColorConverter.toFunctionalRgbaString(c4);
               var left = number_util_1.NumberUtil.map(rgbaComps[3], 0, 1, 0, 100);
               this.markerElem_.style.left = left + "%";
             };
@@ -5283,22 +5284,22 @@ var require_tweakpane = __commonJS({
         "./src/main/js/view/input/checkbox.ts": function(module2, exports2, __webpack_require__) {
           "use strict";
           var __extends = this && this.__extends || function() {
-            var extendStatics = function(d, b) {
-              extendStatics = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(d2, b2) {
-                d2.__proto__ = b2;
-              } || function(d2, b2) {
-                for (var p in b2)
-                  if (b2.hasOwnProperty(p))
-                    d2[p] = b2[p];
+            var extendStatics = function(d3, b3) {
+              extendStatics = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(d4, b4) {
+                d4.__proto__ = b4;
+              } || function(d4, b4) {
+                for (var p3 in b4)
+                  if (b4.hasOwnProperty(p3))
+                    d4[p3] = b4[p3];
               };
-              return extendStatics(d, b);
+              return extendStatics(d3, b3);
             };
-            return function(d, b) {
-              extendStatics(d, b);
+            return function(d3, b3) {
+              extendStatics(d3, b3);
               function __() {
-                this.constructor = d;
+                this.constructor = d3;
               }
-              d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+              d3.prototype = b3 === null ? Object.create(b3) : (__.prototype = b3.prototype, new __());
             };
           }();
           Object.defineProperty(exports2, "__esModule", { value: true });
@@ -5359,22 +5360,22 @@ var require_tweakpane = __commonJS({
         "./src/main/js/view/input/color-component-texts.ts": function(module2, exports2, __webpack_require__) {
           "use strict";
           var __extends = this && this.__extends || function() {
-            var extendStatics = function(d, b) {
-              extendStatics = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(d2, b2) {
-                d2.__proto__ = b2;
-              } || function(d2, b2) {
-                for (var p in b2)
-                  if (b2.hasOwnProperty(p))
-                    d2[p] = b2[p];
+            var extendStatics = function(d3, b3) {
+              extendStatics = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(d4, b4) {
+                d4.__proto__ = b4;
+              } || function(d4, b4) {
+                for (var p3 in b4)
+                  if (b4.hasOwnProperty(p3))
+                    d4[p3] = b4[p3];
               };
-              return extendStatics(d, b);
+              return extendStatics(d3, b3);
             };
-            return function(d, b) {
-              extendStatics(d, b);
+            return function(d3, b3) {
+              extendStatics(d3, b3);
               function __() {
-                this.constructor = d;
+                this.constructor = d3;
               }
-              d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+              d3.prototype = b3 === null ? Object.create(b3) : (__.prototype = b3.prototype, new __());
             };
           }();
           Object.defineProperty(exports2, "__esModule", { value: true });
@@ -5484,31 +5485,31 @@ var require_tweakpane = __commonJS({
         "./src/main/js/view/input/color-picker.ts": function(module2, exports2, __webpack_require__) {
           "use strict";
           var __extends = this && this.__extends || function() {
-            var extendStatics = function(d, b) {
-              extendStatics = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(d2, b2) {
-                d2.__proto__ = b2;
-              } || function(d2, b2) {
-                for (var p in b2)
-                  if (b2.hasOwnProperty(p))
-                    d2[p] = b2[p];
+            var extendStatics = function(d3, b3) {
+              extendStatics = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(d4, b4) {
+                d4.__proto__ = b4;
+              } || function(d4, b4) {
+                for (var p3 in b4)
+                  if (b4.hasOwnProperty(p3))
+                    d4[p3] = b4[p3];
               };
-              return extendStatics(d, b);
+              return extendStatics(d3, b3);
             };
-            return function(d, b) {
-              extendStatics(d, b);
+            return function(d3, b3) {
+              extendStatics(d3, b3);
               function __() {
-                this.constructor = d;
+                this.constructor = d3;
               }
-              d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+              d3.prototype = b3 === null ? Object.create(b3) : (__.prototype = b3.prototype, new __());
             };
           }();
           var __spreadArrays = this && this.__spreadArrays || function() {
-            for (var s = 0, i = 0, il = arguments.length; i < il; i++)
-              s += arguments[i].length;
-            for (var r = Array(s), k = 0, i = 0; i < il; i++)
-              for (var a = arguments[i], j = 0, jl = a.length; j < jl; j++, k++)
-                r[k] = a[j];
-            return r;
+            for (var s4 = 0, i4 = 0, il = arguments.length; i4 < il; i4++)
+              s4 += arguments[i4].length;
+            for (var r5 = Array(s4), k2 = 0, i4 = 0; i4 < il; i4++)
+              for (var a3 = arguments[i4], j2 = 0, jl = a3.length; j2 < jl; j2++, k2++)
+                r5[k2] = a3[j2];
+            return r5;
           };
           Object.defineProperty(exports2, "__esModule", { value: true });
           exports2.ColorPickerInputView = void 0;
@@ -5606,22 +5607,22 @@ var require_tweakpane = __commonJS({
         "./src/main/js/view/input/color-swatch-text.ts": function(module2, exports2, __webpack_require__) {
           "use strict";
           var __extends = this && this.__extends || function() {
-            var extendStatics = function(d, b) {
-              extendStatics = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(d2, b2) {
-                d2.__proto__ = b2;
-              } || function(d2, b2) {
-                for (var p in b2)
-                  if (b2.hasOwnProperty(p))
-                    d2[p] = b2[p];
+            var extendStatics = function(d3, b3) {
+              extendStatics = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(d4, b4) {
+                d4.__proto__ = b4;
+              } || function(d4, b4) {
+                for (var p3 in b4)
+                  if (b4.hasOwnProperty(p3))
+                    d4[p3] = b4[p3];
               };
-              return extendStatics(d, b);
+              return extendStatics(d3, b3);
             };
-            return function(d, b) {
-              extendStatics(d, b);
+            return function(d3, b3) {
+              extendStatics(d3, b3);
               function __() {
-                this.constructor = d;
+                this.constructor = d3;
               }
-              d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+              d3.prototype = b3 === null ? Object.create(b3) : (__.prototype = b3.prototype, new __());
             };
           }();
           Object.defineProperty(exports2, "__esModule", { value: true });
@@ -5664,22 +5665,22 @@ var require_tweakpane = __commonJS({
         "./src/main/js/view/input/color-swatch.ts": function(module2, exports2, __webpack_require__) {
           "use strict";
           var __extends = this && this.__extends || function() {
-            var extendStatics = function(d, b) {
-              extendStatics = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(d2, b2) {
-                d2.__proto__ = b2;
-              } || function(d2, b2) {
-                for (var p in b2)
-                  if (b2.hasOwnProperty(p))
-                    d2[p] = b2[p];
+            var extendStatics = function(d3, b3) {
+              extendStatics = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(d4, b4) {
+                d4.__proto__ = b4;
+              } || function(d4, b4) {
+                for (var p3 in b4)
+                  if (b4.hasOwnProperty(p3))
+                    d4[p3] = b4[p3];
               };
-              return extendStatics(d, b);
+              return extendStatics(d3, b3);
             };
-            return function(d, b) {
-              extendStatics(d, b);
+            return function(d3, b3) {
+              extendStatics(d3, b3);
               function __() {
-                this.constructor = d;
+                this.constructor = d3;
               }
-              d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+              d3.prototype = b3 === null ? Object.create(b3) : (__.prototype = b3.prototype, new __());
             };
           }();
           Object.defineProperty(exports2, "__esModule", { value: true });
@@ -5748,22 +5749,22 @@ var require_tweakpane = __commonJS({
         "./src/main/js/view/input/h-palette.ts": function(module2, exports2, __webpack_require__) {
           "use strict";
           var __extends = this && this.__extends || function() {
-            var extendStatics = function(d, b) {
-              extendStatics = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(d2, b2) {
-                d2.__proto__ = b2;
-              } || function(d2, b2) {
-                for (var p in b2)
-                  if (b2.hasOwnProperty(p))
-                    d2[p] = b2[p];
+            var extendStatics = function(d3, b3) {
+              extendStatics = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(d4, b4) {
+                d4.__proto__ = b4;
+              } || function(d4, b4) {
+                for (var p3 in b4)
+                  if (b4.hasOwnProperty(p3))
+                    d4[p3] = b4[p3];
               };
-              return extendStatics(d, b);
+              return extendStatics(d3, b3);
             };
-            return function(d, b) {
-              extendStatics(d, b);
+            return function(d3, b3) {
+              extendStatics(d3, b3);
               function __() {
-                this.constructor = d;
+                this.constructor = d3;
               }
-              d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+              d3.prototype = b3 === null ? Object.create(b3) : (__.prototype = b3.prototype, new __());
             };
           }();
           Object.defineProperty(exports2, "__esModule", { value: true });
@@ -5804,10 +5805,10 @@ var require_tweakpane = __commonJS({
               if (!this.markerElem_) {
                 throw pane_error_1.PaneError.alreadyDisposed();
               }
-              var c = this.value.rawValue;
-              var h = c.getComponents("hsv")[0];
-              this.markerElem_.style.backgroundColor = ColorConverter.toFunctionalRgbString(new color_1.Color([h, 100, 100], "hsv"));
-              var left = number_util_1.NumberUtil.map(h, 0, 360, 0, 100);
+              var c4 = this.value.rawValue;
+              var h3 = c4.getComponents("hsv")[0];
+              this.markerElem_.style.backgroundColor = ColorConverter.toFunctionalRgbString(new color_1.Color([h3, 100, 100], "hsv"));
+              var left = number_util_1.NumberUtil.map(h3, 0, 360, 0, 100);
               this.markerElem_.style.left = left + "%";
             };
             HPaletteInputView2.prototype.onValueChange_ = function() {
@@ -5820,22 +5821,22 @@ var require_tweakpane = __commonJS({
         "./src/main/js/view/input/list.ts": function(module2, exports2, __webpack_require__) {
           "use strict";
           var __extends = this && this.__extends || function() {
-            var extendStatics = function(d, b) {
-              extendStatics = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(d2, b2) {
-                d2.__proto__ = b2;
-              } || function(d2, b2) {
-                for (var p in b2)
-                  if (b2.hasOwnProperty(p))
-                    d2[p] = b2[p];
+            var extendStatics = function(d3, b3) {
+              extendStatics = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(d4, b4) {
+                d4.__proto__ = b4;
+              } || function(d4, b4) {
+                for (var p3 in b4)
+                  if (b4.hasOwnProperty(p3))
+                    d4[p3] = b4[p3];
               };
-              return extendStatics(d, b);
+              return extendStatics(d3, b3);
             };
-            return function(d, b) {
-              extendStatics(d, b);
+            return function(d3, b3) {
+              extendStatics(d3, b3);
               function __() {
-                this.constructor = d;
+                this.constructor = d3;
               }
-              d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+              d3.prototype = b3 === null ? Object.create(b3) : (__.prototype = b3.prototype, new __());
             };
           }();
           Object.defineProperty(exports2, "__esModule", { value: true });
@@ -5900,22 +5901,22 @@ var require_tweakpane = __commonJS({
         "./src/main/js/view/input/point-2d-pad-text.ts": function(module2, exports2, __webpack_require__) {
           "use strict";
           var __extends = this && this.__extends || function() {
-            var extendStatics = function(d, b) {
-              extendStatics = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(d2, b2) {
-                d2.__proto__ = b2;
-              } || function(d2, b2) {
-                for (var p in b2)
-                  if (b2.hasOwnProperty(p))
-                    d2[p] = b2[p];
+            var extendStatics = function(d3, b3) {
+              extendStatics = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(d4, b4) {
+                d4.__proto__ = b4;
+              } || function(d4, b4) {
+                for (var p3 in b4)
+                  if (b4.hasOwnProperty(p3))
+                    d4[p3] = b4[p3];
               };
-              return extendStatics(d, b);
+              return extendStatics(d3, b3);
             };
-            return function(d, b) {
-              extendStatics(d, b);
+            return function(d3, b3) {
+              extendStatics(d3, b3);
               function __() {
-                this.constructor = d;
+                this.constructor = d3;
               }
-              d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+              d3.prototype = b3 === null ? Object.create(b3) : (__.prototype = b3.prototype, new __());
             };
           }();
           Object.defineProperty(exports2, "__esModule", { value: true });
@@ -5974,22 +5975,22 @@ var require_tweakpane = __commonJS({
         "./src/main/js/view/input/point-2d-pad.ts": function(module2, exports2, __webpack_require__) {
           "use strict";
           var __extends = this && this.__extends || function() {
-            var extendStatics = function(d, b) {
-              extendStatics = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(d2, b2) {
-                d2.__proto__ = b2;
-              } || function(d2, b2) {
-                for (var p in b2)
-                  if (b2.hasOwnProperty(p))
-                    d2[p] = b2[p];
+            var extendStatics = function(d3, b3) {
+              extendStatics = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(d4, b4) {
+                d4.__proto__ = b4;
+              } || function(d4, b4) {
+                for (var p3 in b4)
+                  if (b4.hasOwnProperty(p3))
+                    d4[p3] = b4[p3];
               };
-              return extendStatics(d, b);
+              return extendStatics(d3, b3);
             };
-            return function(d, b) {
-              extendStatics(d, b);
+            return function(d3, b3) {
+              extendStatics(d3, b3);
               function __() {
-                this.constructor = d;
+                this.constructor = d3;
               }
-              d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+              d3.prototype = b3 === null ? Object.create(b3) : (__.prototype = b3.prototype, new __());
             };
           }();
           Object.defineProperty(exports2, "__esModule", { value: true });
@@ -6086,10 +6087,10 @@ var require_tweakpane = __commonJS({
               if (!lineElem || !markerElem) {
                 throw pane_error_1.PaneError.alreadyDisposed();
               }
-              var _a2 = this.value.rawValue.getComponents(), x = _a2[0], y = _a2[1];
+              var _a6 = this.value.rawValue.getComponents(), x2 = _a6[0], y3 = _a6[1];
               var max4 = this.maxValue_;
-              var px = number_util_1.NumberUtil.map(x, -max4, +max4, 0, 100);
-              var py = number_util_1.NumberUtil.map(y, -max4, +max4, 0, 100);
+              var px = number_util_1.NumberUtil.map(x2, -max4, +max4, 0, 100);
+              var py = number_util_1.NumberUtil.map(y3, -max4, +max4, 0, 100);
               var ipy = this.invertsY_ ? 100 - py : py;
               lineElem.setAttributeNS(null, "x2", px + "%");
               lineElem.setAttributeNS(null, "y2", ipy + "%");
@@ -6109,22 +6110,22 @@ var require_tweakpane = __commonJS({
         "./src/main/js/view/input/point-2d-text.ts": function(module2, exports2, __webpack_require__) {
           "use strict";
           var __extends = this && this.__extends || function() {
-            var extendStatics = function(d, b) {
-              extendStatics = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(d2, b2) {
-                d2.__proto__ = b2;
-              } || function(d2, b2) {
-                for (var p in b2)
-                  if (b2.hasOwnProperty(p))
-                    d2[p] = b2[p];
+            var extendStatics = function(d3, b3) {
+              extendStatics = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(d4, b4) {
+                d4.__proto__ = b4;
+              } || function(d4, b4) {
+                for (var p3 in b4)
+                  if (b4.hasOwnProperty(p3))
+                    d4[p3] = b4[p3];
               };
-              return extendStatics(d, b);
+              return extendStatics(d3, b3);
             };
-            return function(d, b) {
-              extendStatics(d, b);
+            return function(d3, b3) {
+              extendStatics(d3, b3);
               function __() {
-                this.constructor = d;
+                this.constructor = d3;
               }
-              d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+              d3.prototype = b3 === null ? Object.create(b3) : (__.prototype = b3.prototype, new __());
             };
           }();
           Object.defineProperty(exports2, "__esModule", { value: true });
@@ -6148,7 +6149,7 @@ var require_tweakpane = __commonJS({
                 inputElem.type = "text";
                 return inputElem;
               });
-              COMPONENT_LABELS.forEach(function(_, index) {
+              COMPONENT_LABELS.forEach(function(_2, index) {
                 var elem = document2.createElement("div");
                 elem.classList.add(className("w"));
                 elem.appendChild(inputElems[index]);
@@ -6200,22 +6201,22 @@ var require_tweakpane = __commonJS({
         "./src/main/js/view/input/slider-text.ts": function(module2, exports2, __webpack_require__) {
           "use strict";
           var __extends = this && this.__extends || function() {
-            var extendStatics = function(d, b) {
-              extendStatics = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(d2, b2) {
-                d2.__proto__ = b2;
-              } || function(d2, b2) {
-                for (var p in b2)
-                  if (b2.hasOwnProperty(p))
-                    d2[p] = b2[p];
+            var extendStatics = function(d3, b3) {
+              extendStatics = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(d4, b4) {
+                d4.__proto__ = b4;
+              } || function(d4, b4) {
+                for (var p3 in b4)
+                  if (b4.hasOwnProperty(p3))
+                    d4[p3] = b4[p3];
               };
-              return extendStatics(d, b);
+              return extendStatics(d3, b3);
             };
-            return function(d, b) {
-              extendStatics(d, b);
+            return function(d3, b3) {
+              extendStatics(d3, b3);
               function __() {
-                this.constructor = d;
+                this.constructor = d3;
               }
-              d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+              d3.prototype = b3 === null ? Object.create(b3) : (__.prototype = b3.prototype, new __());
             };
           }();
           Object.defineProperty(exports2, "__esModule", { value: true });
@@ -6258,22 +6259,22 @@ var require_tweakpane = __commonJS({
         "./src/main/js/view/input/slider.ts": function(module2, exports2, __webpack_require__) {
           "use strict";
           var __extends = this && this.__extends || function() {
-            var extendStatics = function(d, b) {
-              extendStatics = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(d2, b2) {
-                d2.__proto__ = b2;
-              } || function(d2, b2) {
-                for (var p in b2)
-                  if (b2.hasOwnProperty(p))
-                    d2[p] = b2[p];
+            var extendStatics = function(d3, b3) {
+              extendStatics = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(d4, b4) {
+                d4.__proto__ = b4;
+              } || function(d4, b4) {
+                for (var p3 in b4)
+                  if (b4.hasOwnProperty(p3))
+                    d4[p3] = b4[p3];
               };
-              return extendStatics(d, b);
+              return extendStatics(d3, b3);
             };
-            return function(d, b) {
-              extendStatics(d, b);
+            return function(d3, b3) {
+              extendStatics(d3, b3);
               function __() {
-                this.constructor = d;
+                this.constructor = d3;
               }
-              d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+              d3.prototype = b3 === null ? Object.create(b3) : (__.prototype = b3.prototype, new __());
             };
           }();
           Object.defineProperty(exports2, "__esModule", { value: true });
@@ -6334,8 +6335,8 @@ var require_tweakpane = __commonJS({
               if (!this.innerElem_) {
                 throw pane_error_1.PaneError.alreadyDisposed();
               }
-              var p = number_util_1.NumberUtil.constrain(number_util_1.NumberUtil.map(this.value.rawValue, this.minValue_, this.maxValue_, 0, 100), 0, 100);
-              this.innerElem_.style.width = p + "%";
+              var p3 = number_util_1.NumberUtil.constrain(number_util_1.NumberUtil.map(this.value.rawValue, this.minValue_, this.maxValue_, 0, 100), 0, 100);
+              this.innerElem_.style.width = p3 + "%";
             };
             SliderInputView2.prototype.onValueChange_ = function() {
               this.update();
@@ -6347,22 +6348,22 @@ var require_tweakpane = __commonJS({
         "./src/main/js/view/input/sv-palette.ts": function(module2, exports2, __webpack_require__) {
           "use strict";
           var __extends = this && this.__extends || function() {
-            var extendStatics = function(d, b) {
-              extendStatics = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(d2, b2) {
-                d2.__proto__ = b2;
-              } || function(d2, b2) {
-                for (var p in b2)
-                  if (b2.hasOwnProperty(p))
-                    d2[p] = b2[p];
+            var extendStatics = function(d3, b3) {
+              extendStatics = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(d4, b4) {
+                d4.__proto__ = b4;
+              } || function(d4, b4) {
+                for (var p3 in b4)
+                  if (b4.hasOwnProperty(p3))
+                    d4[p3] = b4[p3];
               };
-              return extendStatics(d, b);
+              return extendStatics(d3, b3);
             };
-            return function(d, b) {
-              extendStatics(d, b);
+            return function(d3, b3) {
+              extendStatics(d3, b3);
               function __() {
-                this.constructor = d;
+                this.constructor = d3;
               }
-              d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+              d3.prototype = b3 === null ? Object.create(b3) : (__.prototype = b3.prototype, new __());
             };
           }();
           Object.defineProperty(exports2, "__esModule", { value: true });
@@ -6420,22 +6421,22 @@ var require_tweakpane = __commonJS({
               if (!ctx) {
                 return;
               }
-              var c = this.value.rawValue;
-              var hsvComps = c.getComponents("hsv");
+              var c4 = this.value.rawValue;
+              var hsvComps = c4.getComponents("hsv");
               var width = this.canvasElement.width;
               var height = this.canvasElement.height;
               var imgData = ctx.getImageData(0, 0, width, height);
               var data = imgData.data;
               for (var iy = 0; iy < height; iy++) {
                 for (var ix = 0; ix < width; ix++) {
-                  var s = number_util_1.NumberUtil.map(ix, 0, width, 0, 100);
-                  var v = number_util_1.NumberUtil.map(iy, 0, height, 100, 0);
-                  var rgbComps = color_model_1.hsvToRgb(hsvComps[0], s, v);
-                  var i = (iy * width + ix) * 4;
-                  data[i] = rgbComps[0];
-                  data[i + 1] = rgbComps[1];
-                  data[i + 2] = rgbComps[2];
-                  data[i + 3] = 255;
+                  var s4 = number_util_1.NumberUtil.map(ix, 0, width, 0, 100);
+                  var v2 = number_util_1.NumberUtil.map(iy, 0, height, 100, 0);
+                  var rgbComps = color_model_1.hsvToRgb(hsvComps[0], s4, v2);
+                  var i4 = (iy * width + ix) * 4;
+                  data[i4] = rgbComps[0];
+                  data[i4 + 1] = rgbComps[1];
+                  data[i4 + 2] = rgbComps[2];
+                  data[i4 + 3] = 255;
                 }
               }
               ctx.putImageData(imgData, 0, 0);
@@ -6454,22 +6455,22 @@ var require_tweakpane = __commonJS({
         "./src/main/js/view/input/text.ts": function(module2, exports2, __webpack_require__) {
           "use strict";
           var __extends = this && this.__extends || function() {
-            var extendStatics = function(d, b) {
-              extendStatics = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(d2, b2) {
-                d2.__proto__ = b2;
-              } || function(d2, b2) {
-                for (var p in b2)
-                  if (b2.hasOwnProperty(p))
-                    d2[p] = b2[p];
+            var extendStatics = function(d3, b3) {
+              extendStatics = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(d4, b4) {
+                d4.__proto__ = b4;
+              } || function(d4, b4) {
+                for (var p3 in b4)
+                  if (b4.hasOwnProperty(p3))
+                    d4[p3] = b4[p3];
               };
-              return extendStatics(d, b);
+              return extendStatics(d3, b3);
             };
-            return function(d, b) {
-              extendStatics(d, b);
+            return function(d3, b3) {
+              extendStatics(d3, b3);
               function __() {
-                this.constructor = d;
+                this.constructor = d3;
               }
-              d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+              d3.prototype = b3 === null ? Object.create(b3) : (__.prototype = b3.prototype, new __());
             };
           }();
           Object.defineProperty(exports2, "__esModule", { value: true });
@@ -6525,22 +6526,22 @@ var require_tweakpane = __commonJS({
         "./src/main/js/view/labeled.ts": function(module2, exports2, __webpack_require__) {
           "use strict";
           var __extends = this && this.__extends || function() {
-            var extendStatics = function(d, b) {
-              extendStatics = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(d2, b2) {
-                d2.__proto__ = b2;
-              } || function(d2, b2) {
-                for (var p in b2)
-                  if (b2.hasOwnProperty(p))
-                    d2[p] = b2[p];
+            var extendStatics = function(d3, b3) {
+              extendStatics = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(d4, b4) {
+                d4.__proto__ = b4;
+              } || function(d4, b4) {
+                for (var p3 in b4)
+                  if (b4.hasOwnProperty(p3))
+                    d4[p3] = b4[p3];
               };
-              return extendStatics(d, b);
+              return extendStatics(d3, b3);
             };
-            return function(d, b) {
-              extendStatics(d, b);
+            return function(d3, b3) {
+              extendStatics(d3, b3);
               function __() {
-                this.constructor = d;
+                this.constructor = d3;
               }
-              d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+              d3.prototype = b3 === null ? Object.create(b3) : (__.prototype = b3.prototype, new __());
             };
           }();
           Object.defineProperty(exports2, "__esModule", { value: true });
@@ -6584,22 +6585,22 @@ var require_tweakpane = __commonJS({
         "./src/main/js/view/monitor/graph.ts": function(module2, exports2, __webpack_require__) {
           "use strict";
           var __extends = this && this.__extends || function() {
-            var extendStatics = function(d, b) {
-              extendStatics = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(d2, b2) {
-                d2.__proto__ = b2;
-              } || function(d2, b2) {
-                for (var p in b2)
-                  if (b2.hasOwnProperty(p))
-                    d2[p] = b2[p];
+            var extendStatics = function(d3, b3) {
+              extendStatics = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(d4, b4) {
+                d4.__proto__ = b4;
+              } || function(d4, b4) {
+                for (var p3 in b4)
+                  if (b4.hasOwnProperty(p3))
+                    d4[p3] = b4[p3];
               };
-              return extendStatics(d, b);
+              return extendStatics(d3, b3);
             };
-            return function(d, b) {
-              extendStatics(d, b);
+            return function(d3, b3) {
+              extendStatics(d3, b3);
               function __() {
-                this.constructor = d;
+                this.constructor = d3;
               }
-              d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+              d3.prototype = b3 === null ? Object.create(b3) : (__.prototype = b3.prototype, new __());
             };
           }();
           Object.defineProperty(exports2, "__esModule", { value: true });
@@ -6664,10 +6665,10 @@ var require_tweakpane = __commonJS({
               var maxIndex = this.value.totalCount - 1;
               var min4 = this.minValue_;
               var max4 = this.maxValue_;
-              this.lineElem_.setAttributeNS(null, "points", this.value.rawValues.map(function(v, index) {
-                var x = number_util_1.NumberUtil.map(index, 0, maxIndex, 0, bounds.width);
-                var y = number_util_1.NumberUtil.map(v, min4, max4, bounds.height, 0);
-                return [x, y].join(",");
+              this.lineElem_.setAttributeNS(null, "points", this.value.rawValues.map(function(v2, index) {
+                var x2 = number_util_1.NumberUtil.map(index, 0, maxIndex, 0, bounds.width);
+                var y3 = number_util_1.NumberUtil.map(v2, min4, max4, bounds.height, 0);
+                return [x2, y3].join(",");
               }).join(" "));
               var value = this.value.rawValues[this.cursor_.index];
               if (value === void 0) {
@@ -6694,22 +6695,22 @@ var require_tweakpane = __commonJS({
         "./src/main/js/view/monitor/multi-log.ts": function(module2, exports2, __webpack_require__) {
           "use strict";
           var __extends = this && this.__extends || function() {
-            var extendStatics = function(d, b) {
-              extendStatics = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(d2, b2) {
-                d2.__proto__ = b2;
-              } || function(d2, b2) {
-                for (var p in b2)
-                  if (b2.hasOwnProperty(p))
-                    d2[p] = b2[p];
+            var extendStatics = function(d3, b3) {
+              extendStatics = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(d4, b4) {
+                d4.__proto__ = b4;
+              } || function(d4, b4) {
+                for (var p3 in b4)
+                  if (b4.hasOwnProperty(p3))
+                    d4[p3] = b4[p3];
               };
-              return extendStatics(d, b);
+              return extendStatics(d3, b3);
             };
-            return function(d, b) {
-              extendStatics(d, b);
+            return function(d3, b3) {
+              extendStatics(d3, b3);
               function __() {
-                this.constructor = d;
+                this.constructor = d3;
               }
-              d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+              d3.prototype = b3 === null ? Object.create(b3) : (__.prototype = b3.prototype, new __());
             };
           }();
           Object.defineProperty(exports2, "__esModule", { value: true });
@@ -6763,22 +6764,22 @@ var require_tweakpane = __commonJS({
         "./src/main/js/view/monitor/single-log.ts": function(module2, exports2, __webpack_require__) {
           "use strict";
           var __extends = this && this.__extends || function() {
-            var extendStatics = function(d, b) {
-              extendStatics = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(d2, b2) {
-                d2.__proto__ = b2;
-              } || function(d2, b2) {
-                for (var p in b2)
-                  if (b2.hasOwnProperty(p))
-                    d2[p] = b2[p];
+            var extendStatics = function(d3, b3) {
+              extendStatics = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(d4, b4) {
+                d4.__proto__ = b4;
+              } || function(d4, b4) {
+                for (var p3 in b4)
+                  if (b4.hasOwnProperty(p3))
+                    d4[p3] = b4[p3];
               };
-              return extendStatics(d, b);
+              return extendStatics(d3, b3);
             };
-            return function(d, b) {
-              extendStatics(d, b);
+            return function(d3, b3) {
+              extendStatics(d3, b3);
               function __() {
-                this.constructor = d;
+                this.constructor = d3;
               }
-              d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+              d3.prototype = b3 === null ? Object.create(b3) : (__.prototype = b3.prototype, new __());
             };
           }();
           Object.defineProperty(exports2, "__esModule", { value: true });
@@ -6826,22 +6827,22 @@ var require_tweakpane = __commonJS({
         "./src/main/js/view/root.ts": function(module2, exports2, __webpack_require__) {
           "use strict";
           var __extends = this && this.__extends || function() {
-            var extendStatics = function(d, b) {
-              extendStatics = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(d2, b2) {
-                d2.__proto__ = b2;
-              } || function(d2, b2) {
-                for (var p in b2)
-                  if (b2.hasOwnProperty(p))
-                    d2[p] = b2[p];
+            var extendStatics = function(d3, b3) {
+              extendStatics = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(d4, b4) {
+                d4.__proto__ = b4;
+              } || function(d4, b4) {
+                for (var p3 in b4)
+                  if (b4.hasOwnProperty(p3))
+                    d4[p3] = b4[p3];
               };
-              return extendStatics(d, b);
+              return extendStatics(d3, b3);
             };
-            return function(d, b) {
-              extendStatics(d, b);
+            return function(d3, b3) {
+              extendStatics(d3, b3);
               function __() {
-                this.constructor = d;
+                this.constructor = d3;
               }
-              d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+              d3.prototype = b3 === null ? Object.create(b3) : (__.prototype = b3.prototype, new __());
             };
           }();
           Object.defineProperty(exports2, "__esModule", { value: true });
@@ -6925,22 +6926,22 @@ var require_tweakpane = __commonJS({
         "./src/main/js/view/separator.ts": function(module2, exports2, __webpack_require__) {
           "use strict";
           var __extends = this && this.__extends || function() {
-            var extendStatics = function(d, b) {
-              extendStatics = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(d2, b2) {
-                d2.__proto__ = b2;
-              } || function(d2, b2) {
-                for (var p in b2)
-                  if (b2.hasOwnProperty(p))
-                    d2[p] = b2[p];
+            var extendStatics = function(d3, b3) {
+              extendStatics = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(d4, b4) {
+                d4.__proto__ = b4;
+              } || function(d4, b4) {
+                for (var p3 in b4)
+                  if (b4.hasOwnProperty(p3))
+                    d4[p3] = b4[p3];
               };
-              return extendStatics(d, b);
+              return extendStatics(d3, b3);
             };
-            return function(d, b) {
-              extendStatics(d, b);
+            return function(d3, b3) {
+              extendStatics(d3, b3);
               function __() {
-                this.constructor = d;
+                this.constructor = d3;
               }
-              d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+              d3.prototype = b3 === null ? Object.create(b3) : (__.prototype = b3.prototype, new __());
             };
           }();
           Object.defineProperty(exports2, "__esModule", { value: true });
@@ -7047,31 +7048,31 @@ var require_chroma = __commonJS({
       typeof exports === "object" && typeof module !== "undefined" ? module.exports = factory() : typeof define === "function" && define.amd ? define(factory) : global.chroma = factory();
     })(exports, function() {
       "use strict";
-      var limit = function(x, min5, max5) {
+      var limit = function(x2, min5, max5) {
         if (min5 === void 0)
           min5 = 0;
         if (max5 === void 0)
           max5 = 1;
-        return x < min5 ? min5 : x > max5 ? max5 : x;
+        return x2 < min5 ? min5 : x2 > max5 ? max5 : x2;
       };
       var clip_rgb = function(rgb) {
         rgb._clipped = false;
         rgb._unclipped = rgb.slice(0);
-        for (var i2 = 0; i2 <= 3; i2++) {
-          if (i2 < 3) {
-            if (rgb[i2] < 0 || rgb[i2] > 255) {
+        for (var i5 = 0; i5 <= 3; i5++) {
+          if (i5 < 3) {
+            if (rgb[i5] < 0 || rgb[i5] > 255) {
               rgb._clipped = true;
             }
-            rgb[i2] = limit(rgb[i2], 0, 255);
-          } else if (i2 === 3) {
-            rgb[i2] = limit(rgb[i2], 0, 1);
+            rgb[i5] = limit(rgb[i5], 0, 255);
+          } else if (i5 === 3) {
+            rgb[i5] = limit(rgb[i5], 0, 1);
           }
         }
         return rgb;
       };
       var classToType = {};
-      for (var i = 0, list = ["Boolean", "Number", "String", "Function", "Array", "Date", "RegExp", "Undefined", "Null"]; i < list.length; i += 1) {
-        var name = list[i];
+      for (var i4 = 0, list = ["Boolean", "Number", "String", "Function", "Array", "Date", "RegExp", "Undefined", "Null"]; i4 < list.length; i4 += 1) {
+        var name = list[i4];
         classToType["[object " + name + "]"] = name.toLowerCase();
       }
       var type = function(obj) {
@@ -7084,10 +7085,10 @@ var require_chroma = __commonJS({
           return Array.prototype.slice.call(args);
         }
         if (type(args[0]) == "object" && keyOrder) {
-          return keyOrder.split("").filter(function(k) {
-            return args[0][k] !== void 0;
-          }).map(function(k) {
-            return args[0][k];
+          return keyOrder.split("").filter(function(k2) {
+            return args[0][k2] !== void 0;
+          }).map(function(k2) {
+            return args[0][k2];
           });
         }
         return args[0];
@@ -7096,9 +7097,9 @@ var require_chroma = __commonJS({
         if (args.length < 2) {
           return null;
         }
-        var l = args.length - 1;
-        if (type(args[l]) == "string") {
-          return args[l].toLowerCase();
+        var l3 = args.length - 1;
+        if (type(args[l3]) == "string") {
+          return args[l3].toLowerCase();
         }
         return null;
       };
@@ -7135,13 +7136,13 @@ var require_chroma = __commonJS({
         if (!mode) {
           autodetect = true;
           if (!input.sorted) {
-            input.autodetect = input.autodetect.sort(function(a, b) {
-              return b.p - a.p;
+            input.autodetect = input.autodetect.sort(function(a3, b3) {
+              return b3.p - a3.p;
             });
             input.sorted = true;
           }
-          for (var i2 = 0, list2 = input.autodetect; i2 < list2.length; i2 += 1) {
-            var chk = list2[i2];
+          for (var i5 = 0, list2 = input.autodetect; i5 < list2.length; i5 += 1) {
+            var chk = list2[i5];
             mode = chk.test.apply(chk, args);
             if (mode) {
               break;
@@ -7181,18 +7182,18 @@ var require_chroma = __commonJS({
         while (len5--)
           args[len5] = arguments[len5];
         var ref = unpack$1(args, "rgb");
-        var r = ref[0];
-        var g = ref[1];
-        var b = ref[2];
-        r = r / 255;
-        g = g / 255;
-        b = b / 255;
-        var k = 1 - max4(r, max4(g, b));
-        var f = k < 1 ? 1 / (1 - k) : 0;
-        var c = (1 - r - k) * f;
-        var m = (1 - g - k) * f;
-        var y = (1 - b - k) * f;
-        return [c, m, y, k];
+        var r5 = ref[0];
+        var g2 = ref[1];
+        var b3 = ref[2];
+        r5 = r5 / 255;
+        g2 = g2 / 255;
+        b3 = b3 / 255;
+        var k2 = 1 - max4(r5, max4(g2, b3));
+        var f3 = k2 < 1 ? 1 / (1 - k2) : 0;
+        var c4 = (1 - r5 - k2) * f3;
+        var m2 = (1 - g2 - k2) * f3;
+        var y3 = (1 - b3 - k2) * f3;
+        return [c4, m2, y3, k2];
       };
       var rgb2cmyk_1 = rgb2cmyk;
       var unpack$2 = utils.unpack;
@@ -7201,18 +7202,18 @@ var require_chroma = __commonJS({
         while (len5--)
           args[len5] = arguments[len5];
         args = unpack$2(args, "cmyk");
-        var c = args[0];
-        var m = args[1];
-        var y = args[2];
-        var k = args[3];
+        var c4 = args[0];
+        var m2 = args[1];
+        var y3 = args[2];
+        var k2 = args[3];
         var alpha = args.length > 4 ? args[4] : 1;
-        if (k === 1) {
+        if (k2 === 1) {
           return [0, 0, 0, alpha];
         }
         return [
-          c >= 1 ? 0 : 255 * (1 - c) * (1 - k),
-          m >= 1 ? 0 : 255 * (1 - m) * (1 - k),
-          y >= 1 ? 0 : 255 * (1 - y) * (1 - k),
+          c4 >= 1 ? 0 : 255 * (1 - c4) * (1 - k2),
+          m2 >= 1 ? 0 : 255 * (1 - m2) * (1 - k2),
+          y3 >= 1 ? 0 : 255 * (1 - y3) * (1 - k2),
           alpha
         ];
       };
@@ -7243,8 +7244,8 @@ var require_chroma = __commonJS({
       });
       var unpack$4 = utils.unpack;
       var last$2 = utils.last;
-      var rnd = function(a) {
-        return Math.round(a * 100) / 100;
+      var rnd = function(a3) {
+        return Math.round(a3 * 100) / 100;
       };
       var hsl2css = function() {
         var args = [], len5 = arguments.length;
@@ -7270,37 +7271,37 @@ var require_chroma = __commonJS({
         while (len5--)
           args[len5] = arguments[len5];
         args = unpack$5(args, "rgba");
-        var r = args[0];
-        var g = args[1];
-        var b = args[2];
-        r /= 255;
-        g /= 255;
-        b /= 255;
-        var min5 = Math.min(r, g, b);
-        var max5 = Math.max(r, g, b);
-        var l = (max5 + min5) / 2;
-        var s, h;
+        var r5 = args[0];
+        var g2 = args[1];
+        var b3 = args[2];
+        r5 /= 255;
+        g2 /= 255;
+        b3 /= 255;
+        var min5 = Math.min(r5, g2, b3);
+        var max5 = Math.max(r5, g2, b3);
+        var l3 = (max5 + min5) / 2;
+        var s4, h3;
         if (max5 === min5) {
-          s = 0;
-          h = Number.NaN;
+          s4 = 0;
+          h3 = Number.NaN;
         } else {
-          s = l < 0.5 ? (max5 - min5) / (max5 + min5) : (max5 - min5) / (2 - max5 - min5);
+          s4 = l3 < 0.5 ? (max5 - min5) / (max5 + min5) : (max5 - min5) / (2 - max5 - min5);
         }
-        if (r == max5) {
-          h = (g - b) / (max5 - min5);
-        } else if (g == max5) {
-          h = 2 + (b - r) / (max5 - min5);
-        } else if (b == max5) {
-          h = 4 + (r - g) / (max5 - min5);
+        if (r5 == max5) {
+          h3 = (g2 - b3) / (max5 - min5);
+        } else if (g2 == max5) {
+          h3 = 2 + (b3 - r5) / (max5 - min5);
+        } else if (b3 == max5) {
+          h3 = 4 + (r5 - g2) / (max5 - min5);
         }
-        h *= 60;
-        if (h < 0) {
-          h += 360;
+        h3 *= 60;
+        if (h3 < 0) {
+          h3 += 360;
         }
         if (args.length > 3 && args[3] !== void 0) {
-          return [h, s, l, args[3]];
+          return [h3, s4, l3, args[3]];
         }
-        return [h, s, l];
+        return [h3, s4, l3];
       };
       var rgb2hsl_1 = rgb2hsl;
       var unpack$6 = utils.unpack;
@@ -7333,44 +7334,44 @@ var require_chroma = __commonJS({
         while (len5--)
           args[len5] = arguments[len5];
         args = unpack$7(args, "hsl");
-        var h = args[0];
-        var s = args[1];
-        var l = args[2];
-        var r, g, b;
-        if (s === 0) {
-          r = g = b = l * 255;
+        var h3 = args[0];
+        var s4 = args[1];
+        var l3 = args[2];
+        var r5, g2, b3;
+        if (s4 === 0) {
+          r5 = g2 = b3 = l3 * 255;
         } else {
-          var t3 = [0, 0, 0];
-          var c = [0, 0, 0];
-          var t2 = l < 0.5 ? l * (1 + s) : l + s - l * s;
-          var t1 = 2 * l - t2;
-          var h_ = h / 360;
-          t3[0] = h_ + 1 / 3;
-          t3[1] = h_;
-          t3[2] = h_ - 1 / 3;
-          for (var i2 = 0; i2 < 3; i2++) {
-            if (t3[i2] < 0) {
-              t3[i2] += 1;
+          var t32 = [0, 0, 0];
+          var c4 = [0, 0, 0];
+          var t22 = l3 < 0.5 ? l3 * (1 + s4) : l3 + s4 - l3 * s4;
+          var t1 = 2 * l3 - t22;
+          var h_ = h3 / 360;
+          t32[0] = h_ + 1 / 3;
+          t32[1] = h_;
+          t32[2] = h_ - 1 / 3;
+          for (var i5 = 0; i5 < 3; i5++) {
+            if (t32[i5] < 0) {
+              t32[i5] += 1;
             }
-            if (t3[i2] > 1) {
-              t3[i2] -= 1;
+            if (t32[i5] > 1) {
+              t32[i5] -= 1;
             }
-            if (6 * t3[i2] < 1) {
-              c[i2] = t1 + (t2 - t1) * 6 * t3[i2];
-            } else if (2 * t3[i2] < 1) {
-              c[i2] = t2;
-            } else if (3 * t3[i2] < 2) {
-              c[i2] = t1 + (t2 - t1) * (2 / 3 - t3[i2]) * 6;
+            if (6 * t32[i5] < 1) {
+              c4[i5] = t1 + (t22 - t1) * 6 * t32[i5];
+            } else if (2 * t32[i5] < 1) {
+              c4[i5] = t22;
+            } else if (3 * t32[i5] < 2) {
+              c4[i5] = t1 + (t22 - t1) * (2 / 3 - t32[i5]) * 6;
             } else {
-              c[i2] = t1;
+              c4[i5] = t1;
             }
           }
-          assign = [round$1(c[0] * 255), round$1(c[1] * 255), round$1(c[2] * 255)], r = assign[0], g = assign[1], b = assign[2];
+          assign = [round$1(c4[0] * 255), round$1(c4[1] * 255), round$1(c4[2] * 255)], r5 = assign[0], g2 = assign[1], b3 = assign[2];
         }
         if (args.length > 3) {
-          return [r, g, b, args[3]];
+          return [r5, g2, b3, args[3]];
         }
-        return [r, g, b, 1];
+        return [r5, g2, b3, 1];
       };
       var hsl2rgb_1 = hsl2rgb;
       var RE_RGB = /^rgb\(\s*(-?\d+),\s*(-?\d+)\s*,\s*(-?\d+)\s*\)$/;
@@ -7380,65 +7381,65 @@ var require_chroma = __commonJS({
       var RE_HSL = /^hsl\(\s*(-?\d+(?:\.\d+)?),\s*(-?\d+(?:\.\d+)?)%\s*,\s*(-?\d+(?:\.\d+)?)%\s*\)$/;
       var RE_HSLA = /^hsla\(\s*(-?\d+(?:\.\d+)?),\s*(-?\d+(?:\.\d+)?)%\s*,\s*(-?\d+(?:\.\d+)?)%\s*,\s*([01]|[01]?\.\d+)\)$/;
       var round$2 = Math.round;
-      var css2rgb = function(css2) {
-        css2 = css2.toLowerCase().trim();
-        var m;
+      var css2rgb = function(css) {
+        css = css.toLowerCase().trim();
+        var m2;
         if (input.format.named) {
           try {
-            return input.format.named(css2);
-          } catch (e) {
+            return input.format.named(css);
+          } catch (e5) {
           }
         }
-        if (m = css2.match(RE_RGB)) {
-          var rgb = m.slice(1, 4);
-          for (var i2 = 0; i2 < 3; i2++) {
-            rgb[i2] = +rgb[i2];
+        if (m2 = css.match(RE_RGB)) {
+          var rgb = m2.slice(1, 4);
+          for (var i5 = 0; i5 < 3; i5++) {
+            rgb[i5] = +rgb[i5];
           }
           rgb[3] = 1;
           return rgb;
         }
-        if (m = css2.match(RE_RGBA)) {
-          var rgb$12 = m.slice(1, 5);
+        if (m2 = css.match(RE_RGBA)) {
+          var rgb$12 = m2.slice(1, 5);
           for (var i$12 = 0; i$12 < 4; i$12++) {
             rgb$12[i$12] = +rgb$12[i$12];
           }
           return rgb$12;
         }
-        if (m = css2.match(RE_RGB_PCT)) {
-          var rgb$2 = m.slice(1, 4);
+        if (m2 = css.match(RE_RGB_PCT)) {
+          var rgb$2 = m2.slice(1, 4);
           for (var i$2 = 0; i$2 < 3; i$2++) {
             rgb$2[i$2] = round$2(rgb$2[i$2] * 2.55);
           }
           rgb$2[3] = 1;
           return rgb$2;
         }
-        if (m = css2.match(RE_RGBA_PCT)) {
-          var rgb$3 = m.slice(1, 5);
+        if (m2 = css.match(RE_RGBA_PCT)) {
+          var rgb$3 = m2.slice(1, 5);
           for (var i$3 = 0; i$3 < 3; i$3++) {
             rgb$3[i$3] = round$2(rgb$3[i$3] * 2.55);
           }
           rgb$3[3] = +rgb$3[3];
           return rgb$3;
         }
-        if (m = css2.match(RE_HSL)) {
-          var hsl = m.slice(1, 4);
+        if (m2 = css.match(RE_HSL)) {
+          var hsl = m2.slice(1, 4);
           hsl[1] *= 0.01;
           hsl[2] *= 0.01;
           var rgb$4 = hsl2rgb_1(hsl);
           rgb$4[3] = 1;
           return rgb$4;
         }
-        if (m = css2.match(RE_HSLA)) {
-          var hsl$12 = m.slice(1, 4);
+        if (m2 = css.match(RE_HSLA)) {
+          var hsl$12 = m2.slice(1, 4);
           hsl$12[1] *= 0.01;
           hsl$12[2] *= 0.01;
           var rgb$5 = hsl2rgb_1(hsl$12);
-          rgb$5[3] = +m[4];
+          rgb$5[3] = +m2[4];
           return rgb$5;
         }
       };
-      css2rgb.test = function(s) {
-        return RE_RGB.test(s) || RE_RGBA.test(s) || RE_RGB_PCT.test(s) || RE_RGBA_PCT.test(s) || RE_HSL.test(s) || RE_HSLA.test(s);
+      css2rgb.test = function(s4) {
+        return RE_RGB.test(s4) || RE_RGBA.test(s4) || RE_RGB_PCT.test(s4) || RE_RGBA_PCT.test(s4) || RE_HSL.test(s4) || RE_HSLA.test(s4);
       };
       var css2rgb_1 = css2rgb;
       var type$3 = utils.type;
@@ -7454,11 +7455,11 @@ var require_chroma = __commonJS({
       input.format.css = css2rgb_1;
       input.autodetect.push({
         p: 5,
-        test: function(h) {
+        test: function(h3) {
           var rest = [], len5 = arguments.length - 1;
           while (len5-- > 0)
             rest[len5] = arguments[len5 + 1];
-          if (!rest.length && type$3(h) === "string" && css2rgb_1.test(h)) {
+          if (!rest.length && type$3(h3) === "string" && css2rgb_1.test(h3)) {
             return "css";
           }
         }
@@ -7490,33 +7491,33 @@ var require_chroma = __commonJS({
         while (len5--)
           args[len5] = arguments[len5];
         var ref = unpack$9(args, "rgb");
-        var r = ref[0];
-        var g = ref[1];
-        var b = ref[2];
-        var min5 = Math.min(r, g, b);
-        var max5 = Math.max(r, g, b);
+        var r5 = ref[0];
+        var g2 = ref[1];
+        var b3 = ref[2];
+        var min5 = Math.min(r5, g2, b3);
+        var max5 = Math.max(r5, g2, b3);
         var delta = max5 - min5;
-        var c = delta * 100 / 255;
+        var c4 = delta * 100 / 255;
         var _g = min5 / (255 - delta) * 100;
-        var h;
+        var h3;
         if (delta === 0) {
-          h = Number.NaN;
+          h3 = Number.NaN;
         } else {
-          if (r === max5) {
-            h = (g - b) / delta;
+          if (r5 === max5) {
+            h3 = (g2 - b3) / delta;
           }
-          if (g === max5) {
-            h = 2 + (b - r) / delta;
+          if (g2 === max5) {
+            h3 = 2 + (b3 - r5) / delta;
           }
-          if (b === max5) {
-            h = 4 + (r - g) / delta;
+          if (b3 === max5) {
+            h3 = 4 + (r5 - g2) / delta;
           }
-          h *= 60;
-          if (h < 0) {
-            h += 360;
+          h3 *= 60;
+          if (h3 < 0) {
+            h3 += 360;
           }
         }
-        return [h, c, _g];
+        return [h3, c4, _g];
       };
       var rgb2hcg_1 = rgb2hcg;
       var unpack$a = utils.unpack;
@@ -7527,53 +7528,53 @@ var require_chroma = __commonJS({
         while (len5--)
           args[len5] = arguments[len5];
         args = unpack$a(args, "hcg");
-        var h = args[0];
-        var c = args[1];
+        var h3 = args[0];
+        var c4 = args[1];
         var _g = args[2];
-        var r, g, b;
+        var r5, g2, b3;
         _g = _g * 255;
-        var _c = c * 255;
-        if (c === 0) {
-          r = g = b = _g;
+        var _c = c4 * 255;
+        if (c4 === 0) {
+          r5 = g2 = b3 = _g;
         } else {
-          if (h === 360) {
-            h = 0;
+          if (h3 === 360) {
+            h3 = 0;
           }
-          if (h > 360) {
-            h -= 360;
+          if (h3 > 360) {
+            h3 -= 360;
           }
-          if (h < 0) {
-            h += 360;
+          if (h3 < 0) {
+            h3 += 360;
           }
-          h /= 60;
-          var i2 = floor4(h);
-          var f = h - i2;
-          var p = _g * (1 - c);
-          var q = p + _c * (1 - f);
-          var t = p + _c * f;
-          var v = p + _c;
-          switch (i2) {
+          h3 /= 60;
+          var i5 = floor4(h3);
+          var f3 = h3 - i5;
+          var p3 = _g * (1 - c4);
+          var q = p3 + _c * (1 - f3);
+          var t4 = p3 + _c * f3;
+          var v2 = p3 + _c;
+          switch (i5) {
             case 0:
-              assign = [v, t, p], r = assign[0], g = assign[1], b = assign[2];
+              assign = [v2, t4, p3], r5 = assign[0], g2 = assign[1], b3 = assign[2];
               break;
             case 1:
-              assign$1 = [q, v, p], r = assign$1[0], g = assign$1[1], b = assign$1[2];
+              assign$1 = [q, v2, p3], r5 = assign$1[0], g2 = assign$1[1], b3 = assign$1[2];
               break;
             case 2:
-              assign$2 = [p, v, t], r = assign$2[0], g = assign$2[1], b = assign$2[2];
+              assign$2 = [p3, v2, t4], r5 = assign$2[0], g2 = assign$2[1], b3 = assign$2[2];
               break;
             case 3:
-              assign$3 = [p, q, v], r = assign$3[0], g = assign$3[1], b = assign$3[2];
+              assign$3 = [p3, q, v2], r5 = assign$3[0], g2 = assign$3[1], b3 = assign$3[2];
               break;
             case 4:
-              assign$4 = [t, p, v], r = assign$4[0], g = assign$4[1], b = assign$4[2];
+              assign$4 = [t4, p3, v2], r5 = assign$4[0], g2 = assign$4[1], b3 = assign$4[2];
               break;
             case 5:
-              assign$5 = [v, p, q], r = assign$5[0], g = assign$5[1], b = assign$5[2];
+              assign$5 = [v2, p3, q], r5 = assign$5[0], g2 = assign$5[1], b3 = assign$5[2];
               break;
           }
         }
-        return [r, g, b, args.length > 3 ? args[3] : 1];
+        return [r5, g2, b3, args.length > 3 ? args[3] : 1];
       };
       var hcg2rgb_1 = hcg2rgb;
       var unpack$b = utils.unpack;
@@ -7608,24 +7609,24 @@ var require_chroma = __commonJS({
         while (len5--)
           args[len5] = arguments[len5];
         var ref = unpack$c(args, "rgba");
-        var r = ref[0];
-        var g = ref[1];
-        var b = ref[2];
-        var a = ref[3];
+        var r5 = ref[0];
+        var g2 = ref[1];
+        var b3 = ref[2];
+        var a3 = ref[3];
         var mode = last$4(args) || "auto";
-        if (a === void 0) {
-          a = 1;
+        if (a3 === void 0) {
+          a3 = 1;
         }
         if (mode === "auto") {
-          mode = a < 1 ? "rgba" : "rgb";
+          mode = a3 < 1 ? "rgba" : "rgb";
         }
-        r = round$3(r);
-        g = round$3(g);
-        b = round$3(b);
-        var u = r << 16 | g << 8 | b;
-        var str6 = "000000" + u.toString(16);
+        r5 = round$3(r5);
+        g2 = round$3(g2);
+        b3 = round$3(b3);
+        var u3 = r5 << 16 | g2 << 8 | b3;
+        var str6 = "000000" + u3.toString(16);
         str6 = str6.substr(str6.length - 6);
-        var hxa = "0" + round$3(a * 255).toString(16);
+        var hxa = "0" + round$3(a3 * 255).toString(16);
         hxa = hxa.substr(hxa.length - 2);
         switch (mode.toLowerCase()) {
           case "rgba":
@@ -7648,11 +7649,11 @@ var require_chroma = __commonJS({
             hex = hex.split("");
             hex = hex[0] + hex[0] + hex[1] + hex[1] + hex[2] + hex[2];
           }
-          var u = parseInt(hex, 16);
-          var r = u >> 16;
-          var g = u >> 8 & 255;
-          var b = u & 255;
-          return [r, g, b, 1];
+          var u3 = parseInt(hex, 16);
+          var r5 = u3 >> 16;
+          var g2 = u3 >> 8 & 255;
+          var b3 = u3 & 255;
+          return [r5, g2, b3, 1];
         }
         if (hex.match(RE_HEXA)) {
           if (hex.length === 5 || hex.length === 9) {
@@ -7666,8 +7667,8 @@ var require_chroma = __commonJS({
           var r$1 = u$1 >> 24 & 255;
           var g$1 = u$1 >> 16 & 255;
           var b$1 = u$1 >> 8 & 255;
-          var a = Math.round((u$1 & 255) / 255 * 100) / 100;
-          return [r$1, g$1, b$1, a];
+          var a3 = Math.round((u$1 & 255) / 255 * 100) / 100;
+          return [r$1, g$1, b$1, a3];
         }
         throw new Error("unknown hex color: " + hex);
       };
@@ -7685,11 +7686,11 @@ var require_chroma = __commonJS({
       input.format.hex = hex2rgb_1;
       input.autodetect.push({
         p: 4,
-        test: function(h) {
+        test: function(h3) {
           var rest = [], len5 = arguments.length - 1;
           while (len5-- > 0)
             rest[len5] = arguments[len5 + 1];
-          if (!rest.length && type$5(h) === "string" && [3, 4, 5, 6, 7, 8, 9].indexOf(h.length) >= 0) {
+          if (!rest.length && type$5(h3) === "string" && [3, 4, 5, 6, 7, 8, 9].indexOf(h3.length) >= 0) {
             return "hex";
           }
         }
@@ -7704,28 +7705,28 @@ var require_chroma = __commonJS({
         while (len5--)
           args[len5] = arguments[len5];
         var ref = unpack$d(args, "rgb");
-        var r = ref[0];
-        var g = ref[1];
-        var b = ref[2];
-        r /= 255;
-        g /= 255;
-        b /= 255;
-        var h;
-        var min_ = min4(r, g, b);
-        var i2 = (r + g + b) / 3;
-        var s = i2 > 0 ? 1 - min_ / i2 : 0;
-        if (s === 0) {
-          h = NaN;
+        var r5 = ref[0];
+        var g2 = ref[1];
+        var b3 = ref[2];
+        r5 /= 255;
+        g2 /= 255;
+        b3 /= 255;
+        var h3;
+        var min_ = min4(r5, g2, b3);
+        var i5 = (r5 + g2 + b3) / 3;
+        var s4 = i5 > 0 ? 1 - min_ / i5 : 0;
+        if (s4 === 0) {
+          h3 = NaN;
         } else {
-          h = (r - g + (r - b)) / 2;
-          h /= sqrt2((r - g) * (r - g) + (r - b) * (g - b));
-          h = acos(h);
-          if (b > g) {
-            h = TWOPI - h;
+          h3 = (r5 - g2 + (r5 - b3)) / 2;
+          h3 /= sqrt2((r5 - g2) * (r5 - g2) + (r5 - b3) * (g2 - b3));
+          h3 = acos(h3);
+          if (b3 > g2) {
+            h3 = TWOPI - h3;
           }
-          h /= TWOPI;
+          h3 /= TWOPI;
         }
-        return [h * 360, s, i2];
+        return [h3 * 360, s4, i5];
       };
       var rgb2hsi_1 = rgb2hsi;
       var unpack$e = utils.unpack;
@@ -7738,42 +7739,42 @@ var require_chroma = __commonJS({
         while (len5--)
           args[len5] = arguments[len5];
         args = unpack$e(args, "hsi");
-        var h = args[0];
-        var s = args[1];
-        var i2 = args[2];
-        var r, g, b;
-        if (isNaN(h)) {
-          h = 0;
+        var h3 = args[0];
+        var s4 = args[1];
+        var i5 = args[2];
+        var r5, g2, b3;
+        if (isNaN(h3)) {
+          h3 = 0;
         }
-        if (isNaN(s)) {
-          s = 0;
+        if (isNaN(s4)) {
+          s4 = 0;
         }
-        if (h > 360) {
-          h -= 360;
+        if (h3 > 360) {
+          h3 -= 360;
         }
-        if (h < 0) {
-          h += 360;
+        if (h3 < 0) {
+          h3 += 360;
         }
-        h /= 360;
-        if (h < 1 / 3) {
-          b = (1 - s) / 3;
-          r = (1 + s * cos2(TWOPI$1 * h) / cos2(PITHIRD - TWOPI$1 * h)) / 3;
-          g = 1 - (b + r);
-        } else if (h < 2 / 3) {
-          h -= 1 / 3;
-          r = (1 - s) / 3;
-          g = (1 + s * cos2(TWOPI$1 * h) / cos2(PITHIRD - TWOPI$1 * h)) / 3;
-          b = 1 - (r + g);
+        h3 /= 360;
+        if (h3 < 1 / 3) {
+          b3 = (1 - s4) / 3;
+          r5 = (1 + s4 * cos2(TWOPI$1 * h3) / cos2(PITHIRD - TWOPI$1 * h3)) / 3;
+          g2 = 1 - (b3 + r5);
+        } else if (h3 < 2 / 3) {
+          h3 -= 1 / 3;
+          r5 = (1 - s4) / 3;
+          g2 = (1 + s4 * cos2(TWOPI$1 * h3) / cos2(PITHIRD - TWOPI$1 * h3)) / 3;
+          b3 = 1 - (r5 + g2);
         } else {
-          h -= 2 / 3;
-          g = (1 - s) / 3;
-          b = (1 + s * cos2(TWOPI$1 * h) / cos2(PITHIRD - TWOPI$1 * h)) / 3;
-          r = 1 - (g + b);
+          h3 -= 2 / 3;
+          g2 = (1 - s4) / 3;
+          b3 = (1 + s4 * cos2(TWOPI$1 * h3) / cos2(PITHIRD - TWOPI$1 * h3)) / 3;
+          r5 = 1 - (g2 + b3);
         }
-        r = limit$1(i2 * r * 3);
-        g = limit$1(i2 * g * 3);
-        b = limit$1(i2 * b * 3);
-        return [r * 255, g * 255, b * 255, args.length > 3 ? args[3] : 1];
+        r5 = limit$1(i5 * r5 * 3);
+        g2 = limit$1(i5 * g2 * 3);
+        b3 = limit$1(i5 * b3 * 3);
+        return [r5 * 255, g2 * 255, b3 * 255, args.length > 3 ? args[3] : 1];
       };
       var hsi2rgb_1 = hsi2rgb;
       var unpack$f = utils.unpack;
@@ -7832,34 +7833,34 @@ var require_chroma = __commonJS({
         while (len5--)
           args[len5] = arguments[len5];
         args = unpack$h(args, "rgb");
-        var r = args[0];
-        var g = args[1];
-        var b = args[2];
-        var min_ = min$1(r, g, b);
-        var max_ = max$1(r, g, b);
+        var r5 = args[0];
+        var g2 = args[1];
+        var b3 = args[2];
+        var min_ = min$1(r5, g2, b3);
+        var max_ = max$1(r5, g2, b3);
         var delta = max_ - min_;
-        var h, s, v;
-        v = max_ / 255;
+        var h3, s4, v2;
+        v2 = max_ / 255;
         if (max_ === 0) {
-          h = Number.NaN;
-          s = 0;
+          h3 = Number.NaN;
+          s4 = 0;
         } else {
-          s = delta / max_;
-          if (r === max_) {
-            h = (g - b) / delta;
+          s4 = delta / max_;
+          if (r5 === max_) {
+            h3 = (g2 - b3) / delta;
           }
-          if (g === max_) {
-            h = 2 + (b - r) / delta;
+          if (g2 === max_) {
+            h3 = 2 + (b3 - r5) / delta;
           }
-          if (b === max_) {
-            h = 4 + (r - g) / delta;
+          if (b3 === max_) {
+            h3 = 4 + (r5 - g2) / delta;
           }
-          h *= 60;
-          if (h < 0) {
-            h += 360;
+          h3 *= 60;
+          if (h3 < 0) {
+            h3 += 360;
           }
         }
-        return [h, s, v];
+        return [h3, s4, v2];
       };
       var rgb2hsv = rgb2hsl$1;
       var unpack$i = utils.unpack;
@@ -7870,51 +7871,51 @@ var require_chroma = __commonJS({
         while (len5--)
           args[len5] = arguments[len5];
         args = unpack$i(args, "hsv");
-        var h = args[0];
-        var s = args[1];
-        var v = args[2];
-        var r, g, b;
-        v *= 255;
-        if (s === 0) {
-          r = g = b = v;
+        var h3 = args[0];
+        var s4 = args[1];
+        var v2 = args[2];
+        var r5, g2, b3;
+        v2 *= 255;
+        if (s4 === 0) {
+          r5 = g2 = b3 = v2;
         } else {
-          if (h === 360) {
-            h = 0;
+          if (h3 === 360) {
+            h3 = 0;
           }
-          if (h > 360) {
-            h -= 360;
+          if (h3 > 360) {
+            h3 -= 360;
           }
-          if (h < 0) {
-            h += 360;
+          if (h3 < 0) {
+            h3 += 360;
           }
-          h /= 60;
-          var i2 = floor$1(h);
-          var f = h - i2;
-          var p = v * (1 - s);
-          var q = v * (1 - s * f);
-          var t = v * (1 - s * (1 - f));
-          switch (i2) {
+          h3 /= 60;
+          var i5 = floor$1(h3);
+          var f3 = h3 - i5;
+          var p3 = v2 * (1 - s4);
+          var q = v2 * (1 - s4 * f3);
+          var t4 = v2 * (1 - s4 * (1 - f3));
+          switch (i5) {
             case 0:
-              assign = [v, t, p], r = assign[0], g = assign[1], b = assign[2];
+              assign = [v2, t4, p3], r5 = assign[0], g2 = assign[1], b3 = assign[2];
               break;
             case 1:
-              assign$1 = [q, v, p], r = assign$1[0], g = assign$1[1], b = assign$1[2];
+              assign$1 = [q, v2, p3], r5 = assign$1[0], g2 = assign$1[1], b3 = assign$1[2];
               break;
             case 2:
-              assign$2 = [p, v, t], r = assign$2[0], g = assign$2[1], b = assign$2[2];
+              assign$2 = [p3, v2, t4], r5 = assign$2[0], g2 = assign$2[1], b3 = assign$2[2];
               break;
             case 3:
-              assign$3 = [p, q, v], r = assign$3[0], g = assign$3[1], b = assign$3[2];
+              assign$3 = [p3, q, v2], r5 = assign$3[0], g2 = assign$3[1], b3 = assign$3[2];
               break;
             case 4:
-              assign$4 = [t, p, v], r = assign$4[0], g = assign$4[1], b = assign$4[2];
+              assign$4 = [t4, p3, v2], r5 = assign$4[0], g2 = assign$4[1], b3 = assign$4[2];
               break;
             case 5:
-              assign$5 = [v, p, q], r = assign$5[0], g = assign$5[1], b = assign$5[2];
+              assign$5 = [v2, p3, q], r5 = assign$5[0], g2 = assign$5[1], b3 = assign$5[2];
               break;
           }
         }
-        return [r, g, b, args.length > 3 ? args[3] : 1];
+        return [r5, g2, b3, args.length > 3 ? args[3] : 1];
       };
       var hsv2rgb_1 = hsv2rgb;
       var unpack$j = utils.unpack;
@@ -7958,36 +7959,36 @@ var require_chroma = __commonJS({
         while (len5--)
           args[len5] = arguments[len5];
         var ref = unpack$k(args, "rgb");
-        var r = ref[0];
-        var g = ref[1];
-        var b = ref[2];
-        var ref$1 = rgb2xyz(r, g, b);
-        var x = ref$1[0];
-        var y = ref$1[1];
+        var r5 = ref[0];
+        var g2 = ref[1];
+        var b3 = ref[2];
+        var ref$1 = rgb2xyz(r5, g2, b3);
+        var x2 = ref$1[0];
+        var y3 = ref$1[1];
         var z = ref$1[2];
-        var l = 116 * y - 16;
-        return [l < 0 ? 0 : l, 500 * (x - y), 200 * (y - z)];
+        var l3 = 116 * y3 - 16;
+        return [l3 < 0 ? 0 : l3, 500 * (x2 - y3), 200 * (y3 - z)];
       };
-      var rgb_xyz = function(r) {
-        if ((r /= 255) <= 0.04045) {
-          return r / 12.92;
+      var rgb_xyz = function(r5) {
+        if ((r5 /= 255) <= 0.04045) {
+          return r5 / 12.92;
         }
-        return pow3((r + 0.055) / 1.055, 2.4);
+        return pow3((r5 + 0.055) / 1.055, 2.4);
       };
-      var xyz_lab = function(t) {
-        if (t > labConstants.t3) {
-          return pow3(t, 1 / 3);
+      var xyz_lab = function(t4) {
+        if (t4 > labConstants.t3) {
+          return pow3(t4, 1 / 3);
         }
-        return t / labConstants.t2 + labConstants.t0;
+        return t4 / labConstants.t2 + labConstants.t0;
       };
-      var rgb2xyz = function(r, g, b) {
-        r = rgb_xyz(r);
-        g = rgb_xyz(g);
-        b = rgb_xyz(b);
-        var x = xyz_lab((0.4124564 * r + 0.3575761 * g + 0.1804375 * b) / labConstants.Xn);
-        var y = xyz_lab((0.2126729 * r + 0.7151522 * g + 0.072175 * b) / labConstants.Yn);
-        var z = xyz_lab((0.0193339 * r + 0.119192 * g + 0.9503041 * b) / labConstants.Zn);
-        return [x, y, z];
+      var rgb2xyz = function(r5, g2, b3) {
+        r5 = rgb_xyz(r5);
+        g2 = rgb_xyz(g2);
+        b3 = rgb_xyz(b3);
+        var x2 = xyz_lab((0.4124564 * r5 + 0.3575761 * g2 + 0.1804375 * b3) / labConstants.Xn);
+        var y3 = xyz_lab((0.2126729 * r5 + 0.7151522 * g2 + 0.072175 * b3) / labConstants.Yn);
+        var z = xyz_lab((0.0193339 * r5 + 0.119192 * g2 + 0.9503041 * b3) / labConstants.Zn);
+        return [x2, y3, z];
       };
       var rgb2lab_1 = rgb2lab;
       var unpack$l = utils.unpack;
@@ -7997,26 +7998,26 @@ var require_chroma = __commonJS({
         while (len5--)
           args[len5] = arguments[len5];
         args = unpack$l(args, "lab");
-        var l = args[0];
-        var a = args[1];
-        var b = args[2];
-        var x, y, z, r, g, b_;
-        y = (l + 16) / 116;
-        x = isNaN(a) ? y : y + a / 500;
-        z = isNaN(b) ? y : y - b / 200;
-        y = labConstants.Yn * lab_xyz(y);
-        x = labConstants.Xn * lab_xyz(x);
+        var l3 = args[0];
+        var a3 = args[1];
+        var b3 = args[2];
+        var x2, y3, z, r5, g2, b_;
+        y3 = (l3 + 16) / 116;
+        x2 = isNaN(a3) ? y3 : y3 + a3 / 500;
+        z = isNaN(b3) ? y3 : y3 - b3 / 200;
+        y3 = labConstants.Yn * lab_xyz(y3);
+        x2 = labConstants.Xn * lab_xyz(x2);
         z = labConstants.Zn * lab_xyz(z);
-        r = xyz_rgb(3.2404542 * x - 1.5371385 * y - 0.4985314 * z);
-        g = xyz_rgb(-0.969266 * x + 1.8760108 * y + 0.041556 * z);
-        b_ = xyz_rgb(0.0556434 * x - 0.2040259 * y + 1.0572252 * z);
-        return [r, g, b_, args.length > 3 ? args[3] : 1];
+        r5 = xyz_rgb(3.2404542 * x2 - 1.5371385 * y3 - 0.4985314 * z);
+        g2 = xyz_rgb(-0.969266 * x2 + 1.8760108 * y3 + 0.041556 * z);
+        b_ = xyz_rgb(0.0556434 * x2 - 0.2040259 * y3 + 1.0572252 * z);
+        return [r5, g2, b_, args.length > 3 ? args[3] : 1];
       };
-      var xyz_rgb = function(r) {
-        return 255 * (r <= 304e-5 ? 12.92 * r : 1.055 * pow$1(r, 1 / 2.4) - 0.055);
+      var xyz_rgb = function(r5) {
+        return 255 * (r5 <= 304e-5 ? 12.92 * r5 : 1.055 * pow$1(r5, 1 / 2.4) - 0.055);
       };
-      var lab_xyz = function(t) {
-        return t > labConstants.t1 ? t * t * t : labConstants.t2 * (t - labConstants.t0);
+      var lab_xyz = function(t4) {
+        return t4 > labConstants.t1 ? t4 * t4 * t4 : labConstants.t2 * (t4 - labConstants.t0);
       };
       var lab2rgb_1 = lab2rgb;
       var unpack$m = utils.unpack;
@@ -8053,15 +8054,15 @@ var require_chroma = __commonJS({
         while (len5--)
           args[len5] = arguments[len5];
         var ref = unpack$n(args, "lab");
-        var l = ref[0];
-        var a = ref[1];
-        var b = ref[2];
-        var c = sqrt$1(a * a + b * b);
-        var h = (atan2(b, a) * RAD2DEG + 360) % 360;
-        if (round$4(c * 1e4) === 0) {
-          h = Number.NaN;
+        var l3 = ref[0];
+        var a3 = ref[1];
+        var b3 = ref[2];
+        var c4 = sqrt$1(a3 * a3 + b3 * b3);
+        var h3 = (atan2(b3, a3) * RAD2DEG + 360) % 360;
+        if (round$4(c4 * 1e4) === 0) {
+          h3 = Number.NaN;
         }
-        return [l, c, h];
+        return [l3, c4, h3];
       };
       var lab2lch_1 = lab2lch;
       var unpack$o = utils.unpack;
@@ -8070,14 +8071,14 @@ var require_chroma = __commonJS({
         while (len5--)
           args[len5] = arguments[len5];
         var ref = unpack$o(args, "rgb");
-        var r = ref[0];
-        var g = ref[1];
-        var b = ref[2];
-        var ref$1 = rgb2lab_1(r, g, b);
-        var l = ref$1[0];
-        var a = ref$1[1];
+        var r5 = ref[0];
+        var g2 = ref[1];
+        var b3 = ref[2];
+        var ref$1 = rgb2lab_1(r5, g2, b3);
+        var l3 = ref$1[0];
+        var a3 = ref$1[1];
         var b_ = ref$1[2];
-        return lab2lch_1(l, a, b_);
+        return lab2lch_1(l3, a3, b_);
       };
       var rgb2lch_1 = rgb2lch;
       var unpack$p = utils.unpack;
@@ -8089,14 +8090,14 @@ var require_chroma = __commonJS({
         while (len5--)
           args[len5] = arguments[len5];
         var ref = unpack$p(args, "lch");
-        var l = ref[0];
-        var c = ref[1];
-        var h = ref[2];
-        if (isNaN(h)) {
-          h = 0;
+        var l3 = ref[0];
+        var c4 = ref[1];
+        var h3 = ref[2];
+        if (isNaN(h3)) {
+          h3 = 0;
         }
-        h = h * DEG2RAD;
-        return [l, cos$1(h) * c, sin2(h) * c];
+        h3 = h3 * DEG2RAD;
+        return [l3, cos$1(h3) * c4, sin2(h3) * c4];
       };
       var lch2lab_1 = lch2lab;
       var unpack$q = utils.unpack;
@@ -8105,18 +8106,18 @@ var require_chroma = __commonJS({
         while (len5--)
           args[len5] = arguments[len5];
         args = unpack$q(args, "lch");
-        var l = args[0];
-        var c = args[1];
-        var h = args[2];
-        var ref = lch2lab_1(l, c, h);
-        var L = ref[0];
-        var a = ref[1];
+        var l3 = args[0];
+        var c4 = args[1];
+        var h3 = args[2];
+        var ref = lch2lab_1(l3, c4, h3);
+        var L2 = ref[0];
+        var a3 = ref[1];
         var b_ = ref[2];
-        var ref$1 = lab2rgb_1(L, a, b_);
-        var r = ref$1[0];
-        var g = ref$1[1];
-        var b = ref$1[2];
-        return [r, g, b, args.length > 3 ? args[3] : 1];
+        var ref$1 = lab2rgb_1(L2, a3, b_);
+        var r5 = ref$1[0];
+        var g2 = ref$1[1];
+        var b3 = ref$1[2];
+        return [r5, g2, b3, args.length > 3 ? args[3] : 1];
       };
       var lch2rgb_1 = lch2rgb;
       var unpack$r = utils.unpack;
@@ -8150,16 +8151,16 @@ var require_chroma = __commonJS({
       };
       input.format.lch = lch2rgb_1;
       input.format.hcl = hcl2rgb_1;
-      ["lch", "hcl"].forEach(function(m) {
+      ["lch", "hcl"].forEach(function(m2) {
         return input.autodetect.push({
           p: 2,
           test: function() {
             var args = [], len5 = arguments.length;
             while (len5--)
               args[len5] = arguments[len5];
-            args = unpack$s(args, m);
+            args = unpack$s(args, m2);
             if (type$a(args) === "array" && args.length === 3) {
-              return m;
+              return m2;
             }
           }
         });
@@ -8325,10 +8326,10 @@ var require_chroma = __commonJS({
       var type$b = utils.type;
       Color_1.prototype.name = function() {
         var hex = rgb2hex_1(this._rgb, "rgb");
-        for (var i2 = 0, list2 = Object.keys(w3cx11_1); i2 < list2.length; i2 += 1) {
-          var n = list2[i2];
-          if (w3cx11_1[n] === hex) {
-            return n.toLowerCase();
+        for (var i5 = 0, list2 = Object.keys(w3cx11_1); i5 < list2.length; i5 += 1) {
+          var n5 = list2[i5];
+          if (w3cx11_1[n5] === hex) {
+            return n5.toLowerCase();
           }
         }
         return hex;
@@ -8342,11 +8343,11 @@ var require_chroma = __commonJS({
       };
       input.autodetect.push({
         p: 5,
-        test: function(h) {
+        test: function(h3) {
           var rest = [], len5 = arguments.length - 1;
           while (len5-- > 0)
             rest[len5] = arguments[len5 + 1];
-          if (!rest.length && type$b(h) === "string" && w3cx11_1[h.toLowerCase()]) {
+          if (!rest.length && type$b(h3) === "string" && w3cx11_1[h3.toLowerCase()]) {
             return "named";
           }
         }
@@ -8357,19 +8358,19 @@ var require_chroma = __commonJS({
         while (len5--)
           args[len5] = arguments[len5];
         var ref = unpack$t(args, "rgb");
-        var r = ref[0];
-        var g = ref[1];
-        var b = ref[2];
-        return (r << 16) + (g << 8) + b;
+        var r5 = ref[0];
+        var g2 = ref[1];
+        var b3 = ref[2];
+        return (r5 << 16) + (g2 << 8) + b3;
       };
       var rgb2num_1 = rgb2num;
       var type$c = utils.type;
       var num2rgb = function(num) {
         if (type$c(num) == "number" && num >= 0 && num <= 16777215) {
-          var r = num >> 16;
-          var g = num >> 8 & 255;
-          var b = num & 255;
-          return [r, g, b, 1];
+          var r5 = num >> 16;
+          var g2 = num >> 8 & 255;
+          var b3 = num & 255;
+          return [r5, g2, b3, 1];
         }
         throw new Error("unknown num color: " + num);
       };
@@ -8410,8 +8411,8 @@ var require_chroma = __commonJS({
       Color_1.prototype.rgba = function(rnd2) {
         if (rnd2 === void 0)
           rnd2 = true;
-        return this._rgb.slice(0, 4).map(function(v, i2) {
-          return i2 < 3 ? rnd2 === false ? v : round$5(v) : v;
+        return this._rgb.slice(0, 4).map(function(v2, i5) {
+          return i5 < 3 ? rnd2 === false ? v2 : round$5(v2) : v2;
         });
       };
       chroma_1.rgb = function() {
@@ -8445,17 +8446,17 @@ var require_chroma = __commonJS({
       var log2 = Math.log;
       var temperature2rgb = function(kelvin) {
         var temp = kelvin / 100;
-        var r, g, b;
+        var r5, g2, b3;
         if (temp < 66) {
-          r = 255;
-          g = -155.25485562709179 - 0.44596950469579133 * (g = temp - 2) + 104.49216199393888 * log2(g);
-          b = temp < 20 ? 0 : -254.76935184120902 + 0.8274096064007395 * (b = temp - 10) + 115.67994401066147 * log2(b);
+          r5 = 255;
+          g2 = -155.25485562709179 - 0.44596950469579133 * (g2 = temp - 2) + 104.49216199393888 * log2(g2);
+          b3 = temp < 20 ? 0 : -254.76935184120902 + 0.8274096064007395 * (b3 = temp - 10) + 115.67994401066147 * log2(b3);
         } else {
-          r = 351.97690566805693 + 0.114206453784165 * (r = temp - 55) - 40.25366309332127 * log2(r);
-          g = 325.4494125711974 + 0.07943456536662342 * (g = temp - 50) - 28.0852963507957 * log2(g);
-          b = 255;
+          r5 = 351.97690566805693 + 0.114206453784165 * (r5 = temp - 55) - 40.25366309332127 * log2(r5);
+          g2 = 325.4494125711974 + 0.07943456536662342 * (g2 = temp - 50) - 28.0852963507957 * log2(g2);
+          b3 = 255;
         }
-        return [r, g, b, 1];
+        return [r5, g2, b3, 1];
       };
       var temperature2rgb_1 = temperature2rgb;
       var unpack$v = utils.unpack;
@@ -8465,7 +8466,7 @@ var require_chroma = __commonJS({
         while (len5--)
           args[len5] = arguments[len5];
         var rgb = unpack$v(args, "rgb");
-        var r = rgb[0], b = rgb[2];
+        var r5 = rgb[0], b3 = rgb[2];
         var minTemp = 1e3;
         var maxTemp = 4e4;
         var eps = 0.4;
@@ -8473,7 +8474,7 @@ var require_chroma = __commonJS({
         while (maxTemp - minTemp > eps) {
           temp = (maxTemp + minTemp) * 0.5;
           var rgb$12 = temperature2rgb_1(temp);
-          if (rgb$12[2] / rgb$12[0] >= b / r) {
+          if (rgb$12[2] / rgb$12[0] >= b3 / r5) {
             maxTemp = temp;
           } else {
             minTemp = temp;
@@ -8493,15 +8494,15 @@ var require_chroma = __commonJS({
       };
       input.format.temp = input.format.kelvin = input.format.temperature = temperature2rgb_1;
       var type$f = utils.type;
-      Color_1.prototype.alpha = function(a, mutate) {
+      Color_1.prototype.alpha = function(a3, mutate) {
         if (mutate === void 0)
           mutate = false;
-        if (a !== void 0 && type$f(a) === "number") {
+        if (a3 !== void 0 && type$f(a3) === "number") {
           if (mutate) {
-            this._rgb[3] = a;
+            this._rgb[3] = a3;
             return this;
           }
-          return new Color_1([this._rgb[0], this._rgb[1], this._rgb[2], a], "rgb");
+          return new Color_1([this._rgb[0], this._rgb[1], this._rgb[2], a3], "rgb");
         }
         return this._rgb[3];
       };
@@ -8529,9 +8530,9 @@ var require_chroma = __commonJS({
         var channel = ref[1];
         var src = this[mode]();
         if (channel) {
-          var i2 = mode.indexOf(channel);
-          if (i2 > -1) {
-            return src[i2];
+          var i5 = mode.indexOf(channel);
+          if (i5 > -1) {
+            return src[i5];
           }
           throw new Error("unknown channel " + channel + " in mode " + mode);
         } else {
@@ -8566,21 +8567,21 @@ var require_chroma = __commonJS({
         }
         return rgb2luminance.apply(void 0, this._rgb.slice(0, 3));
       };
-      var rgb2luminance = function(r, g, b) {
-        r = luminance_x(r);
-        g = luminance_x(g);
-        b = luminance_x(b);
-        return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+      var rgb2luminance = function(r5, g2, b3) {
+        r5 = luminance_x(r5);
+        g2 = luminance_x(g2);
+        b3 = luminance_x(b3);
+        return 0.2126 * r5 + 0.7152 * g2 + 0.0722 * b3;
       };
-      var luminance_x = function(x) {
-        x /= 255;
-        return x <= 0.03928 ? x / 12.92 : pow$2((x + 0.055) / 1.055, 2.4);
+      var luminance_x = function(x2) {
+        x2 /= 255;
+        return x2 <= 0.03928 ? x2 / 12.92 : pow$2((x2 + 0.055) / 1.055, 2.4);
       };
       var interpolator = {};
       var type$h = utils.type;
-      var mix = function(col1, col2, f) {
-        if (f === void 0)
-          f = 0.5;
+      var mix = function(col1, col2, f3) {
+        if (f3 === void 0)
+          f3 = 0.5;
         var rest = [], len5 = arguments.length - 3;
         while (len5-- > 0)
           rest[len5] = arguments[len5 + 3];
@@ -8597,26 +8598,26 @@ var require_chroma = __commonJS({
         if (type$h(col2) !== "object") {
           col2 = new Color_1(col2);
         }
-        return interpolator[mode](col1, col2, f).alpha(col1.alpha() + f * (col2.alpha() - col1.alpha()));
+        return interpolator[mode](col1, col2, f3).alpha(col1.alpha() + f3 * (col2.alpha() - col1.alpha()));
       };
-      Color_1.prototype.mix = Color_1.prototype.interpolate = function(col2, f) {
-        if (f === void 0)
-          f = 0.5;
+      Color_1.prototype.mix = Color_1.prototype.interpolate = function(col2, f3) {
+        if (f3 === void 0)
+          f3 = 0.5;
         var rest = [], len5 = arguments.length - 2;
         while (len5-- > 0)
           rest[len5] = arguments[len5 + 2];
-        return mix.apply(void 0, [this, col2, f].concat(rest));
+        return mix.apply(void 0, [this, col2, f3].concat(rest));
       };
       Color_1.prototype.premultiply = function(mutate) {
         if (mutate === void 0)
           mutate = false;
         var rgb = this._rgb;
-        var a = rgb[3];
+        var a3 = rgb[3];
         if (mutate) {
-          this._rgb = [rgb[0] * a, rgb[1] * a, rgb[2] * a, a];
+          this._rgb = [rgb[0] * a3, rgb[1] * a3, rgb[2] * a3, a3];
           return this;
         } else {
-          return new Color_1([rgb[0] * a, rgb[1] * a, rgb[2] * a, a], "rgb");
+          return new Color_1([rgb[0] * a3, rgb[1] * a3, rgb[2] * a3, a3], "rgb");
         }
       };
       Color_1.prototype.saturate = function(amount) {
@@ -8644,27 +8645,27 @@ var require_chroma = __commonJS({
         var channel = ref[1];
         var src = this[mode]();
         if (channel) {
-          var i2 = mode.indexOf(channel);
-          if (i2 > -1) {
+          var i5 = mode.indexOf(channel);
+          if (i5 > -1) {
             if (type$i(value) == "string") {
               switch (value.charAt(0)) {
                 case "+":
-                  src[i2] += +value;
+                  src[i5] += +value;
                   break;
                 case "-":
-                  src[i2] += +value;
+                  src[i5] += +value;
                   break;
                 case "*":
-                  src[i2] *= +value.substr(1);
+                  src[i5] *= +value.substr(1);
                   break;
                 case "/":
-                  src[i2] /= +value.substr(1);
+                  src[i5] /= +value.substr(1);
                   break;
                 default:
-                  src[i2] = +value;
+                  src[i5] = +value;
               }
             } else if (type$i(value) === "number") {
-              src[i2] = value;
+              src[i5] = value;
             } else {
               throw new Error("unsupported value for Color.set");
             }
@@ -8680,54 +8681,69 @@ var require_chroma = __commonJS({
           return src;
         }
       };
-      var rgb$1 = function(col1, col2, f) {
+      var rgb$1 = function(col1, col2, f3) {
         var xyz0 = col1._rgb;
         var xyz1 = col2._rgb;
-        return new Color_1(xyz0[0] + f * (xyz1[0] - xyz0[0]), xyz0[1] + f * (xyz1[1] - xyz0[1]), xyz0[2] + f * (xyz1[2] - xyz0[2]), "rgb");
+        return new Color_1(
+          xyz0[0] + f3 * (xyz1[0] - xyz0[0]),
+          xyz0[1] + f3 * (xyz1[1] - xyz0[1]),
+          xyz0[2] + f3 * (xyz1[2] - xyz0[2]),
+          "rgb"
+        );
       };
       interpolator.rgb = rgb$1;
       var sqrt$2 = Math.sqrt;
       var pow$3 = Math.pow;
-      var lrgb = function(col1, col2, f) {
+      var lrgb = function(col1, col2, f3) {
         var ref = col1._rgb;
         var x1 = ref[0];
         var y1 = ref[1];
         var z1 = ref[2];
         var ref$1 = col2._rgb;
         var x2 = ref$1[0];
-        var y2 = ref$1[1];
+        var y22 = ref$1[1];
         var z2 = ref$1[2];
-        return new Color_1(sqrt$2(pow$3(x1, 2) * (1 - f) + pow$3(x2, 2) * f), sqrt$2(pow$3(y1, 2) * (1 - f) + pow$3(y2, 2) * f), sqrt$2(pow$3(z1, 2) * (1 - f) + pow$3(z2, 2) * f), "rgb");
+        return new Color_1(
+          sqrt$2(pow$3(x1, 2) * (1 - f3) + pow$3(x2, 2) * f3),
+          sqrt$2(pow$3(y1, 2) * (1 - f3) + pow$3(y22, 2) * f3),
+          sqrt$2(pow$3(z1, 2) * (1 - f3) + pow$3(z2, 2) * f3),
+          "rgb"
+        );
       };
       interpolator.lrgb = lrgb;
-      var lab$1 = function(col1, col2, f) {
+      var lab$1 = function(col1, col2, f3) {
         var xyz0 = col1.lab();
         var xyz1 = col2.lab();
-        return new Color_1(xyz0[0] + f * (xyz1[0] - xyz0[0]), xyz0[1] + f * (xyz1[1] - xyz0[1]), xyz0[2] + f * (xyz1[2] - xyz0[2]), "lab");
+        return new Color_1(
+          xyz0[0] + f3 * (xyz1[0] - xyz0[0]),
+          xyz0[1] + f3 * (xyz1[1] - xyz0[1]),
+          xyz0[2] + f3 * (xyz1[2] - xyz0[2]),
+          "lab"
+        );
       };
       interpolator.lab = lab$1;
-      var _hsx = function(col1, col2, f, m) {
+      var _hsx = function(col1, col2, f3, m2) {
         var assign, assign$1;
         var xyz0, xyz1;
-        if (m === "hsl") {
+        if (m2 === "hsl") {
           xyz0 = col1.hsl();
           xyz1 = col2.hsl();
-        } else if (m === "hsv") {
+        } else if (m2 === "hsv") {
           xyz0 = col1.hsv();
           xyz1 = col2.hsv();
-        } else if (m === "hcg") {
+        } else if (m2 === "hcg") {
           xyz0 = col1.hcg();
           xyz1 = col2.hcg();
-        } else if (m === "hsi") {
+        } else if (m2 === "hsi") {
           xyz0 = col1.hsi();
           xyz1 = col2.hsi();
-        } else if (m === "lch" || m === "hcl") {
-          m = "hcl";
+        } else if (m2 === "lch" || m2 === "hcl") {
+          m2 = "hcl";
           xyz0 = col1.hcl();
           xyz1 = col2.hcl();
         }
         var hue0, hue1, sat0, sat1, lbv0, lbv1;
-        if (m.substr(0, 1) === "h") {
+        if (m2.substr(0, 1) === "h") {
           assign = xyz0, hue0 = assign[0], sat0 = assign[1], lbv0 = assign[2];
           assign$1 = xyz1, hue1 = assign$1[0], sat1 = assign$1[1], lbv1 = assign$1[2];
         }
@@ -8740,51 +8756,51 @@ var require_chroma = __commonJS({
           } else {
             dh = hue1 - hue0;
           }
-          hue = hue0 + f * dh;
+          hue = hue0 + f3 * dh;
         } else if (!isNaN(hue0)) {
           hue = hue0;
-          if ((lbv1 == 1 || lbv1 == 0) && m != "hsv") {
+          if ((lbv1 == 1 || lbv1 == 0) && m2 != "hsv") {
             sat = sat0;
           }
         } else if (!isNaN(hue1)) {
           hue = hue1;
-          if ((lbv0 == 1 || lbv0 == 0) && m != "hsv") {
+          if ((lbv0 == 1 || lbv0 == 0) && m2 != "hsv") {
             sat = sat1;
           }
         } else {
           hue = Number.NaN;
         }
         if (sat === void 0) {
-          sat = sat0 + f * (sat1 - sat0);
+          sat = sat0 + f3 * (sat1 - sat0);
         }
-        lbv = lbv0 + f * (lbv1 - lbv0);
-        return new Color_1([hue, sat, lbv], m);
+        lbv = lbv0 + f3 * (lbv1 - lbv0);
+        return new Color_1([hue, sat, lbv], m2);
       };
-      var lch$1 = function(col1, col2, f) {
-        return _hsx(col1, col2, f, "lch");
+      var lch$1 = function(col1, col2, f3) {
+        return _hsx(col1, col2, f3, "lch");
       };
       interpolator.lch = lch$1;
       interpolator.hcl = lch$1;
-      var num$1 = function(col1, col2, f) {
+      var num$1 = function(col1, col2, f3) {
         var c1 = col1.num();
-        var c2 = col2.num();
-        return new Color_1(c1 + f * (c2 - c1), "num");
+        var c22 = col2.num();
+        return new Color_1(c1 + f3 * (c22 - c1), "num");
       };
       interpolator.num = num$1;
-      var hcg$1 = function(col1, col2, f) {
-        return _hsx(col1, col2, f, "hcg");
+      var hcg$1 = function(col1, col2, f3) {
+        return _hsx(col1, col2, f3, "hcg");
       };
       interpolator.hcg = hcg$1;
-      var hsi$1 = function(col1, col2, f) {
-        return _hsx(col1, col2, f, "hsi");
+      var hsi$1 = function(col1, col2, f3) {
+        return _hsx(col1, col2, f3, "hsi");
       };
       interpolator.hsi = hsi$1;
-      var hsl$1 = function(col1, col2, f) {
-        return _hsx(col1, col2, f, "hsl");
+      var hsl$1 = function(col1, col2, f3) {
+        return _hsx(col1, col2, f3, "hsl");
       };
       interpolator.hsl = hsl$1;
-      var hsv$1 = function(col1, col2, f) {
-        return _hsx(col1, col2, f, "hsv");
+      var hsv$1 = function(col1, col2, f3) {
+        return _hsx(col1, col2, f3, "hsv");
       };
       interpolator.hsv = hsv$1;
       var clip_rgb$2 = utils.clip_rgb;
@@ -8799,20 +8815,20 @@ var require_chroma = __commonJS({
           mode = "lrgb";
         if (weights === void 0)
           weights = null;
-        var l = colors2.length;
+        var l3 = colors2.length;
         if (!weights) {
-          weights = Array.from(new Array(l)).map(function() {
+          weights = Array.from(new Array(l3)).map(function() {
             return 1;
           });
         }
-        var k = l / weights.reduce(function(a, b) {
-          return a + b;
+        var k2 = l3 / weights.reduce(function(a3, b3) {
+          return a3 + b3;
         });
-        weights.forEach(function(w, i3) {
-          weights[i3] *= k;
+        weights.forEach(function(w2, i6) {
+          weights[i6] *= k2;
         });
-        colors2 = colors2.map(function(c) {
-          return new Color_1(c);
+        colors2 = colors2.map(function(c4) {
+          return new Color_1(c4);
         });
         if (mode === "lrgb") {
           return _average_lrgb(colors2, weights);
@@ -8822,28 +8838,28 @@ var require_chroma = __commonJS({
         var cnt = [];
         var dx = 0;
         var dy = 0;
-        for (var i2 = 0; i2 < xyz.length; i2++) {
-          xyz[i2] = (xyz[i2] || 0) * weights[0];
-          cnt.push(isNaN(xyz[i2]) ? 0 : weights[0]);
-          if (mode.charAt(i2) === "h" && !isNaN(xyz[i2])) {
-            var A = xyz[i2] / 180 * PI$1;
-            dx += cos$2(A) * weights[0];
-            dy += sin$1(A) * weights[0];
+        for (var i5 = 0; i5 < xyz.length; i5++) {
+          xyz[i5] = (xyz[i5] || 0) * weights[0];
+          cnt.push(isNaN(xyz[i5]) ? 0 : weights[0]);
+          if (mode.charAt(i5) === "h" && !isNaN(xyz[i5])) {
+            var A2 = xyz[i5] / 180 * PI$1;
+            dx += cos$2(A2) * weights[0];
+            dy += sin$1(A2) * weights[0];
           }
         }
         var alpha = first.alpha() * weights[0];
-        colors2.forEach(function(c, ci) {
-          var xyz2 = c.get(mode);
-          alpha += c.alpha() * weights[ci + 1];
-          for (var i3 = 0; i3 < xyz.length; i3++) {
-            if (!isNaN(xyz2[i3])) {
-              cnt[i3] += weights[ci + 1];
-              if (mode.charAt(i3) === "h") {
-                var A2 = xyz2[i3] / 180 * PI$1;
-                dx += cos$2(A2) * weights[ci + 1];
-                dy += sin$1(A2) * weights[ci + 1];
+        colors2.forEach(function(c4, ci) {
+          var xyz2 = c4.get(mode);
+          alpha += c4.alpha() * weights[ci + 1];
+          for (var i6 = 0; i6 < xyz.length; i6++) {
+            if (!isNaN(xyz2[i6])) {
+              cnt[i6] += weights[ci + 1];
+              if (mode.charAt(i6) === "h") {
+                var A3 = xyz2[i6] / 180 * PI$1;
+                dx += cos$2(A3) * weights[ci + 1];
+                dy += sin$1(A3) * weights[ci + 1];
               } else {
-                xyz[i3] += xyz2[i3] * weights[ci + 1];
+                xyz[i6] += xyz2[i6] * weights[ci + 1];
               }
             }
           }
@@ -8862,20 +8878,20 @@ var require_chroma = __commonJS({
             xyz[i$12] = xyz[i$12] / cnt[i$12];
           }
         }
-        alpha /= l;
+        alpha /= l3;
         return new Color_1(xyz, mode).alpha(alpha > 0.99999 ? 1 : alpha, true);
       };
       var _average_lrgb = function(colors2, weights) {
-        var l = colors2.length;
+        var l3 = colors2.length;
         var xyz = [0, 0, 0, 0];
-        for (var i2 = 0; i2 < colors2.length; i2++) {
-          var col = colors2[i2];
-          var f = weights[i2] / l;
+        for (var i5 = 0; i5 < colors2.length; i5++) {
+          var col = colors2[i5];
+          var f3 = weights[i5] / l3;
           var rgb = col._rgb;
-          xyz[0] += pow$4(rgb[0], 2) * f;
-          xyz[1] += pow$4(rgb[1], 2) * f;
-          xyz[2] += pow$4(rgb[2], 2) * f;
-          xyz[3] += rgb[3] * f;
+          xyz[0] += pow$4(rgb[0], 2) * f3;
+          xyz[1] += pow$4(rgb[1], 2) * f3;
+          xyz[2] += pow$4(rgb[2], 2) * f3;
+          xyz[3] += rgb[3] * f3;
         }
         xyz[0] = sqrt$3(xyz[0]);
         xyz[1] = sqrt$3(xyz[1]);
@@ -8913,8 +8929,8 @@ var require_chroma = __commonJS({
               colors3 = [colors3[0], colors3[0]];
             }
             colors3 = colors3.slice(0);
-            for (var c = 0; c < colors3.length; c++) {
-              colors3[c] = chroma_1(colors3[c]);
+            for (var c4 = 0; c4 < colors3.length; c4++) {
+              colors3[c4] = chroma_1(colors3[c4]);
             }
             _pos.length = 0;
             for (var c$1 = 0; c$1 < colors3.length; c$1++) {
@@ -8926,23 +8942,23 @@ var require_chroma = __commonJS({
         };
         var getClass = function(value) {
           if (_classes != null) {
-            var n = _classes.length - 1;
-            var i2 = 0;
-            while (i2 < n && value >= _classes[i2]) {
-              i2++;
+            var n5 = _classes.length - 1;
+            var i5 = 0;
+            while (i5 < n5 && value >= _classes[i5]) {
+              i5++;
             }
-            return i2 - 1;
+            return i5 - 1;
           }
           return 0;
         };
-        var tMapLightness = function(t) {
-          return t;
+        var tMapLightness = function(t4) {
+          return t4;
         };
-        var tMapDomain = function(t) {
-          return t;
+        var tMapDomain = function(t4) {
+          return t4;
         };
         var getColor = function(val, bypassMap) {
-          var col, t;
+          var col, t4;
           if (bypassMap == null) {
             bypassMap = false;
           }
@@ -8951,51 +8967,51 @@ var require_chroma = __commonJS({
           }
           if (!bypassMap) {
             if (_classes && _classes.length > 2) {
-              var c = getClass(val);
-              t = c / (_classes.length - 2);
+              var c4 = getClass(val);
+              t4 = c4 / (_classes.length - 2);
             } else if (_max !== _min) {
-              t = (val - _min) / (_max - _min);
+              t4 = (val - _min) / (_max - _min);
             } else {
-              t = 1;
+              t4 = 1;
             }
           } else {
-            t = val;
+            t4 = val;
           }
-          t = tMapDomain(t);
+          t4 = tMapDomain(t4);
           if (!bypassMap) {
-            t = tMapLightness(t);
+            t4 = tMapLightness(t4);
           }
           if (_gamma !== 1) {
-            t = pow$5(t, _gamma);
+            t4 = pow$5(t4, _gamma);
           }
-          t = _padding[0] + t * (1 - _padding[0] - _padding[1]);
-          t = Math.min(1, Math.max(0, t));
-          var k = Math.floor(t * 1e4);
-          if (_useCache && _colorCache[k]) {
-            col = _colorCache[k];
+          t4 = _padding[0] + t4 * (1 - _padding[0] - _padding[1]);
+          t4 = Math.min(1, Math.max(0, t4));
+          var k2 = Math.floor(t4 * 1e4);
+          if (_useCache && _colorCache[k2]) {
+            col = _colorCache[k2];
           } else {
             if (type$j(_colors) === "array") {
-              for (var i2 = 0; i2 < _pos.length; i2++) {
-                var p = _pos[i2];
-                if (t <= p) {
-                  col = _colors[i2];
+              for (var i5 = 0; i5 < _pos.length; i5++) {
+                var p3 = _pos[i5];
+                if (t4 <= p3) {
+                  col = _colors[i5];
                   break;
                 }
-                if (t >= p && i2 === _pos.length - 1) {
-                  col = _colors[i2];
+                if (t4 >= p3 && i5 === _pos.length - 1) {
+                  col = _colors[i5];
                   break;
                 }
-                if (t > p && t < _pos[i2 + 1]) {
-                  t = (t - p) / (_pos[i2 + 1] - p);
-                  col = chroma_1.interpolate(_colors[i2], _colors[i2 + 1], t, _mode);
+                if (t4 > p3 && t4 < _pos[i5 + 1]) {
+                  t4 = (t4 - p3) / (_pos[i5 + 1] - p3);
+                  col = chroma_1.interpolate(_colors[i5], _colors[i5 + 1], t4, _mode);
                   break;
                 }
               }
             } else if (type$j(_colors) === "function") {
-              col = _colors(t);
+              col = _colors(t4);
             }
             if (_useCache) {
-              _colorCache[k] = col;
+              _colorCache[k2] = col;
             }
           }
           return col;
@@ -9004,112 +9020,112 @@ var require_chroma = __commonJS({
           return _colorCache = {};
         };
         setColors(colors2);
-        var f = function(v) {
-          var c = chroma_1(getColor(v));
-          if (_out && c[_out]) {
-            return c[_out]();
+        var f3 = function(v2) {
+          var c4 = chroma_1(getColor(v2));
+          if (_out && c4[_out]) {
+            return c4[_out]();
           } else {
-            return c;
+            return c4;
           }
         };
-        f.classes = function(classes) {
+        f3.classes = function(classes) {
           if (classes != null) {
             if (type$j(classes) === "array") {
               _classes = classes;
               _domain = [classes[0], classes[classes.length - 1]];
             } else {
-              var d = chroma_1.analyze(_domain);
+              var d3 = chroma_1.analyze(_domain);
               if (classes === 0) {
-                _classes = [d.min, d.max];
+                _classes = [d3.min, d3.max];
               } else {
-                _classes = chroma_1.limits(d, "e", classes);
+                _classes = chroma_1.limits(d3, "e", classes);
               }
             }
-            return f;
+            return f3;
           }
           return _classes;
         };
-        f.domain = function(domain) {
+        f3.domain = function(domain) {
           if (!arguments.length) {
             return _domain;
           }
           _min = domain[0];
           _max = domain[domain.length - 1];
           _pos = [];
-          var k = _colors.length;
-          if (domain.length === k && _min !== _max) {
-            for (var i2 = 0, list2 = Array.from(domain); i2 < list2.length; i2 += 1) {
-              var d = list2[i2];
-              _pos.push((d - _min) / (_max - _min));
+          var k2 = _colors.length;
+          if (domain.length === k2 && _min !== _max) {
+            for (var i5 = 0, list2 = Array.from(domain); i5 < list2.length; i5 += 1) {
+              var d3 = list2[i5];
+              _pos.push((d3 - _min) / (_max - _min));
             }
           } else {
-            for (var c = 0; c < k; c++) {
-              _pos.push(c / (k - 1));
+            for (var c4 = 0; c4 < k2; c4++) {
+              _pos.push(c4 / (k2 - 1));
             }
             if (domain.length > 2) {
-              var tOut = domain.map(function(d2, i3) {
-                return i3 / (domain.length - 1);
+              var tOut = domain.map(function(d4, i6) {
+                return i6 / (domain.length - 1);
               });
-              var tBreaks = domain.map(function(d2) {
-                return (d2 - _min) / (_max - _min);
+              var tBreaks = domain.map(function(d4) {
+                return (d4 - _min) / (_max - _min);
               });
-              if (!tBreaks.every(function(val, i3) {
-                return tOut[i3] === val;
+              if (!tBreaks.every(function(val, i6) {
+                return tOut[i6] === val;
               })) {
-                tMapDomain = function(t) {
-                  if (t <= 0 || t >= 1) {
-                    return t;
+                tMapDomain = function(t4) {
+                  if (t4 <= 0 || t4 >= 1) {
+                    return t4;
                   }
-                  var i3 = 0;
-                  while (t >= tBreaks[i3 + 1]) {
-                    i3++;
+                  var i6 = 0;
+                  while (t4 >= tBreaks[i6 + 1]) {
+                    i6++;
                   }
-                  var f2 = (t - tBreaks[i3]) / (tBreaks[i3 + 1] - tBreaks[i3]);
-                  var out2 = tOut[i3] + f2 * (tOut[i3 + 1] - tOut[i3]);
+                  var f4 = (t4 - tBreaks[i6]) / (tBreaks[i6 + 1] - tBreaks[i6]);
+                  var out2 = tOut[i6] + f4 * (tOut[i6 + 1] - tOut[i6]);
                   return out2;
                 };
               }
             }
           }
           _domain = [_min, _max];
-          return f;
+          return f3;
         };
-        f.mode = function(_m) {
+        f3.mode = function(_m) {
           if (!arguments.length) {
             return _mode;
           }
           _mode = _m;
           resetCache();
-          return f;
+          return f3;
         };
-        f.range = function(colors3, _pos2) {
+        f3.range = function(colors3, _pos2) {
           setColors(colors3, _pos2);
-          return f;
+          return f3;
         };
-        f.out = function(_o) {
+        f3.out = function(_o) {
           _out = _o;
-          return f;
+          return f3;
         };
-        f.spread = function(val) {
+        f3.spread = function(val) {
           if (!arguments.length) {
             return _spread;
           }
           _spread = val;
-          return f;
+          return f3;
         };
-        f.correctLightness = function(v) {
-          if (v == null) {
-            v = true;
+        f3.correctLightness = function(v2) {
+          if (v2 == null) {
+            v2 = true;
           }
-          _correctLightness = v;
+          _correctLightness = v2;
           resetCache();
           if (_correctLightness) {
-            tMapLightness = function(t) {
+            tMapLightness = function(t4) {
               var L0 = getColor(0, true).lab()[0];
               var L1 = getColor(1, true).lab()[0];
               var pol = L0 > L1;
-              var L_actual = getColor(t, true).lab()[0];
-              var L_ideal = L0 + (L1 - L0) * t;
+              var L_actual = getColor(t4, true).lab()[0];
+              var L_ideal = L0 + (L1 - L0) * t4;
               var L_diff = L_actual - L_ideal;
               var t0 = 0;
               var t1 = 1;
@@ -9120,37 +9136,37 @@ var require_chroma = __commonJS({
                     L_diff *= -1;
                   }
                   if (L_diff < 0) {
-                    t0 = t;
-                    t += (t1 - t) * 0.5;
+                    t0 = t4;
+                    t4 += (t1 - t4) * 0.5;
                   } else {
-                    t1 = t;
-                    t += (t0 - t) * 0.5;
+                    t1 = t4;
+                    t4 += (t0 - t4) * 0.5;
                   }
-                  L_actual = getColor(t, true).lab()[0];
+                  L_actual = getColor(t4, true).lab()[0];
                   return L_diff = L_actual - L_ideal;
                 })();
               }
-              return t;
+              return t4;
             };
           } else {
-            tMapLightness = function(t) {
-              return t;
+            tMapLightness = function(t4) {
+              return t4;
             };
           }
-          return f;
+          return f3;
         };
-        f.padding = function(p) {
-          if (p != null) {
-            if (type$j(p) === "number") {
-              p = [p, p];
+        f3.padding = function(p3) {
+          if (p3 != null) {
+            if (type$j(p3) === "number") {
+              p3 = [p3, p3];
             }
-            _padding = p;
-            return f;
+            _padding = p3;
+            return f3;
           } else {
             return _padding;
           }
         };
-        f.colors = function(numColors, out2) {
+        f3.colors = function(numColors, out2) {
           if (arguments.length < 2) {
             out2 = "hex";
           }
@@ -9158,125 +9174,125 @@ var require_chroma = __commonJS({
           if (arguments.length === 0) {
             result = _colors.slice(0);
           } else if (numColors === 1) {
-            result = [f(0.5)];
+            result = [f3(0.5)];
           } else if (numColors > 1) {
             var dm = _domain[0];
             var dd = _domain[1] - dm;
-            result = __range__(0, numColors, false).map(function(i3) {
-              return f(dm + i3 / (numColors - 1) * dd);
+            result = __range__(0, numColors, false).map(function(i6) {
+              return f3(dm + i6 / (numColors - 1) * dd);
             });
           } else {
             colors2 = [];
             var samples = [];
             if (_classes && _classes.length > 2) {
-              for (var i2 = 1, end = _classes.length, asc = 1 <= end; asc ? i2 < end : i2 > end; asc ? i2++ : i2--) {
-                samples.push((_classes[i2 - 1] + _classes[i2]) * 0.5);
+              for (var i5 = 1, end = _classes.length, asc = 1 <= end; asc ? i5 < end : i5 > end; asc ? i5++ : i5--) {
+                samples.push((_classes[i5 - 1] + _classes[i5]) * 0.5);
               }
             } else {
               samples = _domain;
             }
-            result = samples.map(function(v) {
-              return f(v);
+            result = samples.map(function(v2) {
+              return f3(v2);
             });
           }
           if (chroma_1[out2]) {
-            result = result.map(function(c) {
-              return c[out2]();
+            result = result.map(function(c4) {
+              return c4[out2]();
             });
           }
           return result;
         };
-        f.cache = function(c) {
-          if (c != null) {
-            _useCache = c;
-            return f;
+        f3.cache = function(c4) {
+          if (c4 != null) {
+            _useCache = c4;
+            return f3;
           } else {
             return _useCache;
           }
         };
-        f.gamma = function(g) {
-          if (g != null) {
-            _gamma = g;
-            return f;
+        f3.gamma = function(g2) {
+          if (g2 != null) {
+            _gamma = g2;
+            return f3;
           } else {
             return _gamma;
           }
         };
-        f.nodata = function(d) {
-          if (d != null) {
-            _nacol = chroma_1(d);
-            return f;
+        f3.nodata = function(d3) {
+          if (d3 != null) {
+            _nacol = chroma_1(d3);
+            return f3;
           } else {
             return _nacol;
           }
         };
-        return f;
+        return f3;
       };
       function __range__(left, right, inclusive) {
         var range = [];
         var ascending = left < right;
         var end = !inclusive ? right : ascending ? right + 1 : right - 1;
-        for (var i2 = left; ascending ? i2 < end : i2 > end; ascending ? i2++ : i2--) {
-          range.push(i2);
+        for (var i5 = left; ascending ? i5 < end : i5 > end; ascending ? i5++ : i5--) {
+          range.push(i5);
         }
         return range;
       }
       var bezier2 = function(colors2) {
         var assign, assign$1, assign$2;
-        var I, lab0, lab1, lab2;
-        colors2 = colors2.map(function(c) {
-          return new Color_1(c);
+        var I2, lab0, lab1, lab2;
+        colors2 = colors2.map(function(c4) {
+          return new Color_1(c4);
         });
         if (colors2.length === 2) {
-          assign = colors2.map(function(c) {
-            return c.lab();
+          assign = colors2.map(function(c4) {
+            return c4.lab();
           }), lab0 = assign[0], lab1 = assign[1];
-          I = function(t) {
-            var lab = [0, 1, 2].map(function(i2) {
-              return lab0[i2] + t * (lab1[i2] - lab0[i2]);
+          I2 = function(t4) {
+            var lab = [0, 1, 2].map(function(i5) {
+              return lab0[i5] + t4 * (lab1[i5] - lab0[i5]);
             });
             return new Color_1(lab, "lab");
           };
         } else if (colors2.length === 3) {
-          assign$1 = colors2.map(function(c) {
-            return c.lab();
+          assign$1 = colors2.map(function(c4) {
+            return c4.lab();
           }), lab0 = assign$1[0], lab1 = assign$1[1], lab2 = assign$1[2];
-          I = function(t) {
-            var lab = [0, 1, 2].map(function(i2) {
-              return (1 - t) * (1 - t) * lab0[i2] + 2 * (1 - t) * t * lab1[i2] + t * t * lab2[i2];
+          I2 = function(t4) {
+            var lab = [0, 1, 2].map(function(i5) {
+              return (1 - t4) * (1 - t4) * lab0[i5] + 2 * (1 - t4) * t4 * lab1[i5] + t4 * t4 * lab2[i5];
             });
             return new Color_1(lab, "lab");
           };
         } else if (colors2.length === 4) {
           var lab3;
-          assign$2 = colors2.map(function(c) {
-            return c.lab();
+          assign$2 = colors2.map(function(c4) {
+            return c4.lab();
           }), lab0 = assign$2[0], lab1 = assign$2[1], lab2 = assign$2[2], lab3 = assign$2[3];
-          I = function(t) {
-            var lab = [0, 1, 2].map(function(i2) {
-              return (1 - t) * (1 - t) * (1 - t) * lab0[i2] + 3 * (1 - t) * (1 - t) * t * lab1[i2] + 3 * (1 - t) * t * t * lab2[i2] + t * t * t * lab3[i2];
+          I2 = function(t4) {
+            var lab = [0, 1, 2].map(function(i5) {
+              return (1 - t4) * (1 - t4) * (1 - t4) * lab0[i5] + 3 * (1 - t4) * (1 - t4) * t4 * lab1[i5] + 3 * (1 - t4) * t4 * t4 * lab2[i5] + t4 * t4 * t4 * lab3[i5];
             });
             return new Color_1(lab, "lab");
           };
         } else if (colors2.length === 5) {
           var I0 = bezier2(colors2.slice(0, 3));
           var I1 = bezier2(colors2.slice(2, 5));
-          I = function(t) {
-            if (t < 0.5) {
-              return I0(t * 2);
+          I2 = function(t4) {
+            if (t4 < 0.5) {
+              return I0(t4 * 2);
             } else {
-              return I1((t - 0.5) * 2);
+              return I1((t4 - 0.5) * 2);
             }
           };
         }
-        return I;
+        return I2;
       };
       var bezier_1 = function(colors2) {
-        var f = bezier2(colors2);
-        f.scale = function() {
-          return scale6(f);
+        var f3 = bezier2(colors2);
+        f3.scale = function() {
+          return scale6(f3);
         };
-        return f;
+        return f3;
       };
       var blend = function(bottom, top, mode) {
         if (!blend[mode]) {
@@ -9284,49 +9300,49 @@ var require_chroma = __commonJS({
         }
         return blend[mode](bottom, top);
       };
-      var blend_f = function(f) {
+      var blend_f = function(f3) {
         return function(bottom, top) {
           var c0 = chroma_1(top).rgb();
           var c1 = chroma_1(bottom).rgb();
-          return chroma_1.rgb(f(c0, c1));
+          return chroma_1.rgb(f3(c0, c1));
         };
       };
-      var each = function(f) {
+      var each = function(f3) {
         return function(c0, c1) {
           var out2 = [];
-          out2[0] = f(c0[0], c1[0]);
-          out2[1] = f(c0[1], c1[1]);
-          out2[2] = f(c0[2], c1[2]);
+          out2[0] = f3(c0[0], c1[0]);
+          out2[1] = f3(c0[1], c1[1]);
+          out2[2] = f3(c0[2], c1[2]);
           return out2;
         };
       };
-      var normal = function(a) {
-        return a;
+      var normal = function(a3) {
+        return a3;
       };
-      var multiply6 = function(a, b) {
-        return a * b / 255;
+      var multiply6 = function(a3, b3) {
+        return a3 * b3 / 255;
       };
-      var darken$1 = function(a, b) {
-        return a > b ? b : a;
+      var darken$1 = function(a3, b3) {
+        return a3 > b3 ? b3 : a3;
       };
-      var lighten = function(a, b) {
-        return a > b ? a : b;
+      var lighten = function(a3, b3) {
+        return a3 > b3 ? a3 : b3;
       };
-      var screen = function(a, b) {
-        return 255 * (1 - (1 - a / 255) * (1 - b / 255));
+      var screen = function(a3, b3) {
+        return 255 * (1 - (1 - a3 / 255) * (1 - b3 / 255));
       };
-      var overlay2 = function(a, b) {
-        return b < 128 ? 2 * a * b / 255 : 255 * (1 - 2 * (1 - a / 255) * (1 - b / 255));
+      var overlay2 = function(a3, b3) {
+        return b3 < 128 ? 2 * a3 * b3 / 255 : 255 * (1 - 2 * (1 - a3 / 255) * (1 - b3 / 255));
       };
-      var burn = function(a, b) {
-        return 255 * (1 - (1 - b / 255) / (a / 255));
+      var burn = function(a3, b3) {
+        return 255 * (1 - (1 - b3 / 255) / (a3 / 255));
       };
-      var dodge = function(a, b) {
-        if (a === 255) {
+      var dodge = function(a3, b3) {
+        if (a3 === 255) {
           return 255;
         }
-        a = 255 * (b / 255) / (1 - a / 255);
-        return a > 255 ? 255 : a;
+        a3 = 255 * (b3 / 255) / (1 - a3 / 255);
+        return a3 > 255 ? 255 : a3;
       };
       blend.normal = blend_f(each(normal));
       blend.multiply = blend_f(each(multiply6));
@@ -9361,44 +9377,44 @@ var require_chroma = __commonJS({
           dl = 0;
           lightness = [lightness, lightness];
         }
-        var f = function(fract) {
-          var a = TWOPI$2 * ((start + 120) / 360 + rotations * fract);
-          var l = pow$6(lightness[0] + dl * fract, gamma);
-          var h = dh !== 0 ? hue[0] + fract * dh : hue;
-          var amp = h * l * (1 - l) / 2;
-          var cos_a = cos$3(a);
-          var sin_a = sin$2(a);
-          var r = l + amp * (-0.14861 * cos_a + 1.78277 * sin_a);
-          var g = l + amp * (-0.29227 * cos_a - 0.90649 * sin_a);
-          var b = l + amp * (1.97294 * cos_a);
-          return chroma_1(clip_rgb$3([r * 255, g * 255, b * 255, 1]));
+        var f3 = function(fract) {
+          var a3 = TWOPI$2 * ((start + 120) / 360 + rotations * fract);
+          var l3 = pow$6(lightness[0] + dl * fract, gamma);
+          var h3 = dh !== 0 ? hue[0] + fract * dh : hue;
+          var amp = h3 * l3 * (1 - l3) / 2;
+          var cos_a = cos$3(a3);
+          var sin_a = sin$2(a3);
+          var r5 = l3 + amp * (-0.14861 * cos_a + 1.78277 * sin_a);
+          var g2 = l3 + amp * (-0.29227 * cos_a - 0.90649 * sin_a);
+          var b3 = l3 + amp * (1.97294 * cos_a);
+          return chroma_1(clip_rgb$3([r5 * 255, g2 * 255, b3 * 255, 1]));
         };
-        f.start = function(s) {
-          if (s == null) {
+        f3.start = function(s4) {
+          if (s4 == null) {
             return start;
           }
-          start = s;
-          return f;
+          start = s4;
+          return f3;
         };
-        f.rotations = function(r) {
-          if (r == null) {
+        f3.rotations = function(r5) {
+          if (r5 == null) {
             return rotations;
           }
-          rotations = r;
-          return f;
+          rotations = r5;
+          return f3;
         };
-        f.gamma = function(g) {
-          if (g == null) {
+        f3.gamma = function(g2) {
+          if (g2 == null) {
             return gamma;
           }
-          gamma = g;
-          return f;
+          gamma = g2;
+          return f3;
         };
-        f.hue = function(h) {
-          if (h == null) {
+        f3.hue = function(h3) {
+          if (h3 == null) {
             return hue;
           }
-          hue = h;
+          hue = h3;
           if (type$k(hue) === "array") {
             dh = hue[1] - hue[0];
             if (dh === 0) {
@@ -9407,33 +9423,33 @@ var require_chroma = __commonJS({
           } else {
             dh = 0;
           }
-          return f;
+          return f3;
         };
-        f.lightness = function(h) {
-          if (h == null) {
+        f3.lightness = function(h3) {
+          if (h3 == null) {
             return lightness;
           }
-          if (type$k(h) === "array") {
-            lightness = h;
-            dl = h[1] - h[0];
+          if (type$k(h3) === "array") {
+            lightness = h3;
+            dl = h3[1] - h3[0];
           } else {
-            lightness = [h, h];
+            lightness = [h3, h3];
             dl = 0;
           }
-          return f;
+          return f3;
         };
-        f.scale = function() {
-          return chroma_1.scale(f);
+        f3.scale = function() {
+          return chroma_1.scale(f3);
         };
-        f.hue(hue);
-        return f;
+        f3.hue(hue);
+        return f3;
       };
       var digits = "0123456789abcdef";
       var floor$2 = Math.floor;
       var random5 = Math.random;
       var random_1 = function() {
         var code = "#";
-        for (var i2 = 0; i2 < 6; i2++) {
+        for (var i5 = 0; i5 < 6; i5++) {
           code += digits.charAt(floor$2(random5() * 16));
         }
         return new Color_1(code, "hex");
@@ -9445,7 +9461,7 @@ var require_chroma = __commonJS({
       var analyze = function(data, key3) {
         if (key3 === void 0)
           key3 = null;
-        var r = {
+        var r5 = {
           min: Number.MAX_VALUE,
           max: Number.MAX_VALUE * -1,
           sum: 0,
@@ -9460,22 +9476,22 @@ var require_chroma = __commonJS({
             val = val[key3];
           }
           if (val !== void 0 && val !== null && !isNaN(val)) {
-            r.values.push(val);
-            r.sum += val;
-            if (val < r.min) {
-              r.min = val;
+            r5.values.push(val);
+            r5.sum += val;
+            if (val < r5.min) {
+              r5.min = val;
             }
-            if (val > r.max) {
-              r.max = val;
+            if (val > r5.max) {
+              r5.max = val;
             }
-            r.count += 1;
+            r5.count += 1;
           }
         });
-        r.domain = [r.min, r.max];
-        r.limits = function(mode, num) {
-          return limits(r, mode, num);
+        r5.domain = [r5.min, r5.max];
+        r5.limits = function(mode, num) {
+          return limits(r5, mode, num);
         };
-        return r;
+        return r5;
       };
       var limits = function(data, mode, num) {
         if (mode === void 0)
@@ -9487,8 +9503,8 @@ var require_chroma = __commonJS({
         }
         var min5 = data.min;
         var max5 = data.max;
-        var values = data.values.sort(function(a, b) {
-          return a - b;
+        var values = data.values.sort(function(a3, b3) {
+          return a3 - b3;
         });
         if (num === 1) {
           return [min5, max5];
@@ -9500,8 +9516,8 @@ var require_chroma = __commonJS({
         }
         if (mode.substr(0, 1) === "e") {
           limits2.push(min5);
-          for (var i2 = 1; i2 < num; i2++) {
-            limits2.push(min5 + i2 / num * (max5 - min5));
+          for (var i5 = 1; i5 < num; i5++) {
+            limits2.push(min5 + i5 / num * (max5 - min5));
           }
           limits2.push(max5);
         } else if (mode.substr(0, 1) === "l") {
@@ -9518,20 +9534,20 @@ var require_chroma = __commonJS({
         } else if (mode.substr(0, 1) === "q") {
           limits2.push(min5);
           for (var i$2 = 1; i$2 < num; i$2++) {
-            var p = (values.length - 1) * i$2 / num;
-            var pb = floor$3(p);
-            if (pb === p) {
+            var p3 = (values.length - 1) * i$2 / num;
+            var pb = floor$3(p3);
+            if (pb === p3) {
               limits2.push(values[pb]);
             } else {
-              var pr = p - pb;
+              var pr = p3 - pb;
               limits2.push(values[pb] * (1 - pr) + values[pb + 1] * pr);
             }
           }
           limits2.push(max5);
         } else if (mode.substr(0, 1) === "k") {
           var cluster;
-          var n = values.length;
-          var assignments = new Array(n);
+          var n5 = values.length;
+          var assignments = new Array(n5);
           var clusterSizes = new Array(num);
           var repeat = true;
           var nb_iters = 0;
@@ -9543,10 +9559,10 @@ var require_chroma = __commonJS({
           }
           centroids.push(max5);
           while (repeat) {
-            for (var j = 0; j < num; j++) {
-              clusterSizes[j] = 0;
+            for (var j2 = 0; j2 < num; j2++) {
+              clusterSizes[j2] = 0;
             }
-            for (var i$4 = 0; i$4 < n; i$4++) {
+            for (var i$4 = 0; i$4 < n5; i$4++) {
               var value = values[i$4];
               var mindist = Number.MAX_VALUE;
               var best = void 0;
@@ -9564,7 +9580,7 @@ var require_chroma = __commonJS({
             for (var j$2 = 0; j$2 < num; j$2++) {
               newCentroids[j$2] = null;
             }
-            for (var i$5 = 0; i$5 < n; i$5++) {
+            for (var i$5 = 0; i$5 < n5; i$5++) {
               cluster = assignments[i$5];
               if (newCentroids[cluster] === null) {
                 newCentroids[cluster] = values[i$5];
@@ -9592,7 +9608,7 @@ var require_chroma = __commonJS({
           for (var j$5 = 0; j$5 < num; j$5++) {
             kClusters[j$5] = [];
           }
-          for (var i$6 = 0; i$6 < n; i$6++) {
+          for (var i$6 = 0; i$6 < n5; i$6++) {
             cluster = assignments[i$6];
             kClusters[cluster].push(values[i$6]);
           }
@@ -9601,49 +9617,49 @@ var require_chroma = __commonJS({
             tmpKMeansBreaks.push(kClusters[j$6][0]);
             tmpKMeansBreaks.push(kClusters[j$6][kClusters[j$6].length - 1]);
           }
-          tmpKMeansBreaks = tmpKMeansBreaks.sort(function(a, b) {
-            return a - b;
+          tmpKMeansBreaks = tmpKMeansBreaks.sort(function(a3, b3) {
+            return a3 - b3;
           });
           limits2.push(tmpKMeansBreaks[0]);
           for (var i$7 = 1; i$7 < tmpKMeansBreaks.length; i$7 += 2) {
-            var v = tmpKMeansBreaks[i$7];
-            if (!isNaN(v) && limits2.indexOf(v) === -1) {
-              limits2.push(v);
+            var v2 = tmpKMeansBreaks[i$7];
+            if (!isNaN(v2) && limits2.indexOf(v2) === -1) {
+              limits2.push(v2);
             }
           }
         }
         return limits2;
       };
       var analyze_1 = { analyze, limits };
-      var contrast = function(a, b) {
-        a = new Color_1(a);
-        b = new Color_1(b);
-        var l1 = a.luminance();
-        var l2 = b.luminance();
-        return l1 > l2 ? (l1 + 0.05) / (l2 + 0.05) : (l2 + 0.05) / (l1 + 0.05);
+      var contrast = function(a3, b3) {
+        a3 = new Color_1(a3);
+        b3 = new Color_1(b3);
+        var l1 = a3.luminance();
+        var l22 = b3.luminance();
+        return l1 > l22 ? (l1 + 0.05) / (l22 + 0.05) : (l22 + 0.05) / (l1 + 0.05);
       };
       var sqrt$4 = Math.sqrt;
       var atan2$2 = Math.atan2;
       var abs$1 = Math.abs;
       var cos$4 = Math.cos;
       var PI$2 = Math.PI;
-      var deltaE = function(a, b, L, C) {
-        if (L === void 0)
-          L = 1;
-        if (C === void 0)
-          C = 1;
-        a = new Color_1(a);
-        b = new Color_1(b);
-        var ref = Array.from(a.lab());
+      var deltaE = function(a3, b3, L2, C2) {
+        if (L2 === void 0)
+          L2 = 1;
+        if (C2 === void 0)
+          C2 = 1;
+        a3 = new Color_1(a3);
+        b3 = new Color_1(b3);
+        var ref = Array.from(a3.lab());
         var L1 = ref[0];
         var a1 = ref[1];
         var b1 = ref[2];
-        var ref$1 = Array.from(b.lab());
-        var L2 = ref$1[0];
-        var a2 = ref$1[1];
-        var b2 = ref$1[2];
+        var ref$1 = Array.from(b3.lab());
+        var L22 = ref$1[0];
+        var a22 = ref$1[1];
+        var b22 = ref$1[2];
         var c1 = sqrt$4(a1 * a1 + b1 * b1);
-        var c2 = sqrt$4(a2 * a2 + b2 * b2);
+        var c22 = sqrt$4(a22 * a22 + b22 * b22);
         var sl = L1 < 16 ? 0.511 : 0.040975 * L1 / (1 + 0.01765 * L1);
         var sc = 0.0638 * c1 / (1 + 0.0131 * c1) + 0.638;
         var h1 = c1 < 1e-6 ? 0 : atan2$2(b1, a1) * 180 / PI$2;
@@ -9653,31 +9669,31 @@ var require_chroma = __commonJS({
         while (h1 >= 360) {
           h1 -= 360;
         }
-        var t = h1 >= 164 && h1 <= 345 ? 0.56 + abs$1(0.2 * cos$4(PI$2 * (h1 + 168) / 180)) : 0.36 + abs$1(0.4 * cos$4(PI$2 * (h1 + 35) / 180));
+        var t4 = h1 >= 164 && h1 <= 345 ? 0.56 + abs$1(0.2 * cos$4(PI$2 * (h1 + 168) / 180)) : 0.36 + abs$1(0.4 * cos$4(PI$2 * (h1 + 35) / 180));
         var c4 = c1 * c1 * c1 * c1;
-        var f = sqrt$4(c4 / (c4 + 1900));
-        var sh = sc * (f * t + 1 - f);
-        var delL = L1 - L2;
-        var delC = c1 - c2;
-        var delA = a1 - a2;
-        var delB = b1 - b2;
+        var f3 = sqrt$4(c4 / (c4 + 1900));
+        var sh = sc * (f3 * t4 + 1 - f3);
+        var delL = L1 - L22;
+        var delC = c1 - c22;
+        var delA = a1 - a22;
+        var delB = b1 - b22;
         var dH2 = delA * delA + delB * delB - delC * delC;
-        var v1 = delL / (L * sl);
-        var v2 = delC / (C * sc);
+        var v1 = delL / (L2 * sl);
+        var v2 = delC / (C2 * sc);
         var v3 = sh;
         return sqrt$4(v1 * v1 + v2 * v2 + dH2 / (v3 * v3));
       };
-      var distance4 = function(a, b, mode) {
+      var distance4 = function(a3, b3, mode) {
         if (mode === void 0)
           mode = "lab";
-        a = new Color_1(a);
-        b = new Color_1(b);
-        var l1 = a.get(mode);
-        var l2 = b.get(mode);
+        a3 = new Color_1(a3);
+        b3 = new Color_1(b3);
+        var l1 = a3.get(mode);
+        var l22 = b3.get(mode);
         var sum_sq = 0;
-        for (var i2 in l1) {
-          var d = (l1[i2] || 0) - (l2[i2] || 0);
-          sum_sq += d * d;
+        for (var i5 in l1) {
+          var d3 = (l1[i5] || 0) - (l22[i5] || 0);
+          sum_sq += d3 * d3;
         }
         return Math.sqrt(sum_sq);
       };
@@ -9688,7 +9704,7 @@ var require_chroma = __commonJS({
         try {
           new (Function.prototype.bind.apply(Color_1, [null].concat(args)))();
           return true;
-        } catch (e) {
+        } catch (e5) {
           return false;
         }
       };
@@ -9768,16 +9784,16 @@ var require_chroma = __commonJS({
 // examples/src/renderMenu.ts
 function getExamplePaths(examples2, currentPath, entries = [], path = "") {
   const keys = Object.keys(examples2);
-  for (let i = 0, n = keys.length; i < n; ++i) {
-    if (typeof examples2[keys[i]] === "function") {
+  for (let i4 = 0, n5 = keys.length; i4 < n5; ++i4) {
+    if (typeof examples2[keys[i4]] === "function") {
       if (path === currentPath) {
-        entries.push(`${path}/${keys[i]}`);
+        entries.push(`${path}/${keys[i4]}`);
       }
     } else {
       if (path === currentPath) {
-        entries.push(`${path}/${keys[i]}`);
+        entries.push(`${path}/${keys[i4]}`);
       } else {
-        getExamplePaths(examples2[keys[i]], currentPath, entries, `${path}/${keys[i]}`);
+        getExamplePaths(examples2[keys[i4]], currentPath, entries, `${path}/${keys[i4]}`);
       }
     }
   }
@@ -9795,10 +9811,10 @@ function renderMenu(element, examples2, pathComponents, basePath) {
     const backPath = `${basePath}/${pathComponents.slice(0, -1).join("/")}`;
     const div4 = document.createElement("div");
     div4.className = "menu-back";
-    const a = document.createElement("a");
-    a.href = backPath;
-    a.appendChild(div4);
-    header.appendChild(a);
+    const a3 = document.createElement("a");
+    a3.href = backPath;
+    a3.appendChild(div4);
+    header.appendChild(a3);
   }
   const title = document.createElement("div");
   title.innerText = "Examples";
@@ -9807,650 +9823,643 @@ function renderMenu(element, examples2, pathComponents, basePath) {
   const items = document.createElement("div");
   items.className = "menu-items-container";
   container.appendChild(items);
-  for (let i = 0, n = entries.length; i < n; ++i) {
+  for (let i4 = 0, n5 = entries.length; i4 < n5; ++i4) {
     const div4 = document.createElement("div");
     div4.className = "menu-item";
-    div4.innerText = entries[i];
-    const a = document.createElement("a");
-    a.href = `${basePath}${entries[i]}`;
-    a.appendChild(div4);
-    items.appendChild(a);
+    div4.innerText = entries[i4];
+    const a3 = document.createElement("a");
+    a3.href = `${basePath}${entries[i4]}`;
+    a3.appendChild(div4);
+    items.appendChild(a3);
   }
   element.appendChild(container);
 }
 
-// node_modules/lit-html/lib/directive.js
-var directives = new WeakMap();
-var isDirective = (o) => {
-  return typeof o === "function" && directives.has(o);
+// node_modules/@lit/reactive-element/css-tag.js
+var t = globalThis;
+var e = t.ShadowRoot && (void 0 === t.ShadyCSS || t.ShadyCSS.nativeShadow) && "adoptedStyleSheets" in Document.prototype && "replace" in CSSStyleSheet.prototype;
+var s = Symbol();
+var o = /* @__PURE__ */ new WeakMap();
+var n = class {
+  constructor(t4, e5, o4) {
+    if (this._$cssResult$ = true, o4 !== s)
+      throw Error("CSSResult is not constructable. Use `unsafeCSS` or `css` instead.");
+    this.cssText = t4, this.t = e5;
+  }
+  get styleSheet() {
+    let t4 = this.o;
+    const s4 = this.t;
+    if (e && void 0 === t4) {
+      const e5 = void 0 !== s4 && 1 === s4.length;
+      e5 && (t4 = o.get(s4)), void 0 === t4 && ((this.o = t4 = new CSSStyleSheet()).replaceSync(this.cssText), e5 && o.set(s4, t4));
+    }
+    return t4;
+  }
+  toString() {
+    return this.cssText;
+  }
 };
+var r = (t4) => new n("string" == typeof t4 ? t4 : t4 + "", void 0, s);
+var i = (t4, ...e5) => {
+  const o4 = 1 === t4.length ? t4[0] : e5.reduce((e6, s4, o5) => e6 + ((t5) => {
+    if (true === t5._$cssResult$)
+      return t5.cssText;
+    if ("number" == typeof t5)
+      return t5;
+    throw Error("Value passed to 'css' function must be a 'css' function result: " + t5 + ". Use 'unsafeCSS' to pass non-literal values, but take care to ensure page security.");
+  })(s4) + t4[o5 + 1], t4[0]);
+  return new n(o4, t4, s);
+};
+var S = (s4, o4) => {
+  if (e)
+    s4.adoptedStyleSheets = o4.map((t4) => t4 instanceof CSSStyleSheet ? t4 : t4.styleSheet);
+  else
+    for (const e5 of o4) {
+      const o5 = document.createElement("style"), n5 = t.litNonce;
+      void 0 !== n5 && o5.setAttribute("nonce", n5), o5.textContent = e5.cssText, s4.appendChild(o5);
+    }
+};
+var c = e ? (t4) => t4 : (t4) => t4 instanceof CSSStyleSheet ? ((t5) => {
+  let e5 = "";
+  for (const s4 of t5.cssRules)
+    e5 += s4.cssText;
+  return r(e5);
+})(t4) : t4;
 
-// node_modules/lit-html/lib/dom.js
-var isCEPolyfill = typeof window !== "undefined" && window.customElements != null && window.customElements.polyfillWrapFlushCallback !== void 0;
-var removeNodes = (container, start, end = null) => {
-  while (start !== end) {
-    const n = start.nextSibling;
-    container.removeChild(start);
-    start = n;
+// node_modules/@lit/reactive-element/reactive-element.js
+var { is: i2, defineProperty: e2, getOwnPropertyDescriptor: r2, getOwnPropertyNames: h, getOwnPropertySymbols: o2, getPrototypeOf: n2 } = Object;
+var a = globalThis;
+var c2 = a.trustedTypes;
+var l = c2 ? c2.emptyScript : "";
+var p = a.reactiveElementPolyfillSupport;
+var d = (t4, s4) => t4;
+var u = { toAttribute(t4, s4) {
+  switch (s4) {
+    case Boolean:
+      t4 = t4 ? l : null;
+      break;
+    case Object:
+    case Array:
+      t4 = null == t4 ? t4 : JSON.stringify(t4);
   }
-};
-
-// node_modules/lit-html/lib/part.js
-var noChange = {};
-var nothing = {};
-
-// node_modules/lit-html/lib/template.js
-var marker = `{{lit-${String(Math.random()).slice(2)}}}`;
-var nodeMarker = `<!--${marker}-->`;
-var markerRegex = new RegExp(`${marker}|${nodeMarker}`);
-var boundAttributeSuffix = "$lit$";
-var Template = class {
-  constructor(result, element) {
-    this.parts = [];
-    this.element = element;
-    const nodesToRemove = [];
-    const stack = [];
-    const walker = document.createTreeWalker(element.content, 133, null, false);
-    let lastPartIndex = 0;
-    let index = -1;
-    let partIndex = 0;
-    const { strings, values: { length: length5 } } = result;
-    while (partIndex < length5) {
-      const node = walker.nextNode();
-      if (node === null) {
-        walker.currentNode = stack.pop();
-        continue;
+  return t4;
+}, fromAttribute(t4, s4) {
+  let i4 = t4;
+  switch (s4) {
+    case Boolean:
+      i4 = null !== t4;
+      break;
+    case Number:
+      i4 = null === t4 ? null : Number(t4);
+      break;
+    case Object:
+    case Array:
+      try {
+        i4 = JSON.parse(t4);
+      } catch (t5) {
+        i4 = null;
       }
-      index++;
-      if (node.nodeType === 1) {
-        if (node.hasAttributes()) {
-          const attributes = node.attributes;
-          const { length: length6 } = attributes;
-          let count = 0;
-          for (let i = 0; i < length6; i++) {
-            if (endsWith(attributes[i].name, boundAttributeSuffix)) {
-              count++;
-            }
-          }
-          while (count-- > 0) {
-            const stringForPart = strings[partIndex];
-            const name = lastAttributeNameRegex.exec(stringForPart)[2];
-            const attributeLookupName = name.toLowerCase() + boundAttributeSuffix;
-            const attributeValue = node.getAttribute(attributeLookupName);
-            node.removeAttribute(attributeLookupName);
-            const statics = attributeValue.split(markerRegex);
-            this.parts.push({ type: "attribute", index, name, strings: statics });
-            partIndex += statics.length - 1;
-          }
-        }
-        if (node.tagName === "TEMPLATE") {
-          stack.push(node);
-          walker.currentNode = node.content;
-        }
-      } else if (node.nodeType === 3) {
-        const data = node.data;
-        if (data.indexOf(marker) >= 0) {
-          const parent = node.parentNode;
-          const strings2 = data.split(markerRegex);
-          const lastIndex = strings2.length - 1;
-          for (let i = 0; i < lastIndex; i++) {
-            let insert;
-            let s = strings2[i];
-            if (s === "") {
-              insert = createMarker();
-            } else {
-              const match = lastAttributeNameRegex.exec(s);
-              if (match !== null && endsWith(match[2], boundAttributeSuffix)) {
-                s = s.slice(0, match.index) + match[1] + match[2].slice(0, -boundAttributeSuffix.length) + match[3];
-              }
-              insert = document.createTextNode(s);
-            }
-            parent.insertBefore(insert, node);
-            this.parts.push({ type: "node", index: ++index });
-          }
-          if (strings2[lastIndex] === "") {
-            parent.insertBefore(createMarker(), node);
-            nodesToRemove.push(node);
-          } else {
-            node.data = strings2[lastIndex];
-          }
-          partIndex += lastIndex;
-        }
-      } else if (node.nodeType === 8) {
-        if (node.data === marker) {
-          const parent = node.parentNode;
-          if (node.previousSibling === null || index === lastPartIndex) {
-            index++;
-            parent.insertBefore(createMarker(), node);
-          }
-          lastPartIndex = index;
-          this.parts.push({ type: "node", index });
-          if (node.nextSibling === null) {
-            node.data = "";
-          } else {
-            nodesToRemove.push(node);
-            index--;
-          }
-          partIndex++;
-        } else {
-          let i = -1;
-          while ((i = node.data.indexOf(marker, i + 1)) !== -1) {
-            this.parts.push({ type: "node", index: -1 });
-            partIndex++;
-          }
-        }
-      }
-    }
-    for (const n of nodesToRemove) {
-      n.parentNode.removeChild(n);
+  }
+  return i4;
+} };
+var f = (t4, s4) => !i2(t4, s4);
+var y = { attribute: true, type: String, converter: u, reflect: false, hasChanged: f };
+var _a, _b;
+(_a = Symbol.metadata) != null ? _a : Symbol.metadata = Symbol("metadata"), (_b = a.litPropertyMetadata) != null ? _b : a.litPropertyMetadata = /* @__PURE__ */ new WeakMap();
+var b = class extends HTMLElement {
+  static addInitializer(t4) {
+    var _a6;
+    this._$Ei(), ((_a6 = this.l) != null ? _a6 : this.l = []).push(t4);
+  }
+  static get observedAttributes() {
+    return this.finalize(), this._$Eh && [...this._$Eh.keys()];
+  }
+  static createProperty(t4, s4 = y) {
+    if (s4.state && (s4.attribute = false), this._$Ei(), this.elementProperties.set(t4, s4), !s4.noAccessor) {
+      const i4 = Symbol(), r5 = this.getPropertyDescriptor(t4, i4, s4);
+      void 0 !== r5 && e2(this.prototype, t4, r5);
     }
   }
-};
-var endsWith = (str6, suffix) => {
-  const index = str6.length - suffix.length;
-  return index >= 0 && str6.slice(index) === suffix;
-};
-var isTemplatePartActive = (part) => part.index !== -1;
-var createMarker = () => document.createComment("");
-var lastAttributeNameRegex = /([ \x09\x0a\x0c\x0d])([^\0-\x1F\x7F-\x9F "'>=/]+)([ \x09\x0a\x0c\x0d]*=[ \x09\x0a\x0c\x0d]*(?:[^ \x09\x0a\x0c\x0d"'`<>=]*|"[^"]*|'[^']*))$/;
-
-// node_modules/lit-html/lib/template-instance.js
-var TemplateInstance = class {
-  constructor(template, processor, options) {
-    this.__parts = [];
-    this.template = template;
-    this.processor = processor;
-    this.options = options;
+  static getPropertyDescriptor(t4, s4, i4) {
+    var _a6;
+    const { get: e5, set: h3 } = (_a6 = r2(this.prototype, t4)) != null ? _a6 : { get() {
+      return this[s4];
+    }, set(t5) {
+      this[s4] = t5;
+    } };
+    return { get() {
+      return e5 == null ? void 0 : e5.call(this);
+    }, set(s5) {
+      const r5 = e5 == null ? void 0 : e5.call(this);
+      h3.call(this, s5), this.requestUpdate(t4, r5, i4);
+    }, configurable: true, enumerable: true };
   }
-  update(values) {
-    let i = 0;
-    for (const part of this.__parts) {
-      if (part !== void 0) {
-        part.setValue(values[i]);
-      }
-      i++;
-    }
-    for (const part of this.__parts) {
-      if (part !== void 0) {
-        part.commit();
-      }
-    }
+  static getPropertyOptions(t4) {
+    var _a6;
+    return (_a6 = this.elementProperties.get(t4)) != null ? _a6 : y;
   }
-  _clone() {
-    const fragment = isCEPolyfill ? this.template.element.content.cloneNode(true) : document.importNode(this.template.element.content, true);
-    const stack = [];
-    const parts2 = this.template.parts;
-    const walker = document.createTreeWalker(fragment, 133, null, false);
-    let partIndex = 0;
-    let nodeIndex = 0;
-    let part;
-    let node = walker.nextNode();
-    while (partIndex < parts2.length) {
-      part = parts2[partIndex];
-      if (!isTemplatePartActive(part)) {
-        this.__parts.push(void 0);
-        partIndex++;
-        continue;
-      }
-      while (nodeIndex < part.index) {
-        nodeIndex++;
-        if (node.nodeName === "TEMPLATE") {
-          stack.push(node);
-          walker.currentNode = node.content;
-        }
-        if ((node = walker.nextNode()) === null) {
-          walker.currentNode = stack.pop();
-          node = walker.nextNode();
-        }
-      }
-      if (part.type === "node") {
-        const part2 = this.processor.handleTextExpression(this.options);
-        part2.insertAfterNode(node.previousSibling);
-        this.__parts.push(part2);
-      } else {
-        this.__parts.push(...this.processor.handleAttributeExpressions(node, part.name, part.strings, this.options));
-      }
-      partIndex++;
-    }
-    if (isCEPolyfill) {
-      document.adoptNode(fragment);
-      customElements.upgrade(fragment);
-    }
-    return fragment;
-  }
-};
-
-// node_modules/lit-html/lib/template-result.js
-var policy = window.trustedTypes && trustedTypes.createPolicy("lit-html", { createHTML: (s) => s });
-var commentMarker = ` ${marker} `;
-var TemplateResult = class {
-  constructor(strings, values, type, processor) {
-    this.strings = strings;
-    this.values = values;
-    this.type = type;
-    this.processor = processor;
-  }
-  getHTML() {
-    const l = this.strings.length - 1;
-    let html2 = "";
-    let isCommentBinding = false;
-    for (let i = 0; i < l; i++) {
-      const s = this.strings[i];
-      const commentOpen = s.lastIndexOf("<!--");
-      isCommentBinding = (commentOpen > -1 || isCommentBinding) && s.indexOf("-->", commentOpen + 1) === -1;
-      const attributeMatch = lastAttributeNameRegex.exec(s);
-      if (attributeMatch === null) {
-        html2 += s + (isCommentBinding ? commentMarker : nodeMarker);
-      } else {
-        html2 += s.substr(0, attributeMatch.index) + attributeMatch[1] + attributeMatch[2] + boundAttributeSuffix + attributeMatch[3] + marker;
-      }
-    }
-    html2 += this.strings[l];
-    return html2;
-  }
-  getTemplateElement() {
-    const template = document.createElement("template");
-    let value = this.getHTML();
-    if (policy !== void 0) {
-      value = policy.createHTML(value);
-    }
-    template.innerHTML = value;
-    return template;
-  }
-};
-
-// node_modules/lit-html/lib/parts.js
-var isPrimitive = (value) => {
-  return value === null || !(typeof value === "object" || typeof value === "function");
-};
-var isIterable = (value) => {
-  return Array.isArray(value) || !!(value && value[Symbol.iterator]);
-};
-var AttributeCommitter = class {
-  constructor(element, name, strings) {
-    this.dirty = true;
-    this.element = element;
-    this.name = name;
-    this.strings = strings;
-    this.parts = [];
-    for (let i = 0; i < strings.length - 1; i++) {
-      this.parts[i] = this._createPart();
-    }
-  }
-  _createPart() {
-    return new AttributePart(this);
-  }
-  _getValue() {
-    const strings = this.strings;
-    const l = strings.length - 1;
-    const parts2 = this.parts;
-    if (l === 1 && strings[0] === "" && strings[1] === "") {
-      const v = parts2[0].value;
-      if (typeof v === "symbol") {
-        return String(v);
-      }
-      if (typeof v === "string" || !isIterable(v)) {
-        return v;
-      }
-    }
-    let text = "";
-    for (let i = 0; i < l; i++) {
-      text += strings[i];
-      const part = parts2[i];
-      if (part !== void 0) {
-        const v = part.value;
-        if (isPrimitive(v) || !isIterable(v)) {
-          text += typeof v === "string" ? v : String(v);
-        } else {
-          for (const t of v) {
-            text += typeof t === "string" ? t : String(t);
-          }
-        }
-      }
-    }
-    text += strings[l];
-    return text;
-  }
-  commit() {
-    if (this.dirty) {
-      this.dirty = false;
-      this.element.setAttribute(this.name, this._getValue());
-    }
-  }
-};
-var AttributePart = class {
-  constructor(committer) {
-    this.value = void 0;
-    this.committer = committer;
-  }
-  setValue(value) {
-    if (value !== noChange && (!isPrimitive(value) || value !== this.value)) {
-      this.value = value;
-      if (!isDirective(value)) {
-        this.committer.dirty = true;
-      }
-    }
-  }
-  commit() {
-    while (isDirective(this.value)) {
-      const directive2 = this.value;
-      this.value = noChange;
-      directive2(this);
-    }
-    if (this.value === noChange) {
+  static _$Ei() {
+    if (this.hasOwnProperty(d("elementProperties")))
       return;
-    }
-    this.committer.commit();
+    const t4 = n2(this);
+    t4.finalize(), void 0 !== t4.l && (this.l = [...t4.l]), this.elementProperties = new Map(t4.elementProperties);
   }
-};
-var NodePart = class {
-  constructor(options) {
-    this.value = void 0;
-    this.__pendingValue = void 0;
-    this.options = options;
-  }
-  appendInto(container) {
-    this.startNode = container.appendChild(createMarker());
-    this.endNode = container.appendChild(createMarker());
-  }
-  insertAfterNode(ref) {
-    this.startNode = ref;
-    this.endNode = ref.nextSibling;
-  }
-  appendIntoPart(part) {
-    part.__insert(this.startNode = createMarker());
-    part.__insert(this.endNode = createMarker());
-  }
-  insertAfterPart(ref) {
-    ref.__insert(this.startNode = createMarker());
-    this.endNode = ref.endNode;
-    ref.endNode = this.startNode;
-  }
-  setValue(value) {
-    this.__pendingValue = value;
-  }
-  commit() {
-    if (this.startNode.parentNode === null) {
+  static finalize() {
+    if (this.hasOwnProperty(d("finalized")))
       return;
+    if (this.finalized = true, this._$Ei(), this.hasOwnProperty(d("properties"))) {
+      const t5 = this.properties, s4 = [...h(t5), ...o2(t5)];
+      for (const i4 of s4)
+        this.createProperty(i4, t5[i4]);
     }
-    while (isDirective(this.__pendingValue)) {
-      const directive2 = this.__pendingValue;
-      this.__pendingValue = noChange;
-      directive2(this);
+    const t4 = this[Symbol.metadata];
+    if (null !== t4) {
+      const s4 = litPropertyMetadata.get(t4);
+      if (void 0 !== s4)
+        for (const [t5, i4] of s4)
+          this.elementProperties.set(t5, i4);
     }
-    const value = this.__pendingValue;
-    if (value === noChange) {
+    this._$Eh = /* @__PURE__ */ new Map();
+    for (const [t5, s4] of this.elementProperties) {
+      const i4 = this._$Eu(t5, s4);
+      void 0 !== i4 && this._$Eh.set(i4, t5);
+    }
+    this.elementStyles = this.finalizeStyles(this.styles);
+  }
+  static finalizeStyles(s4) {
+    const i4 = [];
+    if (Array.isArray(s4)) {
+      const e5 = new Set(s4.flat(1 / 0).reverse());
+      for (const s5 of e5)
+        i4.unshift(c(s5));
+    } else
+      void 0 !== s4 && i4.push(c(s4));
+    return i4;
+  }
+  static _$Eu(t4, s4) {
+    const i4 = s4.attribute;
+    return false === i4 ? void 0 : "string" == typeof i4 ? i4 : "string" == typeof t4 ? t4.toLowerCase() : void 0;
+  }
+  constructor() {
+    super(), this._$Ep = void 0, this.isUpdatePending = false, this.hasUpdated = false, this._$Em = null, this._$Ev();
+  }
+  _$Ev() {
+    var _a6;
+    this._$Eg = new Promise((t4) => this.enableUpdating = t4), this._$AL = /* @__PURE__ */ new Map(), this._$ES(), this.requestUpdate(), (_a6 = this.constructor.l) == null ? void 0 : _a6.forEach((t4) => t4(this));
+  }
+  addController(t4) {
+    var _a6, _b3;
+    ((_a6 = this._$E_) != null ? _a6 : this._$E_ = /* @__PURE__ */ new Set()).add(t4), void 0 !== this.renderRoot && this.isConnected && ((_b3 = t4.hostConnected) == null ? void 0 : _b3.call(t4));
+  }
+  removeController(t4) {
+    var _a6;
+    (_a6 = this._$E_) == null ? void 0 : _a6.delete(t4);
+  }
+  _$ES() {
+    const t4 = /* @__PURE__ */ new Map(), s4 = this.constructor.elementProperties;
+    for (const i4 of s4.keys())
+      this.hasOwnProperty(i4) && (t4.set(i4, this[i4]), delete this[i4]);
+    t4.size > 0 && (this._$Ep = t4);
+  }
+  createRenderRoot() {
+    var _a6;
+    const t4 = (_a6 = this.shadowRoot) != null ? _a6 : this.attachShadow(this.constructor.shadowRootOptions);
+    return S(t4, this.constructor.elementStyles), t4;
+  }
+  connectedCallback() {
+    var _a6, _b3;
+    (_a6 = this.renderRoot) != null ? _a6 : this.renderRoot = this.createRenderRoot(), this.enableUpdating(true), (_b3 = this._$E_) == null ? void 0 : _b3.forEach((t4) => {
+      var _a7;
+      return (_a7 = t4.hostConnected) == null ? void 0 : _a7.call(t4);
+    });
+  }
+  enableUpdating(t4) {
+  }
+  disconnectedCallback() {
+    var _a6;
+    (_a6 = this._$E_) == null ? void 0 : _a6.forEach((t4) => {
+      var _a7;
+      return (_a7 = t4.hostDisconnected) == null ? void 0 : _a7.call(t4);
+    });
+  }
+  attributeChangedCallback(t4, s4, i4) {
+    this._$AK(t4, i4);
+  }
+  _$EO(t4, s4) {
+    var _a6;
+    const i4 = this.constructor.elementProperties.get(t4), e5 = this.constructor._$Eu(t4, i4);
+    if (void 0 !== e5 && true === i4.reflect) {
+      const r5 = (void 0 !== ((_a6 = i4.converter) == null ? void 0 : _a6.toAttribute) ? i4.converter : u).toAttribute(s4, i4.type);
+      this._$Em = t4, null == r5 ? this.removeAttribute(e5) : this.setAttribute(e5, r5), this._$Em = null;
+    }
+  }
+  _$AK(t4, s4) {
+    var _a6;
+    const i4 = this.constructor, e5 = i4._$Eh.get(t4);
+    if (void 0 !== e5 && this._$Em !== e5) {
+      const t5 = i4.getPropertyOptions(e5), r5 = "function" == typeof t5.converter ? { fromAttribute: t5.converter } : void 0 !== ((_a6 = t5.converter) == null ? void 0 : _a6.fromAttribute) ? t5.converter : u;
+      this._$Em = e5, this[e5] = r5.fromAttribute(s4, t5.type), this._$Em = null;
+    }
+  }
+  requestUpdate(t4, s4, i4, e5 = false, r5) {
+    var _a6;
+    if (void 0 !== t4) {
+      if (i4 != null ? i4 : i4 = this.constructor.getPropertyOptions(t4), !((_a6 = i4.hasChanged) != null ? _a6 : f)(e5 ? r5 : this[t4], s4))
+        return;
+      this.C(t4, s4, i4);
+    }
+    false === this.isUpdatePending && (this._$Eg = this._$EP());
+  }
+  C(t4, s4, i4) {
+    var _a6;
+    this._$AL.has(t4) || this._$AL.set(t4, s4), true === i4.reflect && this._$Em !== t4 && ((_a6 = this._$Ej) != null ? _a6 : this._$Ej = /* @__PURE__ */ new Set()).add(t4);
+  }
+  async _$EP() {
+    this.isUpdatePending = true;
+    try {
+      await this._$Eg;
+    } catch (t5) {
+      Promise.reject(t5);
+    }
+    const t4 = this.scheduleUpdate();
+    return null != t4 && await t4, !this.isUpdatePending;
+  }
+  scheduleUpdate() {
+    return this.performUpdate();
+  }
+  performUpdate() {
+    var _a6, _b3;
+    if (!this.isUpdatePending)
       return;
-    }
-    if (isPrimitive(value)) {
-      if (value !== this.value) {
-        this.__commitText(value);
+    if (!this.hasUpdated) {
+      if ((_a6 = this.renderRoot) != null ? _a6 : this.renderRoot = this.createRenderRoot(), this._$Ep) {
+        for (const [t6, s5] of this._$Ep)
+          this[t6] = s5;
+        this._$Ep = void 0;
       }
-    } else if (value instanceof TemplateResult) {
-      this.__commitTemplateResult(value);
-    } else if (value instanceof Node) {
-      this.__commitNode(value);
-    } else if (isIterable(value)) {
-      this.__commitIterable(value);
-    } else if (value === nothing) {
-      this.value = nothing;
-      this.clear();
-    } else {
-      this.__commitText(value);
+      const t5 = this.constructor.elementProperties;
+      if (t5.size > 0)
+        for (const [s5, i4] of t5)
+          true !== i4.wrapped || this._$AL.has(s5) || void 0 === this[s5] || this.C(s5, this[s5], i4);
     }
+    let t4 = false;
+    const s4 = this._$AL;
+    try {
+      t4 = this.shouldUpdate(s4), t4 ? (this.willUpdate(s4), (_b3 = this._$E_) == null ? void 0 : _b3.forEach((t5) => {
+        var _a7;
+        return (_a7 = t5.hostUpdate) == null ? void 0 : _a7.call(t5);
+      }), this.update(s4)) : this._$ET();
+    } catch (s5) {
+      throw t4 = false, this._$ET(), s5;
+    }
+    t4 && this._$AE(s4);
   }
-  __insert(node) {
-    this.endNode.parentNode.insertBefore(node, this.endNode);
+  willUpdate(t4) {
   }
-  __commitNode(value) {
-    if (this.value === value) {
-      return;
-    }
-    this.clear();
-    this.__insert(value);
-    this.value = value;
+  _$AE(t4) {
+    var _a6;
+    (_a6 = this._$E_) == null ? void 0 : _a6.forEach((t5) => {
+      var _a7;
+      return (_a7 = t5.hostUpdated) == null ? void 0 : _a7.call(t5);
+    }), this.hasUpdated || (this.hasUpdated = true, this.firstUpdated(t4)), this.updated(t4);
   }
-  __commitText(value) {
-    const node = this.startNode.nextSibling;
-    value = value == null ? "" : value;
-    const valueAsString = typeof value === "string" ? value : String(value);
-    if (node === this.endNode.previousSibling && node.nodeType === 3) {
-      node.data = valueAsString;
-    } else {
-      this.__commitNode(document.createTextNode(valueAsString));
-    }
-    this.value = value;
+  _$ET() {
+    this._$AL = /* @__PURE__ */ new Map(), this.isUpdatePending = false;
   }
-  __commitTemplateResult(value) {
-    const template = this.options.templateFactory(value);
-    if (this.value instanceof TemplateInstance && this.value.template === template) {
-      this.value.update(value.values);
-    } else {
-      const instance = new TemplateInstance(template, value.processor, this.options);
-      const fragment = instance._clone();
-      instance.update(value.values);
-      this.__commitNode(fragment);
-      this.value = instance;
-    }
+  get updateComplete() {
+    return this.getUpdateComplete();
   }
-  __commitIterable(value) {
-    if (!Array.isArray(this.value)) {
-      this.value = [];
-      this.clear();
-    }
-    const itemParts = this.value;
-    let partIndex = 0;
-    let itemPart;
-    for (const item of value) {
-      itemPart = itemParts[partIndex];
-      if (itemPart === void 0) {
-        itemPart = new NodePart(this.options);
-        itemParts.push(itemPart);
-        if (partIndex === 0) {
-          itemPart.appendIntoPart(this);
-        } else {
-          itemPart.insertAfterPart(itemParts[partIndex - 1]);
-        }
-      }
-      itemPart.setValue(item);
-      itemPart.commit();
-      partIndex++;
-    }
-    if (partIndex < itemParts.length) {
-      itemParts.length = partIndex;
-      this.clear(itemPart && itemPart.endNode);
-    }
+  getUpdateComplete() {
+    return this._$Eg;
   }
-  clear(startNode = this.startNode) {
-    removeNodes(this.startNode.parentNode, startNode.nextSibling, this.endNode);
+  shouldUpdate(t4) {
+    return true;
+  }
+  update(t4) {
+    this._$Ej && (this._$Ej = this._$Ej.forEach((t5) => this._$EO(t5, this[t5]))), this._$ET();
+  }
+  updated(t4) {
+  }
+  firstUpdated(t4) {
   }
 };
-var BooleanAttributePart = class {
-  constructor(element, name, strings) {
-    this.value = void 0;
-    this.__pendingValue = void 0;
-    if (strings.length !== 2 || strings[0] !== "" || strings[1] !== "") {
-      throw new Error("Boolean attributes can only contain a single expression");
-    }
-    this.element = element;
-    this.name = name;
-    this.strings = strings;
-  }
-  setValue(value) {
-    this.__pendingValue = value;
-  }
-  commit() {
-    while (isDirective(this.__pendingValue)) {
-      const directive2 = this.__pendingValue;
-      this.__pendingValue = noChange;
-      directive2(this);
-    }
-    if (this.__pendingValue === noChange) {
-      return;
-    }
-    const value = !!this.__pendingValue;
-    if (this.value !== value) {
-      if (value) {
-        this.element.setAttribute(this.name, "");
-      } else {
-        this.element.removeAttribute(this.name);
-      }
-      this.value = value;
-    }
-    this.__pendingValue = noChange;
-  }
-};
-var PropertyCommitter = class extends AttributeCommitter {
-  constructor(element, name, strings) {
-    super(element, name, strings);
-    this.single = strings.length === 2 && strings[0] === "" && strings[1] === "";
-  }
-  _createPart() {
-    return new PropertyPart(this);
-  }
-  _getValue() {
-    if (this.single) {
-      return this.parts[0].value;
-    }
-    return super._getValue();
-  }
-  commit() {
-    if (this.dirty) {
-      this.dirty = false;
-      this.element[this.name] = this._getValue();
-    }
-  }
-};
-var PropertyPart = class extends AttributePart {
-};
-var eventOptionsSupported = false;
-(() => {
-  try {
-    const options = {
-      get capture() {
-        eventOptionsSupported = true;
-        return false;
-      }
-    };
-    window.addEventListener("test", options, options);
-    window.removeEventListener("test", options, options);
-  } catch (_e) {
-  }
-})();
-var EventPart = class {
-  constructor(element, eventName, eventContext) {
-    this.value = void 0;
-    this.__pendingValue = void 0;
-    this.element = element;
-    this.eventName = eventName;
-    this.eventContext = eventContext;
-    this.__boundHandleEvent = (e) => this.handleEvent(e);
-  }
-  setValue(value) {
-    this.__pendingValue = value;
-  }
-  commit() {
-    while (isDirective(this.__pendingValue)) {
-      const directive2 = this.__pendingValue;
-      this.__pendingValue = noChange;
-      directive2(this);
-    }
-    if (this.__pendingValue === noChange) {
-      return;
-    }
-    const newListener = this.__pendingValue;
-    const oldListener = this.value;
-    const shouldRemoveListener = newListener == null || oldListener != null && (newListener.capture !== oldListener.capture || newListener.once !== oldListener.once || newListener.passive !== oldListener.passive);
-    const shouldAddListener = newListener != null && (oldListener == null || shouldRemoveListener);
-    if (shouldRemoveListener) {
-      this.element.removeEventListener(this.eventName, this.__boundHandleEvent, this.__options);
-    }
-    if (shouldAddListener) {
-      this.__options = getOptions(newListener);
-      this.element.addEventListener(this.eventName, this.__boundHandleEvent, this.__options);
-    }
-    this.value = newListener;
-    this.__pendingValue = noChange;
-  }
-  handleEvent(event) {
-    if (typeof this.value === "function") {
-      this.value.call(this.eventContext || this.element, event);
-    } else {
-      this.value.handleEvent(event);
-    }
-  }
-};
-var getOptions = (o) => o && (eventOptionsSupported ? { capture: o.capture, passive: o.passive, once: o.once } : o.capture);
-
-// node_modules/lit-html/lib/default-template-processor.js
-var DefaultTemplateProcessor = class {
-  handleAttributeExpressions(element, name, strings, options) {
-    const prefix = name[0];
-    if (prefix === ".") {
-      const committer2 = new PropertyCommitter(element, name.slice(1), strings);
-      return committer2.parts;
-    }
-    if (prefix === "@") {
-      return [new EventPart(element, name.slice(1), options.eventContext)];
-    }
-    if (prefix === "?") {
-      return [new BooleanAttributePart(element, name.slice(1), strings)];
-    }
-    const committer = new AttributeCommitter(element, name, strings);
-    return committer.parts;
-  }
-  handleTextExpression(options) {
-    return new NodePart(options);
-  }
-};
-var defaultTemplateProcessor = new DefaultTemplateProcessor();
-
-// node_modules/lit-html/lib/template-factory.js
-function templateFactory(result) {
-  let templateCache = templateCaches.get(result.type);
-  if (templateCache === void 0) {
-    templateCache = {
-      stringsArray: new WeakMap(),
-      keyString: new Map()
-    };
-    templateCaches.set(result.type, templateCache);
-  }
-  let template = templateCache.stringsArray.get(result.strings);
-  if (template !== void 0) {
-    return template;
-  }
-  const key2 = result.strings.join(marker);
-  template = templateCache.keyString.get(key2);
-  if (template === void 0) {
-    template = new Template(result, result.getTemplateElement());
-    templateCache.keyString.set(key2, template);
-  }
-  templateCache.stringsArray.set(result.strings, template);
-  return template;
-}
-var templateCaches = new Map();
-
-// node_modules/lit-html/lib/render.js
-var parts = new WeakMap();
-var render = (result, container, options) => {
-  let part = parts.get(container);
-  if (part === void 0) {
-    removeNodes(container, container.firstChild);
-    parts.set(container, part = new NodePart(Object.assign({ templateFactory }, options)));
-    part.appendInto(container);
-  }
-  part.setValue(result);
-  part.commit();
-};
+var _a2;
+b.elementStyles = [], b.shadowRootOptions = { mode: "open" }, b[d("elementProperties")] = /* @__PURE__ */ new Map(), b[d("finalized")] = /* @__PURE__ */ new Map(), p == null ? void 0 : p({ ReactiveElement: b }), ((_a2 = a.reactiveElementVersions) != null ? _a2 : a.reactiveElementVersions = []).push("2.0.2");
 
 // node_modules/lit-html/lit-html.js
-if (typeof window !== "undefined") {
-  (window["litHtmlVersions"] || (window["litHtmlVersions"] = [])).push("1.4.1");
+var t2 = globalThis;
+var i3 = t2.trustedTypes;
+var s2 = i3 ? i3.createPolicy("lit-html", { createHTML: (t4) => t4 }) : void 0;
+var e3 = "$lit$";
+var h2 = `lit$${(Math.random() + "").slice(9)}$`;
+var o3 = "?" + h2;
+var n3 = `<${o3}>`;
+var r3 = document;
+var l2 = () => r3.createComment("");
+var c3 = (t4) => null === t4 || "object" != typeof t4 && "function" != typeof t4;
+var a2 = Array.isArray;
+var u2 = (t4) => a2(t4) || "function" == typeof (t4 == null ? void 0 : t4[Symbol.iterator]);
+var d2 = "[ 	\n\f\r]";
+var f2 = /<(?:(!--|\/[^a-zA-Z])|(\/?[a-zA-Z][^>\s]*)|(\/?$))/g;
+var v = /-->/g;
+var _ = />/g;
+var m = RegExp(`>|${d2}(?:([^\\s"'>=/]+)(${d2}*=${d2}*(?:[^ 	
+\f\r"'\`<>=]|("|')|))|$)`, "g");
+var p2 = /'/g;
+var g = /"/g;
+var $ = /^(?:script|style|textarea|title)$/i;
+var y2 = (t4) => (i4, ...s4) => ({ _$litType$: t4, strings: i4, values: s4 });
+var x = y2(1);
+var b2 = y2(2);
+var w = Symbol.for("lit-noChange");
+var T = Symbol.for("lit-nothing");
+var A = /* @__PURE__ */ new WeakMap();
+var E = r3.createTreeWalker(r3, 129);
+function C(t4, i4) {
+  if (!Array.isArray(t4) || !t4.hasOwnProperty("raw"))
+    throw Error("invalid template strings array");
+  return void 0 !== s2 ? s2.createHTML(i4) : i4;
 }
-var html = (strings, ...values) => new TemplateResult(strings, values, "html", defaultTemplateProcessor);
+var P = (t4, i4) => {
+  const s4 = t4.length - 1, o4 = [];
+  let r5, l3 = 2 === i4 ? "<svg>" : "", c4 = f2;
+  for (let i5 = 0; i5 < s4; i5++) {
+    const s5 = t4[i5];
+    let a3, u3, d3 = -1, y3 = 0;
+    for (; y3 < s5.length && (c4.lastIndex = y3, u3 = c4.exec(s5), null !== u3); )
+      y3 = c4.lastIndex, c4 === f2 ? "!--" === u3[1] ? c4 = v : void 0 !== u3[1] ? c4 = _ : void 0 !== u3[2] ? ($.test(u3[2]) && (r5 = RegExp("</" + u3[2], "g")), c4 = m) : void 0 !== u3[3] && (c4 = m) : c4 === m ? ">" === u3[0] ? (c4 = r5 != null ? r5 : f2, d3 = -1) : void 0 === u3[1] ? d3 = -2 : (d3 = c4.lastIndex - u3[2].length, a3 = u3[1], c4 = void 0 === u3[3] ? m : '"' === u3[3] ? g : p2) : c4 === g || c4 === p2 ? c4 = m : c4 === v || c4 === _ ? c4 = f2 : (c4 = m, r5 = void 0);
+    const x2 = c4 === m && t4[i5 + 1].startsWith("/>") ? " " : "";
+    l3 += c4 === f2 ? s5 + n3 : d3 >= 0 ? (o4.push(a3), s5.slice(0, d3) + e3 + s5.slice(d3) + h2 + x2) : s5 + h2 + (-2 === d3 ? i5 : x2);
+  }
+  return [C(t4, l3 + (t4[s4] || "<?>") + (2 === i4 ? "</svg>" : "")), o4];
+};
+var V = class {
+  constructor({ strings: t4, _$litType$: s4 }, n5) {
+    let r5;
+    this.parts = [];
+    let c4 = 0, a3 = 0;
+    const u3 = t4.length - 1, d3 = this.parts, [f3, v2] = P(t4, s4);
+    if (this.el = V.createElement(f3, n5), E.currentNode = this.el.content, 2 === s4) {
+      const t5 = this.el.content.firstChild;
+      t5.replaceWith(...t5.childNodes);
+    }
+    for (; null !== (r5 = E.nextNode()) && d3.length < u3; ) {
+      if (1 === r5.nodeType) {
+        if (r5.hasAttributes())
+          for (const t5 of r5.getAttributeNames())
+            if (t5.endsWith(e3)) {
+              const i4 = v2[a3++], s5 = r5.getAttribute(t5).split(h2), e5 = /([.?@])?(.*)/.exec(i4);
+              d3.push({ type: 1, index: c4, name: e5[2], strings: s5, ctor: "." === e5[1] ? k : "?" === e5[1] ? H : "@" === e5[1] ? I : R }), r5.removeAttribute(t5);
+            } else
+              t5.startsWith(h2) && (d3.push({ type: 6, index: c4 }), r5.removeAttribute(t5));
+        if ($.test(r5.tagName)) {
+          const t5 = r5.textContent.split(h2), s5 = t5.length - 1;
+          if (s5 > 0) {
+            r5.textContent = i3 ? i3.emptyScript : "";
+            for (let i4 = 0; i4 < s5; i4++)
+              r5.append(t5[i4], l2()), E.nextNode(), d3.push({ type: 2, index: ++c4 });
+            r5.append(t5[s5], l2());
+          }
+        }
+      } else if (8 === r5.nodeType)
+        if (r5.data === o3)
+          d3.push({ type: 2, index: c4 });
+        else {
+          let t5 = -1;
+          for (; -1 !== (t5 = r5.data.indexOf(h2, t5 + 1)); )
+            d3.push({ type: 7, index: c4 }), t5 += h2.length - 1;
+        }
+      c4++;
+    }
+  }
+  static createElement(t4, i4) {
+    const s4 = r3.createElement("template");
+    return s4.innerHTML = t4, s4;
+  }
+};
+function N(t4, i4, s4 = t4, e5) {
+  var _a6, _b2, _c;
+  if (i4 === w)
+    return i4;
+  let h3 = void 0 !== e5 ? (_a6 = s4._$Co) == null ? void 0 : _a6[e5] : s4._$Cl;
+  const o4 = c3(i4) ? void 0 : i4._$litDirective$;
+  return (h3 == null ? void 0 : h3.constructor) !== o4 && ((_b2 = h3 == null ? void 0 : h3._$AO) == null ? void 0 : _b2.call(h3, false), void 0 === o4 ? h3 = void 0 : (h3 = new o4(t4), h3._$AT(t4, s4, e5)), void 0 !== e5 ? ((_c = s4._$Co) != null ? _c : s4._$Co = [])[e5] = h3 : s4._$Cl = h3), void 0 !== h3 && (i4 = N(t4, h3._$AS(t4, i4.values), h3, e5)), i4;
+}
+var S2 = class {
+  constructor(t4, i4) {
+    this._$AV = [], this._$AN = void 0, this._$AD = t4, this._$AM = i4;
+  }
+  get parentNode() {
+    return this._$AM.parentNode;
+  }
+  get _$AU() {
+    return this._$AM._$AU;
+  }
+  u(t4) {
+    var _a6;
+    const { el: { content: i4 }, parts: s4 } = this._$AD, e5 = ((_a6 = t4 == null ? void 0 : t4.creationScope) != null ? _a6 : r3).importNode(i4, true);
+    E.currentNode = e5;
+    let h3 = E.nextNode(), o4 = 0, n5 = 0, l3 = s4[0];
+    for (; void 0 !== l3; ) {
+      if (o4 === l3.index) {
+        let i5;
+        2 === l3.type ? i5 = new M(h3, h3.nextSibling, this, t4) : 1 === l3.type ? i5 = new l3.ctor(h3, l3.name, l3.strings, this, t4) : 6 === l3.type && (i5 = new L(h3, this, t4)), this._$AV.push(i5), l3 = s4[++n5];
+      }
+      o4 !== (l3 == null ? void 0 : l3.index) && (h3 = E.nextNode(), o4++);
+    }
+    return E.currentNode = r3, e5;
+  }
+  p(t4) {
+    let i4 = 0;
+    for (const s4 of this._$AV)
+      void 0 !== s4 && (void 0 !== s4.strings ? (s4._$AI(t4, s4, i4), i4 += s4.strings.length - 2) : s4._$AI(t4[i4])), i4++;
+  }
+};
+var M = class {
+  get _$AU() {
+    var _a6, _b2;
+    return (_b2 = (_a6 = this._$AM) == null ? void 0 : _a6._$AU) != null ? _b2 : this._$Cv;
+  }
+  constructor(t4, i4, s4, e5) {
+    var _a6;
+    this.type = 2, this._$AH = T, this._$AN = void 0, this._$AA = t4, this._$AB = i4, this._$AM = s4, this.options = e5, this._$Cv = (_a6 = e5 == null ? void 0 : e5.isConnected) != null ? _a6 : true;
+  }
+  get parentNode() {
+    let t4 = this._$AA.parentNode;
+    const i4 = this._$AM;
+    return void 0 !== i4 && 11 === (t4 == null ? void 0 : t4.nodeType) && (t4 = i4.parentNode), t4;
+  }
+  get startNode() {
+    return this._$AA;
+  }
+  get endNode() {
+    return this._$AB;
+  }
+  _$AI(t4, i4 = this) {
+    t4 = N(this, t4, i4), c3(t4) ? t4 === T || null == t4 || "" === t4 ? (this._$AH !== T && this._$AR(), this._$AH = T) : t4 !== this._$AH && t4 !== w && this._(t4) : void 0 !== t4._$litType$ ? this.g(t4) : void 0 !== t4.nodeType ? this.$(t4) : u2(t4) ? this.T(t4) : this._(t4);
+  }
+  k(t4) {
+    return this._$AA.parentNode.insertBefore(t4, this._$AB);
+  }
+  $(t4) {
+    this._$AH !== t4 && (this._$AR(), this._$AH = this.k(t4));
+  }
+  _(t4) {
+    this._$AH !== T && c3(this._$AH) ? this._$AA.nextSibling.data = t4 : this.$(r3.createTextNode(t4)), this._$AH = t4;
+  }
+  g(t4) {
+    var _a6;
+    const { values: i4, _$litType$: s4 } = t4, e5 = "number" == typeof s4 ? this._$AC(t4) : (void 0 === s4.el && (s4.el = V.createElement(C(s4.h, s4.h[0]), this.options)), s4);
+    if (((_a6 = this._$AH) == null ? void 0 : _a6._$AD) === e5)
+      this._$AH.p(i4);
+    else {
+      const t5 = new S2(e5, this), s5 = t5.u(this.options);
+      t5.p(i4), this.$(s5), this._$AH = t5;
+    }
+  }
+  _$AC(t4) {
+    let i4 = A.get(t4.strings);
+    return void 0 === i4 && A.set(t4.strings, i4 = new V(t4)), i4;
+  }
+  T(t4) {
+    a2(this._$AH) || (this._$AH = [], this._$AR());
+    const i4 = this._$AH;
+    let s4, e5 = 0;
+    for (const h3 of t4)
+      e5 === i4.length ? i4.push(s4 = new M(this.k(l2()), this.k(l2()), this, this.options)) : s4 = i4[e5], s4._$AI(h3), e5++;
+    e5 < i4.length && (this._$AR(s4 && s4._$AB.nextSibling, e5), i4.length = e5);
+  }
+  _$AR(t4 = this._$AA.nextSibling, i4) {
+    var _a6;
+    for ((_a6 = this._$AP) == null ? void 0 : _a6.call(this, false, true, i4); t4 && t4 !== this._$AB; ) {
+      const i5 = t4.nextSibling;
+      t4.remove(), t4 = i5;
+    }
+  }
+  setConnected(t4) {
+    var _a6;
+    void 0 === this._$AM && (this._$Cv = t4, (_a6 = this._$AP) == null ? void 0 : _a6.call(this, t4));
+  }
+};
+var R = class {
+  get tagName() {
+    return this.element.tagName;
+  }
+  get _$AU() {
+    return this._$AM._$AU;
+  }
+  constructor(t4, i4, s4, e5, h3) {
+    this.type = 1, this._$AH = T, this._$AN = void 0, this.element = t4, this.name = i4, this._$AM = e5, this.options = h3, s4.length > 2 || "" !== s4[0] || "" !== s4[1] ? (this._$AH = Array(s4.length - 1).fill(new String()), this.strings = s4) : this._$AH = T;
+  }
+  _$AI(t4, i4 = this, s4, e5) {
+    const h3 = this.strings;
+    let o4 = false;
+    if (void 0 === h3)
+      t4 = N(this, t4, i4, 0), o4 = !c3(t4) || t4 !== this._$AH && t4 !== w, o4 && (this._$AH = t4);
+    else {
+      const e6 = t4;
+      let n5, r5;
+      for (t4 = h3[0], n5 = 0; n5 < h3.length - 1; n5++)
+        r5 = N(this, e6[s4 + n5], i4, n5), r5 === w && (r5 = this._$AH[n5]), o4 || (o4 = !c3(r5) || r5 !== this._$AH[n5]), r5 === T ? t4 = T : t4 !== T && (t4 += (r5 != null ? r5 : "") + h3[n5 + 1]), this._$AH[n5] = r5;
+    }
+    o4 && !e5 && this.O(t4);
+  }
+  O(t4) {
+    t4 === T ? this.element.removeAttribute(this.name) : this.element.setAttribute(this.name, t4 != null ? t4 : "");
+  }
+};
+var k = class extends R {
+  constructor() {
+    super(...arguments), this.type = 3;
+  }
+  O(t4) {
+    this.element[this.name] = t4 === T ? void 0 : t4;
+  }
+};
+var H = class extends R {
+  constructor() {
+    super(...arguments), this.type = 4;
+  }
+  O(t4) {
+    this.element.toggleAttribute(this.name, !!t4 && t4 !== T);
+  }
+};
+var I = class extends R {
+  constructor(t4, i4, s4, e5, h3) {
+    super(t4, i4, s4, e5, h3), this.type = 5;
+  }
+  _$AI(t4, i4 = this) {
+    var _a6;
+    if ((t4 = (_a6 = N(this, t4, i4, 0)) != null ? _a6 : T) === w)
+      return;
+    const s4 = this._$AH, e5 = t4 === T && s4 !== T || t4.capture !== s4.capture || t4.once !== s4.once || t4.passive !== s4.passive, h3 = t4 !== T && (s4 === T || e5);
+    e5 && this.element.removeEventListener(this.name, this, s4), h3 && this.element.addEventListener(this.name, this, t4), this._$AH = t4;
+  }
+  handleEvent(t4) {
+    var _a6, _b2;
+    "function" == typeof this._$AH ? this._$AH.call((_b2 = (_a6 = this.options) == null ? void 0 : _a6.host) != null ? _b2 : this.element, t4) : this._$AH.handleEvent(t4);
+  }
+};
+var L = class {
+  constructor(t4, i4, s4) {
+    this.element = t4, this.type = 6, this._$AN = void 0, this._$AM = i4, this.options = s4;
+  }
+  get _$AU() {
+    return this._$AM._$AU;
+  }
+  _$AI(t4) {
+    N(this, t4);
+  }
+};
+var Z = t2.litHtmlPolyfillSupport;
+var _a3;
+Z == null ? void 0 : Z(V, M), ((_a3 = t2.litHtmlVersions) != null ? _a3 : t2.litHtmlVersions = []).push("3.1.0");
+var j = (t4, i4, s4) => {
+  var _a6, _b2;
+  const e5 = (_a6 = s4 == null ? void 0 : s4.renderBefore) != null ? _a6 : i4;
+  let h3 = e5._$litPart$;
+  if (void 0 === h3) {
+    const t5 = (_b2 = s4 == null ? void 0 : s4.renderBefore) != null ? _b2 : null;
+    e5._$litPart$ = h3 = new M(i4.insertBefore(l2(), t5), t5, void 0, s4 != null ? s4 : {});
+  }
+  return h3._$AI(t4), h3;
+};
+
+// node_modules/lit-element/lit-element.js
+var s3 = class extends b {
+  constructor() {
+    super(...arguments), this.renderOptions = { host: this }, this._$Do = void 0;
+  }
+  createRenderRoot() {
+    var _a6, _b2;
+    const t4 = super.createRenderRoot();
+    return (_b2 = (_a6 = this.renderOptions).renderBefore) != null ? _b2 : _a6.renderBefore = t4.firstChild, t4;
+  }
+  update(t4) {
+    const i4 = this.render();
+    this.hasUpdated || (this.renderOptions.isConnected = this.isConnected), super.update(t4), this._$Do = j(i4, this.renderRoot, this.renderOptions);
+  }
+  connectedCallback() {
+    var _a6;
+    super.connectedCallback(), (_a6 = this._$Do) == null ? void 0 : _a6.setConnected(true);
+  }
+  disconnectedCallback() {
+    var _a6;
+    super.disconnectedCallback(), (_a6 = this._$Do) == null ? void 0 : _a6.setConnected(false);
+  }
+  render() {
+    return w;
+  }
+};
+var _a4;
+s3._$litElement$ = true, s3["finalized", "finalized"] = true, (_a4 = globalThis.litElementHydrateSupport) == null ? void 0 : _a4.call(globalThis, { LitElement: s3 });
+var r4 = globalThis.litElementPolyfillSupport;
+r4 == null ? void 0 : r4({ LitElement: s3 });
+var _a5;
+((_a5 = globalThis.litElementVersions) != null ? _a5 : globalThis.litElementVersions = []).push("4.0.2");
 
 // examples/src/playground.ts
-var import_tweakpane2 = __toModule(require_tweakpane());
+var import_tweakpane2 = __toESM(require_tweakpane(), 1);
 
 // node_modules/@dekkai/env/build/lib/node.js
 var kIsNodeJS = Object.prototype.toString.call(typeof process !== "undefined" ? process : 0) === "[object process]";
@@ -10678,7 +10687,7 @@ var EventEmitterMixin = class {
     class EventEmitter2 extends ParentConstructor {
       constructor() {
         super(...arguments);
-        this.listeners = new Map();
+        this.listeners = /* @__PURE__ */ new Map();
       }
       static get omniEvent() {
         return kOmniEvent;
@@ -10688,7 +10697,7 @@ var EventEmitterMixin = class {
         if (queue) {
           queue.add(callback);
         } else {
-          this.listeners.set(type, new Set([callback]));
+          this.listeners.set(type, /* @__PURE__ */ new Set([callback]));
         }
       }
       off(type, callback) {
@@ -10761,7 +10770,7 @@ var RemoteDataFileBrowser = class extends RemoteDataFile {
   get byteLength() {
     if (this._byteLength === null) {
       return new Promise((resolve) => {
-        const handleEvent = (e, byteLength) => {
+        const handleEvent = (e5, byteLength) => {
           this.off(RemoteDataFile.LOADING_START, handleEvent);
           this._byteLength = byteLength;
           resolve(byteLength);
@@ -10786,9 +10795,9 @@ var RemoteDataFileBrowser = class extends RemoteDataFile {
       let response;
       try {
         response = await fetch(this.source);
-      } catch (e) {
-        this._onLoadingComplete.reject(e);
-        throw e;
+      } catch (e5) {
+        this._onLoadingComplete.reject(e5);
+        throw e5;
       }
       if (!response.ok) {
         const notOK = new Error("Network response was not ok");
@@ -10806,8 +10815,8 @@ var RemoteDataFileBrowser = class extends RemoteDataFile {
       return this.buffer.slice(start, Math.min(end, this._bytesLoaded));
     }
     return new Promise((resolve) => {
-      const handleEvent = (e, loaded) => {
-        if (loaded >= end || e === RemoteDataFile.LOADING_COMPLETE) {
+      const handleEvent = (e5, loaded) => {
+        if (loaded >= end || e5 === RemoteDataFile.LOADING_COMPLETE) {
           this.off(RemoteDataFile.LOADING_PROGRESS, handleEvent);
           this.off(RemoteDataFile.LOADING_COMPLETE, handleEvent);
           resolve(this.buffer.slice(start, Math.min(end, loaded)));
@@ -10855,9 +10864,9 @@ var RemoteDataFileBrowser = class extends RemoteDataFile {
           view.set(result.value, this._bytesLoaded);
           this.emit(RemoteDataFile.LOADING_PROGRESS, this._bytesLoaded, this._byteLength);
           this._bytesLoaded += result.value.length;
-        } catch (e) {
-          this._onLoadingComplete.reject(e);
-          throw e;
+        } catch (e5) {
+          this._onLoadingComplete.reject(e5);
+          throw e5;
         }
       }
     }
@@ -10902,7 +10911,7 @@ var RemoteDataFileNode = class extends RemoteDataFile {
   get byteLength() {
     if (this._byteLength === null) {
       return new Promise((resolve) => {
-        const handleEvent = (e, byteLength) => {
+        const handleEvent = (e5, byteLength) => {
           this.off(RemoteDataFile.LOADING_START, handleEvent);
           this._byteLength = byteLength;
           resolve(byteLength);
@@ -10948,8 +10957,8 @@ var RemoteDataFileNode = class extends RemoteDataFile {
       return this.buffer.slice(start, Math.min(end, this._bytesLoaded));
     }
     return new Promise((resolve) => {
-      const handleEvent = (e, loaded) => {
-        if (loaded >= end || e === RemoteDataFile.LOADING_COMPLETE) {
+      const handleEvent = (e5, loaded) => {
+        if (loaded >= end || e5 === RemoteDataFile.LOADING_COMPLETE) {
           this.off(RemoteDataFile.LOADING_PROGRESS, handleEvent);
           this.off(RemoteDataFile.LOADING_COMPLETE, handleEvent);
           resolve(this.buffer.slice(start, Math.min(end, loaded)));
@@ -11030,11 +11039,11 @@ var RANDOM = Math.random;
 var degree = Math.PI / 180;
 if (!Math.hypot)
   Math.hypot = function() {
-    var y = 0, i = arguments.length;
-    while (i--) {
-      y += arguments[i] * arguments[i];
+    var y3 = 0, i4 = arguments.length;
+    while (i4--) {
+      y3 += arguments[i4] * arguments[i4];
     }
-    return Math.sqrt(y);
+    return Math.sqrt(y3);
   };
 
 // node_modules/gl-matrix/esm/mat3.js
@@ -11090,8 +11099,12 @@ __export(mat4_exports, {
   multiplyScalar: () => multiplyScalar,
   multiplyScalarAndAdd: () => multiplyScalarAndAdd,
   ortho: () => ortho,
+  orthoNO: () => orthoNO,
+  orthoZO: () => orthoZO,
   perspective: () => perspective,
   perspectiveFromFieldOfView: () => perspectiveFromFieldOfView,
+  perspectiveNO: () => perspectiveNO,
+  perspectiveZO: () => perspectiveZO,
   rotate: () => rotate,
   rotateX: () => rotateX,
   rotateY: () => rotateY,
@@ -11127,43 +11140,43 @@ function create2() {
   out2[15] = 1;
   return out2;
 }
-function clone(a) {
+function clone(a3) {
   var out2 = new ARRAY_TYPE(16);
-  out2[0] = a[0];
-  out2[1] = a[1];
-  out2[2] = a[2];
-  out2[3] = a[3];
-  out2[4] = a[4];
-  out2[5] = a[5];
-  out2[6] = a[6];
-  out2[7] = a[7];
-  out2[8] = a[8];
-  out2[9] = a[9];
-  out2[10] = a[10];
-  out2[11] = a[11];
-  out2[12] = a[12];
-  out2[13] = a[13];
-  out2[14] = a[14];
-  out2[15] = a[15];
+  out2[0] = a3[0];
+  out2[1] = a3[1];
+  out2[2] = a3[2];
+  out2[3] = a3[3];
+  out2[4] = a3[4];
+  out2[5] = a3[5];
+  out2[6] = a3[6];
+  out2[7] = a3[7];
+  out2[8] = a3[8];
+  out2[9] = a3[9];
+  out2[10] = a3[10];
+  out2[11] = a3[11];
+  out2[12] = a3[12];
+  out2[13] = a3[13];
+  out2[14] = a3[14];
+  out2[15] = a3[15];
   return out2;
 }
-function copy(out2, a) {
-  out2[0] = a[0];
-  out2[1] = a[1];
-  out2[2] = a[2];
-  out2[3] = a[3];
-  out2[4] = a[4];
-  out2[5] = a[5];
-  out2[6] = a[6];
-  out2[7] = a[7];
-  out2[8] = a[8];
-  out2[9] = a[9];
-  out2[10] = a[10];
-  out2[11] = a[11];
-  out2[12] = a[12];
-  out2[13] = a[13];
-  out2[14] = a[14];
-  out2[15] = a[15];
+function copy(out2, a3) {
+  out2[0] = a3[0];
+  out2[1] = a3[1];
+  out2[2] = a3[2];
+  out2[3] = a3[3];
+  out2[4] = a3[4];
+  out2[5] = a3[5];
+  out2[6] = a3[6];
+  out2[7] = a3[7];
+  out2[8] = a3[8];
+  out2[9] = a3[9];
+  out2[10] = a3[10];
+  out2[11] = a3[11];
+  out2[12] = a3[12];
+  out2[13] = a3[13];
+  out2[14] = a3[14];
+  out2[15] = a3[15];
   return out2;
 }
 function fromValues(m00, m01, m02, m03, m10, m11, m12, m13, m20, m21, m22, m23, m30, m31, m32, m33) {
@@ -11224,48 +11237,48 @@ function identity(out2) {
   out2[15] = 1;
   return out2;
 }
-function transpose(out2, a) {
-  if (out2 === a) {
-    var a01 = a[1], a02 = a[2], a03 = a[3];
-    var a12 = a[6], a13 = a[7];
-    var a23 = a[11];
-    out2[1] = a[4];
-    out2[2] = a[8];
-    out2[3] = a[12];
+function transpose(out2, a3) {
+  if (out2 === a3) {
+    var a01 = a3[1], a02 = a3[2], a03 = a3[3];
+    var a12 = a3[6], a13 = a3[7];
+    var a23 = a3[11];
+    out2[1] = a3[4];
+    out2[2] = a3[8];
+    out2[3] = a3[12];
     out2[4] = a01;
-    out2[6] = a[9];
-    out2[7] = a[13];
+    out2[6] = a3[9];
+    out2[7] = a3[13];
     out2[8] = a02;
     out2[9] = a12;
-    out2[11] = a[14];
+    out2[11] = a3[14];
     out2[12] = a03;
     out2[13] = a13;
     out2[14] = a23;
   } else {
-    out2[0] = a[0];
-    out2[1] = a[4];
-    out2[2] = a[8];
-    out2[3] = a[12];
-    out2[4] = a[1];
-    out2[5] = a[5];
-    out2[6] = a[9];
-    out2[7] = a[13];
-    out2[8] = a[2];
-    out2[9] = a[6];
-    out2[10] = a[10];
-    out2[11] = a[14];
-    out2[12] = a[3];
-    out2[13] = a[7];
-    out2[14] = a[11];
-    out2[15] = a[15];
+    out2[0] = a3[0];
+    out2[1] = a3[4];
+    out2[2] = a3[8];
+    out2[3] = a3[12];
+    out2[4] = a3[1];
+    out2[5] = a3[5];
+    out2[6] = a3[9];
+    out2[7] = a3[13];
+    out2[8] = a3[2];
+    out2[9] = a3[6];
+    out2[10] = a3[10];
+    out2[11] = a3[14];
+    out2[12] = a3[3];
+    out2[13] = a3[7];
+    out2[14] = a3[11];
+    out2[15] = a3[15];
   }
   return out2;
 }
-function invert(out2, a) {
-  var a00 = a[0], a01 = a[1], a02 = a[2], a03 = a[3];
-  var a10 = a[4], a11 = a[5], a12 = a[6], a13 = a[7];
-  var a20 = a[8], a21 = a[9], a22 = a[10], a23 = a[11];
-  var a30 = a[12], a31 = a[13], a32 = a[14], a33 = a[15];
+function invert(out2, a3) {
+  var a00 = a3[0], a01 = a3[1], a02 = a3[2], a03 = a3[3];
+  var a10 = a3[4], a11 = a3[5], a12 = a3[6], a13 = a3[7];
+  var a20 = a3[8], a21 = a3[9], a22 = a3[10], a23 = a3[11];
+  var a30 = a3[12], a31 = a3[13], a32 = a3[14], a33 = a3[15];
   var b00 = a00 * a11 - a01 * a10;
   var b01 = a00 * a12 - a02 * a10;
   var b02 = a00 * a13 - a03 * a10;
@@ -11301,11 +11314,11 @@ function invert(out2, a) {
   out2[15] = (a20 * b03 - a21 * b01 + a22 * b00) * det;
   return out2;
 }
-function adjoint(out2, a) {
-  var a00 = a[0], a01 = a[1], a02 = a[2], a03 = a[3];
-  var a10 = a[4], a11 = a[5], a12 = a[6], a13 = a[7];
-  var a20 = a[8], a21 = a[9], a22 = a[10], a23 = a[11];
-  var a30 = a[12], a31 = a[13], a32 = a[14], a33 = a[15];
+function adjoint(out2, a3) {
+  var a00 = a3[0], a01 = a3[1], a02 = a3[2], a03 = a3[3];
+  var a10 = a3[4], a11 = a3[5], a12 = a3[6], a13 = a3[7];
+  var a20 = a3[8], a21 = a3[9], a22 = a3[10], a23 = a3[11];
+  var a30 = a3[12], a31 = a3[13], a32 = a3[14], a33 = a3[15];
   out2[0] = a11 * (a22 * a33 - a23 * a32) - a21 * (a12 * a33 - a13 * a32) + a31 * (a12 * a23 - a13 * a22);
   out2[1] = -(a01 * (a22 * a33 - a23 * a32) - a21 * (a02 * a33 - a03 * a32) + a31 * (a02 * a23 - a03 * a22));
   out2[2] = a01 * (a12 * a33 - a13 * a32) - a11 * (a02 * a33 - a03 * a32) + a31 * (a02 * a13 - a03 * a12);
@@ -11324,11 +11337,11 @@ function adjoint(out2, a) {
   out2[15] = a00 * (a11 * a22 - a12 * a21) - a10 * (a01 * a22 - a02 * a21) + a20 * (a01 * a12 - a02 * a11);
   return out2;
 }
-function determinant(a) {
-  var a00 = a[0], a01 = a[1], a02 = a[2], a03 = a[3];
-  var a10 = a[4], a11 = a[5], a12 = a[6], a13 = a[7];
-  var a20 = a[8], a21 = a[9], a22 = a[10], a23 = a[11];
-  var a30 = a[12], a31 = a[13], a32 = a[14], a33 = a[15];
+function determinant(a3) {
+  var a00 = a3[0], a01 = a3[1], a02 = a3[2], a03 = a3[3];
+  var a10 = a3[4], a11 = a3[5], a12 = a3[6], a13 = a3[7];
+  var a20 = a3[8], a21 = a3[9], a22 = a3[10], a23 = a3[11];
+  var a30 = a3[12], a31 = a3[13], a32 = a3[14], a33 = a3[15];
   var b00 = a00 * a11 - a01 * a10;
   var b01 = a00 * a12 - a02 * a10;
   var b02 = a00 * a13 - a03 * a10;
@@ -11343,65 +11356,65 @@ function determinant(a) {
   var b11 = a22 * a33 - a23 * a32;
   return b00 * b11 - b01 * b10 + b02 * b09 + b03 * b08 - b04 * b07 + b05 * b06;
 }
-function multiply(out2, a, b) {
-  var a00 = a[0], a01 = a[1], a02 = a[2], a03 = a[3];
-  var a10 = a[4], a11 = a[5], a12 = a[6], a13 = a[7];
-  var a20 = a[8], a21 = a[9], a22 = a[10], a23 = a[11];
-  var a30 = a[12], a31 = a[13], a32 = a[14], a33 = a[15];
-  var b0 = b[0], b1 = b[1], b2 = b[2], b3 = b[3];
-  out2[0] = b0 * a00 + b1 * a10 + b2 * a20 + b3 * a30;
-  out2[1] = b0 * a01 + b1 * a11 + b2 * a21 + b3 * a31;
-  out2[2] = b0 * a02 + b1 * a12 + b2 * a22 + b3 * a32;
-  out2[3] = b0 * a03 + b1 * a13 + b2 * a23 + b3 * a33;
-  b0 = b[4];
-  b1 = b[5];
-  b2 = b[6];
-  b3 = b[7];
-  out2[4] = b0 * a00 + b1 * a10 + b2 * a20 + b3 * a30;
-  out2[5] = b0 * a01 + b1 * a11 + b2 * a21 + b3 * a31;
-  out2[6] = b0 * a02 + b1 * a12 + b2 * a22 + b3 * a32;
-  out2[7] = b0 * a03 + b1 * a13 + b2 * a23 + b3 * a33;
-  b0 = b[8];
-  b1 = b[9];
-  b2 = b[10];
-  b3 = b[11];
-  out2[8] = b0 * a00 + b1 * a10 + b2 * a20 + b3 * a30;
-  out2[9] = b0 * a01 + b1 * a11 + b2 * a21 + b3 * a31;
-  out2[10] = b0 * a02 + b1 * a12 + b2 * a22 + b3 * a32;
-  out2[11] = b0 * a03 + b1 * a13 + b2 * a23 + b3 * a33;
-  b0 = b[12];
-  b1 = b[13];
-  b2 = b[14];
-  b3 = b[15];
-  out2[12] = b0 * a00 + b1 * a10 + b2 * a20 + b3 * a30;
-  out2[13] = b0 * a01 + b1 * a11 + b2 * a21 + b3 * a31;
-  out2[14] = b0 * a02 + b1 * a12 + b2 * a22 + b3 * a32;
-  out2[15] = b0 * a03 + b1 * a13 + b2 * a23 + b3 * a33;
+function multiply(out2, a3, b3) {
+  var a00 = a3[0], a01 = a3[1], a02 = a3[2], a03 = a3[3];
+  var a10 = a3[4], a11 = a3[5], a12 = a3[6], a13 = a3[7];
+  var a20 = a3[8], a21 = a3[9], a22 = a3[10], a23 = a3[11];
+  var a30 = a3[12], a31 = a3[13], a32 = a3[14], a33 = a3[15];
+  var b0 = b3[0], b1 = b3[1], b22 = b3[2], b32 = b3[3];
+  out2[0] = b0 * a00 + b1 * a10 + b22 * a20 + b32 * a30;
+  out2[1] = b0 * a01 + b1 * a11 + b22 * a21 + b32 * a31;
+  out2[2] = b0 * a02 + b1 * a12 + b22 * a22 + b32 * a32;
+  out2[3] = b0 * a03 + b1 * a13 + b22 * a23 + b32 * a33;
+  b0 = b3[4];
+  b1 = b3[5];
+  b22 = b3[6];
+  b32 = b3[7];
+  out2[4] = b0 * a00 + b1 * a10 + b22 * a20 + b32 * a30;
+  out2[5] = b0 * a01 + b1 * a11 + b22 * a21 + b32 * a31;
+  out2[6] = b0 * a02 + b1 * a12 + b22 * a22 + b32 * a32;
+  out2[7] = b0 * a03 + b1 * a13 + b22 * a23 + b32 * a33;
+  b0 = b3[8];
+  b1 = b3[9];
+  b22 = b3[10];
+  b32 = b3[11];
+  out2[8] = b0 * a00 + b1 * a10 + b22 * a20 + b32 * a30;
+  out2[9] = b0 * a01 + b1 * a11 + b22 * a21 + b32 * a31;
+  out2[10] = b0 * a02 + b1 * a12 + b22 * a22 + b32 * a32;
+  out2[11] = b0 * a03 + b1 * a13 + b22 * a23 + b32 * a33;
+  b0 = b3[12];
+  b1 = b3[13];
+  b22 = b3[14];
+  b32 = b3[15];
+  out2[12] = b0 * a00 + b1 * a10 + b22 * a20 + b32 * a30;
+  out2[13] = b0 * a01 + b1 * a11 + b22 * a21 + b32 * a31;
+  out2[14] = b0 * a02 + b1 * a12 + b22 * a22 + b32 * a32;
+  out2[15] = b0 * a03 + b1 * a13 + b22 * a23 + b32 * a33;
   return out2;
 }
-function translate(out2, a, v) {
-  var x = v[0], y = v[1], z = v[2];
+function translate(out2, a3, v2) {
+  var x2 = v2[0], y3 = v2[1], z = v2[2];
   var a00, a01, a02, a03;
   var a10, a11, a12, a13;
   var a20, a21, a22, a23;
-  if (a === out2) {
-    out2[12] = a[0] * x + a[4] * y + a[8] * z + a[12];
-    out2[13] = a[1] * x + a[5] * y + a[9] * z + a[13];
-    out2[14] = a[2] * x + a[6] * y + a[10] * z + a[14];
-    out2[15] = a[3] * x + a[7] * y + a[11] * z + a[15];
+  if (a3 === out2) {
+    out2[12] = a3[0] * x2 + a3[4] * y3 + a3[8] * z + a3[12];
+    out2[13] = a3[1] * x2 + a3[5] * y3 + a3[9] * z + a3[13];
+    out2[14] = a3[2] * x2 + a3[6] * y3 + a3[10] * z + a3[14];
+    out2[15] = a3[3] * x2 + a3[7] * y3 + a3[11] * z + a3[15];
   } else {
-    a00 = a[0];
-    a01 = a[1];
-    a02 = a[2];
-    a03 = a[3];
-    a10 = a[4];
-    a11 = a[5];
-    a12 = a[6];
-    a13 = a[7];
-    a20 = a[8];
-    a21 = a[9];
-    a22 = a[10];
-    a23 = a[11];
+    a00 = a3[0];
+    a01 = a3[1];
+    a02 = a3[2];
+    a03 = a3[3];
+    a10 = a3[4];
+    a11 = a3[5];
+    a12 = a3[6];
+    a13 = a3[7];
+    a20 = a3[8];
+    a21 = a3[9];
+    a22 = a3[10];
+    a23 = a3[11];
     out2[0] = a00;
     out2[1] = a01;
     out2[2] = a02;
@@ -11414,37 +11427,37 @@ function translate(out2, a, v) {
     out2[9] = a21;
     out2[10] = a22;
     out2[11] = a23;
-    out2[12] = a00 * x + a10 * y + a20 * z + a[12];
-    out2[13] = a01 * x + a11 * y + a21 * z + a[13];
-    out2[14] = a02 * x + a12 * y + a22 * z + a[14];
-    out2[15] = a03 * x + a13 * y + a23 * z + a[15];
+    out2[12] = a00 * x2 + a10 * y3 + a20 * z + a3[12];
+    out2[13] = a01 * x2 + a11 * y3 + a21 * z + a3[13];
+    out2[14] = a02 * x2 + a12 * y3 + a22 * z + a3[14];
+    out2[15] = a03 * x2 + a13 * y3 + a23 * z + a3[15];
   }
   return out2;
 }
-function scale(out2, a, v) {
-  var x = v[0], y = v[1], z = v[2];
-  out2[0] = a[0] * x;
-  out2[1] = a[1] * x;
-  out2[2] = a[2] * x;
-  out2[3] = a[3] * x;
-  out2[4] = a[4] * y;
-  out2[5] = a[5] * y;
-  out2[6] = a[6] * y;
-  out2[7] = a[7] * y;
-  out2[8] = a[8] * z;
-  out2[9] = a[9] * z;
-  out2[10] = a[10] * z;
-  out2[11] = a[11] * z;
-  out2[12] = a[12];
-  out2[13] = a[13];
-  out2[14] = a[14];
-  out2[15] = a[15];
+function scale(out2, a3, v2) {
+  var x2 = v2[0], y3 = v2[1], z = v2[2];
+  out2[0] = a3[0] * x2;
+  out2[1] = a3[1] * x2;
+  out2[2] = a3[2] * x2;
+  out2[3] = a3[3] * x2;
+  out2[4] = a3[4] * y3;
+  out2[5] = a3[5] * y3;
+  out2[6] = a3[6] * y3;
+  out2[7] = a3[7] * y3;
+  out2[8] = a3[8] * z;
+  out2[9] = a3[9] * z;
+  out2[10] = a3[10] * z;
+  out2[11] = a3[11] * z;
+  out2[12] = a3[12];
+  out2[13] = a3[13];
+  out2[14] = a3[14];
+  out2[15] = a3[15];
   return out2;
 }
-function rotate(out2, a, rad, axis) {
-  var x = axis[0], y = axis[1], z = axis[2];
-  var len5 = Math.hypot(x, y, z);
-  var s, c, t;
+function rotate(out2, a3, rad, axis) {
+  var x2 = axis[0], y3 = axis[1], z = axis[2];
+  var len5 = Math.hypot(x2, y3, z);
+  var s4, c4, t4;
   var a00, a01, a02, a03;
   var a10, a11, a12, a13;
   var a20, a21, a22, a23;
@@ -11455,33 +11468,33 @@ function rotate(out2, a, rad, axis) {
     return null;
   }
   len5 = 1 / len5;
-  x *= len5;
-  y *= len5;
+  x2 *= len5;
+  y3 *= len5;
   z *= len5;
-  s = Math.sin(rad);
-  c = Math.cos(rad);
-  t = 1 - c;
-  a00 = a[0];
-  a01 = a[1];
-  a02 = a[2];
-  a03 = a[3];
-  a10 = a[4];
-  a11 = a[5];
-  a12 = a[6];
-  a13 = a[7];
-  a20 = a[8];
-  a21 = a[9];
-  a22 = a[10];
-  a23 = a[11];
-  b00 = x * x * t + c;
-  b01 = y * x * t + z * s;
-  b02 = z * x * t - y * s;
-  b10 = x * y * t - z * s;
-  b11 = y * y * t + c;
-  b12 = z * y * t + x * s;
-  b20 = x * z * t + y * s;
-  b21 = y * z * t - x * s;
-  b22 = z * z * t + c;
+  s4 = Math.sin(rad);
+  c4 = Math.cos(rad);
+  t4 = 1 - c4;
+  a00 = a3[0];
+  a01 = a3[1];
+  a02 = a3[2];
+  a03 = a3[3];
+  a10 = a3[4];
+  a11 = a3[5];
+  a12 = a3[6];
+  a13 = a3[7];
+  a20 = a3[8];
+  a21 = a3[9];
+  a22 = a3[10];
+  a23 = a3[11];
+  b00 = x2 * x2 * t4 + c4;
+  b01 = y3 * x2 * t4 + z * s4;
+  b02 = z * x2 * t4 - y3 * s4;
+  b10 = x2 * y3 * t4 - z * s4;
+  b11 = y3 * y3 * t4 + c4;
+  b12 = z * y3 * t4 + x2 * s4;
+  b20 = x2 * z * t4 + y3 * s4;
+  b21 = y3 * z * t4 - x2 * s4;
+  b22 = z * z * t4 + c4;
   out2[0] = a00 * b00 + a10 * b01 + a20 * b02;
   out2[1] = a01 * b00 + a11 * b01 + a21 * b02;
   out2[2] = a02 * b00 + a12 * b01 + a22 * b02;
@@ -11494,108 +11507,108 @@ function rotate(out2, a, rad, axis) {
   out2[9] = a01 * b20 + a11 * b21 + a21 * b22;
   out2[10] = a02 * b20 + a12 * b21 + a22 * b22;
   out2[11] = a03 * b20 + a13 * b21 + a23 * b22;
-  if (a !== out2) {
-    out2[12] = a[12];
-    out2[13] = a[13];
-    out2[14] = a[14];
-    out2[15] = a[15];
+  if (a3 !== out2) {
+    out2[12] = a3[12];
+    out2[13] = a3[13];
+    out2[14] = a3[14];
+    out2[15] = a3[15];
   }
   return out2;
 }
-function rotateX(out2, a, rad) {
-  var s = Math.sin(rad);
-  var c = Math.cos(rad);
-  var a10 = a[4];
-  var a11 = a[5];
-  var a12 = a[6];
-  var a13 = a[7];
-  var a20 = a[8];
-  var a21 = a[9];
-  var a22 = a[10];
-  var a23 = a[11];
-  if (a !== out2) {
-    out2[0] = a[0];
-    out2[1] = a[1];
-    out2[2] = a[2];
-    out2[3] = a[3];
-    out2[12] = a[12];
-    out2[13] = a[13];
-    out2[14] = a[14];
-    out2[15] = a[15];
+function rotateX(out2, a3, rad) {
+  var s4 = Math.sin(rad);
+  var c4 = Math.cos(rad);
+  var a10 = a3[4];
+  var a11 = a3[5];
+  var a12 = a3[6];
+  var a13 = a3[7];
+  var a20 = a3[8];
+  var a21 = a3[9];
+  var a22 = a3[10];
+  var a23 = a3[11];
+  if (a3 !== out2) {
+    out2[0] = a3[0];
+    out2[1] = a3[1];
+    out2[2] = a3[2];
+    out2[3] = a3[3];
+    out2[12] = a3[12];
+    out2[13] = a3[13];
+    out2[14] = a3[14];
+    out2[15] = a3[15];
   }
-  out2[4] = a10 * c + a20 * s;
-  out2[5] = a11 * c + a21 * s;
-  out2[6] = a12 * c + a22 * s;
-  out2[7] = a13 * c + a23 * s;
-  out2[8] = a20 * c - a10 * s;
-  out2[9] = a21 * c - a11 * s;
-  out2[10] = a22 * c - a12 * s;
-  out2[11] = a23 * c - a13 * s;
+  out2[4] = a10 * c4 + a20 * s4;
+  out2[5] = a11 * c4 + a21 * s4;
+  out2[6] = a12 * c4 + a22 * s4;
+  out2[7] = a13 * c4 + a23 * s4;
+  out2[8] = a20 * c4 - a10 * s4;
+  out2[9] = a21 * c4 - a11 * s4;
+  out2[10] = a22 * c4 - a12 * s4;
+  out2[11] = a23 * c4 - a13 * s4;
   return out2;
 }
-function rotateY(out2, a, rad) {
-  var s = Math.sin(rad);
-  var c = Math.cos(rad);
-  var a00 = a[0];
-  var a01 = a[1];
-  var a02 = a[2];
-  var a03 = a[3];
-  var a20 = a[8];
-  var a21 = a[9];
-  var a22 = a[10];
-  var a23 = a[11];
-  if (a !== out2) {
-    out2[4] = a[4];
-    out2[5] = a[5];
-    out2[6] = a[6];
-    out2[7] = a[7];
-    out2[12] = a[12];
-    out2[13] = a[13];
-    out2[14] = a[14];
-    out2[15] = a[15];
+function rotateY(out2, a3, rad) {
+  var s4 = Math.sin(rad);
+  var c4 = Math.cos(rad);
+  var a00 = a3[0];
+  var a01 = a3[1];
+  var a02 = a3[2];
+  var a03 = a3[3];
+  var a20 = a3[8];
+  var a21 = a3[9];
+  var a22 = a3[10];
+  var a23 = a3[11];
+  if (a3 !== out2) {
+    out2[4] = a3[4];
+    out2[5] = a3[5];
+    out2[6] = a3[6];
+    out2[7] = a3[7];
+    out2[12] = a3[12];
+    out2[13] = a3[13];
+    out2[14] = a3[14];
+    out2[15] = a3[15];
   }
-  out2[0] = a00 * c - a20 * s;
-  out2[1] = a01 * c - a21 * s;
-  out2[2] = a02 * c - a22 * s;
-  out2[3] = a03 * c - a23 * s;
-  out2[8] = a00 * s + a20 * c;
-  out2[9] = a01 * s + a21 * c;
-  out2[10] = a02 * s + a22 * c;
-  out2[11] = a03 * s + a23 * c;
+  out2[0] = a00 * c4 - a20 * s4;
+  out2[1] = a01 * c4 - a21 * s4;
+  out2[2] = a02 * c4 - a22 * s4;
+  out2[3] = a03 * c4 - a23 * s4;
+  out2[8] = a00 * s4 + a20 * c4;
+  out2[9] = a01 * s4 + a21 * c4;
+  out2[10] = a02 * s4 + a22 * c4;
+  out2[11] = a03 * s4 + a23 * c4;
   return out2;
 }
-function rotateZ(out2, a, rad) {
-  var s = Math.sin(rad);
-  var c = Math.cos(rad);
-  var a00 = a[0];
-  var a01 = a[1];
-  var a02 = a[2];
-  var a03 = a[3];
-  var a10 = a[4];
-  var a11 = a[5];
-  var a12 = a[6];
-  var a13 = a[7];
-  if (a !== out2) {
-    out2[8] = a[8];
-    out2[9] = a[9];
-    out2[10] = a[10];
-    out2[11] = a[11];
-    out2[12] = a[12];
-    out2[13] = a[13];
-    out2[14] = a[14];
-    out2[15] = a[15];
+function rotateZ(out2, a3, rad) {
+  var s4 = Math.sin(rad);
+  var c4 = Math.cos(rad);
+  var a00 = a3[0];
+  var a01 = a3[1];
+  var a02 = a3[2];
+  var a03 = a3[3];
+  var a10 = a3[4];
+  var a11 = a3[5];
+  var a12 = a3[6];
+  var a13 = a3[7];
+  if (a3 !== out2) {
+    out2[8] = a3[8];
+    out2[9] = a3[9];
+    out2[10] = a3[10];
+    out2[11] = a3[11];
+    out2[12] = a3[12];
+    out2[13] = a3[13];
+    out2[14] = a3[14];
+    out2[15] = a3[15];
   }
-  out2[0] = a00 * c + a10 * s;
-  out2[1] = a01 * c + a11 * s;
-  out2[2] = a02 * c + a12 * s;
-  out2[3] = a03 * c + a13 * s;
-  out2[4] = a10 * c - a00 * s;
-  out2[5] = a11 * c - a01 * s;
-  out2[6] = a12 * c - a02 * s;
-  out2[7] = a13 * c - a03 * s;
+  out2[0] = a00 * c4 + a10 * s4;
+  out2[1] = a01 * c4 + a11 * s4;
+  out2[2] = a02 * c4 + a12 * s4;
+  out2[3] = a03 * c4 + a13 * s4;
+  out2[4] = a10 * c4 - a00 * s4;
+  out2[5] = a11 * c4 - a01 * s4;
+  out2[6] = a12 * c4 - a02 * s4;
+  out2[7] = a13 * c4 - a03 * s4;
   return out2;
 }
-function fromTranslation(out2, v) {
+function fromTranslation(out2, v2) {
   out2[0] = 1;
   out2[1] = 0;
   out2[2] = 0;
@@ -11608,24 +11621,24 @@ function fromTranslation(out2, v) {
   out2[9] = 0;
   out2[10] = 1;
   out2[11] = 0;
-  out2[12] = v[0];
-  out2[13] = v[1];
-  out2[14] = v[2];
+  out2[12] = v2[0];
+  out2[13] = v2[1];
+  out2[14] = v2[2];
   out2[15] = 1;
   return out2;
 }
-function fromScaling(out2, v) {
-  out2[0] = v[0];
+function fromScaling(out2, v2) {
+  out2[0] = v2[0];
   out2[1] = 0;
   out2[2] = 0;
   out2[3] = 0;
   out2[4] = 0;
-  out2[5] = v[1];
+  out2[5] = v2[1];
   out2[6] = 0;
   out2[7] = 0;
   out2[8] = 0;
   out2[9] = 0;
-  out2[10] = v[2];
+  out2[10] = v2[2];
   out2[11] = 0;
   out2[12] = 0;
   out2[13] = 0;
@@ -11634,30 +11647,30 @@ function fromScaling(out2, v) {
   return out2;
 }
 function fromRotation(out2, rad, axis) {
-  var x = axis[0], y = axis[1], z = axis[2];
-  var len5 = Math.hypot(x, y, z);
-  var s, c, t;
+  var x2 = axis[0], y3 = axis[1], z = axis[2];
+  var len5 = Math.hypot(x2, y3, z);
+  var s4, c4, t4;
   if (len5 < EPSILON) {
     return null;
   }
   len5 = 1 / len5;
-  x *= len5;
-  y *= len5;
+  x2 *= len5;
+  y3 *= len5;
   z *= len5;
-  s = Math.sin(rad);
-  c = Math.cos(rad);
-  t = 1 - c;
-  out2[0] = x * x * t + c;
-  out2[1] = y * x * t + z * s;
-  out2[2] = z * x * t - y * s;
+  s4 = Math.sin(rad);
+  c4 = Math.cos(rad);
+  t4 = 1 - c4;
+  out2[0] = x2 * x2 * t4 + c4;
+  out2[1] = y3 * x2 * t4 + z * s4;
+  out2[2] = z * x2 * t4 - y3 * s4;
   out2[3] = 0;
-  out2[4] = x * y * t - z * s;
-  out2[5] = y * y * t + c;
-  out2[6] = z * y * t + x * s;
+  out2[4] = x2 * y3 * t4 - z * s4;
+  out2[5] = y3 * y3 * t4 + c4;
+  out2[6] = z * y3 * t4 + x2 * s4;
   out2[7] = 0;
-  out2[8] = x * z * t + y * s;
-  out2[9] = y * z * t - x * s;
-  out2[10] = z * z * t + c;
+  out2[8] = x2 * z * t4 + y3 * s4;
+  out2[9] = y3 * z * t4 - x2 * s4;
+  out2[10] = z * z * t4 + c4;
   out2[11] = 0;
   out2[12] = 0;
   out2[13] = 0;
@@ -11666,19 +11679,19 @@ function fromRotation(out2, rad, axis) {
   return out2;
 }
 function fromXRotation(out2, rad) {
-  var s = Math.sin(rad);
-  var c = Math.cos(rad);
+  var s4 = Math.sin(rad);
+  var c4 = Math.cos(rad);
   out2[0] = 1;
   out2[1] = 0;
   out2[2] = 0;
   out2[3] = 0;
   out2[4] = 0;
-  out2[5] = c;
-  out2[6] = s;
+  out2[5] = c4;
+  out2[6] = s4;
   out2[7] = 0;
   out2[8] = 0;
-  out2[9] = -s;
-  out2[10] = c;
+  out2[9] = -s4;
+  out2[10] = c4;
   out2[11] = 0;
   out2[12] = 0;
   out2[13] = 0;
@@ -11687,19 +11700,19 @@ function fromXRotation(out2, rad) {
   return out2;
 }
 function fromYRotation(out2, rad) {
-  var s = Math.sin(rad);
-  var c = Math.cos(rad);
-  out2[0] = c;
+  var s4 = Math.sin(rad);
+  var c4 = Math.cos(rad);
+  out2[0] = c4;
   out2[1] = 0;
-  out2[2] = -s;
+  out2[2] = -s4;
   out2[3] = 0;
   out2[4] = 0;
   out2[5] = 1;
   out2[6] = 0;
   out2[7] = 0;
-  out2[8] = s;
+  out2[8] = s4;
   out2[9] = 0;
-  out2[10] = c;
+  out2[10] = c4;
   out2[11] = 0;
   out2[12] = 0;
   out2[13] = 0;
@@ -11708,14 +11721,14 @@ function fromYRotation(out2, rad) {
   return out2;
 }
 function fromZRotation(out2, rad) {
-  var s = Math.sin(rad);
-  var c = Math.cos(rad);
-  out2[0] = c;
-  out2[1] = s;
+  var s4 = Math.sin(rad);
+  var c4 = Math.cos(rad);
+  out2[0] = c4;
+  out2[1] = s4;
   out2[2] = 0;
   out2[3] = 0;
-  out2[4] = -s;
-  out2[5] = c;
+  out2[4] = -s4;
+  out2[5] = c4;
   out2[6] = 0;
   out2[7] = 0;
   out2[8] = 0;
@@ -11728,20 +11741,20 @@ function fromZRotation(out2, rad) {
   out2[15] = 1;
   return out2;
 }
-function fromRotationTranslation(out2, q, v) {
-  var x = q[0], y = q[1], z = q[2], w = q[3];
-  var x2 = x + x;
-  var y2 = y + y;
+function fromRotationTranslation(out2, q, v2) {
+  var x2 = q[0], y3 = q[1], z = q[2], w2 = q[3];
+  var x22 = x2 + x2;
+  var y22 = y3 + y3;
   var z2 = z + z;
-  var xx = x * x2;
-  var xy = x * y2;
-  var xz = x * z2;
-  var yy = y * y2;
-  var yz = y * z2;
+  var xx = x2 * x22;
+  var xy = x2 * y22;
+  var xz = x2 * z2;
+  var yy = y3 * y22;
+  var yz = y3 * z2;
   var zz = z * z2;
-  var wx = w * x2;
-  var wy = w * y2;
-  var wz = w * z2;
+  var wx = w2 * x22;
+  var wy = w2 * y22;
+  var wz = w2 * z2;
   out2[0] = 1 - (yy + zz);
   out2[1] = xy + wz;
   out2[2] = xz - wy;
@@ -11754,15 +11767,15 @@ function fromRotationTranslation(out2, q, v) {
   out2[9] = yz - wx;
   out2[10] = 1 - (xx + yy);
   out2[11] = 0;
-  out2[12] = v[0];
-  out2[13] = v[1];
-  out2[14] = v[2];
+  out2[12] = v2[0];
+  out2[13] = v2[1];
+  out2[14] = v2[2];
   out2[15] = 1;
   return out2;
 }
-function fromQuat2(out2, a) {
+function fromQuat2(out2, a3) {
   var translation = new ARRAY_TYPE(3);
-  var bx = -a[0], by = -a[1], bz = -a[2], bw = a[3], ax = a[4], ay = a[5], az = a[6], aw = a[7];
+  var bx = -a3[0], by = -a3[1], bz = -a3[2], bw = a3[3], ax = a3[4], ay = a3[5], az = a3[6], aw = a3[7];
   var magnitude = bx * bx + by * by + bz * bz + bw * bw;
   if (magnitude > 0) {
     translation[0] = (ax * bw + aw * bx + ay * bz - az * by) * 2 / magnitude;
@@ -11773,7 +11786,7 @@ function fromQuat2(out2, a) {
     translation[1] = (ay * bw + aw * by + az * bx - ax * bz) * 2;
     translation[2] = (az * bw + aw * bz + ax * by - ay * bx) * 2;
   }
-  fromRotationTranslation(out2, a, translation);
+  fromRotationTranslation(out2, a3, translation);
   return out2;
 }
 function getTranslation(out2, mat) {
@@ -11813,51 +11826,51 @@ function getRotation(out2, mat) {
   var sm32 = mat[9] * is2;
   var sm33 = mat[10] * is3;
   var trace = sm11 + sm22 + sm33;
-  var S = 0;
+  var S3 = 0;
   if (trace > 0) {
-    S = Math.sqrt(trace + 1) * 2;
-    out2[3] = 0.25 * S;
-    out2[0] = (sm23 - sm32) / S;
-    out2[1] = (sm31 - sm13) / S;
-    out2[2] = (sm12 - sm21) / S;
+    S3 = Math.sqrt(trace + 1) * 2;
+    out2[3] = 0.25 * S3;
+    out2[0] = (sm23 - sm32) / S3;
+    out2[1] = (sm31 - sm13) / S3;
+    out2[2] = (sm12 - sm21) / S3;
   } else if (sm11 > sm22 && sm11 > sm33) {
-    S = Math.sqrt(1 + sm11 - sm22 - sm33) * 2;
-    out2[3] = (sm23 - sm32) / S;
-    out2[0] = 0.25 * S;
-    out2[1] = (sm12 + sm21) / S;
-    out2[2] = (sm31 + sm13) / S;
+    S3 = Math.sqrt(1 + sm11 - sm22 - sm33) * 2;
+    out2[3] = (sm23 - sm32) / S3;
+    out2[0] = 0.25 * S3;
+    out2[1] = (sm12 + sm21) / S3;
+    out2[2] = (sm31 + sm13) / S3;
   } else if (sm22 > sm33) {
-    S = Math.sqrt(1 + sm22 - sm11 - sm33) * 2;
-    out2[3] = (sm31 - sm13) / S;
-    out2[0] = (sm12 + sm21) / S;
-    out2[1] = 0.25 * S;
-    out2[2] = (sm23 + sm32) / S;
+    S3 = Math.sqrt(1 + sm22 - sm11 - sm33) * 2;
+    out2[3] = (sm31 - sm13) / S3;
+    out2[0] = (sm12 + sm21) / S3;
+    out2[1] = 0.25 * S3;
+    out2[2] = (sm23 + sm32) / S3;
   } else {
-    S = Math.sqrt(1 + sm33 - sm11 - sm22) * 2;
-    out2[3] = (sm12 - sm21) / S;
-    out2[0] = (sm31 + sm13) / S;
-    out2[1] = (sm23 + sm32) / S;
-    out2[2] = 0.25 * S;
+    S3 = Math.sqrt(1 + sm33 - sm11 - sm22) * 2;
+    out2[3] = (sm12 - sm21) / S3;
+    out2[0] = (sm31 + sm13) / S3;
+    out2[1] = (sm23 + sm32) / S3;
+    out2[2] = 0.25 * S3;
   }
   return out2;
 }
-function fromRotationTranslationScale(out2, q, v, s) {
-  var x = q[0], y = q[1], z = q[2], w = q[3];
-  var x2 = x + x;
-  var y2 = y + y;
+function fromRotationTranslationScale(out2, q, v2, s4) {
+  var x2 = q[0], y3 = q[1], z = q[2], w2 = q[3];
+  var x22 = x2 + x2;
+  var y22 = y3 + y3;
   var z2 = z + z;
-  var xx = x * x2;
-  var xy = x * y2;
-  var xz = x * z2;
-  var yy = y * y2;
-  var yz = y * z2;
+  var xx = x2 * x22;
+  var xy = x2 * y22;
+  var xz = x2 * z2;
+  var yy = y3 * y22;
+  var yz = y3 * z2;
   var zz = z * z2;
-  var wx = w * x2;
-  var wy = w * y2;
-  var wz = w * z2;
-  var sx = s[0];
-  var sy = s[1];
-  var sz = s[2];
+  var wx = w2 * x22;
+  var wy = w2 * y22;
+  var wz = w2 * z2;
+  var sx = s4[0];
+  var sy = s4[1];
+  var sz = s4[2];
   out2[0] = (1 - (yy + zz)) * sx;
   out2[1] = (xy + wz) * sx;
   out2[2] = (xz - wy) * sx;
@@ -11870,32 +11883,32 @@ function fromRotationTranslationScale(out2, q, v, s) {
   out2[9] = (yz - wx) * sz;
   out2[10] = (1 - (xx + yy)) * sz;
   out2[11] = 0;
-  out2[12] = v[0];
-  out2[13] = v[1];
-  out2[14] = v[2];
+  out2[12] = v2[0];
+  out2[13] = v2[1];
+  out2[14] = v2[2];
   out2[15] = 1;
   return out2;
 }
-function fromRotationTranslationScaleOrigin(out2, q, v, s, o) {
-  var x = q[0], y = q[1], z = q[2], w = q[3];
-  var x2 = x + x;
-  var y2 = y + y;
+function fromRotationTranslationScaleOrigin(out2, q, v2, s4, o4) {
+  var x2 = q[0], y3 = q[1], z = q[2], w2 = q[3];
+  var x22 = x2 + x2;
+  var y22 = y3 + y3;
   var z2 = z + z;
-  var xx = x * x2;
-  var xy = x * y2;
-  var xz = x * z2;
-  var yy = y * y2;
-  var yz = y * z2;
+  var xx = x2 * x22;
+  var xy = x2 * y22;
+  var xz = x2 * z2;
+  var yy = y3 * y22;
+  var yz = y3 * z2;
   var zz = z * z2;
-  var wx = w * x2;
-  var wy = w * y2;
-  var wz = w * z2;
-  var sx = s[0];
-  var sy = s[1];
-  var sz = s[2];
-  var ox = o[0];
-  var oy = o[1];
-  var oz = o[2];
+  var wx = w2 * x22;
+  var wy = w2 * y22;
+  var wz = w2 * z2;
+  var sx = s4[0];
+  var sy = s4[1];
+  var sz = s4[2];
+  var ox = o4[0];
+  var oy = o4[1];
+  var oz = o4[2];
   var out0 = (1 - (yy + zz)) * sx;
   var out1 = (xy + wz) * sx;
   var out22 = (xz - wy) * sx;
@@ -11917,26 +11930,26 @@ function fromRotationTranslationScaleOrigin(out2, q, v, s, o) {
   out2[9] = out9;
   out2[10] = out10;
   out2[11] = 0;
-  out2[12] = v[0] + ox - (out0 * ox + out4 * oy + out8 * oz);
-  out2[13] = v[1] + oy - (out1 * ox + out5 * oy + out9 * oz);
-  out2[14] = v[2] + oz - (out22 * ox + out6 * oy + out10 * oz);
+  out2[12] = v2[0] + ox - (out0 * ox + out4 * oy + out8 * oz);
+  out2[13] = v2[1] + oy - (out1 * ox + out5 * oy + out9 * oz);
+  out2[14] = v2[2] + oz - (out22 * ox + out6 * oy + out10 * oz);
   out2[15] = 1;
   return out2;
 }
 function fromQuat(out2, q) {
-  var x = q[0], y = q[1], z = q[2], w = q[3];
-  var x2 = x + x;
-  var y2 = y + y;
+  var x2 = q[0], y3 = q[1], z = q[2], w2 = q[3];
+  var x22 = x2 + x2;
+  var y22 = y3 + y3;
   var z2 = z + z;
-  var xx = x * x2;
-  var yx = y * x2;
-  var yy = y * y2;
-  var zx = z * x2;
-  var zy = z * y2;
+  var xx = x2 * x22;
+  var yx = y3 * x22;
+  var yy = y3 * y22;
+  var zx = z * x22;
+  var zy = z * y22;
   var zz = z * z2;
-  var wx = w * x2;
-  var wy = w * y2;
-  var wz = w * z2;
+  var wx = w2 * x22;
+  var wy = w2 * y22;
+  var wz = w2 * z2;
   out2[0] = 1 - yy - zz;
   out2[1] = yx + wz;
   out2[2] = zx - wy;
@@ -11977,14 +11990,14 @@ function frustum(out2, left, right, bottom, top, near, far) {
   out2[15] = 0;
   return out2;
 }
-function perspective(out2, fovy, aspect, near, far) {
-  var f = 1 / Math.tan(fovy / 2), nf;
-  out2[0] = f / aspect;
+function perspectiveNO(out2, fovy, aspect, near, far) {
+  var f3 = 1 / Math.tan(fovy / 2), nf;
+  out2[0] = f3 / aspect;
   out2[1] = 0;
   out2[2] = 0;
   out2[3] = 0;
   out2[4] = 0;
-  out2[5] = f;
+  out2[5] = f3;
   out2[6] = 0;
   out2[7] = 0;
   out2[8] = 0;
@@ -12000,6 +12013,33 @@ function perspective(out2, fovy, aspect, near, far) {
   } else {
     out2[10] = -1;
     out2[14] = -2 * near;
+  }
+  return out2;
+}
+var perspective = perspectiveNO;
+function perspectiveZO(out2, fovy, aspect, near, far) {
+  var f3 = 1 / Math.tan(fovy / 2), nf;
+  out2[0] = f3 / aspect;
+  out2[1] = 0;
+  out2[2] = 0;
+  out2[3] = 0;
+  out2[4] = 0;
+  out2[5] = f3;
+  out2[6] = 0;
+  out2[7] = 0;
+  out2[8] = 0;
+  out2[9] = 0;
+  out2[11] = -1;
+  out2[12] = 0;
+  out2[13] = 0;
+  out2[15] = 0;
+  if (far != null && far !== Infinity) {
+    nf = 1 / (near - far);
+    out2[10] = far * nf;
+    out2[14] = far * near * nf;
+  } else {
+    out2[10] = -1;
+    out2[14] = -near;
   }
   return out2;
 }
@@ -12028,7 +12068,7 @@ function perspectiveFromFieldOfView(out2, fov, near, far) {
   out2[15] = 0;
   return out2;
 }
-function ortho(out2, left, right, bottom, top, near, far) {
+function orthoNO(out2, left, right, bottom, top, near, far) {
   var lr = 1 / (left - right);
   var bt = 1 / (bottom - top);
   var nf = 1 / (near - far);
@@ -12050,8 +12090,31 @@ function ortho(out2, left, right, bottom, top, near, far) {
   out2[15] = 1;
   return out2;
 }
+var ortho = orthoNO;
+function orthoZO(out2, left, right, bottom, top, near, far) {
+  var lr = 1 / (left - right);
+  var bt = 1 / (bottom - top);
+  var nf = 1 / (near - far);
+  out2[0] = -2 * lr;
+  out2[1] = 0;
+  out2[2] = 0;
+  out2[3] = 0;
+  out2[4] = 0;
+  out2[5] = -2 * bt;
+  out2[6] = 0;
+  out2[7] = 0;
+  out2[8] = 0;
+  out2[9] = 0;
+  out2[10] = nf;
+  out2[11] = 0;
+  out2[12] = (left + right) * lr;
+  out2[13] = (top + bottom) * bt;
+  out2[14] = near * nf;
+  out2[15] = 1;
+  return out2;
+}
 function lookAt(out2, eye, center, up) {
-  var x0, x1, x2, y0, y1, y2, z0, z1, z2, len5;
+  var x0, x1, x2, y0, y1, y22, z0, z1, z2, len5;
   var eyex = eye[0];
   var eyey = eye[1];
   var eyez = eye[2];
@@ -12087,17 +12150,17 @@ function lookAt(out2, eye, center, up) {
   }
   y0 = z1 * x2 - z2 * x1;
   y1 = z2 * x0 - z0 * x2;
-  y2 = z0 * x1 - z1 * x0;
-  len5 = Math.hypot(y0, y1, y2);
+  y22 = z0 * x1 - z1 * x0;
+  len5 = Math.hypot(y0, y1, y22);
   if (!len5) {
     y0 = 0;
     y1 = 0;
-    y2 = 0;
+    y22 = 0;
   } else {
     len5 = 1 / len5;
     y0 *= len5;
     y1 *= len5;
-    y2 *= len5;
+    y22 *= len5;
   }
   out2[0] = x0;
   out2[1] = y0;
@@ -12108,11 +12171,11 @@ function lookAt(out2, eye, center, up) {
   out2[6] = z1;
   out2[7] = 0;
   out2[8] = x2;
-  out2[9] = y2;
+  out2[9] = y22;
   out2[10] = z2;
   out2[11] = 0;
   out2[12] = -(x0 * eyex + x1 * eyey + x2 * eyez);
-  out2[13] = -(y0 * eyex + y1 * eyey + y2 * eyez);
+  out2[13] = -(y0 * eyex + y1 * eyey + y22 * eyez);
   out2[14] = -(z0 * eyex + z1 * eyey + z2 * eyez);
   out2[15] = 1;
   return out2;
@@ -12153,101 +12216,101 @@ function targetTo(out2, eye, target, up) {
   out2[15] = 1;
   return out2;
 }
-function str(a) {
-  return "mat4(" + a[0] + ", " + a[1] + ", " + a[2] + ", " + a[3] + ", " + a[4] + ", " + a[5] + ", " + a[6] + ", " + a[7] + ", " + a[8] + ", " + a[9] + ", " + a[10] + ", " + a[11] + ", " + a[12] + ", " + a[13] + ", " + a[14] + ", " + a[15] + ")";
+function str(a3) {
+  return "mat4(" + a3[0] + ", " + a3[1] + ", " + a3[2] + ", " + a3[3] + ", " + a3[4] + ", " + a3[5] + ", " + a3[6] + ", " + a3[7] + ", " + a3[8] + ", " + a3[9] + ", " + a3[10] + ", " + a3[11] + ", " + a3[12] + ", " + a3[13] + ", " + a3[14] + ", " + a3[15] + ")";
 }
-function frob(a) {
-  return Math.hypot(a[0], a[1], a[2], a[3], a[4], a[5], a[6], a[7], a[8], a[9], a[10], a[11], a[12], a[13], a[14], a[15]);
+function frob(a3) {
+  return Math.hypot(a3[0], a3[1], a3[2], a3[3], a3[4], a3[5], a3[6], a3[7], a3[8], a3[9], a3[10], a3[11], a3[12], a3[13], a3[14], a3[15]);
 }
-function add(out2, a, b) {
-  out2[0] = a[0] + b[0];
-  out2[1] = a[1] + b[1];
-  out2[2] = a[2] + b[2];
-  out2[3] = a[3] + b[3];
-  out2[4] = a[4] + b[4];
-  out2[5] = a[5] + b[5];
-  out2[6] = a[6] + b[6];
-  out2[7] = a[7] + b[7];
-  out2[8] = a[8] + b[8];
-  out2[9] = a[9] + b[9];
-  out2[10] = a[10] + b[10];
-  out2[11] = a[11] + b[11];
-  out2[12] = a[12] + b[12];
-  out2[13] = a[13] + b[13];
-  out2[14] = a[14] + b[14];
-  out2[15] = a[15] + b[15];
+function add(out2, a3, b3) {
+  out2[0] = a3[0] + b3[0];
+  out2[1] = a3[1] + b3[1];
+  out2[2] = a3[2] + b3[2];
+  out2[3] = a3[3] + b3[3];
+  out2[4] = a3[4] + b3[4];
+  out2[5] = a3[5] + b3[5];
+  out2[6] = a3[6] + b3[6];
+  out2[7] = a3[7] + b3[7];
+  out2[8] = a3[8] + b3[8];
+  out2[9] = a3[9] + b3[9];
+  out2[10] = a3[10] + b3[10];
+  out2[11] = a3[11] + b3[11];
+  out2[12] = a3[12] + b3[12];
+  out2[13] = a3[13] + b3[13];
+  out2[14] = a3[14] + b3[14];
+  out2[15] = a3[15] + b3[15];
   return out2;
 }
-function subtract(out2, a, b) {
-  out2[0] = a[0] - b[0];
-  out2[1] = a[1] - b[1];
-  out2[2] = a[2] - b[2];
-  out2[3] = a[3] - b[3];
-  out2[4] = a[4] - b[4];
-  out2[5] = a[5] - b[5];
-  out2[6] = a[6] - b[6];
-  out2[7] = a[7] - b[7];
-  out2[8] = a[8] - b[8];
-  out2[9] = a[9] - b[9];
-  out2[10] = a[10] - b[10];
-  out2[11] = a[11] - b[11];
-  out2[12] = a[12] - b[12];
-  out2[13] = a[13] - b[13];
-  out2[14] = a[14] - b[14];
-  out2[15] = a[15] - b[15];
+function subtract(out2, a3, b3) {
+  out2[0] = a3[0] - b3[0];
+  out2[1] = a3[1] - b3[1];
+  out2[2] = a3[2] - b3[2];
+  out2[3] = a3[3] - b3[3];
+  out2[4] = a3[4] - b3[4];
+  out2[5] = a3[5] - b3[5];
+  out2[6] = a3[6] - b3[6];
+  out2[7] = a3[7] - b3[7];
+  out2[8] = a3[8] - b3[8];
+  out2[9] = a3[9] - b3[9];
+  out2[10] = a3[10] - b3[10];
+  out2[11] = a3[11] - b3[11];
+  out2[12] = a3[12] - b3[12];
+  out2[13] = a3[13] - b3[13];
+  out2[14] = a3[14] - b3[14];
+  out2[15] = a3[15] - b3[15];
   return out2;
 }
-function multiplyScalar(out2, a, b) {
-  out2[0] = a[0] * b;
-  out2[1] = a[1] * b;
-  out2[2] = a[2] * b;
-  out2[3] = a[3] * b;
-  out2[4] = a[4] * b;
-  out2[5] = a[5] * b;
-  out2[6] = a[6] * b;
-  out2[7] = a[7] * b;
-  out2[8] = a[8] * b;
-  out2[9] = a[9] * b;
-  out2[10] = a[10] * b;
-  out2[11] = a[11] * b;
-  out2[12] = a[12] * b;
-  out2[13] = a[13] * b;
-  out2[14] = a[14] * b;
-  out2[15] = a[15] * b;
+function multiplyScalar(out2, a3, b3) {
+  out2[0] = a3[0] * b3;
+  out2[1] = a3[1] * b3;
+  out2[2] = a3[2] * b3;
+  out2[3] = a3[3] * b3;
+  out2[4] = a3[4] * b3;
+  out2[5] = a3[5] * b3;
+  out2[6] = a3[6] * b3;
+  out2[7] = a3[7] * b3;
+  out2[8] = a3[8] * b3;
+  out2[9] = a3[9] * b3;
+  out2[10] = a3[10] * b3;
+  out2[11] = a3[11] * b3;
+  out2[12] = a3[12] * b3;
+  out2[13] = a3[13] * b3;
+  out2[14] = a3[14] * b3;
+  out2[15] = a3[15] * b3;
   return out2;
 }
-function multiplyScalarAndAdd(out2, a, b, scale6) {
-  out2[0] = a[0] + b[0] * scale6;
-  out2[1] = a[1] + b[1] * scale6;
-  out2[2] = a[2] + b[2] * scale6;
-  out2[3] = a[3] + b[3] * scale6;
-  out2[4] = a[4] + b[4] * scale6;
-  out2[5] = a[5] + b[5] * scale6;
-  out2[6] = a[6] + b[6] * scale6;
-  out2[7] = a[7] + b[7] * scale6;
-  out2[8] = a[8] + b[8] * scale6;
-  out2[9] = a[9] + b[9] * scale6;
-  out2[10] = a[10] + b[10] * scale6;
-  out2[11] = a[11] + b[11] * scale6;
-  out2[12] = a[12] + b[12] * scale6;
-  out2[13] = a[13] + b[13] * scale6;
-  out2[14] = a[14] + b[14] * scale6;
-  out2[15] = a[15] + b[15] * scale6;
+function multiplyScalarAndAdd(out2, a3, b3, scale6) {
+  out2[0] = a3[0] + b3[0] * scale6;
+  out2[1] = a3[1] + b3[1] * scale6;
+  out2[2] = a3[2] + b3[2] * scale6;
+  out2[3] = a3[3] + b3[3] * scale6;
+  out2[4] = a3[4] + b3[4] * scale6;
+  out2[5] = a3[5] + b3[5] * scale6;
+  out2[6] = a3[6] + b3[6] * scale6;
+  out2[7] = a3[7] + b3[7] * scale6;
+  out2[8] = a3[8] + b3[8] * scale6;
+  out2[9] = a3[9] + b3[9] * scale6;
+  out2[10] = a3[10] + b3[10] * scale6;
+  out2[11] = a3[11] + b3[11] * scale6;
+  out2[12] = a3[12] + b3[12] * scale6;
+  out2[13] = a3[13] + b3[13] * scale6;
+  out2[14] = a3[14] + b3[14] * scale6;
+  out2[15] = a3[15] + b3[15] * scale6;
   return out2;
 }
-function exactEquals(a, b) {
-  return a[0] === b[0] && a[1] === b[1] && a[2] === b[2] && a[3] === b[3] && a[4] === b[4] && a[5] === b[5] && a[6] === b[6] && a[7] === b[7] && a[8] === b[8] && a[9] === b[9] && a[10] === b[10] && a[11] === b[11] && a[12] === b[12] && a[13] === b[13] && a[14] === b[14] && a[15] === b[15];
+function exactEquals(a3, b3) {
+  return a3[0] === b3[0] && a3[1] === b3[1] && a3[2] === b3[2] && a3[3] === b3[3] && a3[4] === b3[4] && a3[5] === b3[5] && a3[6] === b3[6] && a3[7] === b3[7] && a3[8] === b3[8] && a3[9] === b3[9] && a3[10] === b3[10] && a3[11] === b3[11] && a3[12] === b3[12] && a3[13] === b3[13] && a3[14] === b3[14] && a3[15] === b3[15];
 }
-function equals(a, b) {
-  var a0 = a[0], a1 = a[1], a2 = a[2], a3 = a[3];
-  var a4 = a[4], a5 = a[5], a6 = a[6], a7 = a[7];
-  var a8 = a[8], a9 = a[9], a10 = a[10], a11 = a[11];
-  var a12 = a[12], a13 = a[13], a14 = a[14], a15 = a[15];
-  var b0 = b[0], b1 = b[1], b2 = b[2], b3 = b[3];
-  var b4 = b[4], b5 = b[5], b6 = b[6], b7 = b[7];
-  var b8 = b[8], b9 = b[9], b10 = b[10], b11 = b[11];
-  var b12 = b[12], b13 = b[13], b14 = b[14], b15 = b[15];
-  return Math.abs(a0 - b0) <= EPSILON * Math.max(1, Math.abs(a0), Math.abs(b0)) && Math.abs(a1 - b1) <= EPSILON * Math.max(1, Math.abs(a1), Math.abs(b1)) && Math.abs(a2 - b2) <= EPSILON * Math.max(1, Math.abs(a2), Math.abs(b2)) && Math.abs(a3 - b3) <= EPSILON * Math.max(1, Math.abs(a3), Math.abs(b3)) && Math.abs(a4 - b4) <= EPSILON * Math.max(1, Math.abs(a4), Math.abs(b4)) && Math.abs(a5 - b5) <= EPSILON * Math.max(1, Math.abs(a5), Math.abs(b5)) && Math.abs(a6 - b6) <= EPSILON * Math.max(1, Math.abs(a6), Math.abs(b6)) && Math.abs(a7 - b7) <= EPSILON * Math.max(1, Math.abs(a7), Math.abs(b7)) && Math.abs(a8 - b8) <= EPSILON * Math.max(1, Math.abs(a8), Math.abs(b8)) && Math.abs(a9 - b9) <= EPSILON * Math.max(1, Math.abs(a9), Math.abs(b9)) && Math.abs(a10 - b10) <= EPSILON * Math.max(1, Math.abs(a10), Math.abs(b10)) && Math.abs(a11 - b11) <= EPSILON * Math.max(1, Math.abs(a11), Math.abs(b11)) && Math.abs(a12 - b12) <= EPSILON * Math.max(1, Math.abs(a12), Math.abs(b12)) && Math.abs(a13 - b13) <= EPSILON * Math.max(1, Math.abs(a13), Math.abs(b13)) && Math.abs(a14 - b14) <= EPSILON * Math.max(1, Math.abs(a14), Math.abs(b14)) && Math.abs(a15 - b15) <= EPSILON * Math.max(1, Math.abs(a15), Math.abs(b15));
+function equals(a3, b3) {
+  var a0 = a3[0], a1 = a3[1], a22 = a3[2], a32 = a3[3];
+  var a4 = a3[4], a5 = a3[5], a6 = a3[6], a7 = a3[7];
+  var a8 = a3[8], a9 = a3[9], a10 = a3[10], a11 = a3[11];
+  var a12 = a3[12], a13 = a3[13], a14 = a3[14], a15 = a3[15];
+  var b0 = b3[0], b1 = b3[1], b22 = b3[2], b32 = b3[3];
+  var b4 = b3[4], b5 = b3[5], b6 = b3[6], b7 = b3[7];
+  var b8 = b3[8], b9 = b3[9], b10 = b3[10], b11 = b3[11];
+  var b12 = b3[12], b13 = b3[13], b14 = b3[14], b15 = b3[15];
+  return Math.abs(a0 - b0) <= EPSILON * Math.max(1, Math.abs(a0), Math.abs(b0)) && Math.abs(a1 - b1) <= EPSILON * Math.max(1, Math.abs(a1), Math.abs(b1)) && Math.abs(a22 - b22) <= EPSILON * Math.max(1, Math.abs(a22), Math.abs(b22)) && Math.abs(a32 - b32) <= EPSILON * Math.max(1, Math.abs(a32), Math.abs(b32)) && Math.abs(a4 - b4) <= EPSILON * Math.max(1, Math.abs(a4), Math.abs(b4)) && Math.abs(a5 - b5) <= EPSILON * Math.max(1, Math.abs(a5), Math.abs(b5)) && Math.abs(a6 - b6) <= EPSILON * Math.max(1, Math.abs(a6), Math.abs(b6)) && Math.abs(a7 - b7) <= EPSILON * Math.max(1, Math.abs(a7), Math.abs(b7)) && Math.abs(a8 - b8) <= EPSILON * Math.max(1, Math.abs(a8), Math.abs(b8)) && Math.abs(a9 - b9) <= EPSILON * Math.max(1, Math.abs(a9), Math.abs(b9)) && Math.abs(a10 - b10) <= EPSILON * Math.max(1, Math.abs(a10), Math.abs(b10)) && Math.abs(a11 - b11) <= EPSILON * Math.max(1, Math.abs(a11), Math.abs(b11)) && Math.abs(a12 - b12) <= EPSILON * Math.max(1, Math.abs(a12), Math.abs(b12)) && Math.abs(a13 - b13) <= EPSILON * Math.max(1, Math.abs(a13), Math.abs(b13)) && Math.abs(a14 - b14) <= EPSILON * Math.max(1, Math.abs(a14), Math.abs(b14)) && Math.abs(a15 - b15) <= EPSILON * Math.max(1, Math.abs(a15), Math.abs(b15));
 }
 var mul = multiply;
 var sub = subtract;
@@ -12357,221 +12420,221 @@ function create3() {
   }
   return out2;
 }
-function clone2(a) {
+function clone2(a3) {
   var out2 = new ARRAY_TYPE(3);
-  out2[0] = a[0];
-  out2[1] = a[1];
-  out2[2] = a[2];
+  out2[0] = a3[0];
+  out2[1] = a3[1];
+  out2[2] = a3[2];
   return out2;
 }
-function length(a) {
-  var x = a[0];
-  var y = a[1];
-  var z = a[2];
-  return Math.hypot(x, y, z);
+function length(a3) {
+  var x2 = a3[0];
+  var y3 = a3[1];
+  var z = a3[2];
+  return Math.hypot(x2, y3, z);
 }
-function fromValues2(x, y, z) {
+function fromValues2(x2, y3, z) {
   var out2 = new ARRAY_TYPE(3);
-  out2[0] = x;
-  out2[1] = y;
+  out2[0] = x2;
+  out2[1] = y3;
   out2[2] = z;
   return out2;
 }
-function copy2(out2, a) {
-  out2[0] = a[0];
-  out2[1] = a[1];
-  out2[2] = a[2];
+function copy2(out2, a3) {
+  out2[0] = a3[0];
+  out2[1] = a3[1];
+  out2[2] = a3[2];
   return out2;
 }
-function set2(out2, x, y, z) {
-  out2[0] = x;
-  out2[1] = y;
+function set2(out2, x2, y3, z) {
+  out2[0] = x2;
+  out2[1] = y3;
   out2[2] = z;
   return out2;
 }
-function add2(out2, a, b) {
-  out2[0] = a[0] + b[0];
-  out2[1] = a[1] + b[1];
-  out2[2] = a[2] + b[2];
+function add2(out2, a3, b3) {
+  out2[0] = a3[0] + b3[0];
+  out2[1] = a3[1] + b3[1];
+  out2[2] = a3[2] + b3[2];
   return out2;
 }
-function subtract2(out2, a, b) {
-  out2[0] = a[0] - b[0];
-  out2[1] = a[1] - b[1];
-  out2[2] = a[2] - b[2];
+function subtract2(out2, a3, b3) {
+  out2[0] = a3[0] - b3[0];
+  out2[1] = a3[1] - b3[1];
+  out2[2] = a3[2] - b3[2];
   return out2;
 }
-function multiply2(out2, a, b) {
-  out2[0] = a[0] * b[0];
-  out2[1] = a[1] * b[1];
-  out2[2] = a[2] * b[2];
+function multiply2(out2, a3, b3) {
+  out2[0] = a3[0] * b3[0];
+  out2[1] = a3[1] * b3[1];
+  out2[2] = a3[2] * b3[2];
   return out2;
 }
-function divide(out2, a, b) {
-  out2[0] = a[0] / b[0];
-  out2[1] = a[1] / b[1];
-  out2[2] = a[2] / b[2];
+function divide(out2, a3, b3) {
+  out2[0] = a3[0] / b3[0];
+  out2[1] = a3[1] / b3[1];
+  out2[2] = a3[2] / b3[2];
   return out2;
 }
-function ceil(out2, a) {
-  out2[0] = Math.ceil(a[0]);
-  out2[1] = Math.ceil(a[1]);
-  out2[2] = Math.ceil(a[2]);
+function ceil(out2, a3) {
+  out2[0] = Math.ceil(a3[0]);
+  out2[1] = Math.ceil(a3[1]);
+  out2[2] = Math.ceil(a3[2]);
   return out2;
 }
-function floor(out2, a) {
-  out2[0] = Math.floor(a[0]);
-  out2[1] = Math.floor(a[1]);
-  out2[2] = Math.floor(a[2]);
+function floor(out2, a3) {
+  out2[0] = Math.floor(a3[0]);
+  out2[1] = Math.floor(a3[1]);
+  out2[2] = Math.floor(a3[2]);
   return out2;
 }
-function min(out2, a, b) {
-  out2[0] = Math.min(a[0], b[0]);
-  out2[1] = Math.min(a[1], b[1]);
-  out2[2] = Math.min(a[2], b[2]);
+function min(out2, a3, b3) {
+  out2[0] = Math.min(a3[0], b3[0]);
+  out2[1] = Math.min(a3[1], b3[1]);
+  out2[2] = Math.min(a3[2], b3[2]);
   return out2;
 }
-function max(out2, a, b) {
-  out2[0] = Math.max(a[0], b[0]);
-  out2[1] = Math.max(a[1], b[1]);
-  out2[2] = Math.max(a[2], b[2]);
+function max(out2, a3, b3) {
+  out2[0] = Math.max(a3[0], b3[0]);
+  out2[1] = Math.max(a3[1], b3[1]);
+  out2[2] = Math.max(a3[2], b3[2]);
   return out2;
 }
-function round(out2, a) {
-  out2[0] = Math.round(a[0]);
-  out2[1] = Math.round(a[1]);
-  out2[2] = Math.round(a[2]);
+function round(out2, a3) {
+  out2[0] = Math.round(a3[0]);
+  out2[1] = Math.round(a3[1]);
+  out2[2] = Math.round(a3[2]);
   return out2;
 }
-function scale2(out2, a, b) {
-  out2[0] = a[0] * b;
-  out2[1] = a[1] * b;
-  out2[2] = a[2] * b;
+function scale2(out2, a3, b3) {
+  out2[0] = a3[0] * b3;
+  out2[1] = a3[1] * b3;
+  out2[2] = a3[2] * b3;
   return out2;
 }
-function scaleAndAdd(out2, a, b, scale6) {
-  out2[0] = a[0] + b[0] * scale6;
-  out2[1] = a[1] + b[1] * scale6;
-  out2[2] = a[2] + b[2] * scale6;
+function scaleAndAdd(out2, a3, b3, scale6) {
+  out2[0] = a3[0] + b3[0] * scale6;
+  out2[1] = a3[1] + b3[1] * scale6;
+  out2[2] = a3[2] + b3[2] * scale6;
   return out2;
 }
-function distance(a, b) {
-  var x = b[0] - a[0];
-  var y = b[1] - a[1];
-  var z = b[2] - a[2];
-  return Math.hypot(x, y, z);
+function distance(a3, b3) {
+  var x2 = b3[0] - a3[0];
+  var y3 = b3[1] - a3[1];
+  var z = b3[2] - a3[2];
+  return Math.hypot(x2, y3, z);
 }
-function squaredDistance(a, b) {
-  var x = b[0] - a[0];
-  var y = b[1] - a[1];
-  var z = b[2] - a[2];
-  return x * x + y * y + z * z;
+function squaredDistance(a3, b3) {
+  var x2 = b3[0] - a3[0];
+  var y3 = b3[1] - a3[1];
+  var z = b3[2] - a3[2];
+  return x2 * x2 + y3 * y3 + z * z;
 }
-function squaredLength(a) {
-  var x = a[0];
-  var y = a[1];
-  var z = a[2];
-  return x * x + y * y + z * z;
+function squaredLength(a3) {
+  var x2 = a3[0];
+  var y3 = a3[1];
+  var z = a3[2];
+  return x2 * x2 + y3 * y3 + z * z;
 }
-function negate(out2, a) {
-  out2[0] = -a[0];
-  out2[1] = -a[1];
-  out2[2] = -a[2];
+function negate(out2, a3) {
+  out2[0] = -a3[0];
+  out2[1] = -a3[1];
+  out2[2] = -a3[2];
   return out2;
 }
-function inverse(out2, a) {
-  out2[0] = 1 / a[0];
-  out2[1] = 1 / a[1];
-  out2[2] = 1 / a[2];
+function inverse(out2, a3) {
+  out2[0] = 1 / a3[0];
+  out2[1] = 1 / a3[1];
+  out2[2] = 1 / a3[2];
   return out2;
 }
-function normalize(out2, a) {
-  var x = a[0];
-  var y = a[1];
-  var z = a[2];
-  var len5 = x * x + y * y + z * z;
+function normalize(out2, a3) {
+  var x2 = a3[0];
+  var y3 = a3[1];
+  var z = a3[2];
+  var len5 = x2 * x2 + y3 * y3 + z * z;
   if (len5 > 0) {
     len5 = 1 / Math.sqrt(len5);
   }
-  out2[0] = a[0] * len5;
-  out2[1] = a[1] * len5;
-  out2[2] = a[2] * len5;
+  out2[0] = a3[0] * len5;
+  out2[1] = a3[1] * len5;
+  out2[2] = a3[2] * len5;
   return out2;
 }
-function dot(a, b) {
-  return a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
+function dot(a3, b3) {
+  return a3[0] * b3[0] + a3[1] * b3[1] + a3[2] * b3[2];
 }
-function cross(out2, a, b) {
-  var ax = a[0], ay = a[1], az = a[2];
-  var bx = b[0], by = b[1], bz = b[2];
+function cross(out2, a3, b3) {
+  var ax = a3[0], ay = a3[1], az = a3[2];
+  var bx = b3[0], by = b3[1], bz = b3[2];
   out2[0] = ay * bz - az * by;
   out2[1] = az * bx - ax * bz;
   out2[2] = ax * by - ay * bx;
   return out2;
 }
-function lerp(out2, a, b, t) {
-  var ax = a[0];
-  var ay = a[1];
-  var az = a[2];
-  out2[0] = ax + t * (b[0] - ax);
-  out2[1] = ay + t * (b[1] - ay);
-  out2[2] = az + t * (b[2] - az);
+function lerp(out2, a3, b3, t4) {
+  var ax = a3[0];
+  var ay = a3[1];
+  var az = a3[2];
+  out2[0] = ax + t4 * (b3[0] - ax);
+  out2[1] = ay + t4 * (b3[1] - ay);
+  out2[2] = az + t4 * (b3[2] - az);
   return out2;
 }
-function hermite(out2, a, b, c, d, t) {
-  var factorTimes2 = t * t;
-  var factor1 = factorTimes2 * (2 * t - 3) + 1;
-  var factor2 = factorTimes2 * (t - 2) + t;
-  var factor3 = factorTimes2 * (t - 1);
-  var factor4 = factorTimes2 * (3 - 2 * t);
-  out2[0] = a[0] * factor1 + b[0] * factor2 + c[0] * factor3 + d[0] * factor4;
-  out2[1] = a[1] * factor1 + b[1] * factor2 + c[1] * factor3 + d[1] * factor4;
-  out2[2] = a[2] * factor1 + b[2] * factor2 + c[2] * factor3 + d[2] * factor4;
+function hermite(out2, a3, b3, c4, d3, t4) {
+  var factorTimes2 = t4 * t4;
+  var factor1 = factorTimes2 * (2 * t4 - 3) + 1;
+  var factor2 = factorTimes2 * (t4 - 2) + t4;
+  var factor3 = factorTimes2 * (t4 - 1);
+  var factor4 = factorTimes2 * (3 - 2 * t4);
+  out2[0] = a3[0] * factor1 + b3[0] * factor2 + c4[0] * factor3 + d3[0] * factor4;
+  out2[1] = a3[1] * factor1 + b3[1] * factor2 + c4[1] * factor3 + d3[1] * factor4;
+  out2[2] = a3[2] * factor1 + b3[2] * factor2 + c4[2] * factor3 + d3[2] * factor4;
   return out2;
 }
-function bezier(out2, a, b, c, d, t) {
-  var inverseFactor = 1 - t;
+function bezier(out2, a3, b3, c4, d3, t4) {
+  var inverseFactor = 1 - t4;
   var inverseFactorTimesTwo = inverseFactor * inverseFactor;
-  var factorTimes2 = t * t;
+  var factorTimes2 = t4 * t4;
   var factor1 = inverseFactorTimesTwo * inverseFactor;
-  var factor2 = 3 * t * inverseFactorTimesTwo;
+  var factor2 = 3 * t4 * inverseFactorTimesTwo;
   var factor3 = 3 * factorTimes2 * inverseFactor;
-  var factor4 = factorTimes2 * t;
-  out2[0] = a[0] * factor1 + b[0] * factor2 + c[0] * factor3 + d[0] * factor4;
-  out2[1] = a[1] * factor1 + b[1] * factor2 + c[1] * factor3 + d[1] * factor4;
-  out2[2] = a[2] * factor1 + b[2] * factor2 + c[2] * factor3 + d[2] * factor4;
+  var factor4 = factorTimes2 * t4;
+  out2[0] = a3[0] * factor1 + b3[0] * factor2 + c4[0] * factor3 + d3[0] * factor4;
+  out2[1] = a3[1] * factor1 + b3[1] * factor2 + c4[1] * factor3 + d3[1] * factor4;
+  out2[2] = a3[2] * factor1 + b3[2] * factor2 + c4[2] * factor3 + d3[2] * factor4;
   return out2;
 }
 function random(out2, scale6) {
   scale6 = scale6 || 1;
-  var r = RANDOM() * 2 * Math.PI;
+  var r5 = RANDOM() * 2 * Math.PI;
   var z = RANDOM() * 2 - 1;
   var zScale = Math.sqrt(1 - z * z) * scale6;
-  out2[0] = Math.cos(r) * zScale;
-  out2[1] = Math.sin(r) * zScale;
+  out2[0] = Math.cos(r5) * zScale;
+  out2[1] = Math.sin(r5) * zScale;
   out2[2] = z * scale6;
   return out2;
 }
-function transformMat4(out2, a, m) {
-  var x = a[0], y = a[1], z = a[2];
-  var w = m[3] * x + m[7] * y + m[11] * z + m[15];
-  w = w || 1;
-  out2[0] = (m[0] * x + m[4] * y + m[8] * z + m[12]) / w;
-  out2[1] = (m[1] * x + m[5] * y + m[9] * z + m[13]) / w;
-  out2[2] = (m[2] * x + m[6] * y + m[10] * z + m[14]) / w;
+function transformMat4(out2, a3, m2) {
+  var x2 = a3[0], y3 = a3[1], z = a3[2];
+  var w2 = m2[3] * x2 + m2[7] * y3 + m2[11] * z + m2[15];
+  w2 = w2 || 1;
+  out2[0] = (m2[0] * x2 + m2[4] * y3 + m2[8] * z + m2[12]) / w2;
+  out2[1] = (m2[1] * x2 + m2[5] * y3 + m2[9] * z + m2[13]) / w2;
+  out2[2] = (m2[2] * x2 + m2[6] * y3 + m2[10] * z + m2[14]) / w2;
   return out2;
 }
-function transformMat3(out2, a, m) {
-  var x = a[0], y = a[1], z = a[2];
-  out2[0] = x * m[0] + y * m[3] + z * m[6];
-  out2[1] = x * m[1] + y * m[4] + z * m[7];
-  out2[2] = x * m[2] + y * m[5] + z * m[8];
+function transformMat3(out2, a3, m2) {
+  var x2 = a3[0], y3 = a3[1], z = a3[2];
+  out2[0] = x2 * m2[0] + y3 * m2[3] + z * m2[6];
+  out2[1] = x2 * m2[1] + y3 * m2[4] + z * m2[7];
+  out2[2] = x2 * m2[2] + y3 * m2[5] + z * m2[8];
   return out2;
 }
-function transformQuat(out2, a, q) {
+function transformQuat(out2, a3, q) {
   var qx = q[0], qy = q[1], qz = q[2], qw = q[3];
-  var x = a[0], y = a[1], z = a[2];
-  var uvx = qy * z - qz * y, uvy = qz * x - qx * z, uvz = qx * y - qy * x;
+  var x2 = a3[0], y3 = a3[1], z = a3[2];
+  var uvx = qy * z - qz * y3, uvy = qz * x2 - qx * z, uvz = qx * y3 - qy * x2;
   var uuvx = qy * uvz - qz * uvy, uuvy = qz * uvx - qx * uvz, uuvz = qx * uvy - qy * uvx;
   var w2 = qw * 2;
   uvx *= w2;
@@ -12580,52 +12643,52 @@ function transformQuat(out2, a, q) {
   uuvx *= 2;
   uuvy *= 2;
   uuvz *= 2;
-  out2[0] = x + uvx + uuvx;
-  out2[1] = y + uvy + uuvy;
+  out2[0] = x2 + uvx + uuvx;
+  out2[1] = y3 + uvy + uuvy;
   out2[2] = z + uvz + uuvz;
   return out2;
 }
-function rotateX2(out2, a, b, rad) {
-  var p = [], r = [];
-  p[0] = a[0] - b[0];
-  p[1] = a[1] - b[1];
-  p[2] = a[2] - b[2];
-  r[0] = p[0];
-  r[1] = p[1] * Math.cos(rad) - p[2] * Math.sin(rad);
-  r[2] = p[1] * Math.sin(rad) + p[2] * Math.cos(rad);
-  out2[0] = r[0] + b[0];
-  out2[1] = r[1] + b[1];
-  out2[2] = r[2] + b[2];
+function rotateX2(out2, a3, b3, rad) {
+  var p3 = [], r5 = [];
+  p3[0] = a3[0] - b3[0];
+  p3[1] = a3[1] - b3[1];
+  p3[2] = a3[2] - b3[2];
+  r5[0] = p3[0];
+  r5[1] = p3[1] * Math.cos(rad) - p3[2] * Math.sin(rad);
+  r5[2] = p3[1] * Math.sin(rad) + p3[2] * Math.cos(rad);
+  out2[0] = r5[0] + b3[0];
+  out2[1] = r5[1] + b3[1];
+  out2[2] = r5[2] + b3[2];
   return out2;
 }
-function rotateY2(out2, a, b, rad) {
-  var p = [], r = [];
-  p[0] = a[0] - b[0];
-  p[1] = a[1] - b[1];
-  p[2] = a[2] - b[2];
-  r[0] = p[2] * Math.sin(rad) + p[0] * Math.cos(rad);
-  r[1] = p[1];
-  r[2] = p[2] * Math.cos(rad) - p[0] * Math.sin(rad);
-  out2[0] = r[0] + b[0];
-  out2[1] = r[1] + b[1];
-  out2[2] = r[2] + b[2];
+function rotateY2(out2, a3, b3, rad) {
+  var p3 = [], r5 = [];
+  p3[0] = a3[0] - b3[0];
+  p3[1] = a3[1] - b3[1];
+  p3[2] = a3[2] - b3[2];
+  r5[0] = p3[2] * Math.sin(rad) + p3[0] * Math.cos(rad);
+  r5[1] = p3[1];
+  r5[2] = p3[2] * Math.cos(rad) - p3[0] * Math.sin(rad);
+  out2[0] = r5[0] + b3[0];
+  out2[1] = r5[1] + b3[1];
+  out2[2] = r5[2] + b3[2];
   return out2;
 }
-function rotateZ2(out2, a, b, rad) {
-  var p = [], r = [];
-  p[0] = a[0] - b[0];
-  p[1] = a[1] - b[1];
-  p[2] = a[2] - b[2];
-  r[0] = p[0] * Math.cos(rad) - p[1] * Math.sin(rad);
-  r[1] = p[0] * Math.sin(rad) + p[1] * Math.cos(rad);
-  r[2] = p[2];
-  out2[0] = r[0] + b[0];
-  out2[1] = r[1] + b[1];
-  out2[2] = r[2] + b[2];
+function rotateZ2(out2, a3, b3, rad) {
+  var p3 = [], r5 = [];
+  p3[0] = a3[0] - b3[0];
+  p3[1] = a3[1] - b3[1];
+  p3[2] = a3[2] - b3[2];
+  r5[0] = p3[0] * Math.cos(rad) - p3[1] * Math.sin(rad);
+  r5[1] = p3[0] * Math.sin(rad) + p3[1] * Math.cos(rad);
+  r5[2] = p3[2];
+  out2[0] = r5[0] + b3[0];
+  out2[1] = r5[1] + b3[1];
+  out2[2] = r5[2] + b3[2];
   return out2;
 }
-function angle(a, b) {
-  var ax = a[0], ay = a[1], az = a[2], bx = b[0], by = b[1], bz = b[2], mag1 = Math.sqrt(ax * ax + ay * ay + az * az), mag2 = Math.sqrt(bx * bx + by * by + bz * bz), mag = mag1 * mag2, cosine = mag && dot(a, b) / mag;
+function angle(a3, b3) {
+  var ax = a3[0], ay = a3[1], az = a3[2], bx = b3[0], by = b3[1], bz = b3[2], mag1 = Math.sqrt(ax * ax + ay * ay + az * az), mag2 = Math.sqrt(bx * bx + by * by + bz * bz), mag = mag1 * mag2, cosine = mag && dot(a3, b3) / mag;
   return Math.acos(Math.min(Math.max(cosine, -1), 1));
 }
 function zero(out2) {
@@ -12634,16 +12697,16 @@ function zero(out2) {
   out2[2] = 0;
   return out2;
 }
-function str2(a) {
-  return "vec3(" + a[0] + ", " + a[1] + ", " + a[2] + ")";
+function str2(a3) {
+  return "vec3(" + a3[0] + ", " + a3[1] + ", " + a3[2] + ")";
 }
-function exactEquals2(a, b) {
-  return a[0] === b[0] && a[1] === b[1] && a[2] === b[2];
+function exactEquals2(a3, b3) {
+  return a3[0] === b3[0] && a3[1] === b3[1] && a3[2] === b3[2];
 }
-function equals2(a, b) {
-  var a0 = a[0], a1 = a[1], a2 = a[2];
-  var b0 = b[0], b1 = b[1], b2 = b[2];
-  return Math.abs(a0 - b0) <= EPSILON * Math.max(1, Math.abs(a0), Math.abs(b0)) && Math.abs(a1 - b1) <= EPSILON * Math.max(1, Math.abs(a1), Math.abs(b1)) && Math.abs(a2 - b2) <= EPSILON * Math.max(1, Math.abs(a2), Math.abs(b2));
+function equals2(a3, b3) {
+  var a0 = a3[0], a1 = a3[1], a22 = a3[2];
+  var b0 = b3[0], b1 = b3[1], b22 = b3[2];
+  return Math.abs(a0 - b0) <= EPSILON * Math.max(1, Math.abs(a0), Math.abs(b0)) && Math.abs(a1 - b1) <= EPSILON * Math.max(1, Math.abs(a1), Math.abs(b1)) && Math.abs(a22 - b22) <= EPSILON * Math.max(1, Math.abs(a22), Math.abs(b22));
 }
 var sub2 = subtract2;
 var mul2 = multiply2;
@@ -12654,8 +12717,8 @@ var len = length;
 var sqrLen = squaredLength;
 var forEach = function() {
   var vec = create3();
-  return function(a, stride, offset, count, fn, arg) {
-    var i, l;
+  return function(a3, stride, offset, count, fn, arg) {
+    var i4, l3;
     if (!stride) {
       stride = 3;
     }
@@ -12663,20 +12726,20 @@ var forEach = function() {
       offset = 0;
     }
     if (count) {
-      l = Math.min(count * stride + offset, a.length);
+      l3 = Math.min(count * stride + offset, a3.length);
     } else {
-      l = a.length;
+      l3 = a3.length;
     }
-    for (i = offset; i < l; i += stride) {
-      vec[0] = a[i];
-      vec[1] = a[i + 1];
-      vec[2] = a[i + 2];
+    for (i4 = offset; i4 < l3; i4 += stride) {
+      vec[0] = a3[i4];
+      vec[1] = a3[i4 + 1];
+      vec[2] = a3[i4 + 2];
       fn(vec, vec, arg);
-      a[i] = vec[0];
-      a[i + 1] = vec[1];
-      a[i + 2] = vec[2];
+      a3[i4] = vec[0];
+      a3[i4 + 1] = vec[1];
+      a3[i4 + 2] = vec[2];
     }
-    return a;
+    return a3;
   };
 }();
 
@@ -12735,200 +12798,200 @@ function create4() {
   }
   return out2;
 }
-function clone3(a) {
+function clone3(a3) {
   var out2 = new ARRAY_TYPE(4);
-  out2[0] = a[0];
-  out2[1] = a[1];
-  out2[2] = a[2];
-  out2[3] = a[3];
+  out2[0] = a3[0];
+  out2[1] = a3[1];
+  out2[2] = a3[2];
+  out2[3] = a3[3];
   return out2;
 }
-function fromValues3(x, y, z, w) {
+function fromValues3(x2, y3, z, w2) {
   var out2 = new ARRAY_TYPE(4);
-  out2[0] = x;
-  out2[1] = y;
+  out2[0] = x2;
+  out2[1] = y3;
   out2[2] = z;
-  out2[3] = w;
+  out2[3] = w2;
   return out2;
 }
-function copy3(out2, a) {
-  out2[0] = a[0];
-  out2[1] = a[1];
-  out2[2] = a[2];
-  out2[3] = a[3];
+function copy3(out2, a3) {
+  out2[0] = a3[0];
+  out2[1] = a3[1];
+  out2[2] = a3[2];
+  out2[3] = a3[3];
   return out2;
 }
-function set3(out2, x, y, z, w) {
-  out2[0] = x;
-  out2[1] = y;
+function set3(out2, x2, y3, z, w2) {
+  out2[0] = x2;
+  out2[1] = y3;
   out2[2] = z;
-  out2[3] = w;
+  out2[3] = w2;
   return out2;
 }
-function add3(out2, a, b) {
-  out2[0] = a[0] + b[0];
-  out2[1] = a[1] + b[1];
-  out2[2] = a[2] + b[2];
-  out2[3] = a[3] + b[3];
+function add3(out2, a3, b3) {
+  out2[0] = a3[0] + b3[0];
+  out2[1] = a3[1] + b3[1];
+  out2[2] = a3[2] + b3[2];
+  out2[3] = a3[3] + b3[3];
   return out2;
 }
-function subtract3(out2, a, b) {
-  out2[0] = a[0] - b[0];
-  out2[1] = a[1] - b[1];
-  out2[2] = a[2] - b[2];
-  out2[3] = a[3] - b[3];
+function subtract3(out2, a3, b3) {
+  out2[0] = a3[0] - b3[0];
+  out2[1] = a3[1] - b3[1];
+  out2[2] = a3[2] - b3[2];
+  out2[3] = a3[3] - b3[3];
   return out2;
 }
-function multiply3(out2, a, b) {
-  out2[0] = a[0] * b[0];
-  out2[1] = a[1] * b[1];
-  out2[2] = a[2] * b[2];
-  out2[3] = a[3] * b[3];
+function multiply3(out2, a3, b3) {
+  out2[0] = a3[0] * b3[0];
+  out2[1] = a3[1] * b3[1];
+  out2[2] = a3[2] * b3[2];
+  out2[3] = a3[3] * b3[3];
   return out2;
 }
-function divide2(out2, a, b) {
-  out2[0] = a[0] / b[0];
-  out2[1] = a[1] / b[1];
-  out2[2] = a[2] / b[2];
-  out2[3] = a[3] / b[3];
+function divide2(out2, a3, b3) {
+  out2[0] = a3[0] / b3[0];
+  out2[1] = a3[1] / b3[1];
+  out2[2] = a3[2] / b3[2];
+  out2[3] = a3[3] / b3[3];
   return out2;
 }
-function ceil2(out2, a) {
-  out2[0] = Math.ceil(a[0]);
-  out2[1] = Math.ceil(a[1]);
-  out2[2] = Math.ceil(a[2]);
-  out2[3] = Math.ceil(a[3]);
+function ceil2(out2, a3) {
+  out2[0] = Math.ceil(a3[0]);
+  out2[1] = Math.ceil(a3[1]);
+  out2[2] = Math.ceil(a3[2]);
+  out2[3] = Math.ceil(a3[3]);
   return out2;
 }
-function floor2(out2, a) {
-  out2[0] = Math.floor(a[0]);
-  out2[1] = Math.floor(a[1]);
-  out2[2] = Math.floor(a[2]);
-  out2[3] = Math.floor(a[3]);
+function floor2(out2, a3) {
+  out2[0] = Math.floor(a3[0]);
+  out2[1] = Math.floor(a3[1]);
+  out2[2] = Math.floor(a3[2]);
+  out2[3] = Math.floor(a3[3]);
   return out2;
 }
-function min2(out2, a, b) {
-  out2[0] = Math.min(a[0], b[0]);
-  out2[1] = Math.min(a[1], b[1]);
-  out2[2] = Math.min(a[2], b[2]);
-  out2[3] = Math.min(a[3], b[3]);
+function min2(out2, a3, b3) {
+  out2[0] = Math.min(a3[0], b3[0]);
+  out2[1] = Math.min(a3[1], b3[1]);
+  out2[2] = Math.min(a3[2], b3[2]);
+  out2[3] = Math.min(a3[3], b3[3]);
   return out2;
 }
-function max2(out2, a, b) {
-  out2[0] = Math.max(a[0], b[0]);
-  out2[1] = Math.max(a[1], b[1]);
-  out2[2] = Math.max(a[2], b[2]);
-  out2[3] = Math.max(a[3], b[3]);
+function max2(out2, a3, b3) {
+  out2[0] = Math.max(a3[0], b3[0]);
+  out2[1] = Math.max(a3[1], b3[1]);
+  out2[2] = Math.max(a3[2], b3[2]);
+  out2[3] = Math.max(a3[3], b3[3]);
   return out2;
 }
-function round2(out2, a) {
-  out2[0] = Math.round(a[0]);
-  out2[1] = Math.round(a[1]);
-  out2[2] = Math.round(a[2]);
-  out2[3] = Math.round(a[3]);
+function round2(out2, a3) {
+  out2[0] = Math.round(a3[0]);
+  out2[1] = Math.round(a3[1]);
+  out2[2] = Math.round(a3[2]);
+  out2[3] = Math.round(a3[3]);
   return out2;
 }
-function scale3(out2, a, b) {
-  out2[0] = a[0] * b;
-  out2[1] = a[1] * b;
-  out2[2] = a[2] * b;
-  out2[3] = a[3] * b;
+function scale3(out2, a3, b3) {
+  out2[0] = a3[0] * b3;
+  out2[1] = a3[1] * b3;
+  out2[2] = a3[2] * b3;
+  out2[3] = a3[3] * b3;
   return out2;
 }
-function scaleAndAdd2(out2, a, b, scale6) {
-  out2[0] = a[0] + b[0] * scale6;
-  out2[1] = a[1] + b[1] * scale6;
-  out2[2] = a[2] + b[2] * scale6;
-  out2[3] = a[3] + b[3] * scale6;
+function scaleAndAdd2(out2, a3, b3, scale6) {
+  out2[0] = a3[0] + b3[0] * scale6;
+  out2[1] = a3[1] + b3[1] * scale6;
+  out2[2] = a3[2] + b3[2] * scale6;
+  out2[3] = a3[3] + b3[3] * scale6;
   return out2;
 }
-function distance2(a, b) {
-  var x = b[0] - a[0];
-  var y = b[1] - a[1];
-  var z = b[2] - a[2];
-  var w = b[3] - a[3];
-  return Math.hypot(x, y, z, w);
+function distance2(a3, b3) {
+  var x2 = b3[0] - a3[0];
+  var y3 = b3[1] - a3[1];
+  var z = b3[2] - a3[2];
+  var w2 = b3[3] - a3[3];
+  return Math.hypot(x2, y3, z, w2);
 }
-function squaredDistance2(a, b) {
-  var x = b[0] - a[0];
-  var y = b[1] - a[1];
-  var z = b[2] - a[2];
-  var w = b[3] - a[3];
-  return x * x + y * y + z * z + w * w;
+function squaredDistance2(a3, b3) {
+  var x2 = b3[0] - a3[0];
+  var y3 = b3[1] - a3[1];
+  var z = b3[2] - a3[2];
+  var w2 = b3[3] - a3[3];
+  return x2 * x2 + y3 * y3 + z * z + w2 * w2;
 }
-function length2(a) {
-  var x = a[0];
-  var y = a[1];
-  var z = a[2];
-  var w = a[3];
-  return Math.hypot(x, y, z, w);
+function length2(a3) {
+  var x2 = a3[0];
+  var y3 = a3[1];
+  var z = a3[2];
+  var w2 = a3[3];
+  return Math.hypot(x2, y3, z, w2);
 }
-function squaredLength2(a) {
-  var x = a[0];
-  var y = a[1];
-  var z = a[2];
-  var w = a[3];
-  return x * x + y * y + z * z + w * w;
+function squaredLength2(a3) {
+  var x2 = a3[0];
+  var y3 = a3[1];
+  var z = a3[2];
+  var w2 = a3[3];
+  return x2 * x2 + y3 * y3 + z * z + w2 * w2;
 }
-function negate2(out2, a) {
-  out2[0] = -a[0];
-  out2[1] = -a[1];
-  out2[2] = -a[2];
-  out2[3] = -a[3];
+function negate2(out2, a3) {
+  out2[0] = -a3[0];
+  out2[1] = -a3[1];
+  out2[2] = -a3[2];
+  out2[3] = -a3[3];
   return out2;
 }
-function inverse2(out2, a) {
-  out2[0] = 1 / a[0];
-  out2[1] = 1 / a[1];
-  out2[2] = 1 / a[2];
-  out2[3] = 1 / a[3];
+function inverse2(out2, a3) {
+  out2[0] = 1 / a3[0];
+  out2[1] = 1 / a3[1];
+  out2[2] = 1 / a3[2];
+  out2[3] = 1 / a3[3];
   return out2;
 }
-function normalize2(out2, a) {
-  var x = a[0];
-  var y = a[1];
-  var z = a[2];
-  var w = a[3];
-  var len5 = x * x + y * y + z * z + w * w;
+function normalize2(out2, a3) {
+  var x2 = a3[0];
+  var y3 = a3[1];
+  var z = a3[2];
+  var w2 = a3[3];
+  var len5 = x2 * x2 + y3 * y3 + z * z + w2 * w2;
   if (len5 > 0) {
     len5 = 1 / Math.sqrt(len5);
   }
-  out2[0] = x * len5;
-  out2[1] = y * len5;
+  out2[0] = x2 * len5;
+  out2[1] = y3 * len5;
   out2[2] = z * len5;
-  out2[3] = w * len5;
+  out2[3] = w2 * len5;
   return out2;
 }
-function dot2(a, b) {
-  return a[0] * b[0] + a[1] * b[1] + a[2] * b[2] + a[3] * b[3];
+function dot2(a3, b3) {
+  return a3[0] * b3[0] + a3[1] * b3[1] + a3[2] * b3[2] + a3[3] * b3[3];
 }
-function cross2(out2, u, v, w) {
-  var A = v[0] * w[1] - v[1] * w[0], B = v[0] * w[2] - v[2] * w[0], C = v[0] * w[3] - v[3] * w[0], D = v[1] * w[2] - v[2] * w[1], E = v[1] * w[3] - v[3] * w[1], F = v[2] * w[3] - v[3] * w[2];
-  var G = u[0];
-  var H = u[1];
-  var I = u[2];
-  var J = u[3];
-  out2[0] = H * F - I * E + J * D;
-  out2[1] = -(G * F) + I * C - J * B;
-  out2[2] = G * E - H * C + J * A;
-  out2[3] = -(G * D) + H * B - I * A;
+function cross2(out2, u3, v2, w2) {
+  var A2 = v2[0] * w2[1] - v2[1] * w2[0], B = v2[0] * w2[2] - v2[2] * w2[0], C2 = v2[0] * w2[3] - v2[3] * w2[0], D = v2[1] * w2[2] - v2[2] * w2[1], E2 = v2[1] * w2[3] - v2[3] * w2[1], F = v2[2] * w2[3] - v2[3] * w2[2];
+  var G = u3[0];
+  var H2 = u3[1];
+  var I2 = u3[2];
+  var J = u3[3];
+  out2[0] = H2 * F - I2 * E2 + J * D;
+  out2[1] = -(G * F) + I2 * C2 - J * B;
+  out2[2] = G * E2 - H2 * C2 + J * A2;
+  out2[3] = -(G * D) + H2 * B - I2 * A2;
   return out2;
 }
-function lerp2(out2, a, b, t) {
-  var ax = a[0];
-  var ay = a[1];
-  var az = a[2];
-  var aw = a[3];
-  out2[0] = ax + t * (b[0] - ax);
-  out2[1] = ay + t * (b[1] - ay);
-  out2[2] = az + t * (b[2] - az);
-  out2[3] = aw + t * (b[3] - aw);
+function lerp2(out2, a3, b3, t4) {
+  var ax = a3[0];
+  var ay = a3[1];
+  var az = a3[2];
+  var aw = a3[3];
+  out2[0] = ax + t4 * (b3[0] - ax);
+  out2[1] = ay + t4 * (b3[1] - ay);
+  out2[2] = az + t4 * (b3[2] - az);
+  out2[3] = aw + t4 * (b3[3] - aw);
   return out2;
 }
 function random2(out2, scale6) {
   scale6 = scale6 || 1;
   var v1, v2, v3, v4;
-  var s1, s2;
+  var s1, s22;
   do {
     v1 = RANDOM() * 2 - 1;
     v2 = RANDOM() * 2 - 1;
@@ -12937,34 +13000,34 @@ function random2(out2, scale6) {
   do {
     v3 = RANDOM() * 2 - 1;
     v4 = RANDOM() * 2 - 1;
-    s2 = v3 * v3 + v4 * v4;
-  } while (s2 >= 1);
-  var d = Math.sqrt((1 - s1) / s2);
+    s22 = v3 * v3 + v4 * v4;
+  } while (s22 >= 1);
+  var d3 = Math.sqrt((1 - s1) / s22);
   out2[0] = scale6 * v1;
   out2[1] = scale6 * v2;
-  out2[2] = scale6 * v3 * d;
-  out2[3] = scale6 * v4 * d;
+  out2[2] = scale6 * v3 * d3;
+  out2[3] = scale6 * v4 * d3;
   return out2;
 }
-function transformMat42(out2, a, m) {
-  var x = a[0], y = a[1], z = a[2], w = a[3];
-  out2[0] = m[0] * x + m[4] * y + m[8] * z + m[12] * w;
-  out2[1] = m[1] * x + m[5] * y + m[9] * z + m[13] * w;
-  out2[2] = m[2] * x + m[6] * y + m[10] * z + m[14] * w;
-  out2[3] = m[3] * x + m[7] * y + m[11] * z + m[15] * w;
+function transformMat42(out2, a3, m2) {
+  var x2 = a3[0], y3 = a3[1], z = a3[2], w2 = a3[3];
+  out2[0] = m2[0] * x2 + m2[4] * y3 + m2[8] * z + m2[12] * w2;
+  out2[1] = m2[1] * x2 + m2[5] * y3 + m2[9] * z + m2[13] * w2;
+  out2[2] = m2[2] * x2 + m2[6] * y3 + m2[10] * z + m2[14] * w2;
+  out2[3] = m2[3] * x2 + m2[7] * y3 + m2[11] * z + m2[15] * w2;
   return out2;
 }
-function transformQuat2(out2, a, q) {
-  var x = a[0], y = a[1], z = a[2];
+function transformQuat2(out2, a3, q) {
+  var x2 = a3[0], y3 = a3[1], z = a3[2];
   var qx = q[0], qy = q[1], qz = q[2], qw = q[3];
-  var ix = qw * x + qy * z - qz * y;
-  var iy = qw * y + qz * x - qx * z;
-  var iz = qw * z + qx * y - qy * x;
-  var iw = -qx * x - qy * y - qz * z;
+  var ix = qw * x2 + qy * z - qz * y3;
+  var iy = qw * y3 + qz * x2 - qx * z;
+  var iz = qw * z + qx * y3 - qy * x2;
+  var iw = -qx * x2 - qy * y3 - qz * z;
   out2[0] = ix * qw + iw * -qx + iy * -qz - iz * -qy;
   out2[1] = iy * qw + iw * -qy + iz * -qx - ix * -qz;
   out2[2] = iz * qw + iw * -qz + ix * -qy - iy * -qx;
-  out2[3] = a[3];
+  out2[3] = a3[3];
   return out2;
 }
 function zero2(out2) {
@@ -12974,16 +13037,16 @@ function zero2(out2) {
   out2[3] = 0;
   return out2;
 }
-function str3(a) {
-  return "vec4(" + a[0] + ", " + a[1] + ", " + a[2] + ", " + a[3] + ")";
+function str3(a3) {
+  return "vec4(" + a3[0] + ", " + a3[1] + ", " + a3[2] + ", " + a3[3] + ")";
 }
-function exactEquals3(a, b) {
-  return a[0] === b[0] && a[1] === b[1] && a[2] === b[2] && a[3] === b[3];
+function exactEquals3(a3, b3) {
+  return a3[0] === b3[0] && a3[1] === b3[1] && a3[2] === b3[2] && a3[3] === b3[3];
 }
-function equals3(a, b) {
-  var a0 = a[0], a1 = a[1], a2 = a[2], a3 = a[3];
-  var b0 = b[0], b1 = b[1], b2 = b[2], b3 = b[3];
-  return Math.abs(a0 - b0) <= EPSILON * Math.max(1, Math.abs(a0), Math.abs(b0)) && Math.abs(a1 - b1) <= EPSILON * Math.max(1, Math.abs(a1), Math.abs(b1)) && Math.abs(a2 - b2) <= EPSILON * Math.max(1, Math.abs(a2), Math.abs(b2)) && Math.abs(a3 - b3) <= EPSILON * Math.max(1, Math.abs(a3), Math.abs(b3));
+function equals3(a3, b3) {
+  var a0 = a3[0], a1 = a3[1], a22 = a3[2], a32 = a3[3];
+  var b0 = b3[0], b1 = b3[1], b22 = b3[2], b32 = b3[3];
+  return Math.abs(a0 - b0) <= EPSILON * Math.max(1, Math.abs(a0), Math.abs(b0)) && Math.abs(a1 - b1) <= EPSILON * Math.max(1, Math.abs(a1), Math.abs(b1)) && Math.abs(a22 - b22) <= EPSILON * Math.max(1, Math.abs(a22), Math.abs(b22)) && Math.abs(a32 - b32) <= EPSILON * Math.max(1, Math.abs(a32), Math.abs(b32));
 }
 var sub3 = subtract3;
 var mul3 = multiply3;
@@ -12994,8 +13057,8 @@ var len2 = length2;
 var sqrLen2 = squaredLength2;
 var forEach2 = function() {
   var vec = create4();
-  return function(a, stride, offset, count, fn, arg) {
-    var i, l;
+  return function(a3, stride, offset, count, fn, arg) {
+    var i4, l3;
     if (!stride) {
       stride = 4;
     }
@@ -13003,22 +13066,22 @@ var forEach2 = function() {
       offset = 0;
     }
     if (count) {
-      l = Math.min(count * stride + offset, a.length);
+      l3 = Math.min(count * stride + offset, a3.length);
     } else {
-      l = a.length;
+      l3 = a3.length;
     }
-    for (i = offset; i < l; i += stride) {
-      vec[0] = a[i];
-      vec[1] = a[i + 1];
-      vec[2] = a[i + 2];
-      vec[3] = a[i + 3];
+    for (i4 = offset; i4 < l3; i4 += stride) {
+      vec[0] = a3[i4];
+      vec[1] = a3[i4 + 1];
+      vec[2] = a3[i4 + 2];
+      vec[3] = a3[i4 + 3];
       fn(vec, vec, arg);
-      a[i] = vec[0];
-      a[i + 1] = vec[1];
-      a[i + 2] = vec[2];
-      a[i + 3] = vec[3];
+      a3[i4] = vec[0];
+      a3[i4 + 1] = vec[1];
+      a3[i4 + 2] = vec[2];
+      a3[i4 + 3] = vec[3];
     }
-    return a;
+    return a3;
   };
 }();
 
@@ -13042,20 +13105,20 @@ function identity2(out2) {
 }
 function setAxisAngle(out2, axis, rad) {
   rad = rad * 0.5;
-  var s = Math.sin(rad);
-  out2[0] = s * axis[0];
-  out2[1] = s * axis[1];
-  out2[2] = s * axis[2];
+  var s4 = Math.sin(rad);
+  out2[0] = s4 * axis[0];
+  out2[1] = s4 * axis[1];
+  out2[2] = s4 * axis[2];
   out2[3] = Math.cos(rad);
   return out2;
 }
 function getAxisAngle(out_axis, q) {
   var rad = Math.acos(q[3]) * 2;
-  var s = Math.sin(rad / 2);
-  if (s > EPSILON) {
-    out_axis[0] = q[0] / s;
-    out_axis[1] = q[1] / s;
-    out_axis[2] = q[2] / s;
+  var s4 = Math.sin(rad / 2);
+  if (s4 > EPSILON) {
+    out_axis[0] = q[0] / s4;
+    out_axis[1] = q[1] / s4;
+    out_axis[2] = q[2] / s4;
   } else {
     out_axis[0] = 1;
     out_axis[1] = 0;
@@ -13063,22 +13126,22 @@ function getAxisAngle(out_axis, q) {
   }
   return rad;
 }
-function getAngle(a, b) {
-  var dotproduct = dot3(a, b);
+function getAngle(a3, b3) {
+  var dotproduct = dot3(a3, b3);
   return Math.acos(2 * dotproduct * dotproduct - 1);
 }
-function multiply4(out2, a, b) {
-  var ax = a[0], ay = a[1], az = a[2], aw = a[3];
-  var bx = b[0], by = b[1], bz = b[2], bw = b[3];
+function multiply4(out2, a3, b3) {
+  var ax = a3[0], ay = a3[1], az = a3[2], aw = a3[3];
+  var bx = b3[0], by = b3[1], bz = b3[2], bw = b3[3];
   out2[0] = ax * bw + aw * bx + ay * bz - az * by;
   out2[1] = ay * bw + aw * by + az * bx - ax * bz;
   out2[2] = az * bw + aw * bz + ax * by - ay * bx;
   out2[3] = aw * bw - ax * bx - ay * by - az * bz;
   return out2;
 }
-function rotateX3(out2, a, rad) {
+function rotateX3(out2, a3, rad) {
   rad *= 0.5;
-  var ax = a[0], ay = a[1], az = a[2], aw = a[3];
+  var ax = a3[0], ay = a3[1], az = a3[2], aw = a3[3];
   var bx = Math.sin(rad), bw = Math.cos(rad);
   out2[0] = ax * bw + aw * bx;
   out2[1] = ay * bw + az * bx;
@@ -13086,9 +13149,9 @@ function rotateX3(out2, a, rad) {
   out2[3] = aw * bw - ax * bx;
   return out2;
 }
-function rotateY3(out2, a, rad) {
+function rotateY3(out2, a3, rad) {
   rad *= 0.5;
-  var ax = a[0], ay = a[1], az = a[2], aw = a[3];
+  var ax = a3[0], ay = a3[1], az = a3[2], aw = a3[3];
   var by = Math.sin(rad), bw = Math.cos(rad);
   out2[0] = ax * bw - az * by;
   out2[1] = ay * bw + aw * by;
@@ -13096,9 +13159,9 @@ function rotateY3(out2, a, rad) {
   out2[3] = aw * bw - ay * by;
   return out2;
 }
-function rotateZ3(out2, a, rad) {
+function rotateZ3(out2, a3, rad) {
   rad *= 0.5;
-  var ax = a[0], ay = a[1], az = a[2], aw = a[3];
+  var ax = a3[0], ay = a3[1], az = a3[2], aw = a3[3];
   var bz = Math.sin(rad), bw = Math.cos(rad);
   out2[0] = ax * bw + ay * bz;
   out2[1] = ay * bw - ax * bz;
@@ -13106,44 +13169,44 @@ function rotateZ3(out2, a, rad) {
   out2[3] = aw * bw - az * bz;
   return out2;
 }
-function calculateW(out2, a) {
-  var x = a[0], y = a[1], z = a[2];
-  out2[0] = x;
-  out2[1] = y;
+function calculateW(out2, a3) {
+  var x2 = a3[0], y3 = a3[1], z = a3[2];
+  out2[0] = x2;
+  out2[1] = y3;
   out2[2] = z;
-  out2[3] = Math.sqrt(Math.abs(1 - x * x - y * y - z * z));
+  out2[3] = Math.sqrt(Math.abs(1 - x2 * x2 - y3 * y3 - z * z));
   return out2;
 }
-function exp(out2, a) {
-  var x = a[0], y = a[1], z = a[2], w = a[3];
-  var r = Math.sqrt(x * x + y * y + z * z);
-  var et = Math.exp(w);
-  var s = r > 0 ? et * Math.sin(r) / r : 0;
-  out2[0] = x * s;
-  out2[1] = y * s;
-  out2[2] = z * s;
-  out2[3] = et * Math.cos(r);
+function exp(out2, a3) {
+  var x2 = a3[0], y3 = a3[1], z = a3[2], w2 = a3[3];
+  var r5 = Math.sqrt(x2 * x2 + y3 * y3 + z * z);
+  var et = Math.exp(w2);
+  var s4 = r5 > 0 ? et * Math.sin(r5) / r5 : 0;
+  out2[0] = x2 * s4;
+  out2[1] = y3 * s4;
+  out2[2] = z * s4;
+  out2[3] = et * Math.cos(r5);
   return out2;
 }
-function ln(out2, a) {
-  var x = a[0], y = a[1], z = a[2], w = a[3];
-  var r = Math.sqrt(x * x + y * y + z * z);
-  var t = r > 0 ? Math.atan2(r, w) / r : 0;
-  out2[0] = x * t;
-  out2[1] = y * t;
-  out2[2] = z * t;
-  out2[3] = 0.5 * Math.log(x * x + y * y + z * z + w * w);
+function ln(out2, a3) {
+  var x2 = a3[0], y3 = a3[1], z = a3[2], w2 = a3[3];
+  var r5 = Math.sqrt(x2 * x2 + y3 * y3 + z * z);
+  var t4 = r5 > 0 ? Math.atan2(r5, w2) / r5 : 0;
+  out2[0] = x2 * t4;
+  out2[1] = y3 * t4;
+  out2[2] = z * t4;
+  out2[3] = 0.5 * Math.log(x2 * x2 + y3 * y3 + z * z + w2 * w2);
   return out2;
 }
-function pow(out2, a, b) {
-  ln(out2, a);
-  scale4(out2, out2, b);
+function pow(out2, a3, b3) {
+  ln(out2, a3);
+  scale4(out2, out2, b3);
   exp(out2, out2);
   return out2;
 }
-function slerp(out2, a, b, t) {
-  var ax = a[0], ay = a[1], az = a[2], aw = a[3];
-  var bx = b[0], by = b[1], bz = b[2], bw = b[3];
+function slerp(out2, a3, b3, t4) {
+  var ax = a3[0], ay = a3[1], az = a3[2], aw = a3[3];
+  var bx = b3[0], by = b3[1], bz = b3[2], bw = b3[3];
   var omega, cosom, sinom, scale0, scale1;
   cosom = ax * bx + ay * by + az * bz + aw * bw;
   if (cosom < 0) {
@@ -13156,11 +13219,11 @@ function slerp(out2, a, b, t) {
   if (1 - cosom > EPSILON) {
     omega = Math.acos(cosom);
     sinom = Math.sin(omega);
-    scale0 = Math.sin((1 - t) * omega) / sinom;
-    scale1 = Math.sin(t * omega) / sinom;
+    scale0 = Math.sin((1 - t4) * omega) / sinom;
+    scale1 = Math.sin(t4 * omega) / sinom;
   } else {
-    scale0 = 1 - t;
-    scale1 = t;
+    scale0 = 1 - t4;
+    scale1 = t4;
   }
   out2[0] = scale0 * ax + scale1 * bx;
   out2[1] = scale0 * ay + scale1 * by;
@@ -13170,69 +13233,69 @@ function slerp(out2, a, b, t) {
 }
 function random3(out2) {
   var u1 = RANDOM();
-  var u2 = RANDOM();
+  var u22 = RANDOM();
   var u3 = RANDOM();
   var sqrt1MinusU1 = Math.sqrt(1 - u1);
   var sqrtU1 = Math.sqrt(u1);
-  out2[0] = sqrt1MinusU1 * Math.sin(2 * Math.PI * u2);
-  out2[1] = sqrt1MinusU1 * Math.cos(2 * Math.PI * u2);
+  out2[0] = sqrt1MinusU1 * Math.sin(2 * Math.PI * u22);
+  out2[1] = sqrt1MinusU1 * Math.cos(2 * Math.PI * u22);
   out2[2] = sqrtU1 * Math.sin(2 * Math.PI * u3);
   out2[3] = sqrtU1 * Math.cos(2 * Math.PI * u3);
   return out2;
 }
-function invert2(out2, a) {
-  var a0 = a[0], a1 = a[1], a2 = a[2], a3 = a[3];
-  var dot5 = a0 * a0 + a1 * a1 + a2 * a2 + a3 * a3;
+function invert2(out2, a3) {
+  var a0 = a3[0], a1 = a3[1], a22 = a3[2], a32 = a3[3];
+  var dot5 = a0 * a0 + a1 * a1 + a22 * a22 + a32 * a32;
   var invDot = dot5 ? 1 / dot5 : 0;
   out2[0] = -a0 * invDot;
   out2[1] = -a1 * invDot;
-  out2[2] = -a2 * invDot;
-  out2[3] = a3 * invDot;
+  out2[2] = -a22 * invDot;
+  out2[3] = a32 * invDot;
   return out2;
 }
-function conjugate(out2, a) {
-  out2[0] = -a[0];
-  out2[1] = -a[1];
-  out2[2] = -a[2];
-  out2[3] = a[3];
+function conjugate(out2, a3) {
+  out2[0] = -a3[0];
+  out2[1] = -a3[1];
+  out2[2] = -a3[2];
+  out2[3] = a3[3];
   return out2;
 }
-function fromMat3(out2, m) {
-  var fTrace = m[0] + m[4] + m[8];
+function fromMat3(out2, m2) {
+  var fTrace = m2[0] + m2[4] + m2[8];
   var fRoot;
   if (fTrace > 0) {
     fRoot = Math.sqrt(fTrace + 1);
     out2[3] = 0.5 * fRoot;
     fRoot = 0.5 / fRoot;
-    out2[0] = (m[5] - m[7]) * fRoot;
-    out2[1] = (m[6] - m[2]) * fRoot;
-    out2[2] = (m[1] - m[3]) * fRoot;
+    out2[0] = (m2[5] - m2[7]) * fRoot;
+    out2[1] = (m2[6] - m2[2]) * fRoot;
+    out2[2] = (m2[1] - m2[3]) * fRoot;
   } else {
-    var i = 0;
-    if (m[4] > m[0])
-      i = 1;
-    if (m[8] > m[i * 3 + i])
-      i = 2;
-    var j = (i + 1) % 3;
-    var k = (i + 2) % 3;
-    fRoot = Math.sqrt(m[i * 3 + i] - m[j * 3 + j] - m[k * 3 + k] + 1);
-    out2[i] = 0.5 * fRoot;
+    var i4 = 0;
+    if (m2[4] > m2[0])
+      i4 = 1;
+    if (m2[8] > m2[i4 * 3 + i4])
+      i4 = 2;
+    var j2 = (i4 + 1) % 3;
+    var k2 = (i4 + 2) % 3;
+    fRoot = Math.sqrt(m2[i4 * 3 + i4] - m2[j2 * 3 + j2] - m2[k2 * 3 + k2] + 1);
+    out2[i4] = 0.5 * fRoot;
     fRoot = 0.5 / fRoot;
-    out2[3] = (m[j * 3 + k] - m[k * 3 + j]) * fRoot;
-    out2[j] = (m[j * 3 + i] + m[i * 3 + j]) * fRoot;
-    out2[k] = (m[k * 3 + i] + m[i * 3 + k]) * fRoot;
+    out2[3] = (m2[j2 * 3 + k2] - m2[k2 * 3 + j2]) * fRoot;
+    out2[j2] = (m2[j2 * 3 + i4] + m2[i4 * 3 + j2]) * fRoot;
+    out2[k2] = (m2[k2 * 3 + i4] + m2[i4 * 3 + k2]) * fRoot;
   }
   return out2;
 }
-function fromEuler(out2, x, y, z) {
+function fromEuler(out2, x2, y3, z) {
   var halfToRad = 0.5 * Math.PI / 180;
-  x *= halfToRad;
-  y *= halfToRad;
+  x2 *= halfToRad;
+  y3 *= halfToRad;
   z *= halfToRad;
-  var sx = Math.sin(x);
-  var cx = Math.cos(x);
-  var sy = Math.sin(y);
-  var cy = Math.cos(y);
+  var sx = Math.sin(x2);
+  var cx = Math.cos(x2);
+  var sy = Math.sin(y3);
+  var cy = Math.cos(y3);
   var sz = Math.sin(z);
   var cz = Math.cos(z);
   out2[0] = sx * cy * cz - cx * sy * sz;
@@ -13241,8 +13304,8 @@ function fromEuler(out2, x, y, z) {
   out2[3] = cx * cy * cz + sx * sy * sz;
   return out2;
 }
-function str4(a) {
-  return "quat(" + a[0] + ", " + a[1] + ", " + a[2] + ", " + a[3] + ")";
+function str4(a3) {
+  return "quat(" + a3[0] + ", " + a3[1] + ", " + a3[2] + ", " + a3[3] + ")";
 }
 var clone4 = clone3;
 var fromValues4 = fromValues3;
@@ -13264,12 +13327,12 @@ var rotationTo = function() {
   var tmpvec3 = create3();
   var xUnitVec3 = fromValues2(1, 0, 0);
   var yUnitVec3 = fromValues2(0, 1, 0);
-  return function(out2, a, b) {
-    var dot5 = dot(a, b);
+  return function(out2, a3, b3) {
+    var dot5 = dot(a3, b3);
     if (dot5 < -0.999999) {
-      cross(tmpvec3, xUnitVec3, a);
+      cross(tmpvec3, xUnitVec3, a3);
       if (len(tmpvec3) < 1e-6)
-        cross(tmpvec3, yUnitVec3, a);
+        cross(tmpvec3, yUnitVec3, a3);
       normalize(tmpvec3, tmpvec3);
       setAxisAngle(out2, tmpvec3, Math.PI);
       return out2;
@@ -13280,7 +13343,7 @@ var rotationTo = function() {
       out2[3] = 1;
       return out2;
     } else {
-      cross(tmpvec3, a, b);
+      cross(tmpvec3, a3, b3);
       out2[0] = tmpvec3[0];
       out2[1] = tmpvec3[1];
       out2[2] = tmpvec3[2];
@@ -13292,10 +13355,10 @@ var rotationTo = function() {
 var sqlerp = function() {
   var temp1 = create5();
   var temp2 = create5();
-  return function(out2, a, b, c, d, t) {
-    slerp(temp1, a, d, t);
-    slerp(temp2, b, c, t);
-    slerp(out2, temp1, temp2, 2 * t * (1 - t));
+  return function(out2, a3, b3, c4, d3, t4) {
+    slerp(temp1, a3, d3, t4);
+    slerp(temp2, b3, c4, t4);
+    slerp(out2, temp1, temp2, 2 * t4 * (1 - t4));
     return out2;
   };
 }();
@@ -13372,174 +13435,174 @@ function create6() {
   }
   return out2;
 }
-function clone5(a) {
+function clone5(a3) {
   var out2 = new ARRAY_TYPE(2);
-  out2[0] = a[0];
-  out2[1] = a[1];
+  out2[0] = a3[0];
+  out2[1] = a3[1];
   return out2;
 }
-function fromValues5(x, y) {
+function fromValues5(x2, y3) {
   var out2 = new ARRAY_TYPE(2);
-  out2[0] = x;
-  out2[1] = y;
+  out2[0] = x2;
+  out2[1] = y3;
   return out2;
 }
-function copy5(out2, a) {
-  out2[0] = a[0];
-  out2[1] = a[1];
+function copy5(out2, a3) {
+  out2[0] = a3[0];
+  out2[1] = a3[1];
   return out2;
 }
-function set5(out2, x, y) {
-  out2[0] = x;
-  out2[1] = y;
+function set5(out2, x2, y3) {
+  out2[0] = x2;
+  out2[1] = y3;
   return out2;
 }
-function add5(out2, a, b) {
-  out2[0] = a[0] + b[0];
-  out2[1] = a[1] + b[1];
+function add5(out2, a3, b3) {
+  out2[0] = a3[0] + b3[0];
+  out2[1] = a3[1] + b3[1];
   return out2;
 }
-function subtract4(out2, a, b) {
-  out2[0] = a[0] - b[0];
-  out2[1] = a[1] - b[1];
+function subtract4(out2, a3, b3) {
+  out2[0] = a3[0] - b3[0];
+  out2[1] = a3[1] - b3[1];
   return out2;
 }
-function multiply5(out2, a, b) {
-  out2[0] = a[0] * b[0];
-  out2[1] = a[1] * b[1];
+function multiply5(out2, a3, b3) {
+  out2[0] = a3[0] * b3[0];
+  out2[1] = a3[1] * b3[1];
   return out2;
 }
-function divide3(out2, a, b) {
-  out2[0] = a[0] / b[0];
-  out2[1] = a[1] / b[1];
+function divide3(out2, a3, b3) {
+  out2[0] = a3[0] / b3[0];
+  out2[1] = a3[1] / b3[1];
   return out2;
 }
-function ceil3(out2, a) {
-  out2[0] = Math.ceil(a[0]);
-  out2[1] = Math.ceil(a[1]);
+function ceil3(out2, a3) {
+  out2[0] = Math.ceil(a3[0]);
+  out2[1] = Math.ceil(a3[1]);
   return out2;
 }
-function floor3(out2, a) {
-  out2[0] = Math.floor(a[0]);
-  out2[1] = Math.floor(a[1]);
+function floor3(out2, a3) {
+  out2[0] = Math.floor(a3[0]);
+  out2[1] = Math.floor(a3[1]);
   return out2;
 }
-function min3(out2, a, b) {
-  out2[0] = Math.min(a[0], b[0]);
-  out2[1] = Math.min(a[1], b[1]);
+function min3(out2, a3, b3) {
+  out2[0] = Math.min(a3[0], b3[0]);
+  out2[1] = Math.min(a3[1], b3[1]);
   return out2;
 }
-function max3(out2, a, b) {
-  out2[0] = Math.max(a[0], b[0]);
-  out2[1] = Math.max(a[1], b[1]);
+function max3(out2, a3, b3) {
+  out2[0] = Math.max(a3[0], b3[0]);
+  out2[1] = Math.max(a3[1], b3[1]);
   return out2;
 }
-function round3(out2, a) {
-  out2[0] = Math.round(a[0]);
-  out2[1] = Math.round(a[1]);
+function round3(out2, a3) {
+  out2[0] = Math.round(a3[0]);
+  out2[1] = Math.round(a3[1]);
   return out2;
 }
-function scale5(out2, a, b) {
-  out2[0] = a[0] * b;
-  out2[1] = a[1] * b;
+function scale5(out2, a3, b3) {
+  out2[0] = a3[0] * b3;
+  out2[1] = a3[1] * b3;
   return out2;
 }
-function scaleAndAdd3(out2, a, b, scale6) {
-  out2[0] = a[0] + b[0] * scale6;
-  out2[1] = a[1] + b[1] * scale6;
+function scaleAndAdd3(out2, a3, b3, scale6) {
+  out2[0] = a3[0] + b3[0] * scale6;
+  out2[1] = a3[1] + b3[1] * scale6;
   return out2;
 }
-function distance3(a, b) {
-  var x = b[0] - a[0], y = b[1] - a[1];
-  return Math.hypot(x, y);
+function distance3(a3, b3) {
+  var x2 = b3[0] - a3[0], y3 = b3[1] - a3[1];
+  return Math.hypot(x2, y3);
 }
-function squaredDistance3(a, b) {
-  var x = b[0] - a[0], y = b[1] - a[1];
-  return x * x + y * y;
+function squaredDistance3(a3, b3) {
+  var x2 = b3[0] - a3[0], y3 = b3[1] - a3[1];
+  return x2 * x2 + y3 * y3;
 }
-function length4(a) {
-  var x = a[0], y = a[1];
-  return Math.hypot(x, y);
+function length4(a3) {
+  var x2 = a3[0], y3 = a3[1];
+  return Math.hypot(x2, y3);
 }
-function squaredLength4(a) {
-  var x = a[0], y = a[1];
-  return x * x + y * y;
+function squaredLength4(a3) {
+  var x2 = a3[0], y3 = a3[1];
+  return x2 * x2 + y3 * y3;
 }
-function negate3(out2, a) {
-  out2[0] = -a[0];
-  out2[1] = -a[1];
+function negate3(out2, a3) {
+  out2[0] = -a3[0];
+  out2[1] = -a3[1];
   return out2;
 }
-function inverse3(out2, a) {
-  out2[0] = 1 / a[0];
-  out2[1] = 1 / a[1];
+function inverse3(out2, a3) {
+  out2[0] = 1 / a3[0];
+  out2[1] = 1 / a3[1];
   return out2;
 }
-function normalize4(out2, a) {
-  var x = a[0], y = a[1];
-  var len5 = x * x + y * y;
+function normalize4(out2, a3) {
+  var x2 = a3[0], y3 = a3[1];
+  var len5 = x2 * x2 + y3 * y3;
   if (len5 > 0) {
     len5 = 1 / Math.sqrt(len5);
   }
-  out2[0] = a[0] * len5;
-  out2[1] = a[1] * len5;
+  out2[0] = a3[0] * len5;
+  out2[1] = a3[1] * len5;
   return out2;
 }
-function dot4(a, b) {
-  return a[0] * b[0] + a[1] * b[1];
+function dot4(a3, b3) {
+  return a3[0] * b3[0] + a3[1] * b3[1];
 }
-function cross3(out2, a, b) {
-  var z = a[0] * b[1] - a[1] * b[0];
+function cross3(out2, a3, b3) {
+  var z = a3[0] * b3[1] - a3[1] * b3[0];
   out2[0] = out2[1] = 0;
   out2[2] = z;
   return out2;
 }
-function lerp4(out2, a, b, t) {
-  var ax = a[0], ay = a[1];
-  out2[0] = ax + t * (b[0] - ax);
-  out2[1] = ay + t * (b[1] - ay);
+function lerp4(out2, a3, b3, t4) {
+  var ax = a3[0], ay = a3[1];
+  out2[0] = ax + t4 * (b3[0] - ax);
+  out2[1] = ay + t4 * (b3[1] - ay);
   return out2;
 }
 function random4(out2, scale6) {
   scale6 = scale6 || 1;
-  var r = RANDOM() * 2 * Math.PI;
-  out2[0] = Math.cos(r) * scale6;
-  out2[1] = Math.sin(r) * scale6;
+  var r5 = RANDOM() * 2 * Math.PI;
+  out2[0] = Math.cos(r5) * scale6;
+  out2[1] = Math.sin(r5) * scale6;
   return out2;
 }
-function transformMat2(out2, a, m) {
-  var x = a[0], y = a[1];
-  out2[0] = m[0] * x + m[2] * y;
-  out2[1] = m[1] * x + m[3] * y;
+function transformMat2(out2, a3, m2) {
+  var x2 = a3[0], y3 = a3[1];
+  out2[0] = m2[0] * x2 + m2[2] * y3;
+  out2[1] = m2[1] * x2 + m2[3] * y3;
   return out2;
 }
-function transformMat2d(out2, a, m) {
-  var x = a[0], y = a[1];
-  out2[0] = m[0] * x + m[2] * y + m[4];
-  out2[1] = m[1] * x + m[3] * y + m[5];
+function transformMat2d(out2, a3, m2) {
+  var x2 = a3[0], y3 = a3[1];
+  out2[0] = m2[0] * x2 + m2[2] * y3 + m2[4];
+  out2[1] = m2[1] * x2 + m2[3] * y3 + m2[5];
   return out2;
 }
-function transformMat32(out2, a, m) {
-  var x = a[0], y = a[1];
-  out2[0] = m[0] * x + m[3] * y + m[6];
-  out2[1] = m[1] * x + m[4] * y + m[7];
+function transformMat32(out2, a3, m2) {
+  var x2 = a3[0], y3 = a3[1];
+  out2[0] = m2[0] * x2 + m2[3] * y3 + m2[6];
+  out2[1] = m2[1] * x2 + m2[4] * y3 + m2[7];
   return out2;
 }
-function transformMat43(out2, a, m) {
-  var x = a[0];
-  var y = a[1];
-  out2[0] = m[0] * x + m[4] * y + m[12];
-  out2[1] = m[1] * x + m[5] * y + m[13];
+function transformMat43(out2, a3, m2) {
+  var x2 = a3[0];
+  var y3 = a3[1];
+  out2[0] = m2[0] * x2 + m2[4] * y3 + m2[12];
+  out2[1] = m2[1] * x2 + m2[5] * y3 + m2[13];
   return out2;
 }
-function rotate2(out2, a, b, rad) {
-  var p0 = a[0] - b[0], p1 = a[1] - b[1], sinC = Math.sin(rad), cosC = Math.cos(rad);
-  out2[0] = p0 * cosC - p1 * sinC + b[0];
-  out2[1] = p0 * sinC + p1 * cosC + b[1];
+function rotate2(out2, a3, b3, rad) {
+  var p0 = a3[0] - b3[0], p1 = a3[1] - b3[1], sinC = Math.sin(rad), cosC = Math.cos(rad);
+  out2[0] = p0 * cosC - p1 * sinC + b3[0];
+  out2[1] = p0 * sinC + p1 * cosC + b3[1];
   return out2;
 }
-function angle2(a, b) {
-  var x1 = a[0], y1 = a[1], x2 = b[0], y2 = b[1], mag = Math.sqrt(x1 * x1 + y1 * y1) * Math.sqrt(x2 * x2 + y2 * y2), cosine = mag && (x1 * x2 + y1 * y2) / mag;
+function angle2(a3, b3) {
+  var x1 = a3[0], y1 = a3[1], x2 = b3[0], y22 = b3[1], mag = Math.sqrt(x1 * x1 + y1 * y1) * Math.sqrt(x2 * x2 + y22 * y22), cosine = mag && (x1 * x2 + y1 * y22) / mag;
   return Math.acos(Math.min(Math.max(cosine, -1), 1));
 }
 function zero3(out2) {
@@ -13547,15 +13610,15 @@ function zero3(out2) {
   out2[1] = 0;
   return out2;
 }
-function str5(a) {
-  return "vec2(" + a[0] + ", " + a[1] + ")";
+function str5(a3) {
+  return "vec2(" + a3[0] + ", " + a3[1] + ")";
 }
-function exactEquals5(a, b) {
-  return a[0] === b[0] && a[1] === b[1];
+function exactEquals5(a3, b3) {
+  return a3[0] === b3[0] && a3[1] === b3[1];
 }
-function equals5(a, b) {
-  var a0 = a[0], a1 = a[1];
-  var b0 = b[0], b1 = b[1];
+function equals5(a3, b3) {
+  var a0 = a3[0], a1 = a3[1];
+  var b0 = b3[0], b1 = b3[1];
   return Math.abs(a0 - b0) <= EPSILON * Math.max(1, Math.abs(a0), Math.abs(b0)) && Math.abs(a1 - b1) <= EPSILON * Math.max(1, Math.abs(a1), Math.abs(b1));
 }
 var len4 = length4;
@@ -13567,8 +13630,8 @@ var sqrDist3 = squaredDistance3;
 var sqrLen4 = squaredLength4;
 var forEach3 = function() {
   var vec = create6();
-  return function(a, stride, offset, count, fn, arg) {
-    var i, l;
+  return function(a3, stride, offset, count, fn, arg) {
+    var i4, l3;
     if (!stride) {
       stride = 2;
     }
@@ -13576,24 +13639,24 @@ var forEach3 = function() {
       offset = 0;
     }
     if (count) {
-      l = Math.min(count * stride + offset, a.length);
+      l3 = Math.min(count * stride + offset, a3.length);
     } else {
-      l = a.length;
+      l3 = a3.length;
     }
-    for (i = offset; i < l; i += stride) {
-      vec[0] = a[i];
-      vec[1] = a[i + 1];
+    for (i4 = offset; i4 < l3; i4 += stride) {
+      vec[0] = a3[i4];
+      vec[1] = a3[i4 + 1];
       fn(vec, vec, arg);
-      a[i] = vec[0];
-      a[i + 1] = vec[1];
+      a3[i4] = vec[0];
+      a3[i4 + 1] = vec[1];
     }
-    return a;
+    return a3;
   };
 }();
 
 // src/loaders/GraferLoader.ts
-function createGraferLoaderVec3(x = 0, y = 0, z = 0) {
-  return { x, y, z };
+function createGraferLoaderVec3(x2 = 0, y3 = 0, z = 0) {
+  return { x: x2, y: y3, z };
 }
 function createGraferLoaderDomain(min4 = Number.MAX_SAFE_INTEGER, max4 = Number.MIN_SAFE_INTEGER) {
   return { min: min4, max: max4 };
@@ -13603,9 +13666,9 @@ function setGraferLoaderDomain(value, domain = createGraferLoaderDomain()) {
   domain.max = Math.max(domain.max, value);
   return domain;
 }
-function mergeGraferLoaderDomain(a, b, out2 = a) {
-  out2.min = Math.min(a.min, b.min);
-  out2.max = Math.max(a.max, b.max);
+function mergeGraferLoaderDomain(a3, b3, out2 = a3) {
+  out2.min = Math.min(a3.min, b3.min);
+  out2.max = Math.max(a3.max, b3.max);
   return out2;
 }
 function normalizeNodeLayers(layers, reCenter = false, reSize = false) {
@@ -13617,15 +13680,15 @@ function normalizeNodeLayers(layers, reCenter = false, reSize = false) {
     z: createGraferLoaderDomain()
   };
   let count = 0;
-  for (let i = 0, n = layers.length; i < n; ++i) {
-    center.x += layers[i].cumulative.x;
-    center.y += layers[i].cumulative.y;
-    center.z += layers[i].cumulative.z;
-    count += layers[i].count;
-    mergeGraferLoaderDomain(sizeDomain, layers[i].sizeDomain);
-    mergeGraferLoaderDomain(coordsDomain.x, layers[i].coordsDomain.x);
-    mergeGraferLoaderDomain(coordsDomain.y, layers[i].coordsDomain.y);
-    mergeGraferLoaderDomain(coordsDomain.z, layers[i].coordsDomain.z);
+  for (let i4 = 0, n5 = layers.length; i4 < n5; ++i4) {
+    center.x += layers[i4].cumulative.x;
+    center.y += layers[i4].cumulative.y;
+    center.z += layers[i4].cumulative.z;
+    count += layers[i4].count;
+    mergeGraferLoaderDomain(sizeDomain, layers[i4].sizeDomain);
+    mergeGraferLoaderDomain(coordsDomain.x, layers[i4].coordsDomain.x);
+    mergeGraferLoaderDomain(coordsDomain.y, layers[i4].coordsDomain.y);
+    mergeGraferLoaderDomain(coordsDomain.z, layers[i4].coordsDomain.z);
   }
   if (reCenter) {
     center.x /= count;
@@ -13642,7 +13705,11 @@ function normalizeNodeLayers(layers, reCenter = false, reSize = false) {
     center.y = 0;
     center.z = 0;
   }
-  const bbCorners = vec3_exports.fromValues(Math.max(Math.abs(coordsDomain.x.min), Math.abs(coordsDomain.x.max)), Math.max(Math.abs(coordsDomain.y.min), Math.abs(coordsDomain.y.max)), Math.max(Math.abs(coordsDomain.z.min), Math.abs(coordsDomain.z.max)));
+  const bbCorners = vec3_exports.fromValues(
+    Math.max(Math.abs(coordsDomain.x.min), Math.abs(coordsDomain.x.max)),
+    Math.max(Math.abs(coordsDomain.y.min), Math.abs(coordsDomain.y.max)),
+    Math.max(Math.abs(coordsDomain.z.min), Math.abs(coordsDomain.z.max))
+  );
   const cornerLength = vec3_exports.len(bbCorners);
   const positionMult = reSize ? 300 / cornerLength : 1;
   coordsDomain.x.min *= positionMult;
@@ -13651,8 +13718,8 @@ function normalizeNodeLayers(layers, reCenter = false, reSize = false) {
   coordsDomain.y.max *= positionMult;
   coordsDomain.z.min *= positionMult;
   coordsDomain.z.max *= positionMult;
-  for (let i = 0, n = layers.length; i < n; ++i) {
-    const layer = layers[i];
+  for (let i4 = 0, n5 = layers.length; i4 < n5; ++i4) {
+    const layer = layers[i4];
     const positions = layer.positions;
     const sizes = layer.sizes;
     for (let ii = 0, pi = 0, nn = layer.count; ii < nn; ++ii, pi += 3) {
@@ -13687,10 +13754,10 @@ async function parseJSONL(input, cb) {
     const chunk = await file.loadData(offset, chunkEnd);
     const view = new DataView(chunk);
     let start = 0;
-    for (let i = 0, n = chunk.byteLength; i < n; ++i) {
-      if (view.getUint8(i) === lineBreak || offset + i === byteLength) {
-        const statementBuffer = new Uint8Array(chunk, start, i - start);
-        start = i + 1;
+    for (let i4 = 0, n5 = chunk.byteLength; i4 < n5; ++i4) {
+      if (view.getUint8(i4) === lineBreak || offset + i4 === byteLength) {
+        const statementBuffer = new Uint8Array(chunk, start, i4 - start);
+        start = i4 + 1;
         const str6 = decoder.decode(statementBuffer);
         const json = JSON.parse(str6);
         cb(json);
@@ -13702,8 +13769,8 @@ async function parseJSONL(input, cb) {
   }
 }
 async function loadNodes(file, palette = []) {
-  const colorMap = new Map();
-  const map = new Map();
+  const colorMap = /* @__PURE__ */ new Map();
+  const map = /* @__PURE__ */ new Map();
   const raw = [];
   const points2 = [];
   const nodes = [];
@@ -13719,30 +13786,30 @@ async function loadNodes(file, palette = []) {
   };
   let count = 0;
   await parseJSONL(file, (json) => {
-    var _a2, _b;
+    var _a6, _b2;
     raw.push(json);
     json.z = json.hasOwnProperty("z") ? json.z : 0;
-    const { x, y, z, id, ...node } = json;
+    const { x: x2, y: y3, z, id, ...node } = json;
     points2.push({
       id,
-      x,
-      y,
+      x: x2,
+      y: y3,
       z
     });
     nodes.push({
       point: id,
       ...node
     });
-    positions.push(x, y, z);
+    positions.push(x2, y3, z);
     map.set(json.id, count);
-    setGraferLoaderDomain(x, coordsDomain.x);
-    setGraferLoaderDomain(y, coordsDomain.y);
+    setGraferLoaderDomain(x2, coordsDomain.x);
+    setGraferLoaderDomain(y3, coordsDomain.y);
     setGraferLoaderDomain(z, coordsDomain.z);
-    cumulative.x += x;
-    cumulative.y += y;
+    cumulative.x += x2;
+    cumulative.y += y3;
     cumulative.z += z;
     ++count;
-    const group = ((_b = (_a2 = json.group) != null ? _a2 : json.clusterID) != null ? _b : [0])[0];
+    const group = ((_b2 = (_a6 = json.group) != null ? _a6 : json.clusterID) != null ? _b2 : [0])[0];
     if (group < palette.length) {
       colors2.push(...palette[group], 255);
     } else {
@@ -13781,10 +13848,28 @@ async function loadEdges(file, nodes) {
       raw.push(json);
       const sourceIndex = nodes.map.get(json.source);
       const targetIndex = nodes.map.get(json.target);
-      positions.push(nodes.positions[sourceIndex * 3], nodes.positions[sourceIndex * 3 + 1], nodes.positions[sourceIndex * 3 + 2]);
-      positions.push(nodes.positions[targetIndex * 3], nodes.positions[targetIndex * 3 + 1], nodes.positions[targetIndex * 3 + 2]);
-      colors2.push(nodes.colors[sourceIndex * 4], nodes.colors[sourceIndex * 4 + 1], nodes.colors[sourceIndex * 4 + 2], nodes.colors[sourceIndex * 4 + 3]);
-      colors2.push(nodes.colors[targetIndex * 4], nodes.colors[targetIndex * 4 + 1], nodes.colors[targetIndex * 4 + 2], nodes.colors[targetIndex * 4 + 3]);
+      positions.push(
+        nodes.positions[sourceIndex * 3],
+        nodes.positions[sourceIndex * 3 + 1],
+        nodes.positions[sourceIndex * 3 + 2]
+      );
+      positions.push(
+        nodes.positions[targetIndex * 3],
+        nodes.positions[targetIndex * 3 + 1],
+        nodes.positions[targetIndex * 3 + 2]
+      );
+      colors2.push(
+        nodes.colors[sourceIndex * 4],
+        nodes.colors[sourceIndex * 4 + 1],
+        nodes.colors[sourceIndex * 4 + 2],
+        nodes.colors[sourceIndex * 4 + 3]
+      );
+      colors2.push(
+        nodes.colors[targetIndex * 4],
+        nodes.colors[targetIndex * 4 + 1],
+        nodes.colors[targetIndex * 4 + 2],
+        nodes.colors[targetIndex * 4 + 3]
+      );
     }
   });
   return {
@@ -14714,18 +14799,18 @@ var Cubemap = class {
     let numLevels = this.mipmaps ? data.length : 1;
     let width = this.width;
     let height = this.height;
-    let i;
+    let i4;
     this.gl.pixelStorei(GL.UNPACK_FLIP_Y_WEBGL, this.flipY);
     this.gl.pixelStorei(GL.UNPACK_PREMULTIPLY_ALPHA_WEBGL, this.premultiplyAlpha);
     if (this.compressed) {
-      for (i = 0; i < numLevels; ++i) {
-        this.gl.compressedTexSubImage2D(face, i, 0, 0, width, height, this.format, data[i]);
+      for (i4 = 0; i4 < numLevels; ++i4) {
+        this.gl.compressedTexSubImage2D(face, i4, 0, 0, width, height, this.format, data[i4]);
         width = Math.max(width >> 1, 1);
         height = Math.max(height >> 1, 1);
       }
     } else {
-      for (i = 0; i < numLevels; ++i) {
-        this.gl.texSubImage2D(face, i, 0, 0, width, height, this.format, this.type, data[i]);
+      for (i4 = 0; i4 < numLevels; ++i4) {
+        this.gl.texSubImage2D(face, i4, 0, 0, width, height, this.format, this.type, data[i4]);
         width = Math.max(width >> 1, 1);
         height = Math.max(height >> 1, 1);
       }
@@ -14820,11 +14905,11 @@ var DrawCall = class {
     if (this.numInstances.length < this.numDraws) {
       this.numInstances = new Int32Array(this.numDraws);
     }
-    for (let i = 0; i < this.numDraws; ++i) {
-      let count = counts[i];
-      this.offsets[i] = count[0];
-      this.numElements[i] = count[1];
-      this.numInstances[i] = count[2] || 1;
+    for (let i4 = 0; i4 < this.numDraws; ++i4) {
+      let count = counts[i4];
+      this.offsets[i4] = count[0];
+      this.numElements[i4] = count[1];
+      this.numInstances[i4] = count[2] || 1;
     }
     this.drawCountsFromVertexArray = false;
     return this;
@@ -14870,12 +14955,12 @@ var DrawCall = class {
         ext.multiDrawArraysInstancedWEBGL(this.drawPrimitive, this.offsets, 0, this.numElements, 0, this.numInstances, 0, this.numDraws);
       }
     } else if (indexed) {
-      for (let i = 0; i < this.numDraws; ++i) {
-        this.gl.drawElementsInstanced(this.drawPrimitive, this.numElements[i], this.currentVertexArray.indexType, this.offsets[i], this.numInstances[i]);
+      for (let i4 = 0; i4 < this.numDraws; ++i4) {
+        this.gl.drawElementsInstanced(this.drawPrimitive, this.numElements[i4], this.currentVertexArray.indexType, this.offsets[i4], this.numInstances[i4]);
       }
     } else {
-      for (let i = 0; i < this.numDraws; ++i) {
-        this.gl.drawArraysInstanced(this.drawPrimitive, this.offsets[i], this.numElements[i], this.numInstances[i]);
+      for (let i4 = 0; i4 < this.numDraws; ++i4) {
+        this.gl.drawArraysInstanced(this.drawPrimitive, this.offsets[i4], this.numElements[i4], this.numInstances[i4]);
       }
     }
     if (this.currentTransformFeedback) {
@@ -15027,35 +15112,35 @@ var Texture = class {
     let height = this.height;
     let depth = this.depth;
     let generateMipmaps = this.mipmaps && data.length === 1;
-    let i;
+    let i4;
     this.bind(Math.max(this.currentUnit, 0));
     this.gl.pixelStorei(GL.UNPACK_FLIP_Y_WEBGL, this.flipY);
     this.gl.pixelStorei(GL.UNPACK_PREMULTIPLY_ALPHA_WEBGL, this.premultiplyAlpha);
     if (this.compressed) {
       if (this.is3D) {
-        for (i = 0; i < numLevels; ++i) {
-          this.gl.compressedTexSubImage3D(this.binding, i, 0, 0, 0, width, height, depth, this.format, data[i]);
+        for (i4 = 0; i4 < numLevels; ++i4) {
+          this.gl.compressedTexSubImage3D(this.binding, i4, 0, 0, 0, width, height, depth, this.format, data[i4]);
           width = Math.max(width >> 1, 1);
           height = Math.max(height >> 1, 1);
           depth = Math.max(depth >> 1, 1);
         }
       } else {
-        for (i = 0; i < numLevels; ++i) {
-          this.gl.compressedTexSubImage2D(this.binding, i, 0, 0, width, height, this.format, data[i]);
+        for (i4 = 0; i4 < numLevels; ++i4) {
+          this.gl.compressedTexSubImage2D(this.binding, i4, 0, 0, width, height, this.format, data[i4]);
           width = Math.max(width >> 1, 1);
           height = Math.max(height >> 1, 1);
         }
       }
     } else if (this.is3D) {
-      for (i = 0; i < numLevels; ++i) {
-        this.gl.texSubImage3D(this.binding, i, 0, 0, 0, width, height, depth, this.format, this.type, data[i]);
+      for (i4 = 0; i4 < numLevels; ++i4) {
+        this.gl.texSubImage3D(this.binding, i4, 0, 0, 0, width, height, depth, this.format, this.type, data[i4]);
         width = Math.max(width >> 1, 1);
         height = Math.max(height >> 1, 1);
         depth = Math.max(depth >> 1, 1);
       }
     } else {
-      for (i = 0; i < numLevels; ++i) {
-        this.gl.texSubImage2D(this.binding, i, 0, 0, width, height, this.format, this.type, data[i]);
+      for (i4 = 0; i4 < numLevels; ++i4) {
+        this.gl.texSubImage2D(this.binding, i4, 0, 0, width, height, this.format, this.type, data[i4]);
         width = Math.max(width >> 1, 1);
         height = Math.max(height >> 1, 1);
       }
@@ -15160,10 +15245,10 @@ var Framebuffer = class {
       this.colorAttachmentEnums.length = numColorTargets;
       this.colorAttachments.length = numColorTargets;
       this.colorAttachmentTargets.length = numColorTargets;
-      for (let i = this.numColorTargets; i < numColorTargets - 1; ++i) {
-        this.colorAttachmentEnums[i] = GL.NONE;
-        this.colorAttachments[i] = null;
-        this.colorAttachmentTargets[i] = 0;
+      for (let i4 = this.numColorTargets; i4 < numColorTargets - 1; ++i4) {
+        this.colorAttachmentEnums[i4] = GL.NONE;
+        this.colorAttachments[i4] = null;
+        this.colorAttachmentTargets[i4] = 0;
       }
       this.numColorTargets = numColorTargets;
     }
@@ -15205,17 +15290,17 @@ var Framebuffer = class {
   resize(width = this.gl.drawingBufferWidth, height = this.gl.drawingBufferHeight) {
     let currentFramebuffer = this.bindAndCaptureState();
     let binding = this.appState.drawFramebufferBinding;
-    for (let i = 0; i < this.numColorTargets; ++i) {
-      let attachment = this.colorAttachments[i];
+    for (let i4 = 0; i4 < this.numColorTargets; ++i4) {
+      let attachment = this.colorAttachments[i4];
       if (!attachment) {
         continue;
       }
       attachment.resize(width, height);
       if (attachment instanceof Texture) {
         if (attachment.is3D) {
-          this.gl.framebufferTextureLayer(binding, this.colorAttachmentEnums[i], attachment.texture, 0, this.colorAttachmentTargets[i]);
+          this.gl.framebufferTextureLayer(binding, this.colorAttachmentEnums[i4], attachment.texture, 0, this.colorAttachmentTargets[i4]);
         } else {
-          this.gl.framebufferTexture2D(binding, this.colorAttachmentEnums[i], this.colorAttachmentTargets[i], attachment.texture, 0);
+          this.gl.framebufferTexture2D(binding, this.colorAttachmentEnums[i4], this.colorAttachmentTargets[i4], attachment.texture, 0);
         }
       }
     }
@@ -15330,11 +15415,11 @@ var Shader = class {
   }
   checkCompilation() {
     if (!this.gl.getShaderParameter(this.shader, GL.COMPILE_STATUS)) {
-      let i, lines;
+      let i4, lines;
       console.error(this.gl.getShaderInfoLog(this.shader));
       lines = this.source.split("\n");
-      for (i = 0; i < lines.length; ++i) {
-        console.error(`${i + 1}: ${lines[i]}`);
+      for (i4 = 0; i4 < lines.length; ++i4) {
+        console.error(`${i4 + 1}: ${lines[i4]}`);
       }
     }
     return this;
@@ -15475,8 +15560,8 @@ var MultiNumericUniform = class {
     this.cache = new UNIFORM_CACHE_CLASS[type](UNIFORM_COMPONENT_COUNT[type] * count);
   }
   set(value) {
-    for (let i = 0, len5 = value.length; i < len5; ++i) {
-      if (this.cache[i] !== value[i]) {
+    for (let i4 = 0, len5 = value.length; i4 < len5; ++i4) {
+      if (this.cache[i4] !== value[i4]) {
         this.gl[this.glFuncName](this.handle, value);
         this.cache.set(value);
         return;
@@ -15493,11 +15578,11 @@ var MultiBoolUniform = class {
     this.cache = new Array(UNIFORM_COMPONENT_COUNT[type] * count).fill(false);
   }
   set(value) {
-    for (let i = 0, len5 = value.length; i < len5; ++i) {
-      if (this.cache[i] !== value[i]) {
+    for (let i4 = 0, len5 = value.length; i4 < len5; ++i4) {
+      if (this.cache[i4] !== value[i4]) {
         this.gl[this.glFuncName](this.handle, value);
-        for (let j = i; j < len5; j++) {
-          this.cache[j] = value[j];
+        for (let j2 = i4; j2 < len5; j2++) {
+          this.cache[j2] = value[j2];
         }
         return;
       }
@@ -15513,8 +15598,8 @@ var MatrixUniform = class {
     this.cache = new Float32Array(UNIFORM_COMPONENT_COUNT[type] * count);
   }
   set(value) {
-    for (let i = 0, len5 = value.length; i < len5; ++i) {
-      if (this.cache[i] !== value[i]) {
+    for (let i4 = 0, len5 = value.length; i4 < len5; ++i4) {
+      if (this.cache[i4] !== value[i4]) {
         this.gl[this.glFuncName](this.handle, false, value);
         this.cache.set(value);
         return;
@@ -15654,8 +15739,8 @@ var Program = class {
     this.bind();
     let numUniforms = this.gl.getProgramParameter(this.program, GL.ACTIVE_UNIFORMS);
     let textureUnit;
-    for (let i = 0; i < numUniforms; ++i) {
-      let uniformInfo = this.gl.getActiveUniform(this.program, i);
+    for (let i4 = 0; i4 < numUniforms; ++i4) {
+      let uniformInfo = this.gl.getActiveUniform(this.program, i4);
       let uniformHandle = this.gl.getUniformLocation(this.program, uniformInfo.name);
       let UniformClass = null;
       let type = uniformInfo.type;
@@ -15724,8 +15809,8 @@ var Program = class {
       }
     }
     let numUniformBlocks = this.gl.getProgramParameter(this.program, GL.ACTIVE_UNIFORM_BLOCKS);
-    for (let i = 0; i < numUniformBlocks; ++i) {
-      let blockName = this.gl.getActiveUniformBlockName(this.program, i);
+    for (let i4 = 0; i4 < numUniformBlocks; ++i4) {
+      let blockName = this.gl.getActiveUniformBlockName(this.program, i4);
       let blockIndex = this.gl.getUniformBlockIndex(this.program, blockName);
       let uniformBlockBase = this.uniformBlockCount++;
       this.gl.uniformBlockBinding(this.program, blockIndex, uniformBlockBase);
@@ -15921,21 +16006,21 @@ var UniformBuffer = class {
     this.usage = usage;
     this.appState = appState;
     this.currentBase = -1;
-    for (let i = 0, len5 = layout.length; i < len5; ++i) {
-      let type = layout[i];
+    for (let i4 = 0, len5 = layout.length; i4 < len5; ++i4) {
+      let type = layout[i4];
       switch (type) {
         case GL.FLOAT:
         case GL.INT:
         case GL.UNSIGNED_INT:
         case GL.BOOL:
-          this.offsets[i] = this.size;
-          this.sizes[i] = 1;
+          this.offsets[i4] = this.size;
+          this.sizes[i4] = 1;
           if (type === GL.INT) {
-            this.types[i] = GL.INT;
+            this.types[i4] = GL.INT;
           } else if (type === GL.UNSIGNED_INT) {
-            this.types[i] = GL.UNSIGNED_INT;
+            this.types[i4] = GL.UNSIGNED_INT;
           } else {
-            this.types[i] = GL.FLOAT;
+            this.types[i4] = GL.FLOAT;
           }
           this.size++;
           break;
@@ -15944,14 +16029,14 @@ var UniformBuffer = class {
         case GL.UNSIGNED_INT_VEC2:
         case GL.BOOL_VEC2:
           this.size += this.size % 2;
-          this.offsets[i] = this.size;
-          this.sizes[i] = 2;
+          this.offsets[i4] = this.size;
+          this.sizes[i4] = 2;
           if (type === GL.INT_VEC2) {
-            this.types[i] = GL.INT;
+            this.types[i4] = GL.INT;
           } else if (type === GL.UNSIGNED_INT_VEC2) {
-            this.types[i] = GL.UNSIGNED_INT;
+            this.types[i4] = GL.UNSIGNED_INT;
           } else {
-            this.types[i] = GL.FLOAT;
+            this.types[i4] = GL.FLOAT;
           }
           this.size += 2;
           break;
@@ -15964,14 +16049,14 @@ var UniformBuffer = class {
         case GL.UNSIGNED_INT_VEC4:
         case GL.BOOL_VEC4:
           this.size += (4 - this.size % 4) % 4;
-          this.offsets[i] = this.size;
-          this.sizes[i] = 4;
+          this.offsets[i4] = this.size;
+          this.sizes[i4] = 4;
           if (type === GL.INT_VEC4 || type === GL.INT_VEC3) {
-            this.types[i] = GL.INT;
+            this.types[i4] = GL.INT;
           } else if (type === GL.UNSIGNED_INT_VEC4 || type === GL.UNSIGNED_INT_VEC3) {
-            this.types[i] = GL.UNSIGNED_INT;
+            this.types[i4] = GL.UNSIGNED_INT;
           } else {
-            this.types[i] = GL.FLOAT;
+            this.types[i4] = GL.FLOAT;
           }
           this.size += 4;
           break;
@@ -15979,27 +16064,27 @@ var UniformBuffer = class {
         case GL.FLOAT_MAT2x3:
         case GL.FLOAT_MAT2x4:
           this.size += (4 - this.size % 4) % 4;
-          this.offsets[i] = this.size;
-          this.sizes[i] = 8;
-          this.types[i] = GL.FLOAT;
+          this.offsets[i4] = this.size;
+          this.sizes[i4] = 8;
+          this.types[i4] = GL.FLOAT;
           this.size += 8;
           break;
         case GL.FLOAT_MAT3:
         case GL.FLOAT_MAT3x2:
         case GL.FLOAT_MAT3x4:
           this.size += (4 - this.size % 4) % 4;
-          this.offsets[i] = this.size;
-          this.sizes[i] = 12;
-          this.types[i] = GL.FLOAT;
+          this.offsets[i4] = this.size;
+          this.sizes[i4] = 12;
+          this.types[i4] = GL.FLOAT;
           this.size += 12;
           break;
         case GL.FLOAT_MAT4:
         case GL.FLOAT_MAT4x2:
         case GL.FLOAT_MAT4x3:
           this.size += (4 - this.size % 4) % 4;
-          this.offsets[i] = this.size;
-          this.sizes[i] = 16;
-          this.types[i] = GL.FLOAT;
+          this.offsets[i4] = this.size;
+          this.sizes[i4] = 16;
+          this.types[i4] = GL.FLOAT;
           this.size += 16;
           break;
         default:
@@ -16161,16 +16246,29 @@ var VertexArray = class {
       stride = numColumns * size * TYPE_SIZE[type];
     }
     let numItems = Math.ceil((vertexBuffer.byteLength - offset) / stride);
-    for (let i = 0; i < numColumns; ++i) {
+    for (let i4 = 0; i4 < numColumns; ++i4) {
       if (integer) {
-        this.gl.vertexAttribIPointer(attributeIndex + i, size, type, stride, offset + i * size * TYPE_SIZE[type]);
+        this.gl.vertexAttribIPointer(
+          attributeIndex + i4,
+          size,
+          type,
+          stride,
+          offset + i4 * size * TYPE_SIZE[type]
+        );
       } else {
-        this.gl.vertexAttribPointer(attributeIndex + i, size, type, normalized, stride, offset + i * size * TYPE_SIZE[type]);
+        this.gl.vertexAttribPointer(
+          attributeIndex + i4,
+          size,
+          type,
+          normalized,
+          stride,
+          offset + i4 * size * TYPE_SIZE[type]
+        );
       }
       if (instanced) {
-        this.gl.vertexAttribDivisor(attributeIndex + i, 1);
+        this.gl.vertexAttribDivisor(attributeIndex + i4, 1);
       }
-      this.gl.enableVertexAttribArray(attributeIndex + i);
+      this.gl.enableVertexAttribArray(attributeIndex + i4);
     }
     if (this.numDraws === 1) {
       if (instanced) {
@@ -16355,12 +16453,12 @@ var App = class {
     this.gl.disable(cap);
     return this;
   }
-  colorMask(r, g, b, a) {
-    this.gl.colorMask(r, g, b, a);
+  colorMask(r5, g2, b3, a3) {
+    this.gl.colorMask(r5, g2, b3, a3);
     return this;
   }
-  clearColor(r, g, b, a) {
-    this.gl.clearColor(r, g, b, a);
+  clearColor(r5, g2, b3, a3) {
+    this.gl.clearColor(r5, g2, b3, a3);
     return this;
   }
   clearMask(mask) {
@@ -16466,29 +16564,29 @@ var App = class {
     this.gl.stencilOpSeparate(face, stencilFail, depthFail, pass);
     return this;
   }
-  scissor(x, y, width, height) {
-    this.gl.scissor(x, y, width, height);
+  scissor(x2, y3, width, height) {
+    this.gl.scissor(x2, y3, width, height);
     return this;
   }
   polygonOffset(factor, units) {
     this.gl.polygonOffset(factor, units);
     return this;
   }
-  readPixel(x, y, outColor, options = DUMMY_OBJECT) {
+  readPixel(x2, y3, outColor, options = DUMMY_OBJECT) {
     let {
       format = GL.RGBA,
       type = GL.UNSIGNED_BYTE
     } = options;
-    this.gl.readPixels(x, y, 1, 1, format, type, outColor);
+    this.gl.readPixels(x2, y3, 1, 1, format, type, outColor);
     return this;
   }
-  viewport(x, y, width, height) {
-    if (this.viewportWidth !== width || this.viewportHeight !== height || this.viewportX !== x || this.viewportY !== y) {
-      this.viewportX = x;
-      this.viewportY = y;
+  viewport(x2, y3, width, height) {
+    if (this.viewportWidth !== width || this.viewportHeight !== height || this.viewportX !== x2 || this.viewportY !== y3) {
+      this.viewportX = x2;
+      this.viewportY = y3;
       this.viewportWidth = width;
       this.viewportHeight = height;
-      this.gl.viewport(x, y, this.viewportWidth, this.viewportHeight);
+      this.gl.viewport(x2, y3, this.viewportWidth, this.viewportHeight);
     }
     return this;
   }
@@ -16514,31 +16612,31 @@ var App = class {
       let programs = new Array(numPrograms);
       let pendingPrograms = new Array(numPrograms);
       let numPending = numPrograms;
-      for (let i = 0; i < numPrograms; ++i) {
-        let source = sources[i];
+      for (let i4 = 0; i4 < numPrograms; ++i4) {
+        let source = sources[i4];
         let vsSource = source[0];
         let fsSource = source[1];
         let opts = source[2] || {};
         let { transformFeedbackVaryings, attributeLocations, transformFeedbackMode } = opts;
-        programs[i] = new Program(this.gl, this.state, vsSource, fsSource, transformFeedbackVaryings, attributeLocations, transformFeedbackMode);
-        pendingPrograms[i] = programs[i];
+        programs[i4] = new Program(this.gl, this.state, vsSource, fsSource, transformFeedbackVaryings, attributeLocations, transformFeedbackMode);
+        pendingPrograms[i4] = programs[i4];
       }
-      for (let i = 0; i < numPrograms; ++i) {
-        programs[i].link();
+      for (let i4 = 0; i4 < numPrograms; ++i4) {
+        programs[i4].link();
       }
       let poll = () => {
         let linked = 0;
-        for (let i = 0; i < numPending; ++i) {
-          if (pendingPrograms[i].checkCompletion()) {
-            pendingPrograms[i].checkLinkage();
-            if (pendingPrograms[i].linked) {
+        for (let i4 = 0; i4 < numPending; ++i4) {
+          if (pendingPrograms[i4].checkCompletion()) {
+            pendingPrograms[i4].checkLinkage();
+            if (pendingPrograms[i4].linked) {
               ++linked;
             } else {
               reject(new Error("Program linkage failed"));
               return;
             }
           } else {
-            pendingPrograms[i - linked] = pendingPrograms[i];
+            pendingPrograms[i4 - linked] = pendingPrograms[i4];
           }
         }
         numPending -= linked;
@@ -16556,28 +16654,28 @@ var App = class {
       let numPrograms = programs.length;
       let pendingPrograms = programs.slice();
       let numPending = numPrograms;
-      for (let i = 0; i < numPrograms; ++i) {
-        programs[i].initialize();
+      for (let i4 = 0; i4 < numPrograms; ++i4) {
+        programs[i4].initialize();
       }
-      for (let i = 0; i < numPrograms; ++i) {
-        programs[i].link();
+      for (let i4 = 0; i4 < numPrograms; ++i4) {
+        programs[i4].link();
       }
-      for (let i = 0; i < numPrograms; ++i) {
-        programs[i].checkCompletion();
+      for (let i4 = 0; i4 < numPrograms; ++i4) {
+        programs[i4].checkCompletion();
       }
       let poll = () => {
         let linked = 0;
-        for (let i = 0; i < numPending; ++i) {
-          if (pendingPrograms[i].checkCompletion()) {
-            pendingPrograms[i].checkLinkage();
-            if (pendingPrograms[i].linked) {
+        for (let i4 = 0; i4 < numPending; ++i4) {
+          if (pendingPrograms[i4].checkCompletion()) {
+            pendingPrograms[i4].checkLinkage();
+            if (pendingPrograms[i4].linked) {
               ++linked;
             } else {
               reject(new Error("Program linkage failed"));
               return;
             }
           } else {
-            pendingPrograms[i - linked] = pendingPrograms[i];
+            pendingPrograms[i4 - linked] = pendingPrograms[i4];
           }
         }
         numPending -= linked;
@@ -16688,8 +16786,8 @@ var App = class {
   }
   initContextListeners() {
     if (this.contextRestoredHandler) {
-      this.contextLostListener = (e) => {
-        e.preventDefault();
+      this.contextLostListener = (e5) => {
+        e5.preventDefault();
       };
       this.contextRestoredListener = () => {
         this.initExtensions();
@@ -16769,7 +16867,7 @@ var App = class {
 // node_modules/picogl/build/module/picogl.js
 var webglInfoInitialized = false;
 var PicoGL = Object.assign({
-  version: "0.17.7",
+  version: "0.17.9",
   WEBGL_INFO,
   createApp(gl, contextAttributes) {
     if (gl.tagName === "CANVAS") {
@@ -16778,7 +16876,10 @@ var PicoGL = Object.assign({
     if (!webglInfoInitialized) {
       WEBGL_INFO.MAX_TEXTURE_UNITS = gl.getParameter(GL.MAX_COMBINED_TEXTURE_IMAGE_UNITS);
       WEBGL_INFO.MAX_UNIFORM_BUFFERS = gl.getParameter(GL.MAX_UNIFORM_BUFFER_BINDINGS);
-      WEBGL_INFO.MAX_UNIFORMS = Math.min(gl.getParameter(GL.MAX_VERTEX_UNIFORM_VECTORS), gl.getParameter(GL.MAX_FRAGMENT_UNIFORM_VECTORS));
+      WEBGL_INFO.MAX_UNIFORMS = Math.min(
+        gl.getParameter(GL.MAX_VERTEX_UNIFORM_VECTORS),
+        gl.getParameter(GL.MAX_FRAGMENT_UNIFORM_VECTORS)
+      );
       WEBGL_INFO.SAMPLES = gl.getParameter(GL.SAMPLES);
       WEBGL_INFO.VENDOR = "(Unknown)";
       WEBGL_INFO.RENDERER = "(Unknown)";
@@ -16809,15 +16910,15 @@ var PicoGL = Object.assign({
 var picogl_default = PicoGL;
 
 // src/renderer/Renderable.ts
-var RenderMode;
-(function(RenderMode2) {
+var RenderMode = /* @__PURE__ */ ((RenderMode2) => {
   RenderMode2[RenderMode2["DRAFT"] = 0] = "DRAFT";
   RenderMode2[RenderMode2["MEDIUM"] = 1] = "MEDIUM";
   RenderMode2[RenderMode2["HIGH"] = 2] = "HIGH";
   RenderMode2[RenderMode2["HIGH_PASS_1"] = 3] = "HIGH_PASS_1";
   RenderMode2[RenderMode2["HIGH_PASS_2"] = 4] = "HIGH_PASS_2";
   RenderMode2[RenderMode2["PICKING"] = 5] = "PICKING";
-})(RenderMode || (RenderMode = {}));
+  return RenderMode2;
+})(RenderMode || {});
 var GL_TYPE_SIZE = {
   [picogl_default.BYTE]: 1,
   [picogl_default.UNSIGNED_BYTE]: 1,
@@ -16855,10 +16956,10 @@ function glDataTypesInfo(types4) {
   const mappingsKeys = Object.keys(types4);
   const keys = [];
   let stride = 0;
-  for (let i = 0, n = mappingsKeys.length; i < n; ++i) {
-    if (types4[mappingsKeys[i]]) {
-      stride += glDataTypeSize(types4[mappingsKeys[i]]);
-      keys.push(mappingsKeys[i]);
+  for (let i4 = 0, n5 = mappingsKeys.length; i4 < n5; ++i4) {
+    if (types4[mappingsKeys[i4]]) {
+      stride += glDataTypeSize(types4[mappingsKeys[i4]]);
+      keys.push(mappingsKeys[i4]);
     }
   }
   return {
@@ -16879,11 +16980,11 @@ function configureVAO(vao, vbo, types4, typesInfo, attrIndex = 0, instanced = fa
   const functionKey = instanced ? "instanceAttributeBuffer" : "vertexAttributeBuffer";
   const stride = typesInfo.stride;
   let offset = 0;
-  for (let i = 0, n = typesInfo.keys.length; i < n; ++i) {
-    const type = types4[typesInfo.keys[i]];
+  for (let i4 = 0, n5 = typesInfo.keys.length; i4 < n5; ++i4) {
+    const type = types4[typesInfo.keys[i4]];
     const glType = Array.isArray(type) ? type[0] : type;
     const size = Array.isArray(type) ? type.length : 1;
-    vao[functionKey](attrIndex + i, vbo, {
+    vao[functionKey](attrIndex + i4, vbo, {
       type: glType,
       integer: glIntegerType(glType),
       size,
@@ -16899,14 +17000,14 @@ var kDataMappingFlatten = Symbol("graffer:data::mapping::flatten::key");
 var kDataEntryNeedsFlatten = Symbol("graffer:data::tools::needs::flatten");
 function* dataIterator(data, mappings2) {
   const keys = Reflect.ownKeys(mappings2);
-  for (let i = 0, n = data.length; i < n; ++i) {
+  for (let i4 = 0, n5 = data.length; i4 < n5; ++i4) {
     const entry = {};
     for (const key2 of keys) {
       if (mappings2[key2] !== null) {
-        entry[key2] = mappings2[key2](data[i], i);
+        entry[key2] = mappings2[key2](data[i4], i4);
       }
     }
-    yield [i, entry];
+    yield [i4, entry];
   }
 }
 function extractData(data, mappings2) {
@@ -16918,8 +17019,8 @@ function extractData(data, mappings2) {
 }
 function concatenateData(data, mappings2) {
   const result = [];
-  for (let i = 0, n = data.length; i < n; ++i) {
-    for (const [, entry] of dataIterator(data[i], mappings2)) {
+  for (let i4 = 0, n5 = data.length; i4 < n5; ++i4) {
+    for (const [, entry] of dataIterator(data[i4], mappings2)) {
       result.push(entry);
     }
   }
@@ -16928,9 +17029,9 @@ function concatenateData(data, mappings2) {
 function computeDataTypes(types4, mappings2) {
   const keys = Object.keys(types4);
   const result = {};
-  for (let i = 0, n = keys.length; i < n; ++i) {
-    if (keys[i] in mappings2 && mappings2[keys[i]] !== null) {
-      result[keys[i]] = types4[keys[i]];
+  for (let i4 = 0, n5 = keys.length; i4 < n5; ++i4) {
+    if (keys[i4] in mappings2 && mappings2[keys[i4]] !== null) {
+      result[keys[i4]] = types4[keys[i4]];
     }
   }
   return result;
@@ -16938,9 +17039,9 @@ function computeDataTypes(types4, mappings2) {
 function writeValueToDataView(view, value, type, offset) {
   if (Array.isArray(value)) {
     let writeOffset = 0;
-    for (let i = 0, n = value.length; i < n; ++i) {
-      GL_TYPE_SETTER[type[i]](view, offset + writeOffset, value[i]);
-      writeOffset += GL_TYPE_SIZE[type[i]];
+    for (let i4 = 0, n5 = value.length; i4 < n5; ++i4) {
+      GL_TYPE_SETTER[type[i4]](view, offset + writeOffset, value[i4]);
+      writeOffset += GL_TYPE_SIZE[type[i4]];
     }
     return writeOffset;
   }
@@ -16948,23 +17049,23 @@ function writeValueToDataView(view, value, type, offset) {
   return GL_TYPE_SIZE[type];
 }
 function flattenEntry(entry, types4, typesInfo, mappings2, view, offset) {
-  var _a2, _b;
+  var _a6, _b2;
   const flatMappings = {};
   let flattenLength = 0;
-  for (let i = 0, n = typesInfo.keys.length; i < n; ++i) {
-    const key2 = typesInfo.keys[i];
+  for (let i4 = 0, n5 = typesInfo.keys.length; i4 < n5; ++i4) {
+    const key2 = typesInfo.keys[i4];
     if (entry[kDataEntryNeedsFlatten].has(key2)) {
-      flatMappings[key2] = (_a2 = mappings2[key2][kDataMappingFlatten]) != null ? _a2 : (entry2, i2) => entry2[key2][i2];
+      flatMappings[key2] = (_a6 = mappings2[key2][kDataMappingFlatten]) != null ? _a6 : (entry2, i5) => entry2[key2][i5];
       flattenLength = entry[key2].length;
     } else {
-      flatMappings[key2] = (_b = mappings2[key2][kDataMappingFlatten]) != null ? _b : (entry2) => entry2[key2];
+      flatMappings[key2] = (_b2 = mappings2[key2][kDataMappingFlatten]) != null ? _b2 : (entry2) => entry2[key2];
     }
   }
   let flatOffset = 0;
-  for (let i = 0; i < flattenLength; ++i) {
-    for (let ii = 0, n = typesInfo.keys.length; ii < n; ++ii) {
+  for (let i4 = 0; i4 < flattenLength; ++i4) {
+    for (let ii = 0, n5 = typesInfo.keys.length; ii < n5; ++ii) {
       const key2 = typesInfo.keys[ii];
-      flatOffset += writeValueToDataView(view, flatMappings[key2](entry, i, flattenLength), types4[key2], offset + flatOffset);
+      flatOffset += writeValueToDataView(view, flatMappings[key2](entry, i4, flattenLength), types4[key2], offset + flatOffset);
     }
   }
   return flatOffset;
@@ -16977,13 +17078,13 @@ function packData(data, mappings2, types4, potLength, cb) {
   const cb2 = Array.isArray(cb) ? cb[1] : null;
   for (const [index, entry] of dataIterator(data, mappings2)) {
     let entryLength = 1;
-    for (let i = 0, n = typesInfo.keys.length; i < n; ++i) {
-      const value = entry[typesInfo.keys[i]];
-      if (Array.isArray(value) && (!Array.isArray(types4[typesInfo.keys[i]]) || mappings2[typesInfo.keys[i]][kDataMappingFlatten])) {
+    for (let i4 = 0, n5 = typesInfo.keys.length; i4 < n5; ++i4) {
+      const value = entry[typesInfo.keys[i4]];
+      if (Array.isArray(value) && (!Array.isArray(types4[typesInfo.keys[i4]]) || mappings2[typesInfo.keys[i4]][kDataMappingFlatten])) {
         if (!entry[kDataEntryNeedsFlatten]) {
-          entry[kDataEntryNeedsFlatten] = new Set();
+          entry[kDataEntryNeedsFlatten] = /* @__PURE__ */ new Set();
         }
-        entry[kDataEntryNeedsFlatten].add(typesInfo.keys[i]);
+        entry[kDataEntryNeedsFlatten].add(typesInfo.keys[i4]);
         entryLength = Math.max(entryLength, value.length);
       }
     }
@@ -16997,16 +17098,16 @@ function packData(data, mappings2, types4, potLength, cb) {
   const buffer2 = new ArrayBuffer(typesInfo.stride * dataLength);
   const view = new DataView(buffer2);
   let offset = 0;
-  for (let i = 0, n = entries.length; i < n; ++i) {
-    const entry = entries[i];
+  for (let i4 = 0, n5 = entries.length; i4 < n5; ++i4) {
+    const entry = entries[i4];
     if (cb2) {
-      cb2(i, entry);
+      cb2(i4, entry);
     }
     if (entry[kDataEntryNeedsFlatten]) {
       offset += flattenEntry(entry, types4, typesInfo, mappings2, view, offset);
     } else {
-      for (let i2 = 0, n2 = typesInfo.keys.length; i2 < n2; ++i2) {
-        offset += writeValueToDataView(view, entry[typesInfo.keys[i2]], types4[typesInfo.keys[i2]], offset);
+      for (let i5 = 0, n6 = typesInfo.keys.length; i5 < n6; ++i5) {
+        offset += writeValueToDataView(view, entry[typesInfo.keys[i5]], types4[typesInfo.keys[i5]], offset);
       }
     }
   }
@@ -17021,7 +17122,7 @@ function printDataGL(context, vbo, count, types4) {
   gl.bindBuffer(gl.ARRAY_BUFFER, vbo.buffer);
   gl.getBufferSubData(gl.ARRAY_BUFFER, 0, view);
   let off = 0;
-  for (let i = 0; i < count; ++i) {
+  for (let i4 = 0; i4 < count; ++i4) {
     for (let ii = 0, nn = typesInfo.keys.length; ii < nn; ++ii) {
       const type = Array.isArray(types4[typesInfo.keys[ii]]) ? types4[typesInfo.keys[ii]] : [types4[typesInfo.keys[ii]]];
       const values = [];
@@ -17029,7 +17130,7 @@ function printDataGL(context, vbo, count, types4) {
         values.push(GL_TYPE_GETTER[type[iii]](view, off));
         off += GL_TYPE_SIZE[type[iii]];
       }
-      console.log(`ELEMENT[${i}] ATTR[${ii}]: ${values}`);
+      console.log(`ELEMENT[${i4}] ATTR[${ii}]: ${values}`);
     }
   }
 }
@@ -17079,7 +17180,7 @@ var DataTexture = class {
 
 // src/data/GraphPoints.ts
 var kDefaultMappings = {
-  id: (entry, i) => "id" in entry ? entry.id : i,
+  id: (entry, i4) => "id" in entry ? entry.id : i4,
   x: (entry) => entry.x,
   y: (entry) => entry.y,
   z: (entry) => "z" in entry ? entry.z : 0,
@@ -17096,7 +17197,7 @@ var GraphPoints = class extends DataTexture {
     super(context, data.length);
     this._length = 0;
     this.dirty = false;
-    this.map = new Map();
+    this.map = /* @__PURE__ */ new Map();
     this.bb = {
       min: vec3_exports.fromValues(Number.MAX_SAFE_INTEGER, Number.MAX_SAFE_INTEGER, Number.MAX_SAFE_INTEGER),
       max: vec3_exports.fromValues(Number.MIN_SAFE_INTEGER, Number.MIN_SAFE_INTEGER, Number.MIN_SAFE_INTEGER)
@@ -17188,9 +17289,9 @@ var GraphPoints = class extends DataTexture {
   }
   packData(data, mappings2, potLength, addMapEntry) {
     const dataMappings = Object.assign({}, kDefaultMappings, mappings2);
-    return packData(data, dataMappings, kGLTypes, potLength, (i, entry) => {
+    return packData(data, dataMappings, kGLTypes, potLength, (i4, entry) => {
       if (addMapEntry)
-        this.map.set(entry.id, this._length + i);
+        this.map.set(entry.id, this._length + i4);
       this.bb.min[0] = Math.min(this.bb.min[0], entry.x - entry.radius);
       this.bb.min[1] = Math.min(this.bb.min[1], entry.y - entry.radius);
       this.bb.min[2] = Math.min(this.bb.min[2], entry.z);
@@ -17302,13 +17403,13 @@ __export(mod_exports3, {
 });
 
 // src/renderer/Camera.ts
-var CameraMode;
-(function(CameraMode2) {
+var CameraMode = /* @__PURE__ */ ((CameraMode2) => {
   CameraMode2[CameraMode2["2D"] = 0] = "2D";
   CameraMode2[CameraMode2["3D"] = 1] = "3D";
-})(CameraMode || (CameraMode = {}));
+  return CameraMode2;
+})(CameraMode || {});
 var kDefaultOptions = {
-  mode: 0,
+  mode: 0 /* 2D */,
   position: vec3_exports.fromValues(0, 0, -500)
 };
 var Camera = class {
@@ -17406,12 +17507,26 @@ var Camera = class {
     quat_exports.mul(this._rotation, rotation, this._rotation);
   }
   calculateProjectionMatrix() {
-    if (this.mode === 0) {
+    if (this.mode === 0 /* 2D */) {
       const halfWidth = this._viewportSize[0] * 0.5;
       const halfHeight = this._viewportSize[1] * 0.5;
-      mat4_exports.ortho(this._projectionMatrix, -halfWidth, halfWidth, -halfHeight, halfHeight, this._nearPlane, this._farPlane);
+      mat4_exports.ortho(
+        this._projectionMatrix,
+        -halfWidth,
+        halfWidth,
+        -halfHeight,
+        halfHeight,
+        this._nearPlane,
+        this._farPlane
+      );
     } else {
-      mat4_exports.perspective(this._projectionMatrix, this._aovRad, this._aspect, this._nearPlane, this._farPlane);
+      mat4_exports.perspective(
+        this._projectionMatrix,
+        this._aovRad,
+        this._aspect,
+        this._nearPlane,
+        this._farPlane
+      );
     }
   }
 };
@@ -17465,7 +17580,7 @@ var MouseHandler = class extends EventEmitter.mixin(UXModule) {
   constructor(canvas, rect, pixelRatio, enabled = true) {
     super();
     this.boundHandler = this.handleMouseEvent.bind(this);
-    this.disableContextMenu = (e) => e.preventDefault();
+    this.disableContextMenu = (e5) => e5.preventDefault();
     this.clickDragThreshold = 10;
     this.canvas = canvas;
     this.rect = rect;
@@ -17573,8 +17688,8 @@ var MouseHandler = class extends EventEmitter.mixin(UXModule) {
       }
     }
     const buttonKeys = Object.keys(state.buttons);
-    for (let i = 0, n = buttonKeys.length; i < n; ++i) {
-      const key2 = buttonKeys[i];
+    for (let i4 = 0, n5 = buttonKeys.length; i4 < n5; ++i4) {
+      const key2 = buttonKeys[i4];
       const pressed = state.valid && state.buttons[key2];
       if (this.state.buttons[key2] !== pressed) {
         this.state.buttons[key2] = pressed;
@@ -17588,8 +17703,8 @@ var MouseHandler = class extends EventEmitter.mixin(UXModule) {
     this.emitEvents(events);
   }
   emitEvents(entries) {
-    for (let i = 0, n = entries.length; i < n; ++i) {
-      this.emit(entries[i].event, this.state, ...entries[i].args);
+    for (let i4 = 0, n5 = entries.length; i4 < n5; ++i4) {
+      this.emit(entries[i4].event, this.state, ...entries[i4].args);
     }
   }
   setMouseState(state) {
@@ -17603,37 +17718,37 @@ var MouseHandler = class extends EventEmitter.mixin(UXModule) {
     this.state.wheel = state.wheel;
     Object.assign(this.state.buttons, state.buttons);
   }
-  handleClickEvent(e, state) {
+  handleClickEvent(e5, state) {
     this.setMouseState(state);
     this.emitEvents([{
       event: kEvents.click,
-      args: [e.button, kIndex2Button[e.button]]
+      args: [e5.button, kIndex2Button[e5.button]]
     }]);
   }
-  handleWheelEvent(e, state) {
+  handleWheelEvent(e5, state) {
     this.setMouseState(state);
     let delta;
-    if ("wheelDeltaY" in e) {
-      delta = -e.wheelDeltaY / 120;
+    if ("wheelDeltaY" in e5) {
+      delta = -e5.wheelDeltaY / 120;
     } else {
-      delta = e.deltaY < 1 ? -1 : 1;
+      delta = e5.deltaY < 1 ? -1 : 1;
     }
     this.emitEvents([{
       event: kEvents.wheel,
       args: [delta]
     }]);
   }
-  handleMouseEvent(e) {
+  handleMouseEvent(e5) {
     const client = this.newState.clientCoords;
     const canvas = this.newState.canvasCoords;
     const gl = this.newState.glCoords;
     const delta = this.newState.deltaCoords;
     const rect = this.rect;
-    vec2_exports.set(client, e.clientX, e.clientY);
-    vec2_exports.set(canvas, e.clientX - rect.left, e.clientY - rect.top);
-    vec2_exports.set(gl, (e.clientX - rect.left) * this.pixelRatio, (rect.bottom - e.clientY) * this.pixelRatio);
-    if (e.type === "mousemove") {
-      vec2_exports.set(delta, e.movementX, e.movementY);
+    vec2_exports.set(client, e5.clientX, e5.clientY);
+    vec2_exports.set(canvas, e5.clientX - rect.left, e5.clientY - rect.top);
+    vec2_exports.set(gl, (e5.clientX - rect.left) * this.pixelRatio, (rect.bottom - e5.clientY) * this.pixelRatio);
+    if (e5.type === "mousemove") {
+      vec2_exports.set(delta, e5.movementX, e5.movementY);
       if (this.state.clickValid) {
         vec2_exports.add(this.newState.clickPositionDelta, this.state.clickPositionDelta, delta);
         if (vec2_exports.length(this.newState.clickPositionDelta) > this.clickDragThreshold) {
@@ -17643,13 +17758,15 @@ var MouseHandler = class extends EventEmitter.mixin(UXModule) {
     } else {
       vec2_exports.set(delta, 0, 0);
     }
-    this.newState.valid = Boolean(canvas[0] >= 0 && canvas[0] <= rect.width && canvas[1] >= 0 && canvas[1] <= rect.height);
-    this.newState.buttons.primary = Boolean(e.buttons & 1);
-    this.newState.buttons.secondary = Boolean(e.buttons & 2);
-    this.newState.buttons.auxiliary = Boolean(e.buttons & 4);
-    this.newState.buttons.fourth = Boolean(e.buttons & 8);
-    this.newState.buttons.fifth = Boolean(e.buttons & 16);
-    switch (e.type) {
+    this.newState.valid = Boolean(
+      canvas[0] >= 0 && canvas[0] <= rect.width && canvas[1] >= 0 && canvas[1] <= rect.height
+    );
+    this.newState.buttons.primary = Boolean(e5.buttons & 1);
+    this.newState.buttons.secondary = Boolean(e5.buttons & 2);
+    this.newState.buttons.auxiliary = Boolean(e5.buttons & 4);
+    this.newState.buttons.fourth = Boolean(e5.buttons & 8);
+    this.newState.buttons.fifth = Boolean(e5.buttons & 16);
+    switch (e5.type) {
       case "mousedown":
         if (this.newState.buttons.primary) {
           this.newState.clickValid = true;
@@ -17659,12 +17776,12 @@ var MouseHandler = class extends EventEmitter.mixin(UXModule) {
         break;
       case "mouseup":
         if (this.state.clickValid) {
-          this.handleClickEvent(e, this.newState);
+          this.handleClickEvent(e5, this.newState);
         }
         this.update(this.newState);
         break;
       case "wheel":
-        this.handleWheelEvent(e, this.newState);
+        this.handleWheelEvent(e5, this.newState);
         break;
       case "mouseleave":
         this.newState.valid = false;
@@ -17676,11 +17793,11 @@ var MouseHandler = class extends EventEmitter.mixin(UXModule) {
 };
 
 // src/renderer/colors/ColorRegistry.ts
-var ColorRegistryType;
-(function(ColorRegistryType2) {
+var ColorRegistryType = /* @__PURE__ */ ((ColorRegistryType2) => {
   ColorRegistryType2["mapped"] = "mapped";
   ColorRegistryType2["indexed"] = "indexed";
-})(ColorRegistryType || (ColorRegistryType = {}));
+  return ColorRegistryType2;
+})(ColorRegistryType || {});
 var ColorRegistry = class extends DataTexture {
   constructor() {
     super(...arguments);
@@ -17689,17 +17806,17 @@ var ColorRegistry = class extends DataTexture {
 };
 
 // src/renderer/colors/ColorRegistryIndexed.ts
-var import_chroma_js = __toModule(require_chroma());
+var import_chroma_js = __toESM(require_chroma(), 1);
 var kCapacityIncreaseStep = 1024;
 var ColorRegistryIndexed = class extends ColorRegistry {
-  get length() {
-    return this._length;
-  }
   constructor(context, initialCapacity = kCapacityIncreaseStep) {
     super(context, initialCapacity);
     this.colorBuffer = new ArrayBuffer(this.capacity * 4);
     this.colors = new Uint8Array(this.colorBuffer);
     this._length = 0;
+  }
+  get length() {
+    return this._length;
   }
   update() {
     if (this.dirty) {
@@ -17710,21 +17827,21 @@ var ColorRegistryIndexed = class extends ColorRegistry {
   registerColor(color) {
     this.resizeBuffer(this._length * 4 + 4);
     const rgba = (0, import_chroma_js.default)(color).rgba();
-    let i = this._length * 4;
-    this.colors[i++] = rgba[0];
-    this.colors[i++] = rgba[1];
-    this.colors[i++] = rgba[2];
-    this.colors[i++] = Math.round(rgba[3] * 255);
+    let i4 = this._length * 4;
+    this.colors[i4++] = rgba[0];
+    this.colors[i4++] = rgba[1];
+    this.colors[i4++] = rgba[2];
+    this.colors[i4++] = Math.round(rgba[3] * 255);
     this.dirty = true;
     return this._length++;
   }
   updateColor(index, color) {
     const rgba = (0, import_chroma_js.default)(color).rgba();
-    let i = index * 4;
-    this.colors[i++] = rgba[0];
-    this.colors[i++] = rgba[1];
-    this.colors[i++] = rgba[2];
-    this.colors[i++] = Math.round(rgba[3] * 255);
+    let i4 = index * 4;
+    this.colors[i4++] = rgba[0];
+    this.colors[i4++] = rgba[1];
+    this.colors[i4++] = rgba[2];
+    this.colors[i4++] = Math.round(rgba[3] * 255);
     this.dirty = true;
   }
   resizeBuffer(byteCapacity) {
@@ -17771,14 +17888,14 @@ var RectObserver = class {
 };
 
 // src/renderer/colors/ColorRegistryMapped.ts
-var import_chroma_js2 = __toModule(require_chroma());
+var import_chroma_js2 = __toESM(require_chroma(), 1);
 var ColorRegistryMapped = class extends ColorRegistry {
-  get length() {
-    return this.colorMap.size;
-  }
   constructor(context, initialCapacity = 1024) {
     super(context, initialCapacity);
-    this.colorMap = new Map();
+    this.colorMap = /* @__PURE__ */ new Map();
+  }
+  get length() {
+    return this.colorMap.size;
   }
   update() {
     if (this.dirty) {
@@ -17816,14 +17933,14 @@ function potpack(boxes) {
     area += box2.w * box2.h;
     maxWidth = Math.max(maxWidth, box2.w);
   }
-  boxes.sort((a, b) => b.h - a.h);
+  boxes.sort((a3, b3) => b3.h - a3.h);
   const startWidth = Math.max(Math.ceil(Math.sqrt(area / 0.95)), maxWidth);
   const spaces = [{ x: 0, y: 0, w: startWidth, h: Infinity }];
   let width = 0;
   let height = 0;
   for (const box2 of boxes) {
-    for (let i = spaces.length - 1; i >= 0; i--) {
-      const space = spaces[i];
+    for (let i4 = spaces.length - 1; i4 >= 0; i4--) {
+      const space = spaces[i4];
       if (box2.w > space.w || box2.h > space.h)
         continue;
       box2.x = space.x;
@@ -17832,8 +17949,8 @@ function potpack(boxes) {
       width = Math.max(width, box2.x + box2.w);
       if (box2.w === space.w && box2.h === space.h) {
         const last = spaces.pop();
-        if (i < spaces.length)
-          spaces[i] = last;
+        if (i4 < spaces.length)
+          spaces[i4] = last;
       } else if (box2.h === space.h) {
         space.x += box2.w;
         space.w -= box2.w;
@@ -17875,8 +17992,8 @@ var kLabelDataTypes = {
 var TextureAtlas = class {
   constructor(context) {
     this.dirty = false;
-    this.textureKeyMap = new Map();
-    this.boxes = new Map();
+    this.textureKeyMap = /* @__PURE__ */ new Map();
+    this.boxes = /* @__PURE__ */ new Map();
     this.boxesKeys = {};
     this._numTextures = 0;
     this.context = context;
@@ -17907,11 +18024,11 @@ var TextureAtlas = class {
     const boxes = Array.from(this.boxes.values());
     const pack = potpack(boxes);
     if (!keyList) {
-      boxes.sort((a, b) => this.boxesKeys[a.id] - this.boxesKeys[b.id]);
+      boxes.sort((a3, b3) => this.boxesKeys[a3.id] - this.boxesKeys[b3.id]);
     }
     const finalImage = ctx.createImageData(pack.w, pack.h);
-    boxes.forEach((box2, i) => {
-      this.textureKeyMap.set(box2.id, i);
+    boxes.forEach((box2, i4) => {
+      this.textureKeyMap.set(box2.id, i4);
       TextureAtlas.blitImageData(box2.image, finalImage, box2.x, finalImage.height - box2.y - box2.h);
       box2.x = box2.x + bufferX;
       box2.y = box2.y + bufferY;
@@ -17952,11 +18069,11 @@ var TextureAtlas = class {
     texture.data(data);
     return texture;
   }
-  static blitImageData(src, dst, x, y) {
+  static blitImageData(src, dst, x2, y3) {
     for (let yy = 0; yy < src.height; ++yy) {
       const srcStart = src.width * yy * 4;
       const srcEnd = srcStart + src.width * 4;
-      const dstOff = dst.width * (yy + y) * 4 + x * 4;
+      const dstOff = dst.width * (yy + y3) * 4 + x2 * 4;
       dst.data.set(src.data.subarray(srcStart, srcEnd), dstOff);
     }
   }
@@ -17965,63 +18082,63 @@ var TextureAtlas = class {
     const maxDimension = Math.max(imageData.width, imageData.height);
     const gridOuter = new Float64Array(dataLength);
     const gridInner = new Float64Array(dataLength);
-    const f = new Float64Array(maxDimension);
+    const f3 = new Float64Array(maxDimension);
     const z = new Float64Array(maxDimension + 1);
-    const v = new Uint16Array(maxDimension);
+    const v2 = new Uint16Array(maxDimension);
     gridOuter.fill(INF, 0, dataLength);
     gridInner.fill(0, 0, dataLength);
-    for (let i = 0; i < dataLength; ++i) {
-      const a = imageData.data[i * 4 + 3] / 255;
-      gridOuter[i] = a === 1 ? 0 : a === 0 ? INF : Math.pow(Math.max(0, 0.5 - a), 2);
-      gridInner[i] = a === 1 ? INF : a === 0 ? 0 : Math.pow(Math.max(0, a - 0.5), 2);
+    for (let i4 = 0; i4 < dataLength; ++i4) {
+      const a3 = imageData.data[i4 * 4 + 3] / 255;
+      gridOuter[i4] = a3 === 1 ? 0 : a3 === 0 ? INF : Math.pow(Math.max(0, 0.5 - a3), 2);
+      gridInner[i4] = a3 === 1 ? INF : a3 === 0 ? 0 : Math.pow(Math.max(0, a3 - 0.5), 2);
     }
-    this.edt(gridOuter, imageData.width, imageData.height, f, v, z);
-    this.edt(gridInner, imageData.width, imageData.height, f, v, z);
+    this.edt(gridOuter, imageData.width, imageData.height, f3, v2, z);
+    this.edt(gridInner, imageData.width, imageData.height, f3, v2, z);
     const radius = fontSize;
     const data = imageData.data;
-    for (let i = 0; i < dataLength; ++i) {
-      const d = Math.sqrt(gridOuter[i]) - Math.sqrt(gridInner[i]);
-      const p = i * 4;
-      const a = Math.round(255 - 255 * (d / radius + 0.5));
-      data[p] = 255;
-      data[p + 1] = 255;
-      data[p + 2] = 255;
-      data[p + 3] = a;
+    for (let i4 = 0; i4 < dataLength; ++i4) {
+      const d3 = Math.sqrt(gridOuter[i4]) - Math.sqrt(gridInner[i4]);
+      const p3 = i4 * 4;
+      const a3 = Math.round(255 - 255 * (d3 / radius + 0.5));
+      data[p3] = 255;
+      data[p3 + 1] = 255;
+      data[p3 + 2] = 255;
+      data[p3 + 3] = a3;
     }
     return imageData;
   }
-  static edt(data, width, height, f, v, z) {
-    for (let x = 0; x < width; ++x) {
-      this.edt1d(data, x, width, height, f, v, z);
+  static edt(data, width, height, f3, v2, z) {
+    for (let x2 = 0; x2 < width; ++x2) {
+      this.edt1d(data, x2, width, height, f3, v2, z);
     }
-    for (let y = 0; y < height; ++y) {
-      this.edt1d(data, y * width, 1, width, f, v, z);
+    for (let y3 = 0; y3 < height; ++y3) {
+      this.edt1d(data, y3 * width, 1, width, f3, v2, z);
     }
   }
-  static edt1d(grid, offset, stride, length5, f, v, z) {
-    let q, k, s, r;
-    v[0] = 0;
+  static edt1d(grid, offset, stride, length5, f3, v2, z) {
+    let q, k2, s4, r5;
+    v2[0] = 0;
     z[0] = -INF;
     z[1] = INF;
     for (q = 0; q < length5; ++q) {
-      f[q] = grid[offset + q * stride];
+      f3[q] = grid[offset + q * stride];
     }
-    for (q = 1, k = 0, s = 0; q < length5; ++q) {
+    for (q = 1, k2 = 0, s4 = 0; q < length5; ++q) {
       do {
-        r = v[k];
-        s = (f[q] - f[r] + q * q - r * r) / (q - r) / 2;
-      } while (s <= z[k] && --k > -1);
-      ++k;
-      v[k] = q;
-      z[k] = s;
-      z[k + 1] = INF;
+        r5 = v2[k2];
+        s4 = (f3[q] - f3[r5] + q * q - r5 * r5) / (q - r5) / 2;
+      } while (s4 <= z[k2] && --k2 > -1);
+      ++k2;
+      v2[k2] = q;
+      z[k2] = s4;
+      z[k2 + 1] = INF;
     }
-    for (q = 0, k = 0; q < length5; ++q) {
-      while (z[k + 1] < q) {
-        ++k;
+    for (q = 0, k2 = 0; q < length5; ++q) {
+      while (z[k2 + 1] < q) {
+        ++k2;
       }
-      r = v[k];
-      grid[offset + q * stride] = f[r] + (q - r) * (q - r);
+      r5 = v2[k2];
+      grid[offset + q * stride] = f3[r5] + (q - r5) * (q - r5);
     }
   }
 };
@@ -18057,7 +18174,7 @@ var TextureRegistry = class extends TextureAtlas {
 };
 
 // src/renderer/PixelRatioObserver.ts
-var subscriberSet = new Set();
+var subscriberSet = /* @__PURE__ */ new Set();
 function listenOnDevicePixelRatio() {
   function onChange() {
     for (const subscriberFn of subscriberSet.values()) {
@@ -18083,7 +18200,7 @@ var PixelRatioObserver = class {
 
 // src/renderer/Viewport.ts
 var kDefaultOptions2 = {
-  colorRegistryType: ColorRegistryType.mapped,
+  colorRegistryType: "mapped" /* mapped */,
   colorRegistryCapacity: 1024
 };
 var Viewport = class {
@@ -18133,7 +18250,7 @@ var Viewport = class {
       this.render();
     });
     resizeObserver.observe(this.canvas);
-    if (opts.colorRegistryType === ColorRegistryType.mapped) {
+    if (opts.colorRegistryType === "mapped" /* mapped */) {
       this.colorRegistry = new ColorRegistryMapped(this.context, opts.colorRegistryCapacity);
     } else {
       this.colorRegistry = new ColorRegistryIndexed(this.context, opts.colorRegistryCapacity);
@@ -18163,7 +18280,7 @@ var Viewport = class {
   }
   render() {
     if (!this.animationFrameID) {
-      this.renderMode = RenderMode.DRAFT;
+      this.renderMode = 0 /* DRAFT */;
       if (this.timeoutID) {
         clearTimeout(this.timeoutID);
         this.timeoutID = 0;
@@ -18201,14 +18318,14 @@ var Viewport = class {
     if (this.graph && this.graph.enabled) {
       this.graph.render(this.context, this.renderMode, uniforms);
       switch (this.renderMode) {
-        case RenderMode.DRAFT:
-          uniforms.uRenderMode = RenderMode.PICKING;
-          this.graph.render(this.context, RenderMode.PICKING, uniforms);
-          this.renderMode = RenderMode.MEDIUM;
+        case 0 /* DRAFT */:
+          uniforms.uRenderMode = 5 /* PICKING */;
+          this.graph.render(this.context, 5 /* PICKING */, uniforms);
+          this.renderMode = 1 /* MEDIUM */;
           this.scheduleRender(85);
           break;
-        case RenderMode.MEDIUM:
-          this.renderMode = RenderMode.HIGH;
+        case 1 /* MEDIUM */:
+          this.renderMode = 2 /* HIGH */;
           this.scheduleRender(120);
           break;
       }
@@ -18261,8 +18378,8 @@ var OffscreenBuffer = class {
     context.readFramebuffer(this.frameBuffer);
     context.blitFramebuffer(mask);
   }
-  readPixel(x, y, buffer2) {
-    this.context.defaultDrawFramebuffer().readFramebuffer(this.frameBuffer).readPixel(x, y, buffer2);
+  readPixel(x2, y3, buffer2) {
+    this.context.defaultDrawFramebuffer().readFramebuffer(this.frameBuffer).readPixel(x2, y3, buffer2);
   }
 };
 
@@ -18405,24 +18522,24 @@ var Graph = class extends EventEmitter.mixin(GraphPoints) {
     vec3_exports.set(this._scale, value, value, value);
   }
   render(context, mode, uniforms) {
-    var _a2;
+    var _a6;
     this.emit(kEvents2.preRender, this, mode, uniforms);
-    const isPicking = mode === RenderMode.PICKING && ((_a2 = this.picking) == null ? void 0 : _a2.enabled);
+    const isPicking = mode === 5 /* PICKING */ && ((_a6 = this.picking) == null ? void 0 : _a6.enabled);
     if (isPicking) {
       this.picking.offscreenBuffer.prepareContext(context);
     }
     const localUniforms = [uniforms];
-    if (mode === RenderMode.HIGH) {
-      localUniforms.push(Object.assign({}, uniforms, { uRenderMode: RenderMode.HIGH_PASS_1 }));
-      localUniforms.push(Object.assign({}, uniforms, { uRenderMode: RenderMode.HIGH_PASS_2 }));
+    if (mode === 2 /* HIGH */) {
+      localUniforms.push(Object.assign({}, uniforms, { uRenderMode: 3 /* HIGH_PASS_1 */ }));
+      localUniforms.push(Object.assign({}, uniforms, { uRenderMode: 4 /* HIGH_PASS_2 */ }));
     }
-    for (let i = 0, n = this._layers.length; i < n; ++i) {
-      const glow2 = Math.min(Math.max(this._layers[i].glow, 0), 1);
+    for (let i4 = 0, n5 = this._layers.length; i4 < n5; ++i4) {
+      const glow2 = Math.min(Math.max(this._layers[i4].glow, 0), 1);
       if (glow2 && !isPicking) {
         this._renderBuffer.prepareContext(context);
       }
-      if (this._layers[i].enabled) {
-        this._layers[i].render(context, mode, localUniforms, i);
+      if (this._layers[i4].enabled) {
+        this._layers[i4].render(context, mode, localUniforms, i4);
       }
       if (glow2 && !isPicking) {
         const { outputBuffer1, outputBuffer2, outputTexture1, outputTexture2 } = this._postProcess;
@@ -18482,9 +18599,9 @@ var Graph = class extends EventEmitter.mixin(GraphPoints) {
     }
   }
   removeLayer(layer) {
-    const i = this._layers.indexOf(layer);
-    if (i !== -1) {
-      this._layers.splice(i, 1);
+    const i4 = this._layers.indexOf(layer);
+    if (i4 !== -1) {
+      this._layers.splice(i4, 1);
     }
   }
   removeLayerAt(index) {
@@ -18525,12 +18642,6 @@ var Circle_data_vs_default = "#version 300 es\n\nlayout(location=0) in uint aPos
 var Circle_picking_fs_default = "#version 300 es\nprecision highp float;\n#define GLSLIFY 1\n\n// most of these come from this excellent post:\n// https://iquilezles.org/www/articles/distfunctions2d/distfunctions2d.htm\n\nfloat opRound(in float d, in float r) {\n    return d - r;\n}\n\nfloat opOnion(in float d, in float r) {\n    return abs(d) - r;\n}\n\nfloat sdCircle(in vec2 p, in float r ) {\n    return length(p) - r;\n}\n\nfloat sdEquilateralTriangle(in vec2 p, in float r) {\n    const float k = sqrt(3.0);\n    p.x = abs(p.x) - r;\n    p.y = p.y + (r) / k;\n    if (p.x + k * p.y > 0.0) {\n        p = vec2(p.x-k*p.y,-k*p.x-p.y) / 2.0;\n    }\n    p.x -= clamp(p.x, -2.0 * r, 0.0);\n    return -length(p) * sign(p.y);\n}\n\nfloat sdPentagon(in vec2 p, in float r) {\n    const vec3 k = vec3(0.809016994, 0.587785252, 0.726542528);\n    p.y = -(p.y) * 1.25;\n    p.x = abs(p.x) * 1.25;\n    p -= 2.0 * min(dot(vec2(-k.x, k.y), p), 0.0) * vec2(-k.x, k.y);\n    p -= 2.0 * min(dot(vec2(k.x, k.y), p), 0.0) * vec2(k.x, k.y);\n    p -= vec2(clamp(p.x, -r*k.z, r*k.z), r);\n    return length(p) * sign(p.y);\n}\n\nfloat sdOctagon(in vec2 p, in float r) {\n    // pi/8: cos, sin, tan.\n    const vec3 k = vec3(\n        -0.9238795325,   // sqrt(2+sqrt(2))/2\n        0.3826834323,   // sqrt(2-sqrt(2))/2\n        0.4142135623\n    ); // sqrt(2)-1\n    // reflections\n    p = abs(p) * 1.1;\n    p -= 2.0 * min(dot(vec2(k.x,k.y), p), 0.0) * vec2(k.x,k.y);\n    p -= 2.0 * min(dot(vec2(-k.x,k.y), p), 0.0) * vec2(-k.x,k.y);\n    // Polygon side.\n    p -= vec2(clamp(p.x, -k.z*r, k.z*r), r);\n    return length(p) * sign(p.y);\n}\n\nfloat sdStar(in vec2 p, in float r, in uint n, in float m) { // m=[2,n]\n    // these 4 lines can be precomputed for a given shape\n    float an = 3.141593 / float(n);\n    float en = 3.141593 / m;\n    vec2  acs = vec2(cos(an), sin(an));\n    vec2  ecs = vec2(cos(en), sin(en)); // ecs=vec2(0,1) and simplify, for regular polygon,\n\n    // reduce to first sector\n    float bn = mod(atan(p.x, p.y), 2.0 * an) - an;\n    p = length(p) * vec2(cos(bn), abs(sin(bn)));\n\n    // line sdf\n    p -= r * acs;\n    p += ecs * clamp(-dot(p, ecs), 0.0, r * acs.y / ecs.y);\n    return length(p) * sign(p.x);\n}\n\nfloat sdCross(in vec2 p, in float w, in float r) {\n    p = abs(p);\n    return length(p - min(p.x + p.y, w) * 0.5) - r;\n}\n\n// TODO: Precompute this, we always pass the same parameters tot his function (v, vec2(1.0, 0.3), 0.0)\nfloat sdPlus( in vec2 p, in vec2 b, float r ) {\n    p = abs(p);\n    p = (p.y > p.x) ? p.yx : p.xy;\n\n    vec2  q = p - b;\n    float k = max(q.y, q.x);\n    vec2  w = (k > 0.0) ? q : vec2(b.y - p.x, -k);\n\n    return sign(k)*length(max(w, 0.0)) + r;\n}\n\nfloat sdBox( in vec2 p, in vec2 b ) {\n    vec2 d = abs(p) - b;\n    return length(max(d,0.0)) + min(max(d.x,d.y),0.0);\n}\n\nflat in vec4 fColor;\nflat in float fPixelLength;\nin vec2 vFromCenter;\n\nout vec4 fragColor;\n\nvoid main() {\n    float sd = sdCircle(vFromCenter, 1.0);\n    if (sd > 0.0) {\n        discard;\n    }\n    fragColor = fColor;\n}\n";
 
 // src/graph/LayerRenderable.ts
-var LayerRenderableBlendMode;
-(function(LayerRenderableBlendMode2) {
-  LayerRenderableBlendMode2[LayerRenderableBlendMode2["NONE"] = 0] = "NONE";
-  LayerRenderableBlendMode2[LayerRenderableBlendMode2["NORMAL"] = 1] = "NORMAL";
-  LayerRenderableBlendMode2[LayerRenderableBlendMode2["ADDITIVE"] = 2] = "ADDITIVE";
-})(LayerRenderableBlendMode || (LayerRenderableBlendMode = {}));
 var PointsReaderEmitter = EventEmitter.mixin(PointsReader);
 var LayerRenderable = class extends PointsReaderEmitter {
   constructor(...args) {
@@ -18538,7 +18649,7 @@ var LayerRenderable = class extends PointsReaderEmitter {
     this.enabled = true;
     this.nearDepth = 0;
     this.farDepth = 1;
-    this.blendMode = 1;
+    this.blendMode = 1 /* NORMAL */;
   }
   static get defaultMappings() {
     return void 0;
@@ -18568,7 +18679,7 @@ var LayerRenderable = class extends PointsReaderEmitter {
     this.localUniforms.uBrightness = value;
   }
   get opaque() {
-    return this.localUniforms.uAlpha >= 1 || this.blendMode === 0;
+    return this.alpha >= 1 || this.blendMode === 0 /* NONE */;
   }
   initialize(context, points2, data, mappings2, pickingManager) {
     this.pickingManager = pickingManager;
@@ -18584,14 +18695,14 @@ var LayerRenderable = class extends PointsReaderEmitter {
   configureRenderContext(context, renderMode) {
     context.depthRange(this.nearDepth, this.farDepth);
     switch (renderMode) {
-      case RenderMode.PICKING:
+      case 5 /* PICKING */:
         context.depthMask(false);
         context.disable(PicoGL.BLEND);
         break;
-      case RenderMode.HIGH_PASS_2:
+      case 4 /* HIGH_PASS_2 */:
         context.depthMask(false);
         context.enable(PicoGL.BLEND);
-        if (this.blendMode === 2) {
+        if (this.blendMode === 2 /* ADDITIVE */) {
           context.blendFuncSeparate(PicoGL.SRC_ALPHA, PicoGL.ONE, PicoGL.ONE, PicoGL.ONE);
         } else {
           context.blendFuncSeparate(PicoGL.SRC_ALPHA, PicoGL.ONE_MINUS_SRC_ALPHA, PicoGL.ONE, PicoGL.ONE);
@@ -18604,7 +18715,7 @@ var LayerRenderable = class extends PointsReaderEmitter {
         } else {
           context.enable(PicoGL.BLEND);
           context.depthMask(false);
-          if (this.blendMode === 2) {
+          if (this.blendMode === 2 /* ADDITIVE */) {
             context.blendFuncSeparate(PicoGL.SRC_ALPHA, PicoGL.ONE, PicoGL.ONE, PicoGL.ONE);
           } else {
             context.blendFuncSeparate(PicoGL.SRC_ALPHA, PicoGL.ONE_MINUS_SRC_ALPHA, PicoGL.ONE, PicoGL.ONE);
@@ -18617,8 +18728,8 @@ var LayerRenderable = class extends PointsReaderEmitter {
 
 // src/graph/nodes/Nodes.ts
 var kBasicNodeMappings = {
-  id: (entry, i) => "id" in entry ? entry.id : i,
-  point: (entry, i) => "point" in entry ? entry.point : i,
+  id: (entry, i4) => "id" in entry ? entry.id : i4,
+  point: (entry, i4) => "point" in entry ? entry.point : i4,
   color: (entry) => "color" in entry ? entry.color : 0,
   texture: (entry) => "texture" in entry ? entry.texture : 0,
   radius: null
@@ -18662,18 +18773,18 @@ var Nodes = class extends LayerRenderable {
   computeMappings(mappings2) {
     const nodesMappings = Object.assign({}, kBasicNodeMappings, mappings2);
     const pointMapping = nodesMappings.point;
-    nodesMappings.point = (entry, i) => {
-      return this.points.getPointIndex(pointMapping(entry, i));
+    nodesMappings.point = (entry, i4) => {
+      return this.points.getPointIndex(pointMapping(entry, i4));
     };
     return nodesMappings;
   }
   ingestData(context, data, mappings2) {
-    this.map = new Map();
+    this.map = /* @__PURE__ */ new Map();
     this.idArray = [];
     super.ingestData(context, data, mappings2);
   }
   packDataCB() {
-    return (i, entry) => {
+    return (i4, entry) => {
       this.map.set(entry.id, entry.point);
       this.idArray.push(entry.id);
     };
@@ -18729,11 +18840,11 @@ var PickingManager = class extends EventEmitter.mixin(UXModule) {
   allocatePickingColors(count) {
     const colors2 = new Uint8Array(count * 4);
     const ranges = [];
-    const map = new Map();
+    const map = /* @__PURE__ */ new Map();
     let offset = 0;
     let left = count;
-    for (let i = 0, n = this.availableIndices.length; i < n && left > 0; ++i) {
-      const availableRange = this.availableIndices[i];
+    for (let i4 = 0, n5 = this.availableIndices.length; i4 < n5 && left > 0; ++i4) {
+      const availableRange = this.availableIndices[i4];
       const rangeLength = availableRange.end - availableRange.start;
       if (rangeLength > left) {
         const range = { start: availableRange.start, end: availableRange.start + left };
@@ -18747,7 +18858,7 @@ var PickingManager = class extends EventEmitter.mixin(UXModule) {
         this.mapPickingColorIDs(map, count - left, availableRange);
         ranges.push(availableRange);
         left -= rangeLength;
-        this.availableIndices.splice(i--, 1);
+        this.availableIndices.splice(i4--, 1);
       }
     }
     return {
@@ -18757,8 +18868,8 @@ var PickingManager = class extends EventEmitter.mixin(UXModule) {
     };
   }
   deallocatePickingColors(colors2) {
-    for (let i = 0, n = colors2.ranges.length; i < n; ++i) {
-      this.deallocatePickingRange(colors2.ranges[i]);
+    for (let i4 = 0, n5 = colors2.ranges.length; i4 < n5; ++i4) {
+      this.deallocatePickingRange(colors2.ranges[i4]);
     }
     colors2.colors = new Uint8Array([]);
     colors2.ranges.length = 0;
@@ -18798,13 +18909,13 @@ var PickingManager = class extends EventEmitter.mixin(UXModule) {
     }
   }
   deallocatePickingRange(range) {
-    for (let i = 0, n = this.availableIndices.length; i < n; ++i) {
-      const availableRange = this.availableIndices[i];
+    for (let i4 = 0, n5 = this.availableIndices.length; i4 < n5; ++i4) {
+      const availableRange = this.availableIndices[i4];
       if (availableRange.start > range.start) {
         if (availableRange.start === range.end) {
           availableRange.start = range.start;
         } else {
-          this.availableIndices.splice(i, 0, {
+          this.availableIndices.splice(i4, 0, {
             start: range.start,
             end: range.end
           });
@@ -18814,13 +18925,13 @@ var PickingManager = class extends EventEmitter.mixin(UXModule) {
     }
   }
   mapPickingColorIDs(out2, idStart, range) {
-    for (let i = 0, n = range.end - range.start; i < n; ++i) {
-      out2.set(range.start + i, idStart + i);
+    for (let i4 = 0, n5 = range.end - range.start; i4 < n5; ++i4) {
+      out2.set(range.start + i4, idStart + i4);
     }
   }
   pickingColorsForIndices(out2, offset, range) {
-    for (let i = range.start; i < range.end; ++i) {
-      const color = this.pickingColorForNumber(i);
+    for (let i4 = range.start; i4 < range.end; ++i4) {
+      const color = this.pickingColorForNumber(i4);
       out2[offset++] = color[0];
       out2[offset++] = color[1];
       out2[offset++] = color[2];
@@ -18886,7 +18997,7 @@ var Circle = class extends Nodes {
   render(context, mode, uniforms) {
     this.configureRenderContext(context, mode);
     switch (mode) {
-      case RenderMode.PICKING:
+      case 5 /* PICKING */:
         if (this.picking) {
           setDrawCallUniforms(this.pickingDrawCall, uniforms);
           setDrawCallUniforms(this.pickingDrawCall, this.localUniforms);
@@ -18894,7 +19005,7 @@ var Circle = class extends Nodes {
           this.pickingDrawCall.draw();
         }
         break;
-      case RenderMode.HIGH_PASS_2:
+      case 4 /* HIGH_PASS_2 */:
         context.depthMask(false);
       default:
         setDrawCallUniforms(this.drawCall, uniforms);
@@ -19243,14 +19354,14 @@ var Straight_data_vs_default = "#version 300 es\n#define GLSLIFY 1\n\nlayout(loc
 
 // src/graph/edges/Edges.ts
 var kBasicEdgeMappings = {
-  id: (entry, i) => "id" in entry ? entry.id : i,
+  id: (entry, i4) => "id" in entry ? entry.id : i4,
   source: (entry) => entry.source,
   target: (entry) => entry.target,
   sourceColor: (entry) => "sourceColor" in entry ? entry.sourceColor : 0,
   targetColor: (entry) => "targetColor" in entry ? entry.targetColor : 0,
   width: (entry) => {
-    var _a2;
-    return (_a2 = entry.width) != null ? _a2 : 1.5;
+    var _a6;
+    return (_a6 = entry.width) != null ? _a6 : 1.5;
   }
 };
 var kBasicEdgeDataTypes = {
@@ -19261,6 +19372,9 @@ var kBasicEdgeDataTypes = {
   width: picogl_default.FLOAT
 };
 var Edges = class extends LayerRenderable {
+  constructor(...args) {
+    super(...args);
+  }
   static get defaultMappings() {
     return kBasicEdgeMappings;
   }
@@ -19277,18 +19391,15 @@ var Edges = class extends LayerRenderable {
       uPickingWidth: 8
     });
   }
-  constructor(...args) {
-    super(...args);
-  }
   computeMappings(mappings2) {
     const edgesMappings = Object.assign({}, kBasicEdgeMappings, mappings2);
     const sourceMapping = edgesMappings.source;
-    edgesMappings.source = (entry, i) => {
-      return this.points.getPointIndex(sourceMapping(entry, i));
+    edgesMappings.source = (entry, i4) => {
+      return this.points.getPointIndex(sourceMapping(entry, i4));
     };
     const targetMapping = edgesMappings.target;
-    edgesMappings.target = (entry, i) => {
-      return this.points.getPointIndex(targetMapping(entry, i));
+    edgesMappings.target = (entry, i4) => {
+      return this.points.getPointIndex(targetMapping(entry, i4));
     };
     return edgesMappings;
   }
@@ -19297,7 +19408,7 @@ var Edges = class extends LayerRenderable {
     super.ingestData(context, data, mappings2);
   }
   packDataCB() {
-    return (i, entry) => {
+    return (i4, entry) => {
       this.idArray.push(entry.id);
     };
   }
@@ -19346,7 +19457,7 @@ var Straight = class extends Edges {
   render(context, mode, uniforms) {
     this.configureRenderContext(context, mode);
     switch (mode) {
-      case RenderMode.PICKING:
+      case 5 /* PICKING */:
         setDrawCallUniforms(this.pickingDrawCall, uniforms);
         setDrawCallUniforms(this.pickingDrawCall, this.localUniforms);
         this.pickingDrawCall.uniform("uPicking", true);
@@ -19439,21 +19550,21 @@ var kGLGravityEdgeTypes = {
   width: PicoGL.FLOAT
 };
 var Gravity = class extends Edges {
+  constructor(context, points2, data, mappings2, pickingManager, segments = 16) {
+    super(context, points2, data, mappings2, pickingManager, segments);
+  }
   get gravity() {
     return this.localUniforms.uGravity;
   }
   set gravity(value) {
     this.localUniforms.uGravity = value;
   }
-  constructor(context, points2, data, mappings2, pickingManager, segments = 16) {
-    super(context, points2, data, mappings2, pickingManager, segments);
-  }
   initialize(context, points2, data, mappings2, pickingManager, segments) {
     super.initialize(context, points2, data, mappings2, pickingManager);
     this.localUniforms.uGravity = -0.2;
     const segmentVertices = [];
-    for (let i = 0; i <= segments; ++i) {
-      segmentVertices.push(i / segments, 0);
+    for (let i4 = 0; i4 <= segments; ++i4) {
+      segmentVertices.push(i4 / segments, 0);
     }
     this.verticesVBO = context.createVertexBuffer(PicoGL.FLOAT, 2, new Float32Array(segmentVertices));
     this.pickingHandler = this.handlePickingEvent.bind(this);
@@ -19478,7 +19589,7 @@ var Gravity = class extends Edges {
   render(context, mode, uniforms) {
     this.configureRenderContext(context, mode);
     switch (mode) {
-      case RenderMode.PICKING:
+      case 5 /* PICKING */:
         setDrawCallUniforms(this.pickingDrawCall, uniforms);
         setDrawCallUniforms(this.pickingDrawCall, this.localUniforms);
         this.pickingDrawCall.uniform("uPicking", true);
@@ -19538,15 +19649,15 @@ var CurvedPath_data_vs_default = "#version 300 es\n#define GLSLIFY 1\n\nlayout(l
 // src/graph/edges/path/CurvedPath.ts
 var pickingColorNoOpMapping = () => null;
 var kCurvedPathEdgeMappings = {
-  id: (entry, i) => "id" in entry ? entry.id : i,
+  id: (entry, i4) => "id" in entry ? entry.id : i4,
   source: (entry) => entry.source,
   target: (entry) => entry.target,
   control: (entry) => entry.control,
   sourceColor: (entry) => "sourceColor" in entry ? entry.sourceColor : 0,
   targetColor: (entry) => "targetColor" in entry ? entry.targetColor : 0,
   width: (entry) => {
-    var _a2;
-    return (_a2 = entry.width) != null ? _a2 : 1.5;
+    var _a6;
+    return (_a6 = entry.width) != null ? _a6 : 1.5;
   },
   pickingColor: pickingColorNoOpMapping
 };
@@ -19576,8 +19687,13 @@ var CurvedPath = class extends Edges {
   initialize(context, points2, data, mappings2, pickingManager, segments) {
     super.initialize(context, points2, data, mappings2, pickingManager);
     const segmentVertices = [];
-    for (let i = 0; i <= segments; ++i) {
-      segmentVertices.push(-1, i, 1, i);
+    for (let i4 = 0; i4 <= segments; ++i4) {
+      segmentVertices.push(
+        -1,
+        i4,
+        1,
+        i4
+      );
     }
     this.pickingHandler = this.handlePickingEvent.bind(this);
     this.verticesVBO = context.createVertexBuffer(PicoGL.FLOAT, 2, new Float32Array(segmentVertices));
@@ -19620,7 +19736,7 @@ var CurvedPath = class extends Edges {
     setDrawCallUniforms(this.drawCall, this.localUniforms);
     this.configureRenderContext(context, mode);
     switch (mode) {
-      case RenderMode.PICKING:
+      case 5 /* PICKING */:
         setDrawCallUniforms(this.pickingDrawCall, uniforms);
         setDrawCallUniforms(this.pickingDrawCall, this.localUniforms);
         this.pickingDrawCall.uniform("uPicking", true);
@@ -19657,20 +19773,20 @@ var CurvedPath = class extends Edges {
   }
   computeMappings(mappings2) {
     const edgesMappings = Object.assign({}, kCurvedPathEdgeMappings, super.computeMappings(mappings2));
-    edgesMappings.control[kDataMappingFlatten] = (entry, i, l) => {
-      return [this.points.getPointIndex(entry.control[i]), i, l];
+    edgesMappings.control[kDataMappingFlatten] = (entry, i4, l3) => {
+      return [this.points.getPointIndex(entry.control[i4]), i4, l3];
     };
-    edgesMappings.source[kDataMappingFlatten] = (entry, i, l) => {
-      if (i === 0) {
+    edgesMappings.source[kDataMappingFlatten] = (entry, i4, l3) => {
+      if (i4 === 0) {
         return entry.source;
       }
-      return edgesMappings.control[kDataMappingFlatten](entry, i - 1, l)[0];
+      return edgesMappings.control[kDataMappingFlatten](entry, i4 - 1, l3)[0];
     };
-    edgesMappings.target[kDataMappingFlatten] = (entry, i, l) => {
-      if (i === l - 1) {
+    edgesMappings.target[kDataMappingFlatten] = (entry, i4, l3) => {
+      if (i4 === l3 - 1) {
         return entry.target;
       }
-      return edgesMappings.control[kDataMappingFlatten](entry, i + 1, l)[0];
+      return edgesMappings.control[kDataMappingFlatten](entry, i4 + 1, l3)[0];
     };
     return edgesMappings;
   }
@@ -19765,7 +19881,7 @@ var StraightPath = class extends Edges {
     setDrawCallUniforms(this.drawCall, uniforms);
     setDrawCallUniforms(this.drawCall, this.localUniforms);
     switch (mode) {
-      case RenderMode.PICKING:
+      case 5 /* PICKING */:
         setDrawCallUniforms(this.pickingDrawCall, uniforms);
         setDrawCallUniforms(this.pickingDrawCall, this.localUniforms);
         this.pickingDrawCall.uniform("uPicking", true);
@@ -19803,28 +19919,28 @@ var StraightPath = class extends Edges {
   computeMappings(mappings2) {
     const edgesMappings = Object.assign({}, kCurvedPathEdgeMappings, super.computeMappings(mappings2));
     const superControl = edgesMappings.control;
-    edgesMappings.control = (entry, i, l) => {
-      const control = superControl(entry, i, l);
+    edgesMappings.control = (entry, i4, l3) => {
+      const control = superControl(entry, i4, l3);
       if (Array.isArray(control)) {
         control.push(null);
       }
       return control;
     };
-    edgesMappings.control[kDataMappingFlatten] = (entry, i, l) => {
-      return [i, l];
+    edgesMappings.control[kDataMappingFlatten] = (entry, i4, l3) => {
+      return [i4, l3];
     };
-    const getControl = (entry, i) => this.points.getPointIndex(entry.control[i]);
-    edgesMappings.source[kDataMappingFlatten] = (entry, i) => {
-      if (i === 0) {
+    const getControl = (entry, i4) => this.points.getPointIndex(entry.control[i4]);
+    edgesMappings.source[kDataMappingFlatten] = (entry, i4) => {
+      if (i4 === 0) {
         return entry.source;
       }
-      return getControl(entry, i - 1);
+      return getControl(entry, i4 - 1);
     };
-    edgesMappings.target[kDataMappingFlatten] = (entry, i, l) => {
-      if (i === l - 1) {
+    edgesMappings.target[kDataMappingFlatten] = (entry, i4, l3) => {
+      if (i4 === l3 - 1) {
         return entry.target;
       }
-      return getControl(entry, i);
+      return getControl(entry, i4);
     };
     return edgesMappings;
   }
@@ -19852,7 +19968,7 @@ var ClusterBundle_data_vs_default = "#version 300 es\n#define GLSLIFY 1\n\nlayou
 var pickingColorNoOpMapping2 = () => null;
 var kClusterBundleEdgeNoOpMapping = () => null;
 var kClusterBundleEdgeMappings = {
-  id: (entry, i) => "id" in entry ? entry.id : i,
+  id: (entry, i4) => "id" in entry ? entry.id : i4,
   source: (entry) => entry.source,
   target: (entry) => entry.target,
   sourceCluster: (entry) => entry.sourceCluster,
@@ -19860,8 +19976,8 @@ var kClusterBundleEdgeMappings = {
   sourceColor: (entry) => "sourceColor" in entry ? entry.sourceColor : 0,
   targetColor: (entry) => "targetColor" in entry ? entry.targetColor : 0,
   width: (entry) => {
-    var _a2;
-    return (_a2 = entry.width) != null ? _a2 : 1.5;
+    var _a6;
+    return (_a6 = entry.width) != null ? _a6 : 1.5;
   },
   hyperEdgeStats: kClusterBundleEdgeNoOpMapping,
   index: () => [0, 1, 2],
@@ -19897,8 +20013,13 @@ var ClusterBundle = class extends Edges {
   initialize(context, points2, data, mappings2, pickingManager, segments) {
     super.initialize(context, points2, data, mappings2, pickingManager);
     const segmentVertices = [];
-    for (let i = 0; i <= segments; ++i) {
-      segmentVertices.push(-1, i, 1, i);
+    for (let i4 = 0; i4 <= segments; ++i4) {
+      segmentVertices.push(
+        -1,
+        i4,
+        1,
+        i4
+      );
     }
     this.pickingHandler = this.handlePickingEvent.bind(this);
     this.verticesVBO = context.createVertexBuffer(PicoGL.FLOAT, 2, new Float32Array(segmentVertices));
@@ -19929,7 +20050,7 @@ var ClusterBundle = class extends Edges {
     setDrawCallUniforms(this.drawCall, this.localUniforms);
     this.configureRenderContext(context, mode);
     switch (mode) {
-      case RenderMode.PICKING:
+      case 5 /* PICKING */:
         setDrawCallUniforms(this.pickingDrawCall, uniforms);
         setDrawCallUniforms(this.pickingDrawCall, this.localUniforms);
         this.pickingDrawCall.uniform("uPicking", true);
@@ -19967,15 +20088,15 @@ var ClusterBundle = class extends Edges {
   computeMappings(mappings2) {
     const edgesMappings = Object.assign({}, kClusterBundleEdgeMappings, super.computeMappings(mappings2));
     const sourceClusterMapping = edgesMappings.sourceCluster;
-    edgesMappings.sourceCluster = (entry, i) => {
-      return this.points.getPointIndex(sourceClusterMapping(entry, i));
+    edgesMappings.sourceCluster = (entry, i4) => {
+      return this.points.getPointIndex(sourceClusterMapping(entry, i4));
     };
     const targetClusterMapping = edgesMappings.targetCluster;
-    edgesMappings.targetCluster = (entry, i) => {
-      return this.points.getPointIndex(targetClusterMapping(entry, i));
+    edgesMappings.targetCluster = (entry, i4) => {
+      return this.points.getPointIndex(targetClusterMapping(entry, i4));
     };
     if (edgesMappings.hyperEdgeStats === kClusterBundleEdgeNoOpMapping) {
-      this.hyperEdgeStats = new Map();
+      this.hyperEdgeStats = /* @__PURE__ */ new Map();
       edgesMappings.hyperEdgeStats = (entry) => {
         if ("hyperEdgeStats" in entry) {
           return entry.hyperEdgeStats;
@@ -19989,7 +20110,7 @@ var ClusterBundle = class extends Edges {
     if (!this.hyperEdgeStats) {
       return null;
     }
-    const cb1 = (i, entry) => {
+    const cb1 = (i4, entry) => {
       const key2 = `${entry.sourceCluster}=>${entry.targetCluster}`;
       let count = this.hyperEdgeStats.get(key2);
       if (count === null || count === void 0) {
@@ -19998,7 +20119,7 @@ var ClusterBundle = class extends Edges {
       this.hyperEdgeStats.set(key2, count + 1);
       entry.hyperEdgeStats[0] = count;
       this.idArray.push(entry.id);
-      const indexStart = 4 * i;
+      const indexStart = 4 * i4;
       entry.pickingColor = [
         this.pickingColors.colors[indexStart],
         this.pickingColors.colors[indexStart + 1],
@@ -20006,7 +20127,7 @@ var ClusterBundle = class extends Edges {
         this.pickingColors.colors[indexStart + 3]
       ];
     };
-    const cb2 = (i, entry) => {
+    const cb2 = (i4, entry) => {
       const key2 = `${entry.sourceCluster}=>${entry.targetCluster}`;
       entry.hyperEdgeStats[1] = this.hyperEdgeStats.get(key2);
     };
@@ -20462,14 +20583,14 @@ function ccall(ident, returnType, argTypes, args, opts) {
   var cArgs = [];
   var stack = 0;
   if (args) {
-    for (var i = 0; i < args.length; i++) {
-      var converter = toC[argTypes[i]];
+    for (var i4 = 0; i4 < args.length; i4++) {
+      var converter = toC[argTypes[i4]];
       if (converter) {
         if (stack === 0)
           stack = stackSave();
-        cArgs[i] = converter(args[i]);
+        cArgs[i4] = converter(args[i4]);
       } else {
-        cArgs[i] = args[i];
+        cArgs[i4] = args[i4];
       }
     }
   }
@@ -20505,11 +20626,11 @@ function UTF8ArrayToString(u8Array, idx, maxBytesToRead) {
         str6 += String.fromCharCode((u0 & 31) << 6 | u1);
         continue;
       }
-      var u2 = u8Array[idx++] & 63;
+      var u22 = u8Array[idx++] & 63;
       if ((u0 & 240) == 224) {
-        u0 = (u0 & 15) << 12 | u1 << 6 | u2;
+        u0 = (u0 & 15) << 12 | u1 << 6 | u22;
       } else {
-        u0 = (u0 & 7) << 18 | u1 << 12 | u2 << 6 | u8Array[idx++] & 63;
+        u0 = (u0 & 7) << 18 | u1 << 12 | u22 << 6 | u8Array[idx++] & 63;
       }
       if (u0 < 65536) {
         str6 += String.fromCharCode(u0);
@@ -20529,34 +20650,34 @@ function stringToUTF8Array(str6, outU8Array, outIdx, maxBytesToWrite) {
     return 0;
   var startIdx = outIdx;
   var endIdx = outIdx + maxBytesToWrite - 1;
-  for (var i = 0; i < str6.length; ++i) {
-    var u = str6.charCodeAt(i);
-    if (u >= 55296 && u <= 57343) {
-      var u1 = str6.charCodeAt(++i);
-      u = 65536 + ((u & 1023) << 10) | u1 & 1023;
+  for (var i4 = 0; i4 < str6.length; ++i4) {
+    var u3 = str6.charCodeAt(i4);
+    if (u3 >= 55296 && u3 <= 57343) {
+      var u1 = str6.charCodeAt(++i4);
+      u3 = 65536 + ((u3 & 1023) << 10) | u1 & 1023;
     }
-    if (u <= 127) {
+    if (u3 <= 127) {
       if (outIdx >= endIdx)
         break;
-      outU8Array[outIdx++] = u;
-    } else if (u <= 2047) {
+      outU8Array[outIdx++] = u3;
+    } else if (u3 <= 2047) {
       if (outIdx + 1 >= endIdx)
         break;
-      outU8Array[outIdx++] = 192 | u >> 6;
-      outU8Array[outIdx++] = 128 | u & 63;
-    } else if (u <= 65535) {
+      outU8Array[outIdx++] = 192 | u3 >> 6;
+      outU8Array[outIdx++] = 128 | u3 & 63;
+    } else if (u3 <= 65535) {
       if (outIdx + 2 >= endIdx)
         break;
-      outU8Array[outIdx++] = 224 | u >> 12;
-      outU8Array[outIdx++] = 128 | u >> 6 & 63;
-      outU8Array[outIdx++] = 128 | u & 63;
+      outU8Array[outIdx++] = 224 | u3 >> 12;
+      outU8Array[outIdx++] = 128 | u3 >> 6 & 63;
+      outU8Array[outIdx++] = 128 | u3 & 63;
     } else {
       if (outIdx + 3 >= endIdx)
         break;
-      outU8Array[outIdx++] = 240 | u >> 18;
-      outU8Array[outIdx++] = 128 | u >> 12 & 63;
-      outU8Array[outIdx++] = 128 | u >> 6 & 63;
-      outU8Array[outIdx++] = 128 | u & 63;
+      outU8Array[outIdx++] = 240 | u3 >> 18;
+      outU8Array[outIdx++] = 128 | u3 >> 12 & 63;
+      outU8Array[outIdx++] = 128 | u3 >> 6 & 63;
+      outU8Array[outIdx++] = 128 | u3 & 63;
     }
   }
   outU8Array[outIdx] = 0;
@@ -20575,13 +20696,13 @@ function UTF16ToString(ptr) {
   if (endPtr - ptr > 32 && UTF16Decoder) {
     return UTF16Decoder.decode(HEAPU8.subarray(ptr, endPtr));
   } else {
-    var i = 0;
+    var i4 = 0;
     var str6 = "";
     while (1) {
-      var codeUnit = HEAP16[ptr + i * 2 >> 1];
+      var codeUnit = HEAP16[ptr + i4 * 2 >> 1];
       if (codeUnit == 0)
         return str6;
-      ++i;
+      ++i4;
       str6 += String.fromCharCode(codeUnit);
     }
   }
@@ -20595,8 +20716,8 @@ function stringToUTF16(str6, outPtr, maxBytesToWrite) {
   maxBytesToWrite -= 2;
   var startPtr = outPtr;
   var numCharsToWrite = maxBytesToWrite < str6.length * 2 ? maxBytesToWrite / 2 : str6.length;
-  for (var i = 0; i < numCharsToWrite; ++i) {
-    var codeUnit = str6.charCodeAt(i);
+  for (var i4 = 0; i4 < numCharsToWrite; ++i4) {
+    var codeUnit = str6.charCodeAt(i4);
     HEAP16[outPtr >> 1] = codeUnit;
     outPtr += 2;
   }
@@ -20607,17 +20728,17 @@ function writeArrayToMemory(array, buffer2) {
   HEAP8.set(array, buffer2);
 }
 function writeAsciiToMemory(str6, buffer2, dontAddNull) {
-  for (var i = 0; i < str6.length; ++i) {
-    HEAP8[buffer2++ >> 0] = str6.charCodeAt(i);
+  for (var i4 = 0; i4 < str6.length; ++i4) {
+    HEAP8[buffer2++ >> 0] = str6.charCodeAt(i4);
   }
   if (!dontAddNull)
     HEAP8[buffer2 >> 0] = 0;
 }
-function alignUp(x, multiple) {
-  if (x % multiple > 0) {
-    x += multiple - x % multiple;
+function alignUp(x2, multiple) {
+  if (x2 % multiple > 0) {
+    x2 += multiple - x2 % multiple;
   }
-  return x;
+  return x2;
 }
 var buffer;
 var HEAP8;
@@ -20787,10 +20908,10 @@ function ___buildEnvironment(environ) {
     throw new Error("Environment size exceeded TOTAL_ENV_SIZE!");
   }
   var ptrSize = 4;
-  for (var i = 0; i < strings.length; i++) {
-    var line = strings[i];
+  for (var i4 = 0; i4 < strings.length; i4++) {
+    var line = strings[i4];
     writeAsciiToMemory(line, poolPtr);
-    HEAP32[envPtr + i * ptrSize >> 2] = poolPtr;
+    HEAP32[envPtr + i4 * ptrSize >> 2] = poolPtr;
     poolPtr += line.length + 1;
   }
   HEAP32[envPtr + strings.length * ptrSize >> 2] = 0;
@@ -20801,7 +20922,7 @@ function __ZSt18uncaught_exceptionv() {
 function ___cxa_free_exception(ptr) {
   try {
     return _free(ptr);
-  } catch (e) {
+  } catch (e5) {
   }
 }
 var EXCEPTIONS = {
@@ -20815,8 +20936,8 @@ var EXCEPTIONS = {
       var ptr = +key2;
       var adj = EXCEPTIONS.infos[ptr].adjusted;
       var len5 = adj.length;
-      for (var i = 0; i < len5; i++) {
-        if (adj[i] === adjusted) {
+      for (var i4 = 0; i4 < len5; i4++) {
+        if (adj[i4] === adjusted) {
           return ptr;
         }
       }
@@ -20871,11 +20992,11 @@ function ___cxa_find_matching_catch() {
     ___cxa_find_matching_catch.buffer = _malloc(4);
   HEAP32[___cxa_find_matching_catch.buffer >> 2] = thrown;
   thrown = ___cxa_find_matching_catch.buffer;
-  for (var i = 0; i < typeArray.length; i++) {
-    if (typeArray[i] && Module["___cxa_can_catch"](typeArray[i], throwntype, thrown)) {
+  for (var i4 = 0; i4 < typeArray.length; i4++) {
+    if (typeArray[i4] && Module["___cxa_can_catch"](typeArray[i4], throwntype, thrown)) {
       thrown = HEAP32[thrown >> 2];
       info.adjusted.push(thrown);
-      return (setTempRet0(typeArray[i]), thrown) | 0;
+      return (setTempRet0(typeArray[i4]), thrown) | 0;
     }
   }
   thrown = HEAP32[thrown >> 2];
@@ -20895,7 +21016,7 @@ function emscripten_realloc_buffer(size) {
     if (newBuffer.byteLength != size)
       return false;
     new Int8Array(newBuffer).set(HEAP8);
-  } catch (e) {
+  } catch (e5) {
     return false;
   }
   buffer = newBuffer;
@@ -20935,8 +21056,8 @@ function ___setErrNo(value) {
 var ASSERTIONS = false;
 function intArrayToString(array) {
   var ret = [];
-  for (var i = 0; i < array.length; i++) {
-    var chr = array[i];
+  for (var i4 = 0; i4 < array.length; i4++) {
+    var chr = array[i4];
     if (chr > 255) {
       if (ASSERTIONS) {
       }
@@ -20951,13 +21072,13 @@ var decodeBase64 = typeof atob === "function" ? atob : function(input) {
   var output = "";
   var chr1, chr2, chr3;
   var enc1, enc2, enc3, enc4;
-  var i = 0;
+  var i4 = 0;
   input = input.replace(/[^A-Za-z0-9\+\/\=]/g, "");
   do {
-    enc1 = keyStr.indexOf(input.charAt(i++));
-    enc2 = keyStr.indexOf(input.charAt(i++));
-    enc3 = keyStr.indexOf(input.charAt(i++));
-    enc4 = keyStr.indexOf(input.charAt(i++));
+    enc1 = keyStr.indexOf(input.charAt(i4++));
+    enc2 = keyStr.indexOf(input.charAt(i4++));
+    enc3 = keyStr.indexOf(input.charAt(i4++));
+    enc4 = keyStr.indexOf(input.charAt(i4++));
     chr1 = enc1 << 2 | enc2 >> 4;
     chr2 = (enc2 & 15) << 4 | enc3 >> 2;
     chr3 = (enc3 & 3) << 6 | enc4;
@@ -20968,27 +21089,27 @@ var decodeBase64 = typeof atob === "function" ? atob : function(input) {
     if (enc4 !== 64) {
       output = output + String.fromCharCode(chr3);
     }
-  } while (i < input.length);
+  } while (i4 < input.length);
   return output;
 };
-function intArrayFromBase64(s) {
+function intArrayFromBase64(s4) {
   if (typeof ENVIRONMENT_IS_NODE === "boolean" && ENVIRONMENT_IS_NODE) {
     var buf;
     try {
-      buf = Buffer.from(s, "base64");
-    } catch (_) {
-      buf = new Buffer(s, "base64");
+      buf = Buffer.from(s4, "base64");
+    } catch (_2) {
+      buf = new Buffer(s4, "base64");
     }
     return new Uint8Array(buf.buffer, buf.byteOffset, buf.byteLength);
   }
   try {
-    var decoded = decodeBase64(s);
+    var decoded = decodeBase64(s4);
     var bytes = new Uint8Array(decoded.length);
-    for (var i = 0; i < decoded.length; ++i) {
-      bytes[i] = decoded.charCodeAt(i);
+    for (var i4 = 0; i4 < decoded.length; ++i4) {
+      bytes[i4] = decoded.charCodeAt(i4);
     }
     return bytes;
-  } catch (_) {
+  } catch (_2) {
     throw new Error("Converting base64 string to bytes failed.");
   }
 }
@@ -21026,436 +21147,436 @@ var asmLibraryArg = {
 };
 var asm = function(global, env, buffer2) {
   "almost asm";
-  var a = new global.Int8Array(buffer2), b = new global.Int16Array(buffer2), c = new global.Int32Array(buffer2), d = new global.Uint8Array(buffer2), e = new global.Uint16Array(buffer2), f = env.p | 0, g = env.q | 0, h = 0, i = 0, j = 0, k = 0, l = 0, m = 0, n = 0, o = 0, p = env.a, q = env.b, r = env.c, s = env.d, t = env.e, u = env.f, v = env.g, w = env.h, x = env.i, y = env.j, z = env.k, A = env.l, B = env.m, C = env.n, D = env.o, E = 71120, F = 5314e3, G = 0;
-  function H(newBuffer) {
-    a = new Int8Array(newBuffer);
-    d = new Uint8Array(newBuffer);
-    b = new Int16Array(newBuffer);
-    e = new Uint16Array(newBuffer);
-    c = new Int32Array(newBuffer);
+  var a3 = new global.Int8Array(buffer2), b3 = new global.Int16Array(buffer2), c4 = new global.Int32Array(buffer2), d3 = new global.Uint8Array(buffer2), e5 = new global.Uint16Array(buffer2), f3 = env.p | 0, g2 = env.q | 0, h3 = 0, i4 = 0, j2 = 0, k2 = 0, l3 = 0, m2 = 0, n5 = 0, o4 = 0, p3 = env.a, q = env.b, r5 = env.c, s4 = env.d, t4 = env.e, u3 = env.f, v2 = env.g, w2 = env.h, x2 = env.i, y3 = env.j, z = env.k, A2 = env.l, B = env.m, C2 = env.n, D = env.o, E2 = 71120, F = 5314e3, G = 0;
+  function H2(newBuffer) {
+    a3 = new Int8Array(newBuffer);
+    d3 = new Uint8Array(newBuffer);
+    b3 = new Int16Array(newBuffer);
+    e5 = new Uint16Array(newBuffer);
+    c4 = new Int32Array(newBuffer);
     buffer2 = newBuffer;
     return true;
   }
-  function O(a2) {
-    a2 = a2 | 0;
-    var b2 = 0;
-    b2 = E;
-    E = E + a2 | 0;
-    E = E + 15 & -16;
-    return b2 | 0;
+  function O(a4) {
+    a4 = a4 | 0;
+    var b4 = 0;
+    b4 = E2;
+    E2 = E2 + a4 | 0;
+    E2 = E2 + 15 & -16;
+    return b4 | 0;
   }
-  function P() {
-    return E | 0;
+  function P2() {
+    return E2 | 0;
   }
-  function Q(a2) {
-    a2 = a2 | 0;
-    E = a2;
+  function Q(a4) {
+    a4 = a4 | 0;
+    E2 = a4;
   }
-  function R(a2, b2) {
-    a2 = a2 | 0;
-    b2 = b2 | 0;
-    E = a2;
-    F = b2;
+  function R2(a4, b4) {
+    a4 = a4 | 0;
+    b4 = b4 | 0;
+    E2 = a4;
+    F = b4;
   }
-  function S(a2, d2) {
-    a2 = a2 | 0;
-    d2 = d2 | 0;
-    var e2 = 0, f2 = 0, g2 = 0, h2 = 0, i2 = 0;
-    g2 = E;
-    E = E + 16 | 0;
-    h2 = g2;
-    c[h2 >> 2] = 0;
-    f2 = Ya(a2, d2, 0, 0, h2) | 0;
-    i2 = f2 + 1 | 0;
-    c[h2 >> 2] = 0;
-    e2 = Ab(i2 << 1) | 0;
-    Ya(a2, d2, e2, i2, h2) | 0;
-    if ((c[h2 >> 2] | 0) > 0) {
-      Bb(e2);
-      e2 = 0;
+  function S3(a4, d4) {
+    a4 = a4 | 0;
+    d4 = d4 | 0;
+    var e6 = 0, f4 = 0, g3 = 0, h4 = 0, i5 = 0;
+    g3 = E2;
+    E2 = E2 + 16 | 0;
+    h4 = g3;
+    c4[h4 >> 2] = 0;
+    f4 = Ya(a4, d4, 0, 0, h4) | 0;
+    i5 = f4 + 1 | 0;
+    c4[h4 >> 2] = 0;
+    e6 = Ab(i5 << 1) | 0;
+    Ya(a4, d4, e6, i5, h4) | 0;
+    if ((c4[h4 >> 2] | 0) > 0) {
+      Bb(e6);
+      e6 = 0;
     } else
-      b[e2 + (f2 << 1) >> 1] = 0;
-    E = g2;
-    return e2 | 0;
+      b3[e6 + (f4 << 1) >> 1] = 0;
+    E2 = g3;
+    return e6 | 0;
   }
-  function T(a2, b2) {
-    a2 = a2 | 0;
-    b2 = b2 | 0;
-    var d2 = 0, e2 = 0, f2 = 0;
-    f2 = E;
-    E = E + 16 | 0;
-    e2 = f2;
-    d2 = c[17592] | 0;
-    if (!d2) {
-      d2 = Z() | 0;
-      c[17592] = d2;
+  function T2(a4, b4) {
+    a4 = a4 | 0;
+    b4 = b4 | 0;
+    var d4 = 0, e6 = 0, f4 = 0;
+    f4 = E2;
+    E2 = E2 + 16 | 0;
+    e6 = f4;
+    d4 = c4[17592] | 0;
+    if (!d4) {
+      d4 = Z2() | 0;
+      c4[17592] = d4;
     }
-    c[e2 >> 2] = 0;
-    ea(d2, a2, b2, -2, e2);
-    if ((c[e2 >> 2] | 0) > 0)
-      d2 = 0;
+    c4[e6 >> 2] = 0;
+    ea(d4, a4, b4, -2, e6);
+    if ((c4[e6 >> 2] | 0) > 0)
+      d4 = 0;
     else
-      d2 = Ea(c[17592] | 0) | 0;
-    E = f2;
-    return d2 | 0;
+      d4 = Ea(c4[17592] | 0) | 0;
+    E2 = f4;
+    return d4 | 0;
   }
-  function U(a2) {
-    a2 = a2 | 0;
-    var b2 = 0, d2 = 0, e2 = 0;
-    e2 = E;
-    E = E + 16 | 0;
-    d2 = e2 + 4 | 0;
-    b2 = e2;
-    c[d2 >> 2] = 0;
-    c[b2 >> 2] = 0;
-    Fa(c[17592] | 0, a2, b2, d2);
-    E = e2;
-    return ((c[d2 >> 2] | 0) > 0 ? 0 : c[b2 >> 2] | 0) | 0;
+  function U(a4) {
+    a4 = a4 | 0;
+    var b4 = 0, d4 = 0, e6 = 0;
+    e6 = E2;
+    E2 = E2 + 16 | 0;
+    d4 = e6 + 4 | 0;
+    b4 = e6;
+    c4[d4 >> 2] = 0;
+    c4[b4 >> 2] = 0;
+    Fa(c4[17592] | 0, a4, b4, d4);
+    E2 = e6;
+    return ((c4[d4 >> 2] | 0) > 0 ? 0 : c4[b4 >> 2] | 0) | 0;
   }
-  function V(a2, b2, d2) {
-    a2 = a2 | 0;
-    b2 = b2 | 0;
-    d2 = d2 | 0;
-    return (Va(c[17593] | 0, a2, b2, d2) | 0) == 1 | 0;
+  function V2(a4, b4, d4) {
+    a4 = a4 | 0;
+    b4 = b4 | 0;
+    d4 = d4 | 0;
+    return (Va(c4[17593] | 0, a4, b4, d4) | 0) == 1 | 0;
   }
-  function W(a2, b2) {
-    a2 = a2 | 0;
-    b2 = b2 | 0;
-    var d2 = 0, e2 = 0, f2 = 0;
-    f2 = E;
-    E = E + 16 | 0;
-    e2 = f2;
-    c[e2 >> 2] = 0;
-    d2 = c[17593] | 0;
-    if (!d2) {
-      d2 = Z() | 0;
-      c[17593] = d2;
+  function W(a4, b4) {
+    a4 = a4 | 0;
+    b4 = b4 | 0;
+    var d4 = 0, e6 = 0, f4 = 0;
+    f4 = E2;
+    E2 = E2 + 16 | 0;
+    e6 = f4;
+    c4[e6 >> 2] = 0;
+    d4 = c4[17593] | 0;
+    if (!d4) {
+      d4 = Z2() | 0;
+      c4[17593] = d4;
     }
-    Ma(c[17592] | 0, a2, b2, d2, e2);
-    if ((c[e2 >> 2] | 0) > 0)
-      d2 = 0;
+    Ma(c4[17592] | 0, a4, b4, d4, e6);
+    if ((c4[e6 >> 2] | 0) > 0)
+      d4 = 0;
     else {
-      c[e2 >> 2] = 0;
-      d2 = Qa(d2, e2) | 0;
-      d2 = (c[e2 >> 2] | 0) > 0 ? 0 : d2;
+      c4[e6 >> 2] = 0;
+      d4 = Qa(d4, e6) | 0;
+      d4 = (c4[e6 >> 2] | 0) > 0 ? 0 : d4;
     }
-    E = f2;
-    return d2 | 0;
+    E2 = f4;
+    return d4 | 0;
   }
-  function X(a2, d2, e2) {
-    a2 = a2 | 0;
-    d2 = d2 | 0;
-    e2 = e2 | 0;
-    var f2 = 0, g2 = 0, h2 = 0;
-    g2 = E;
-    E = E + 16 | 0;
-    h2 = g2;
-    c[h2 >> 2] = 0;
-    f2 = Ab((e2 << 1) + 2 | 0) | 0;
-    a2 = Ha(a2 + (d2 << 1) | 0, e2, f2, e2, h2) | 0;
-    if ((c[h2 >> 2] | 0) > 0)
-      f2 = 0;
+  function X(a4, d4, e6) {
+    a4 = a4 | 0;
+    d4 = d4 | 0;
+    e6 = e6 | 0;
+    var f4 = 0, g3 = 0, h4 = 0;
+    g3 = E2;
+    E2 = E2 + 16 | 0;
+    h4 = g3;
+    c4[h4 >> 2] = 0;
+    f4 = Ab((e6 << 1) + 2 | 0) | 0;
+    a4 = Ha(a4 + (d4 << 1) | 0, e6, f4, e6, h4) | 0;
+    if ((c4[h4 >> 2] | 0) > 0)
+      f4 = 0;
     else
-      b[f2 + (a2 << 1) >> 1] = 0;
-    E = g2;
-    return f2 | 0;
+      b3[f4 + (a4 << 1) >> 1] = 0;
+    E2 = g3;
+    return f4 | 0;
   }
-  function Y(a2, d2) {
-    a2 = a2 | 0;
-    d2 = d2 | 0;
-    var e2 = 0, f2 = 0, g2 = 0, h2 = 0, i2 = 0;
-    i2 = E;
-    E = E + 16 | 0;
-    h2 = i2;
-    c[h2 >> 2] = 0;
-    f2 = c[17593] | 0;
-    if (!f2) {
-      f2 = Z() | 0;
-      c[17593] = f2;
+  function Y(a4, d4) {
+    a4 = a4 | 0;
+    d4 = d4 | 0;
+    var e6 = 0, f4 = 0, g3 = 0, h4 = 0, i5 = 0;
+    i5 = E2;
+    E2 = E2 + 16 | 0;
+    h4 = i5;
+    c4[h4 >> 2] = 0;
+    f4 = c4[17593] | 0;
+    if (!f4) {
+      f4 = Z2() | 0;
+      c4[17593] = f4;
     }
-    Ma(c[17592] | 0, a2, d2, f2, h2);
-    if ((c[h2 >> 2] | 0) <= 0 ? (g2 = Da(f2) | 0, d2 = g2 + 1 | 0, e2 = Ab(d2 << 1) | 0, Ka(c[17593] | 0, e2, d2, 10, h2) | 0, (c[h2 >> 2] | 0) <= 0) : 0)
-      b[e2 + (g2 << 1) >> 1] = 0;
+    Ma(c4[17592] | 0, a4, d4, f4, h4);
+    if ((c4[h4 >> 2] | 0) <= 0 ? (g3 = Da(f4) | 0, d4 = g3 + 1 | 0, e6 = Ab(d4 << 1) | 0, Ka(c4[17593] | 0, e6, d4, 10, h4) | 0, (c4[h4 >> 2] | 0) <= 0) : 0)
+      b3[e6 + (g3 << 1) >> 1] = 0;
     else
-      e2 = 0;
-    E = i2;
-    return e2 | 0;
+      e6 = 0;
+    E2 = i5;
+    return e6 | 0;
   }
-  function Z() {
-    var a2 = 0, b2 = 0;
-    b2 = E;
-    E = E + 16 | 0;
-    a2 = b2;
-    c[a2 >> 2] = 0;
-    a2 = _(a2) | 0;
-    E = b2;
-    return a2 | 0;
+  function Z2() {
+    var a4 = 0, b4 = 0;
+    b4 = E2;
+    E2 = E2 + 16 | 0;
+    a4 = b4;
+    c4[a4 >> 2] = 0;
+    a4 = _2(a4) | 0;
+    E2 = b4;
+    return a4 | 0;
   }
-  function _(b2) {
-    b2 = b2 | 0;
-    var d2 = 0;
-    if (!b2) {
-      d2 = 0;
-      return d2 | 0;
+  function _2(b4) {
+    b4 = b4 | 0;
+    var d4 = 0;
+    if (!b4) {
+      d4 = 0;
+      return d4 | 0;
     }
-    if (($(c[b2 >> 2] | 0) | 0) << 24 >> 24) {
-      d2 = 0;
-      return d2 | 0;
+    if (($2(c4[b4 >> 2] | 0) | 0) << 24 >> 24) {
+      d4 = 0;
+      return d4 | 0;
     }
-    d2 = lb(360) | 0;
-    if (!d2) {
-      c[b2 >> 2] = 7;
-      d2 = 0;
-      return d2 | 0;
+    d4 = lb(360) | 0;
+    if (!d4) {
+      c4[b4 >> 2] = 7;
+      d4 = 0;
+      return d4 | 0;
     }
-    fc(d2 | 0, 0, 360) | 0;
-    a[d2 + 68 >> 0] = 1;
-    a[d2 + 69 >> 0] = 1;
-    if ((ba(c[b2 >> 2] | 0) | 0) << 24 >> 24)
-      return d2 | 0;
-    ca(d2);
-    d2 = 0;
-    return d2 | 0;
+    fc(d4 | 0, 0, 360) | 0;
+    a3[d4 + 68 >> 0] = 1;
+    a3[d4 + 69 >> 0] = 1;
+    if ((ba(c4[b4 >> 2] | 0) | 0) << 24 >> 24)
+      return d4 | 0;
+    ca(d4);
+    d4 = 0;
+    return d4 | 0;
   }
-  function $(a2) {
-    a2 = a2 | 0;
-    return (a2 | 0) > 0 | 0;
+  function $2(a4) {
+    a4 = a4 | 0;
+    return (a4 | 0) > 0 | 0;
   }
-  function aa(a2, b2, d2, e2) {
-    a2 = a2 | 0;
-    b2 = b2 | 0;
-    d2 = d2 | 0;
-    e2 = e2 | 0;
-    var f2 = 0, g2 = 0;
-    g2 = c[a2 >> 2] | 0;
-    if (!g2)
-      if (d2 << 24 >> 24 != 0 ? (g2 = lb(e2) | 0, c[a2 >> 2] = g2, (g2 | 0) != 0) : 0) {
-        c[b2 >> 2] = e2;
-        a2 = 1;
+  function aa(a4, b4, d4, e6) {
+    a4 = a4 | 0;
+    b4 = b4 | 0;
+    d4 = d4 | 0;
+    e6 = e6 | 0;
+    var f4 = 0, g3 = 0;
+    g3 = c4[a4 >> 2] | 0;
+    if (!g3)
+      if (d4 << 24 >> 24 != 0 ? (g3 = lb(e6) | 0, c4[a4 >> 2] = g3, (g3 | 0) != 0) : 0) {
+        c4[b4 >> 2] = e6;
+        a4 = 1;
       } else
-        a2 = 0;
-    else if ((c[b2 >> 2] | 0) < (e2 | 0))
-      if (d2 << 24 >> 24 != 0 ? (f2 = mb(g2, e2) | 0, (f2 | 0) != 0) : 0) {
-        c[a2 >> 2] = f2;
-        c[b2 >> 2] = e2;
-        a2 = 1;
+        a4 = 0;
+    else if ((c4[b4 >> 2] | 0) < (e6 | 0))
+      if (d4 << 24 >> 24 != 0 ? (f4 = mb(g3, e6) | 0, (f4 | 0) != 0) : 0) {
+        c4[a4 >> 2] = f4;
+        c4[b4 >> 2] = e6;
+        a4 = 1;
       } else
-        a2 = 0;
+        a4 = 0;
     else
-      a2 = 1;
-    return a2 | 0;
+      a4 = 1;
+    return a4 | 0;
   }
-  function ba(a2) {
-    a2 = a2 | 0;
-    return (a2 | 0) < 1 | 0;
+  function ba(a4) {
+    a4 = a4 | 0;
+    return (a4 | 0) < 1 | 0;
   }
-  function ca(a2) {
-    a2 = a2 | 0;
-    var b2 = 0;
-    if (!a2)
+  function ca(a4) {
+    a4 = a4 | 0;
+    var b4 = 0;
+    if (!a4)
       return;
-    c[a2 >> 2] = 0;
-    b2 = c[a2 + 44 >> 2] | 0;
-    if (b2 | 0)
-      nb(b2);
-    b2 = c[a2 + 48 >> 2] | 0;
-    if (b2 | 0)
-      nb(b2);
-    b2 = c[a2 + 52 >> 2] | 0;
-    if (b2 | 0)
-      nb(b2);
-    b2 = c[a2 + 56 >> 2] | 0;
-    if (b2 | 0)
-      nb(b2);
-    b2 = c[a2 + 60 >> 2] | 0;
-    if (b2 | 0)
-      nb(b2);
-    b2 = c[a2 + 64 >> 2] | 0;
-    if (b2 | 0)
-      nb(b2);
-    b2 = c[a2 + 344 >> 2] | 0;
-    if (b2 | 0)
-      nb(b2);
-    nb(a2);
+    c4[a4 >> 2] = 0;
+    b4 = c4[a4 + 44 >> 2] | 0;
+    if (b4 | 0)
+      nb(b4);
+    b4 = c4[a4 + 48 >> 2] | 0;
+    if (b4 | 0)
+      nb(b4);
+    b4 = c4[a4 + 52 >> 2] | 0;
+    if (b4 | 0)
+      nb(b4);
+    b4 = c4[a4 + 56 >> 2] | 0;
+    if (b4 | 0)
+      nb(b4);
+    b4 = c4[a4 + 60 >> 2] | 0;
+    if (b4 | 0)
+      nb(b4);
+    b4 = c4[a4 + 64 >> 2] | 0;
+    if (b4 | 0)
+      nb(b4);
+    b4 = c4[a4 + 344 >> 2] | 0;
+    if (b4 | 0)
+      nb(b4);
+    nb(a4);
     return;
   }
-  function da(a2, b2, d2) {
-    a2 = a2 | 0;
-    b2 = b2 | 0;
-    d2 = d2 | 0;
-    var e2 = 0, f2 = 0;
-    e2 = 0;
+  function da(a4, b4, d4) {
+    a4 = a4 | 0;
+    b4 = b4 | 0;
+    d4 = d4 | 0;
+    var e6 = 0, f4 = 0;
+    e6 = 0;
     while (1) {
-      if ((e2 | 0) >= (a2 | 0)) {
-        f2 = 5;
+      if ((e6 | 0) >= (a4 | 0)) {
+        f4 = 5;
         break;
       }
-      if ((c[b2 + (e2 << 3) >> 2] | 0) > (d2 | 0))
+      if ((c4[b4 + (e6 << 3) >> 2] | 0) > (d4 | 0))
         break;
-      e2 = e2 + 1 | 0;
+      e6 = e6 + 1 | 0;
     }
-    if ((f2 | 0) == 5)
-      e2 = a2 + -1 | 0;
-    return c[b2 + (e2 << 3) + 4 >> 2] & 255 | 0;
+    if ((f4 | 0) == 5)
+      e6 = a4 + -1 | 0;
+    return c4[b4 + (e6 << 3) + 4 >> 2] & 255 | 0;
   }
-  function ea(b2, e2, f2, g2, h2) {
-    b2 = b2 | 0;
-    e2 = e2 | 0;
-    f2 = f2 | 0;
-    g2 = g2 | 0;
-    h2 = h2 | 0;
-    var i2 = 0, j2 = 0, k2 = 0, l2 = 0, m2 = 0, n2 = 0, o2 = 0, p2 = 0, q2 = 0, r2 = 0, s2 = 0, t2 = 0, u2 = 0, v2 = 0, w2 = 0, x2 = 0, y2 = 0, z2 = 0;
-    if (!h2)
+  function ea(b4, e6, f4, g3, h4) {
+    b4 = b4 | 0;
+    e6 = e6 | 0;
+    f4 = f4 | 0;
+    g3 = g3 | 0;
+    h4 = h4 | 0;
+    var i5 = 0, j3 = 0, k3 = 0, l4 = 0, m3 = 0, n6 = 0, o5 = 0, p4 = 0, q2 = 0, r6 = 0, s5 = 0, t5 = 0, u4 = 0, v3 = 0, w3 = 0, x3 = 0, y4 = 0, z2 = 0;
+    if (!h4)
       return;
-    if (($(c[h2 >> 2] | 0) | 0) << 24 >> 24)
+    if (($2(c4[h4 >> 2] | 0) | 0) << 24 >> 24)
       return;
-    if ((b2 | 0) == 0 | (e2 | 0) == 0 | (f2 | 0) < -1 | g2 + -126 << 24 >> 24 << 24 >> 24 > -1) {
-      c[h2 >> 2] = 1;
-      return;
-    }
-    if ((f2 | 0) == -1)
-      f2 = ob(e2) | 0;
-    u2 = b2 + 84 | 0;
-    if ((c[u2 >> 2] | 0) == 3) {
-      fa(b2, e2, f2, g2, h2);
+    if ((b4 | 0) == 0 | (e6 | 0) == 0 | (f4 | 0) < -1 | g3 + -126 << 24 >> 24 << 24 >> 24 > -1) {
+      c4[h4 >> 2] = 1;
       return;
     }
-    c[b2 >> 2] = 0;
-    c[b2 + 4 >> 2] = e2;
-    z2 = b2 + 16 | 0;
-    c[z2 >> 2] = f2;
-    c[b2 + 8 >> 2] = f2;
-    l2 = b2 + 12 | 0;
-    c[l2 >> 2] = f2;
-    s2 = b2 + 93 | 0;
-    a[s2 >> 0] = g2;
-    i2 = g2 & 1;
-    j2 = i2 & 255;
-    m2 = b2 + 116 | 0;
-    c[m2 >> 2] = j2;
-    x2 = b2 + 132 | 0;
-    c[x2 >> 2] = 1;
-    k2 = b2 + 72 | 0;
-    c[k2 >> 2] = 0;
-    n2 = b2 + 76 | 0;
-    c[n2 >> 2] = 0;
-    c[b2 + 224 >> 2] = 0;
-    y2 = b2 + 332 | 0;
-    c[y2 >> 2] = 0;
-    c[b2 + 336 >> 2] = 0;
-    e2 = (g2 & 255) > 253;
-    t2 = b2 + 94 | 0;
-    a[t2 >> 0] = e2 & 1;
-    if (!f2) {
-      if (e2) {
-        a[s2 >> 0] = i2;
-        a[t2 >> 0] = 0;
+    if ((f4 | 0) == -1)
+      f4 = ob(e6) | 0;
+    u4 = b4 + 84 | 0;
+    if ((c4[u4 >> 2] | 0) == 3) {
+      fa(b4, e6, f4, g3, h4);
+      return;
+    }
+    c4[b4 >> 2] = 0;
+    c4[b4 + 4 >> 2] = e6;
+    z2 = b4 + 16 | 0;
+    c4[z2 >> 2] = f4;
+    c4[b4 + 8 >> 2] = f4;
+    l4 = b4 + 12 | 0;
+    c4[l4 >> 2] = f4;
+    s5 = b4 + 93 | 0;
+    a3[s5 >> 0] = g3;
+    i5 = g3 & 1;
+    j3 = i5 & 255;
+    m3 = b4 + 116 | 0;
+    c4[m3 >> 2] = j3;
+    x3 = b4 + 132 | 0;
+    c4[x3 >> 2] = 1;
+    k3 = b4 + 72 | 0;
+    c4[k3 >> 2] = 0;
+    n6 = b4 + 76 | 0;
+    c4[n6 >> 2] = 0;
+    c4[b4 + 224 >> 2] = 0;
+    y4 = b4 + 332 | 0;
+    c4[y4 >> 2] = 0;
+    c4[b4 + 336 >> 2] = 0;
+    e6 = (g3 & 255) > 253;
+    t5 = b4 + 94 | 0;
+    a3[t5 >> 0] = e6 & 1;
+    if (!f4) {
+      if (e6) {
+        a3[s5 >> 0] = i5;
+        a3[t5 >> 0] = 0;
       }
-      c[b2 + 120 >> 2] = c[69880 + (j2 << 2) >> 2];
-      c[b2 + 220 >> 2] = 0;
-      c[x2 >> 2] = 0;
-      ga(b2);
+      c4[b4 + 120 >> 2] = c4[69880 + (j3 << 2) >> 2];
+      c4[b4 + 220 >> 2] = 0;
+      c4[x3 >> 2] = 0;
+      ga(b4);
       return;
     }
-    c[b2 + 220 >> 2] = -1;
-    e2 = c[b2 + 56 >> 2] | 0;
-    w2 = b2 + 136 | 0;
-    c[w2 >> 2] = (e2 | 0) == 0 ? b2 + 140 | 0 : e2;
-    e2 = b2 + 44 | 0;
-    i2 = b2 + 68 | 0;
-    if (!((aa(e2, b2 + 20 | 0, a[i2 >> 0] | 0, f2) | 0) << 24 >> 24)) {
-      c[h2 >> 2] = 7;
+    c4[b4 + 220 >> 2] = -1;
+    e6 = c4[b4 + 56 >> 2] | 0;
+    w3 = b4 + 136 | 0;
+    c4[w3 >> 2] = (e6 | 0) == 0 ? b4 + 140 | 0 : e6;
+    e6 = b4 + 44 | 0;
+    i5 = b4 + 68 | 0;
+    if (!((aa(e6, b4 + 20 | 0, a3[i5 >> 0] | 0, f4) | 0) << 24 >> 24)) {
+      c4[h4 >> 2] = 7;
       return;
     }
-    c[k2 >> 2] = c[e2 >> 2];
-    if (!((ha(b2) | 0) << 24 >> 24)) {
-      c[h2 >> 2] = 7;
+    c4[k3 >> 2] = c4[e6 >> 2];
+    if (!((ha(b4) | 0) << 24 >> 24)) {
+      c4[h4 >> 2] = 7;
       return;
     }
-    v2 = c[k2 >> 2] | 0;
-    q2 = c[l2 >> 2] | 0;
-    k2 = b2 + 128 | 0;
-    c[k2 >> 2] = q2;
-    f2 = b2 + 48 | 0;
-    if (!((aa(f2, b2 + 24 | 0, a[i2 >> 0] | 0, q2) | 0) << 24 >> 24)) {
-      c[h2 >> 2] = 7;
+    v3 = c4[k3 >> 2] | 0;
+    q2 = c4[l4 >> 2] | 0;
+    k3 = b4 + 128 | 0;
+    c4[k3 >> 2] = q2;
+    f4 = b4 + 48 | 0;
+    if (!((aa(f4, b4 + 24 | 0, a3[i5 >> 0] | 0, q2) | 0) << 24 >> 24)) {
+      c4[h4 >> 2] = 7;
       return;
     }
-    c[n2 >> 2] = c[f2 >> 2];
-    j2 = ia(b2, h2) | 0;
-    if (($(c[h2 >> 2] | 0) | 0) << 24 >> 24)
+    c4[n6 >> 2] = c4[f4 >> 2];
+    j3 = ia(b4, h4) | 0;
+    if (($2(c4[h4 >> 2] | 0) | 0) << 24 >> 24)
       return;
-    g2 = b2 + 240 | 0;
-    f2 = c[g2 >> 2] | 0;
+    g3 = b4 + 240 | 0;
+    f4 = c4[g3 >> 2] | 0;
     do
-      if ((f2 | 0) < 6)
-        c[b2 + 244 >> 2] = b2 + 248;
+      if ((f4 | 0) < 6)
+        c4[b4 + 244 >> 2] = b4 + 248;
       else {
-        f2 = f2 << 4;
-        e2 = b2 + 40 | 0;
-        i2 = b2 + 64 | 0;
-        if ((f2 | 0) <= (c[e2 >> 2] | 0)) {
-          c[b2 + 244 >> 2] = c[i2 >> 2];
+        f4 = f4 << 4;
+        e6 = b4 + 40 | 0;
+        i5 = b4 + 64 | 0;
+        if ((f4 | 0) <= (c4[e6 >> 2] | 0)) {
+          c4[b4 + 244 >> 2] = c4[i5 >> 2];
           break;
         }
-        if ((aa(i2, e2, 1, f2) | 0) << 24 >> 24) {
-          c[b2 + 244 >> 2] = c[i2 >> 2];
+        if ((aa(i5, e6, 1, f4) | 0) << 24 >> 24) {
+          c4[b4 + 244 >> 2] = c4[i5 >> 2];
           break;
         }
-        c[h2 >> 2] = 7;
+        c4[h4 >> 2] = 7;
         return;
       }
     while (0);
-    c[g2 >> 2] = -1;
-    c[m2 >> 2] = j2;
+    c4[g3 >> 2] = -1;
+    c4[m3 >> 2] = j3;
     a:
       do
-        switch (j2 | 0) {
+        switch (j3 | 0) {
           case 0: {
-            c[k2 >> 2] = 0;
+            c4[k3 >> 2] = 0;
             break;
           }
           case 1: {
-            c[k2 >> 2] = 0;
+            c4[k3 >> 2] = 0;
             break;
           }
           default: {
             b:
               do
-                switch (c[u2 >> 2] | 0) {
+                switch (c4[u4 >> 2] | 0) {
                   case 0: {
-                    c[b2 + 112 >> 2] = 69888;
+                    c4[b4 + 112 >> 2] = 69888;
                     break;
                   }
                   case 1: {
-                    c[b2 + 112 >> 2] = 69904;
+                    c4[b4 + 112 >> 2] = 69904;
                     break;
                   }
                   case 2: {
-                    c[b2 + 112 >> 2] = 69920;
+                    c4[b4 + 112 >> 2] = 69920;
                     break;
                   }
                   case 4: {
-                    c[b2 + 112 >> 2] = 69936;
+                    c4[b4 + 112 >> 2] = 69936;
                     break;
                   }
                   case 5: {
-                    f2 = b2 + 112 | 0;
-                    if (!(c[b2 + 88 >> 2] & 1)) {
-                      c[f2 >> 2] = 69968;
+                    f4 = b4 + 112 | 0;
+                    if (!(c4[b4 + 88 >> 2] & 1)) {
+                      c4[f4 >> 2] = 69968;
                       break b;
                     } else {
-                      c[f2 >> 2] = 69952;
+                      c4[f4 >> 2] = 69952;
                       break b;
                     }
                   }
                   case 6: {
-                    f2 = b2 + 112 | 0;
-                    if (!(c[b2 + 88 >> 2] & 1)) {
-                      c[f2 >> 2] = 7e4;
+                    f4 = b4 + 112 | 0;
+                    if (!(c4[b4 + 88 >> 2] & 1)) {
+                      c4[f4 >> 2] = 7e4;
                       break b;
                     } else {
-                      c[f2 >> 2] = 69984;
+                      c4[f4 >> 2] = 69984;
                       break b;
                     }
                   }
@@ -21463,521 +21584,521 @@ var asm = function(global, env, buffer2) {
                   }
                 }
               while (0);
-            j2 = c[x2 >> 2] | 0;
-            if ((j2 | 0) < 2 ? (c[b2 + 120 >> 2] | 0) >= 0 : 0) {
+            j3 = c4[x3 >> 2] | 0;
+            if ((j3 | 0) < 2 ? (c4[b4 + 120 >> 2] | 0) >= 0 : 0) {
               do
-                if (a[t2 >> 0] | 0) {
-                  e2 = c[w2 >> 2] | 0;
-                  i2 = c[e2 >> 2] | 0;
-                  if ((i2 | 0) > 0)
-                    f2 = a[s2 >> 0] | 0;
+                if (a3[t5 >> 0] | 0) {
+                  e6 = c4[w3 >> 2] | 0;
+                  i5 = c4[e6 >> 2] | 0;
+                  if ((i5 | 0) > 0)
+                    f4 = a3[s5 >> 0] | 0;
                   else
-                    f2 = da(j2, e2, 0) | 0;
-                  f2 = f2 & 1;
-                  if ((q2 | 0) > (i2 | 0)) {
-                    e2 = da(j2, e2, q2 + -1 | 0) | 0;
+                    f4 = da(j3, e6, 0) | 0;
+                  f4 = f4 & 1;
+                  if ((q2 | 0) > (i5 | 0)) {
+                    e6 = da(j3, e6, q2 + -1 | 0) | 0;
                     break;
                   } else {
-                    e2 = a[s2 >> 0] | 0;
+                    e6 = a3[s5 >> 0] | 0;
                     break;
                   }
                 } else {
-                  f2 = a[s2 >> 0] | 0;
-                  e2 = f2;
-                  f2 = f2 & 1;
+                  f4 = a3[s5 >> 0] | 0;
+                  e6 = f4;
+                  f4 = f4 & 1;
                 }
               while (0);
-              ja(b2, 0, q2, f2, e2 & 1);
+              ja(b4, 0, q2, f4, e6 & 1);
             } else {
-              o2 = c[n2 >> 2] | 0;
-              if ((a[t2 >> 0] | 0) != 0 ? (p2 = c[w2 >> 2] | 0, (c[p2 >> 2] | 0) <= 0) : 0)
-                f2 = da(j2, p2, 0) | 0;
+              o5 = c4[n6 >> 2] | 0;
+              if ((a3[t5 >> 0] | 0) != 0 ? (p4 = c4[w3 >> 2] | 0, (c4[p4 >> 2] | 0) <= 0) : 0)
+                f4 = da(j3, p4, 0) | 0;
               else
-                f2 = a[s2 >> 0] | 0;
-              p2 = a[o2 >> 0] | 0;
-              n2 = q2 + -1 | 0;
-              l2 = p2;
-              m2 = 0;
-              f2 = ((f2 & 255) < (p2 & 255) ? p2 : f2) & 1;
+                f4 = a3[s5 >> 0] | 0;
+              p4 = a3[o5 >> 0] | 0;
+              n6 = q2 + -1 | 0;
+              l4 = p4;
+              m3 = 0;
+              f4 = ((f4 & 255) < (p4 & 255) ? p4 : f4) & 1;
               while (1) {
-                if ((m2 | 0) > 0 ? (a[v2 + (m2 + -1) >> 0] | 0) == 7 : 0) {
+                if ((m3 | 0) > 0 ? (a3[v3 + (m3 + -1) >> 0] | 0) == 7 : 0) {
                   do
-                    if (!(a[t2 >> 0] | 0))
-                      r2 = 61;
+                    if (!(a3[t5 >> 0] | 0))
+                      r6 = 61;
                     else {
-                      f2 = c[w2 >> 2] | 0;
-                      if ((m2 | 0) < (c[f2 >> 2] | 0)) {
-                        r2 = 61;
+                      f4 = c4[w3 >> 2] | 0;
+                      if ((m3 | 0) < (c4[f4 >> 2] | 0)) {
+                        r6 = 61;
                         break;
                       }
-                      f2 = da(c[x2 >> 2] | 0, f2, m2) | 0;
+                      f4 = da(c4[x3 >> 2] | 0, f4, m3) | 0;
                     }
                   while (0);
-                  if ((r2 | 0) == 61) {
-                    r2 = 0;
-                    f2 = a[s2 >> 0] | 0;
+                  if ((r6 | 0) == 61) {
+                    r6 = 0;
+                    f4 = a3[s5 >> 0] | 0;
                   }
-                  f2 = f2 & 1;
+                  f4 = f4 & 1;
                 }
-                g2 = m2;
+                g3 = m3;
                 while (1) {
-                  k2 = g2 + 1 | 0;
-                  if ((k2 | 0) >= (q2 | 0)) {
-                    r2 = 69;
+                  k3 = g3 + 1 | 0;
+                  if ((k3 | 0) >= (q2 | 0)) {
+                    r6 = 69;
                     break;
                   }
-                  e2 = a[o2 + k2 >> 0] | 0;
-                  if (e2 << 24 >> 24 != l2 << 24 >> 24 ? (1 << d[v2 + k2 >> 0] & 382976 | 0) == 0 : 0) {
-                    j2 = 1;
+                  e6 = a3[o5 + k3 >> 0] | 0;
+                  if (e6 << 24 >> 24 != l4 << 24 >> 24 ? (1 << d3[v3 + k3 >> 0] & 382976 | 0) == 0 : 0) {
+                    j3 = 1;
                     break;
                   }
-                  g2 = k2;
+                  g3 = k3;
                 }
                 c:
                   do
-                    if ((r2 | 0) == 69) {
-                      r2 = 0;
+                    if ((r6 | 0) == 69) {
+                      r6 = 0;
                       do
-                        if (a[t2 >> 0] | 0) {
-                          e2 = c[w2 >> 2] | 0;
-                          if ((q2 | 0) <= (c[e2 >> 2] | 0))
+                        if (a3[t5 >> 0] | 0) {
+                          e6 = c4[w3 >> 2] | 0;
+                          if ((q2 | 0) <= (c4[e6 >> 2] | 0))
                             break;
-                          e2 = da(c[x2 >> 2] | 0, e2, n2) | 0;
-                          j2 = 0;
+                          e6 = da(c4[x3 >> 2] | 0, e6, n6) | 0;
+                          j3 = 0;
                           break c;
                         }
                       while (0);
-                      e2 = a[s2 >> 0] | 0;
-                      j2 = 0;
+                      e6 = a3[s5 >> 0] | 0;
+                      j3 = 0;
                     }
                   while (0);
-                p2 = l2 & 255;
-                i2 = e2 & 255;
-                i2 = ((p2 & 127) >>> 0 < (i2 & 127) >>> 0 ? i2 : p2) & 1;
-                if (!(p2 & 128))
-                  ja(b2, m2, k2, f2, i2);
+                p4 = l4 & 255;
+                i5 = e6 & 255;
+                i5 = ((p4 & 127) >>> 0 < (i5 & 127) >>> 0 ? i5 : p4) & 1;
+                if (!(p4 & 128))
+                  ja(b4, m3, k3, f4, i5);
                 else {
-                  f2 = m2;
+                  f4 = m3;
                   while (1) {
-                    p2 = o2 + f2 | 0;
-                    a[p2 >> 0] = a[p2 >> 0] & 127;
-                    if ((f2 | 0) < (g2 | 0))
-                      f2 = f2 + 1 | 0;
+                    p4 = o5 + f4 | 0;
+                    a3[p4 >> 0] = a3[p4 >> 0] & 127;
+                    if ((f4 | 0) < (g3 | 0))
+                      f4 = f4 + 1 | 0;
                     else
                       break;
                   }
                 }
-                if (j2) {
-                  l2 = e2;
-                  m2 = k2;
-                  f2 = i2;
+                if (j3) {
+                  l4 = e6;
+                  m3 = k3;
+                  f4 = i5;
                 } else
                   break;
               }
             }
-            f2 = c[b2 + 340 >> 2] | 0;
-            if (!(($(f2) | 0) << 24 >> 24)) {
-              ka(b2);
+            f4 = c4[b4 + 340 >> 2] | 0;
+            if (!(($2(f4) | 0) << 24 >> 24)) {
+              ka(b4);
               break a;
             }
-            c[h2 >> 2] = f2;
+            c4[h4 >> 2] = f4;
             return;
           }
         }
       while (0);
-    k2 = b2 + 88 | 0;
+    k3 = b4 + 88 | 0;
     d:
       do
-        if ((a[t2 >> 0] | 0 ? c[k2 >> 2] & 1 | 0 : 0) ? ((c[u2 >> 2] | 0) + -5 | 0) >>> 0 < 2 : 0) {
-          g2 = 0;
+        if ((a3[t5 >> 0] | 0 ? c4[k3 >> 2] & 1 | 0 : 0) ? ((c4[u4 >> 2] | 0) + -5 | 0) >>> 0 < 2 : 0) {
+          g3 = 0;
           while (1) {
-            if ((g2 | 0) >= (c[x2 >> 2] | 0))
+            if ((g3 | 0) >= (c4[x3 >> 2] | 0))
               break d;
-            e2 = c[w2 >> 2] | 0;
-            f2 = (c[e2 + (g2 << 3) >> 2] | 0) + -1 | 0;
+            e6 = c4[w3 >> 2] | 0;
+            f4 = (c4[e6 + (g3 << 3) >> 2] | 0) + -1 | 0;
             e:
               do
-                if (c[e2 + (g2 << 3) + 4 >> 2] & 255 | 0) {
-                  if (!g2)
-                    i2 = 0;
+                if (c4[e6 + (g3 << 3) + 4 >> 2] & 255 | 0) {
+                  if (!g3)
+                    i5 = 0;
                   else
-                    i2 = c[e2 + (g2 + -1 << 3) >> 2] | 0;
-                  e2 = f2;
+                    i5 = c4[e6 + (g3 + -1 << 3) >> 2] | 0;
+                  e6 = f4;
                   while (1) {
-                    if ((e2 | 0) < (i2 | 0))
+                    if ((e6 | 0) < (i5 | 0))
                       break e;
-                    j2 = a[v2 + e2 >> 0] | 0;
-                    if (!(j2 << 24 >> 24))
+                    j3 = a3[v3 + e6 >> 0] | 0;
+                    if (!(j3 << 24 >> 24))
                       break;
-                    if (1 << (j2 & 255) & 8194 | 0)
+                    if (1 << (j3 & 255) & 8194 | 0)
                       break e;
-                    e2 = e2 + -1 | 0;
+                    e6 = e6 + -1 | 0;
                   }
-                  if ((e2 | 0) < (f2 | 0))
+                  if ((e6 | 0) < (f4 | 0))
                     while (1)
-                      if ((a[v2 + f2 >> 0] | 0) == 7)
-                        f2 = f2 + -1 | 0;
+                      if ((a3[v3 + f4 >> 0] | 0) == 7)
+                        f4 = f4 + -1 | 0;
                       else
                         break;
-                  la(b2, f2, 4);
+                  la(b4, f4, 4);
                 }
               while (0);
-            g2 = g2 + 1 | 0;
+            g3 = g3 + 1 | 0;
           }
         }
       while (0);
-    if (!(c[k2 >> 2] & 2))
-      f2 = (c[z2 >> 2] | 0) + (c[y2 >> 2] | 0) | 0;
+    if (!(c4[k3 >> 2] & 2))
+      f4 = (c4[z2 >> 2] | 0) + (c4[y4 >> 2] | 0) | 0;
     else
-      f2 = (c[z2 >> 2] | 0) - (c[b2 + 348 >> 2] | 0) | 0;
-    c[z2 >> 2] = f2;
-    ga(b2);
+      f4 = (c4[z2 >> 2] | 0) - (c4[b4 + 348 >> 2] | 0) | 0;
+    c4[z2 >> 2] = f4;
+    ga(b4);
     return;
   }
-  function fa(b2, e2, f2, g2, h2) {
-    b2 = b2 | 0;
-    e2 = e2 | 0;
-    f2 = f2 | 0;
-    g2 = g2 | 0;
-    h2 = h2 | 0;
-    var i2 = 0, j2 = 0, k2 = 0, l2 = 0, m2 = 0, n2 = 0, o2 = 0, p2 = 0, q2 = 0, r2 = 0, s2 = 0, t2 = 0, u2 = 0, v2 = 0, w2 = 0, x2 = 0, y2 = 0, z2 = 0, A2 = 0, B2 = 0, C2 = 0, D2 = 0, E2 = 0;
-    C2 = b2 + 84 | 0;
-    c[C2 >> 2] = 0;
-    if (!f2) {
-      ea(b2, e2, 0, g2, h2);
+  function fa(b4, e6, f4, g3, h4) {
+    b4 = b4 | 0;
+    e6 = e6 | 0;
+    f4 = f4 | 0;
+    g3 = g3 | 0;
+    h4 = h4 | 0;
+    var i5 = 0, j3 = 0, k3 = 0, l4 = 0, m3 = 0, n6 = 0, o5 = 0, p4 = 0, q2 = 0, r6 = 0, s5 = 0, t5 = 0, u4 = 0, v3 = 0, w3 = 0, x3 = 0, y4 = 0, z2 = 0, A3 = 0, B2 = 0, C3 = 0, D2 = 0, E3 = 0;
+    C3 = b4 + 84 | 0;
+    c4[C3 >> 2] = 0;
+    if (!f4) {
+      ea(b4, e6, 0, g3, h4);
       D2 = 0;
       nb(D2);
-      c[C2 >> 2] = 3;
+      c4[C3 >> 2] = 3;
       return;
     }
-    D2 = lb(f2 * 7 | 0) | 0;
+    D2 = lb(f4 * 7 | 0) | 0;
     if (!D2) {
-      c[h2 >> 2] = 7;
+      c4[h4 >> 2] = 7;
       D2 = 0;
       nb(D2);
-      c[C2 >> 2] = 3;
+      c4[C3 >> 2] = 3;
       return;
     }
-    j2 = D2 + (f2 << 2) | 0;
-    B2 = j2 + (f2 << 1) | 0;
-    k2 = b2 + 88 | 0;
-    l2 = c[k2 >> 2] | 0;
-    if (l2 & 1 | 0)
-      c[k2 >> 2] = l2 & -4 | 2;
-    g2 = g2 & 1;
-    ea(b2, e2, f2, g2, h2);
-    if (($(c[h2 >> 2] | 0) | 0) << 24 >> 24) {
+    j3 = D2 + (f4 << 2) | 0;
+    B2 = j3 + (f4 << 1) | 0;
+    k3 = b4 + 88 | 0;
+    l4 = c4[k3 >> 2] | 0;
+    if (l4 & 1 | 0)
+      c4[k3 >> 2] = l4 & -4 | 2;
+    g3 = g3 & 1;
+    ea(b4, e6, f4, g3, h4);
+    if (($2(c4[h4 >> 2] | 0) | 0) << 24 >> 24) {
       nb(D2);
-      c[C2 >> 2] = 3;
+      c4[C3 >> 2] = 3;
       return;
     }
-    x2 = Pa(b2, h2) | 0;
-    v2 = b2 + 12 | 0;
-    w2 = c[v2 >> 2] | 0;
-    ec(B2 | 0, x2 | 0, w2 | 0) | 0;
-    x2 = b2 + 128 | 0;
-    y2 = c[x2 >> 2] | 0;
-    z2 = b2 + 116 | 0;
-    A2 = c[z2 >> 2] | 0;
-    i2 = Ka(b2, j2, f2, 2, h2) | 0;
-    Wa(b2, D2, h2);
-    if (!(($(c[h2 >> 2] | 0) | 0) << 24 >> 24)) {
-      c[k2 >> 2] = l2;
-      c[C2 >> 2] = 5;
-      u2 = b2 + 68 | 0;
-      t2 = a[u2 >> 0] | 0;
-      a[u2 >> 0] = 0;
-      ea(b2, j2, i2, g2 ^ 1, h2);
-      a[u2 >> 0] = t2;
-      Ra(b2, h2);
+    x3 = Pa(b4, h4) | 0;
+    v3 = b4 + 12 | 0;
+    w3 = c4[v3 >> 2] | 0;
+    ec(B2 | 0, x3 | 0, w3 | 0) | 0;
+    x3 = b4 + 128 | 0;
+    y4 = c4[x3 >> 2] | 0;
+    z2 = b4 + 116 | 0;
+    A3 = c4[z2 >> 2] | 0;
+    i5 = Ka(b4, j3, f4, 2, h4) | 0;
+    Wa(b4, D2, h4);
+    if (!(($2(c4[h4 >> 2] | 0) | 0) << 24 >> 24)) {
+      c4[k3 >> 2] = l4;
+      c4[C3 >> 2] = 5;
+      u4 = b4 + 68 | 0;
+      t5 = a3[u4 >> 0] | 0;
+      a3[u4 >> 0] = 0;
+      ea(b4, j3, i5, g3 ^ 1, h4);
+      a3[u4 >> 0] = t5;
+      Ra(b4, h4);
       a:
         do
-          if (!(($(c[h2 >> 2] | 0) | 0) << 24 >> 24)) {
-            n2 = b2 + 220 | 0;
-            q2 = c[n2 >> 2] | 0;
-            o2 = b2 + 224 | 0;
-            p2 = c[o2 >> 2] | 0;
-            j2 = 0;
-            g2 = 0;
-            h2 = 0;
+          if (!(($2(c4[h4 >> 2] | 0) | 0) << 24 >> 24)) {
+            n6 = b4 + 220 | 0;
+            q2 = c4[n6 >> 2] | 0;
+            o5 = b4 + 224 | 0;
+            p4 = c4[o5 >> 2] | 0;
+            j3 = 0;
+            g3 = 0;
+            h4 = 0;
             while (1) {
-              if ((h2 | 0) >= (q2 | 0))
+              if ((h4 | 0) >= (q2 | 0))
                 break;
-              m2 = c[p2 + (h2 * 12 | 0) + 4 >> 2] | 0;
-              g2 = m2 - g2 | 0;
+              m3 = c4[p4 + (h4 * 12 | 0) + 4 >> 2] | 0;
+              g3 = m3 - g3 | 0;
               b:
                 do
-                  if ((g2 | 0) < 2)
-                    g2 = j2;
+                  if ((g3 | 0) < 2)
+                    g3 = j3;
                   else {
-                    i2 = c[p2 + (h2 * 12 | 0) >> 2] & 2147483647;
-                    l2 = i2 + g2 | 0;
-                    g2 = j2;
+                    i5 = c4[p4 + (h4 * 12 | 0) >> 2] & 2147483647;
+                    l4 = i5 + g3 | 0;
+                    g3 = j3;
                     while (1) {
                       do {
-                        j2 = i2;
-                        i2 = i2 + 1 | 0;
-                        if ((i2 | 0) >= (l2 | 0))
+                        j3 = i5;
+                        i5 = i5 + 1 | 0;
+                        if ((i5 | 0) >= (l4 | 0))
                           break b;
-                        k2 = c[D2 + (i2 << 2) >> 2] | 0;
-                        j2 = c[D2 + (j2 << 2) >> 2] | 0;
-                        u2 = k2 - j2 | 0;
-                        if ((((u2 | 0) > -1 ? u2 : 0 - u2 | 0) | 0) != 1)
+                        k3 = c4[D2 + (i5 << 2) >> 2] | 0;
+                        j3 = c4[D2 + (j3 << 2) >> 2] | 0;
+                        u4 = k3 - j3 | 0;
+                        if ((((u4 | 0) > -1 ? u4 : 0 - u4 | 0) | 0) != 1)
                           break;
-                      } while ((a[B2 + k2 >> 0] | 0) == (a[B2 + j2 >> 0] | 0));
-                      g2 = g2 + 1 | 0;
+                      } while ((a3[B2 + k3 >> 0] | 0) == (a3[B2 + j3 >> 0] | 0));
+                      g3 = g3 + 1 | 0;
                     }
                   }
                 while (0);
-              j2 = g2;
-              g2 = m2;
-              h2 = h2 + 1 | 0;
+              j3 = g3;
+              g3 = m3;
+              h4 = h4 + 1 | 0;
             }
-            if (!j2)
-              t2 = p2;
+            if (!j3)
+              t5 = p4;
             else {
-              g2 = b2 + 60 | 0;
-              if (!((aa(g2, b2 + 36 | 0, a[b2 + 69 >> 0] | 0, (j2 + q2 | 0) * 12 | 0) | 0) << 24 >> 24))
+              g3 = b4 + 60 | 0;
+              if (!((aa(g3, b4 + 36 | 0, a3[b4 + 69 >> 0] | 0, (j3 + q2 | 0) * 12 | 0) | 0) << 24 >> 24))
                 break;
               if ((q2 | 0) == 1) {
-                u2 = c[g2 >> 2] | 0;
-                c[u2 >> 2] = c[p2 >> 2];
-                c[u2 + 4 >> 2] = c[p2 + 4 >> 2];
-                c[u2 + 8 >> 2] = c[p2 + 8 >> 2];
+                u4 = c4[g3 >> 2] | 0;
+                c4[u4 >> 2] = c4[p4 >> 2];
+                c4[u4 + 4 >> 2] = c4[p4 + 4 >> 2];
+                c4[u4 + 8 >> 2] = c4[p4 + 8 >> 2];
               }
-              t2 = c[g2 >> 2] | 0;
-              c[o2 >> 2] = t2;
-              c[n2 >> 2] = (c[n2 >> 2] | 0) + j2;
+              t5 = c4[g3 >> 2] | 0;
+              c4[o5 >> 2] = t5;
+              c4[n6 >> 2] = (c4[n6 >> 2] | 0) + j3;
             }
-            u2 = t2 + 4 | 0;
-            g2 = q2;
-            i2 = j2;
+            u4 = t5 + 4 | 0;
+            g3 = q2;
+            i5 = j3;
             while (1) {
-              s2 = g2 + -1 | 0;
-              if ((g2 | 0) <= 0)
+              s5 = g3 + -1 | 0;
+              if ((g3 | 0) <= 0)
                 break a;
-              if (!s2)
-                g2 = c[u2 >> 2] | 0;
+              if (!s5)
+                g3 = c4[u4 >> 2] | 0;
               else
-                g2 = (c[t2 + (s2 * 12 | 0) + 4 >> 2] | 0) - (c[t2 + ((g2 + -2 | 0) * 12 | 0) + 4 >> 2] | 0) | 0;
-              q2 = t2 + (s2 * 12 | 0) | 0;
-              j2 = c[q2 >> 2] | 0;
-              r2 = j2 >>> 31;
-              j2 = j2 & 2147483647;
-              if ((g2 | 0) < 2) {
-                if (!i2)
-                  g2 = s2;
+                g3 = (c4[t5 + (s5 * 12 | 0) + 4 >> 2] | 0) - (c4[t5 + ((g3 + -2 | 0) * 12 | 0) + 4 >> 2] | 0) | 0;
+              q2 = t5 + (s5 * 12 | 0) | 0;
+              j3 = c4[q2 >> 2] | 0;
+              r6 = j3 >>> 31;
+              j3 = j3 & 2147483647;
+              if ((g3 | 0) < 2) {
+                if (!i5)
+                  g3 = s5;
                 else {
-                  g2 = s2 + i2 | 0;
-                  p2 = t2 + (g2 * 12 | 0) | 0;
-                  c[p2 >> 2] = c[q2 >> 2];
-                  c[p2 + 4 >> 2] = c[q2 + 4 >> 2];
-                  c[p2 + 8 >> 2] = c[q2 + 8 >> 2];
+                  g3 = s5 + i5 | 0;
+                  p4 = t5 + (g3 * 12 | 0) | 0;
+                  c4[p4 >> 2] = c4[q2 >> 2];
+                  c4[p4 + 4 >> 2] = c4[q2 + 4 >> 2];
+                  c4[p4 + 8 >> 2] = c4[q2 + 8 >> 2];
                 }
-                j2 = c[D2 + (j2 << 2) >> 2] | 0;
+                j3 = c4[D2 + (j3 << 2) >> 2] | 0;
               } else {
-                l2 = (r2 | 0) == 0;
-                h2 = g2 + -1 + j2 | 0;
-                p2 = l2 ? j2 : h2;
-                m2 = l2 ? -1 : 1;
-                n2 = t2 + (s2 * 12 | 0) + 4 | 0;
-                o2 = t2 + (s2 * 12 | 0) + 8 | 0;
-                h2 = l2 ? h2 : j2;
+                l4 = (r6 | 0) == 0;
+                h4 = g3 + -1 + j3 | 0;
+                p4 = l4 ? j3 : h4;
+                m3 = l4 ? -1 : 1;
+                n6 = t5 + (s5 * 12 | 0) + 4 | 0;
+                o5 = t5 + (s5 * 12 | 0) + 8 | 0;
+                h4 = l4 ? h4 : j3;
                 c:
                   while (1) {
-                    g2 = h2;
+                    g3 = h4;
                     while (1) {
-                      if ((g2 | 0) == (p2 | 0))
+                      if ((g3 | 0) == (p4 | 0))
                         break c;
-                      j2 = c[D2 + (g2 << 2) >> 2] | 0;
-                      k2 = g2 + m2 | 0;
-                      l2 = c[D2 + (k2 << 2) >> 2] | 0;
-                      E2 = j2 - l2 | 0;
-                      if ((((E2 | 0) > -1 ? E2 : 0 - E2 | 0) | 0) != 1)
+                      j3 = c4[D2 + (g3 << 2) >> 2] | 0;
+                      k3 = g3 + m3 | 0;
+                      l4 = c4[D2 + (k3 << 2) >> 2] | 0;
+                      E3 = j3 - l4 | 0;
+                      if ((((E3 | 0) > -1 ? E3 : 0 - E3 | 0) | 0) != 1)
                         break;
-                      if ((a[B2 + j2 >> 0] | 0) == (a[B2 + l2 >> 0] | 0))
-                        g2 = k2;
+                      if ((a3[B2 + j3 >> 0] | 0) == (a3[B2 + l4 >> 0] | 0))
+                        g3 = k3;
                       else
                         break;
                     }
-                    E2 = c[D2 + (h2 << 2) >> 2] | 0;
-                    E2 = (E2 | 0) < (j2 | 0) ? E2 : j2;
-                    l2 = i2 + s2 | 0;
-                    c[t2 + (l2 * 12 | 0) >> 2] = (r2 ^ d[B2 + E2 >> 0]) << 31 | E2;
-                    c[t2 + (l2 * 12 | 0) + 4 >> 2] = c[n2 >> 2];
-                    E2 = g2 - h2 | 0;
-                    c[n2 >> 2] = (c[n2 >> 2] | 0) + ~((E2 | 0) > -1 ? E2 : 0 - E2 | 0);
-                    E2 = c[o2 >> 2] & 10;
-                    c[t2 + (l2 * 12 | 0) + 8 >> 2] = E2;
-                    c[o2 >> 2] = c[o2 >> 2] & ~E2;
-                    h2 = k2;
-                    i2 = i2 + -1 | 0;
+                    E3 = c4[D2 + (h4 << 2) >> 2] | 0;
+                    E3 = (E3 | 0) < (j3 | 0) ? E3 : j3;
+                    l4 = i5 + s5 | 0;
+                    c4[t5 + (l4 * 12 | 0) >> 2] = (r6 ^ d3[B2 + E3 >> 0]) << 31 | E3;
+                    c4[t5 + (l4 * 12 | 0) + 4 >> 2] = c4[n6 >> 2];
+                    E3 = g3 - h4 | 0;
+                    c4[n6 >> 2] = (c4[n6 >> 2] | 0) + ~((E3 | 0) > -1 ? E3 : 0 - E3 | 0);
+                    E3 = c4[o5 >> 2] & 10;
+                    c4[t5 + (l4 * 12 | 0) + 8 >> 2] = E3;
+                    c4[o5 >> 2] = c4[o5 >> 2] & ~E3;
+                    h4 = k3;
+                    i5 = i5 + -1 | 0;
                   }
-                if (!i2)
-                  g2 = s2;
+                if (!i5)
+                  g3 = s5;
                 else {
-                  g2 = i2 + s2 | 0;
-                  E2 = t2 + (g2 * 12 | 0) | 0;
-                  c[E2 >> 2] = c[q2 >> 2];
-                  c[E2 + 4 >> 2] = c[q2 + 4 >> 2];
-                  c[E2 + 8 >> 2] = c[q2 + 8 >> 2];
+                  g3 = i5 + s5 | 0;
+                  E3 = t5 + (g3 * 12 | 0) | 0;
+                  c4[E3 >> 2] = c4[q2 >> 2];
+                  c4[E3 + 4 >> 2] = c4[q2 + 4 >> 2];
+                  c4[E3 + 8 >> 2] = c4[q2 + 8 >> 2];
                 }
-                E2 = c[D2 + (h2 << 2) >> 2] | 0;
-                j2 = c[D2 + (p2 << 2) >> 2] | 0;
-                j2 = (E2 | 0) < (j2 | 0) ? E2 : j2;
+                E3 = c4[D2 + (h4 << 2) >> 2] | 0;
+                j3 = c4[D2 + (p4 << 2) >> 2] | 0;
+                j3 = (E3 | 0) < (j3 | 0) ? E3 : j3;
               }
-              c[t2 + (g2 * 12 | 0) >> 2] = (r2 ^ d[B2 + j2 >> 0]) << 31 | j2;
-              g2 = s2;
+              c4[t5 + (g3 * 12 | 0) >> 2] = (r6 ^ d3[B2 + j3 >> 0]) << 31 | j3;
+              g3 = s5;
             }
           }
         while (0);
-      E2 = b2 + 93 | 0;
-      a[E2 >> 0] = a[E2 >> 0] ^ 1;
+      E3 = b4 + 93 | 0;
+      a3[E3 >> 0] = a3[E3 >> 0] ^ 1;
     }
-    c[b2 + 4 >> 2] = e2;
-    c[v2 >> 2] = w2;
-    c[b2 + 8 >> 2] = f2;
-    c[z2 >> 2] = A2;
-    E2 = c[b2 + 24 >> 2] | 0;
-    ec(c[b2 + 76 >> 2] | 0, B2 | 0, ((w2 | 0) > (E2 | 0) ? E2 : w2) | 0) | 0;
-    c[x2 >> 2] = y2;
-    if ((c[b2 + 220 >> 2] | 0) <= 1) {
-      E2 = D2;
-      nb(E2);
-      c[C2 >> 2] = 3;
+    c4[b4 + 4 >> 2] = e6;
+    c4[v3 >> 2] = w3;
+    c4[b4 + 8 >> 2] = f4;
+    c4[z2 >> 2] = A3;
+    E3 = c4[b4 + 24 >> 2] | 0;
+    ec(c4[b4 + 76 >> 2] | 0, B2 | 0, ((w3 | 0) > (E3 | 0) ? E3 : w3) | 0) | 0;
+    c4[x3 >> 2] = y4;
+    if ((c4[b4 + 220 >> 2] | 0) <= 1) {
+      E3 = D2;
+      nb(E3);
+      c4[C3 >> 2] = 3;
       return;
     }
-    c[z2 >> 2] = 2;
-    E2 = D2;
-    nb(E2);
-    c[C2 >> 2] = 3;
+    c4[z2 >> 2] = 2;
+    E3 = D2;
+    nb(E3);
+    c4[C3 >> 2] = 3;
     return;
   }
-  function ga(a2) {
-    a2 = a2 | 0;
-    c[a2 + 100 >> 2] = 0;
-    c[a2 + 108 >> 2] = 0;
-    c[a2 >> 2] = a2;
+  function ga(a4) {
+    a4 = a4 | 0;
+    c4[a4 + 100 >> 2] = 0;
+    c4[a4 + 108 >> 2] = 0;
+    c4[a4 >> 2] = a4;
     return;
   }
-  function ha(f2) {
-    f2 = f2 | 0;
-    var g2 = 0, h2 = 0, i2 = 0, j2 = 0, k2 = 0, l2 = 0, m2 = 0, n2 = 0, o2 = 0, p2 = 0, q2 = 0, r2 = 0, s2 = 0, t2 = 0, u2 = 0, v2 = 0, w2 = 0, x2 = 0, y2 = 0, z2 = 0, A2 = 0, B2 = 0, C2 = 0, D2 = 0, F2 = 0, G2 = 0, H2 = 0, I2 = 0, J2 = 0, K2 = 0, L2 = 0, M2 = 0, N2 = 0;
-    N2 = E;
-    E = E + 1024 | 0;
-    x2 = N2 + 512 | 0;
-    G2 = N2;
-    B2 = c[f2 + 4 >> 2] | 0;
-    D2 = c[f2 + 44 >> 2] | 0;
-    J2 = c[f2 + 8 >> 2] | 0;
-    K2 = f2 + 93 | 0;
-    g2 = a[K2 >> 0] | 0;
-    H2 = (g2 & 255) > 253;
-    if (H2)
-      C2 = ((c[f2 + 84 >> 2] | 0) + -5 | 0) >>> 0 < 2;
+  function ha(f4) {
+    f4 = f4 | 0;
+    var g3 = 0, h4 = 0, i5 = 0, j3 = 0, k3 = 0, l4 = 0, m3 = 0, n6 = 0, o5 = 0, p4 = 0, q2 = 0, r6 = 0, s5 = 0, t5 = 0, u4 = 0, v3 = 0, w3 = 0, x3 = 0, y4 = 0, z2 = 0, A3 = 0, B2 = 0, C3 = 0, D2 = 0, F2 = 0, G2 = 0, H3 = 0, I3 = 0, J2 = 0, K2 = 0, L3 = 0, M3 = 0, N3 = 0;
+    N3 = E2;
+    E2 = E2 + 1024 | 0;
+    x3 = N3 + 512 | 0;
+    G2 = N3;
+    B2 = c4[f4 + 4 >> 2] | 0;
+    D2 = c4[f4 + 44 >> 2] | 0;
+    J2 = c4[f4 + 8 >> 2] | 0;
+    K2 = f4 + 93 | 0;
+    g3 = a3[K2 >> 0] | 0;
+    H3 = (g3 & 255) > 253;
+    if (H3)
+      C3 = ((c4[f4 + 84 >> 2] | 0) + -5 | 0) >>> 0 < 2;
     else
-      C2 = 0;
-    I2 = f2 + 88 | 0;
-    M2 = c[I2 >> 2] | 0;
-    j2 = M2 & 2;
-    if (M2 & 4 | 0)
-      c[f2 + 12 >> 2] = 0;
-    g2 = g2 & 255;
-    v2 = g2 & 1;
-    w2 = v2 & 255;
-    M2 = f2 + 136 | 0;
-    h2 = (c[M2 >> 2] | 0) + 4 | 0;
-    if (H2) {
-      c[h2 >> 2] = v2;
-      if ((c[f2 + 100 >> 2] | 0) > 0 ? (i2 = Ba(f2) | 0, i2 << 24 >> 24 != 10) : 0) {
-        c[(c[M2 >> 2] | 0) + 4 >> 2] = i2 << 24 >> 24 != 0 & 1;
-        i2 = w2;
-        k2 = 0;
+      C3 = 0;
+    I3 = f4 + 88 | 0;
+    M3 = c4[I3 >> 2] | 0;
+    j3 = M3 & 2;
+    if (M3 & 4 | 0)
+      c4[f4 + 12 >> 2] = 0;
+    g3 = g3 & 255;
+    v3 = g3 & 1;
+    w3 = v3 & 255;
+    M3 = f4 + 136 | 0;
+    h4 = (c4[M3 >> 2] | 0) + 4 | 0;
+    if (H3) {
+      c4[h4 >> 2] = v3;
+      if ((c4[f4 + 100 >> 2] | 0) > 0 ? (i5 = Ba(f4) | 0, i5 << 24 >> 24 != 10) : 0) {
+        c4[(c4[M3 >> 2] | 0) + 4 >> 2] = i5 << 24 >> 24 != 0 & 1;
+        i5 = w3;
+        k3 = 0;
       } else {
-        i2 = w2;
-        k2 = 1;
+        i5 = w3;
+        k3 = 1;
       }
     } else {
-      c[h2 >> 2] = g2;
-      i2 = 10;
-      k2 = 0;
+      c4[h4 >> 2] = g3;
+      i5 = 10;
+      k3 = 0;
     }
-    u2 = (j2 | 0) == 0;
-    y2 = f2 + 132 | 0;
-    z2 = f2 + 12 | 0;
-    A2 = f2 + 348 | 0;
-    h2 = -1;
-    j2 = 0;
-    l2 = 0;
+    u4 = (j3 | 0) == 0;
+    y4 = f4 + 132 | 0;
+    z2 = f4 + 12 | 0;
+    A3 = f4 + 348 | 0;
+    h4 = -1;
+    j3 = 0;
+    l4 = 0;
     F2 = -1;
-    g2 = 0;
+    g3 = 0;
     a:
       while (1) {
         b:
           while (1) {
-            t2 = C2 & i2 << 24 >> 24 == 1;
-            i2 = l2;
+            t5 = C3 & i5 << 24 >> 24 == 1;
+            i5 = l4;
             c:
               while (1) {
                 d:
                   while (1) {
-                    s2 = (h2 | 0) < 126;
-                    r2 = (k2 | 0) == 2 & s2;
-                    q2 = (h2 | 0) > -1;
+                    s5 = (h4 | 0) < 126;
+                    r6 = (k3 | 0) == 2 & s5;
+                    q2 = (h4 | 0) > -1;
                     e:
                       while (1) {
-                        p2 = i2;
+                        p4 = i5;
                         f:
                           while (1) {
-                            if ((j2 | 0) >= (J2 | 0))
+                            if ((j3 | 0) >= (J2 | 0))
                               break a;
-                            i2 = j2 + 1 | 0;
-                            l2 = e[B2 + (j2 << 1) >> 1] | 0;
-                            if (!((i2 | 0) == (J2 | 0) | (l2 & 64512 | 0) != 55296)) {
-                              m2 = e[B2 + (i2 << 1) >> 1] | 0;
-                              o2 = (m2 & 64512 | 0) == 56320;
-                              j2 = o2 ? j2 + 2 | 0 : i2;
-                              if (o2)
-                                l2 = (l2 << 10) + -56613888 + m2 | 0;
+                            i5 = j3 + 1 | 0;
+                            l4 = e5[B2 + (j3 << 1) >> 1] | 0;
+                            if (!((i5 | 0) == (J2 | 0) | (l4 & 64512 | 0) != 55296)) {
+                              m3 = e5[B2 + (i5 << 1) >> 1] | 0;
+                              o5 = (m3 & 64512 | 0) == 56320;
+                              j3 = o5 ? j3 + 2 | 0 : i5;
+                              if (o5)
+                                l4 = (l4 << 10) + -56613888 + m3 | 0;
                             } else
-                              j2 = i2;
-                            o2 = pa(f2, l2) | 0;
-                            i2 = o2 & 255;
-                            o2 = o2 & 255;
-                            g2 = 1 << o2 | g2;
-                            n2 = j2 + -1 | 0;
-                            m2 = D2 + n2 | 0;
-                            a[m2 >> 0] = i2;
-                            if ((l2 | 0) > 65535) {
-                              a[D2 + (j2 + -2) >> 0] = 18;
-                              g2 = g2 | 262144;
+                              j3 = i5;
+                            o5 = pa(f4, l4) | 0;
+                            i5 = o5 & 255;
+                            o5 = o5 & 255;
+                            g3 = 1 << o5 | g3;
+                            n6 = j3 + -1 | 0;
+                            m3 = D2 + n6 | 0;
+                            a3[m3 >> 0] = i5;
+                            if ((l4 | 0) > 65535) {
+                              a3[D2 + (j3 + -2) >> 0] = 18;
+                              g3 = g3 | 262144;
                             }
-                            if (!u2)
-                              p2 = p2 + (((l2 + -8294 | 0) >>> 0 < 4 | ((l2 & -4 | 0) == 8204 | (l2 + -8234 | 0) >>> 0 < 5)) & 1) | 0;
-                            switch (i2 << 24 >> 24) {
+                            if (!u4)
+                              p4 = p4 + (((l4 + -8294 | 0) >>> 0 < 4 | ((l4 & -4 | 0) == 8204 | (l4 + -8234 | 0) >>> 0 < 5)) & 1) | 0;
+                            switch (i5 << 24 >> 24) {
                               case 13:
                               case 1:
                                 break b;
                               case 0: {
-                                L2 = 25;
+                                L3 = 25;
                                 break c;
                               }
                               default: {
                               }
                             }
-                            if ((o2 + -19 | 0) >>> 0 < 3) {
-                              L2 = 35;
+                            if ((o5 + -19 | 0) >>> 0 < 3) {
+                              L3 = 35;
                               break e;
                             }
-                            switch (i2 << 24 >> 24) {
+                            switch (i5 << 24 >> 24) {
                               case 22:
                                 break f;
                               case 7: {
-                                i2 = (j2 | 0) < (J2 | 0);
-                                if (!((l2 | 0) == 13 & i2))
+                                i5 = (j3 | 0) < (J2 | 0);
+                                if (!((l4 | 0) == 13 & i5))
                                   break d;
-                                if ((b[B2 + (j2 << 1) >> 1] | 0) != 10) {
-                                  i2 = 1;
+                                if ((b3[B2 + (j3 << 1) >> 1] | 0) != 10) {
+                                  i5 = 1;
                                   break d;
                                 }
                                 break;
@@ -21986,647 +22107,647 @@ var asm = function(global, env, buffer2) {
                               }
                             }
                           }
-                        g2 = r2 ? g2 | 1048576 : g2;
+                        g3 = r6 ? g3 | 1048576 : g3;
                         if (q2) {
-                          L2 = 43;
+                          L3 = 43;
                           break;
                         } else
-                          i2 = p2;
+                          i5 = p4;
                       }
-                    if ((L2 | 0) == 35) {
-                      L2 = 0;
-                      i2 = h2 + 1 | 0;
-                      if ((h2 | 0) < 125) {
-                        c[x2 + (i2 << 2) >> 2] = n2;
-                        c[G2 + (i2 << 2) >> 2] = k2;
+                    if ((L3 | 0) == 35) {
+                      L3 = 0;
+                      i5 = h4 + 1 | 0;
+                      if ((h4 | 0) < 125) {
+                        c4[x3 + (i5 << 2) >> 2] = n6;
+                        c4[G2 + (i5 << 2) >> 2] = k3;
                       }
-                      if ((o2 | 0) == 19) {
-                        a[m2 >> 0] = 20;
-                        h2 = i2;
-                        k2 = 2;
+                      if ((o5 | 0) == 19) {
+                        a3[m3 >> 0] = 20;
+                        h4 = i5;
+                        k3 = 2;
                       } else {
-                        h2 = i2;
-                        k2 = 3;
+                        h4 = i5;
+                        k3 = 3;
                       }
-                    } else if ((L2 | 0) == 43) {
-                      L2 = 0;
-                      if (s2)
-                        k2 = c[G2 + (h2 << 2) >> 2] | 0;
-                      h2 = h2 + -1 | 0;
+                    } else if ((L3 | 0) == 43) {
+                      L3 = 0;
+                      if (s5)
+                        k3 = c4[G2 + (h4 << 2) >> 2] | 0;
+                      h4 = h4 + -1 | 0;
                     }
-                    i2 = p2;
+                    i5 = p4;
                   }
-                c[(c[M2 >> 2] | 0) + ((c[y2 >> 2] | 0) + -1 << 3) >> 2] = j2;
-                if (t2)
-                  c[(c[M2 >> 2] | 0) + ((c[y2 >> 2] | 0) + -1 << 3) + 4 >> 2] = 1;
-                if (c[I2 >> 2] & 4 | 0) {
-                  c[z2 >> 2] = j2;
-                  c[A2 >> 2] = p2;
+                c4[(c4[M3 >> 2] | 0) + ((c4[y4 >> 2] | 0) + -1 << 3) >> 2] = j3;
+                if (t5)
+                  c4[(c4[M3 >> 2] | 0) + ((c4[y4 >> 2] | 0) + -1 << 3) + 4 >> 2] = 1;
+                if (c4[I3 >> 2] & 4 | 0) {
+                  c4[z2 >> 2] = j3;
+                  c4[A3 >> 2] = p4;
                 }
-                if (i2) {
-                  c[y2 >> 2] = (c[y2 >> 2] | 0) + 1;
-                  if (!((Ca(f2) | 0) << 24 >> 24)) {
-                    g2 = 0;
-                    L2 = 76;
+                if (i5) {
+                  c4[y4 >> 2] = (c4[y4 >> 2] | 0) + 1;
+                  if (!((Ca(f4) | 0) << 24 >> 24)) {
+                    g3 = 0;
+                    L3 = 76;
                     break a;
                   }
-                  if (H2) {
-                    L2 = 56;
+                  if (H3) {
+                    L3 = 56;
                     break;
                   }
-                  c[(c[M2 >> 2] | 0) + ((c[y2 >> 2] | 0) + -1 << 3) + 4 >> 2] = d[K2 >> 0];
-                  h2 = -1;
-                  k2 = 0;
+                  c4[(c4[M3 >> 2] | 0) + ((c4[y4 >> 2] | 0) + -1 << 3) + 4 >> 2] = d3[K2 >> 0];
+                  h4 = -1;
+                  k3 = 0;
                 }
-                i2 = p2;
+                i5 = p4;
               }
             g:
               do
-                if ((L2 | 0) == 25) {
-                  L2 = 0;
-                  switch (k2 | 0) {
+                if ((L3 | 0) == 25) {
+                  L3 = 0;
+                  switch (k3 | 0) {
                     case 1: {
-                      c[(c[M2 >> 2] | 0) + ((c[y2 >> 2] | 0) + -1 << 3) + 4 >> 2] = 0;
-                      i2 = 0;
-                      k2 = 0;
+                      c4[(c4[M3 >> 2] | 0) + ((c4[y4 >> 2] | 0) + -1 << 3) + 4 >> 2] = 0;
+                      i5 = 0;
+                      k3 = 0;
                       break g;
                     }
                     case 2: {
-                      g2 = s2 ? g2 | 1048576 : g2;
-                      i2 = 0;
-                      k2 = 3;
+                      g3 = s5 ? g3 | 1048576 : g3;
+                      i5 = 0;
+                      k3 = 3;
                       break g;
                     }
                     default: {
-                      i2 = 0;
+                      i5 = 0;
                       break g;
                     }
                   }
-                } else if ((L2 | 0) == 56) {
-                  L2 = 0;
-                  c[(c[M2 >> 2] | 0) + ((c[y2 >> 2] | 0) + -1 << 3) + 4 >> 2] = v2;
-                  h2 = -1;
-                  i2 = w2;
-                  k2 = 1;
+                } else if ((L3 | 0) == 56) {
+                  L3 = 0;
+                  c4[(c4[M3 >> 2] | 0) + ((c4[y4 >> 2] | 0) + -1 << 3) + 4 >> 2] = v3;
+                  h4 = -1;
+                  i5 = w3;
+                  k3 = 1;
                 }
               while (0);
-            l2 = p2;
+            l4 = p4;
           }
-        switch (k2 | 0) {
+        switch (k3 | 0) {
           case 1: {
-            c[(c[M2 >> 2] | 0) + ((c[y2 >> 2] | 0) + -1 << 3) + 4 >> 2] = 1;
-            k2 = 0;
+            c4[(c4[M3 >> 2] | 0) + ((c4[y4 >> 2] | 0) + -1 << 3) + 4 >> 2] = 1;
+            k3 = 0;
             break;
           }
           case 2: {
-            if (s2) {
-              a[D2 + (c[x2 + (h2 << 2) >> 2] | 0) >> 0] = 21;
-              k2 = 3;
-              g2 = g2 | 2097152;
+            if (s5) {
+              a3[D2 + (c4[x3 + (h4 << 2) >> 2] | 0) >> 0] = 21;
+              k3 = 3;
+              g3 = g3 | 2097152;
             } else
-              k2 = 3;
+              k3 = 3;
             break;
           }
           default: {
           }
         }
-        l2 = p2;
-        F2 = (o2 | 0) == 13 ? n2 : F2;
-        i2 = 1;
+        l4 = p4;
+        F2 = (o5 | 0) == 13 ? n6 : F2;
+        i5 = 1;
       }
-    if ((L2 | 0) == 76) {
-      E = N2;
-      return g2 | 0;
+    if ((L3 | 0) == 76) {
+      E2 = N3;
+      return g3 | 0;
     }
-    D2 = (h2 | 0) > 125;
-    i2 = D2 ? 2 : k2;
-    h2 = D2 ? 125 : h2;
+    D2 = (h4 | 0) > 125;
+    i5 = D2 ? 2 : k3;
+    h4 = D2 ? 125 : h4;
     while (1) {
-      if ((h2 | 0) <= -1)
+      if ((h4 | 0) <= -1)
         break;
-      if ((i2 | 0) == 2) {
-        L2 = 62;
+      if ((i5 | 0) == 2) {
+        L3 = 62;
         break;
       }
-      i2 = c[G2 + (h2 << 2) >> 2] | 0;
-      h2 = h2 + -1 | 0;
+      i5 = c4[G2 + (h4 << 2) >> 2] | 0;
+      h4 = h4 + -1 | 0;
     }
-    if ((L2 | 0) == 62)
-      g2 = g2 | 1048576;
-    if (c[I2 >> 2] & 4) {
-      if ((c[z2 >> 2] | 0) < (J2 | 0))
-        c[y2 >> 2] = (c[y2 >> 2] | 0) + -1;
+    if ((L3 | 0) == 62)
+      g3 = g3 | 1048576;
+    if (c4[I3 >> 2] & 4) {
+      if ((c4[z2 >> 2] | 0) < (J2 | 0))
+        c4[y4 >> 2] = (c4[y4 >> 2] | 0) + -1;
     } else {
-      c[(c[M2 >> 2] | 0) + ((c[y2 >> 2] | 0) + -1 << 3) >> 2] = J2;
-      c[A2 >> 2] = p2;
+      c4[(c4[M3 >> 2] | 0) + ((c4[y4 >> 2] | 0) + -1 << 3) >> 2] = J2;
+      c4[A3 >> 2] = p4;
     }
-    if (t2)
-      c[(c[M2 >> 2] | 0) + ((c[y2 >> 2] | 0) + -1 << 3) + 4 >> 2] = 1;
-    if (H2)
-      a[K2 >> 0] = c[(c[M2 >> 2] | 0) + 4 >> 2];
-    i2 = c[y2 >> 2] | 0;
-    h2 = 0;
+    if (t5)
+      c4[(c4[M3 >> 2] | 0) + ((c4[y4 >> 2] | 0) + -1 << 3) + 4 >> 2] = 1;
+    if (H3)
+      a3[K2 >> 0] = c4[(c4[M3 >> 2] | 0) + 4 >> 2];
+    i5 = c4[y4 >> 2] | 0;
+    h4 = 0;
     while (1) {
-      if ((h2 | 0) >= (i2 | 0))
+      if ((h4 | 0) >= (i5 | 0))
         break;
-      L2 = c[69880 + ((c[(c[M2 >> 2] | 0) + (h2 << 3) + 4 >> 2] & 1) << 2) >> 2] | g2;
-      h2 = h2 + 1 | 0;
-      g2 = L2;
+      L3 = c4[69880 + ((c4[(c4[M3 >> 2] | 0) + (h4 << 3) + 4 >> 2] & 1) << 2) >> 2] | g3;
+      h4 = h4 + 1 | 0;
+      g3 = L3;
     }
-    c[f2 + 120 >> 2] = g2 | (g2 & 128 | 0) != 0 & (a[f2 + 92 >> 0] | 0) != 0 & 1;
-    c[f2 + 124 >> 2] = F2;
-    f2 = 1;
-    E = N2;
-    return f2 | 0;
+    c4[f4 + 120 >> 2] = g3 | (g3 & 128 | 0) != 0 & (a3[f4 + 92 >> 0] | 0) != 0 & 1;
+    c4[f4 + 124 >> 2] = F2;
+    f4 = 1;
+    E2 = N3;
+    return f4 | 0;
   }
-  function ia(f2, g2) {
-    f2 = f2 | 0;
-    g2 = g2 | 0;
-    var h2 = 0, i2 = 0, j2 = 0, k2 = 0, l2 = 0, m2 = 0, n2 = 0, o2 = 0, p2 = 0, q2 = 0, r2 = 0, s2 = 0, t2 = 0, u2 = 0, v2 = 0, w2 = 0, x2 = 0, y2 = 0, z2 = 0, A2 = 0, B2 = 0, C2 = 0, D2 = 0, F2 = 0, G2 = 0, H2 = 0, I2 = 0, J2 = 0, K2 = 0, L2 = 0;
-    L2 = E;
-    E = E + 5328 | 0;
-    o2 = L2 + 2788 | 0;
-    B2 = L2;
-    C2 = L2 + 256 | 0;
-    I2 = c[f2 + 72 >> 2] | 0;
-    K2 = c[f2 + 76 >> 2] | 0;
-    G2 = c[f2 + 4 >> 2] | 0;
-    H2 = c[f2 + 12 >> 2] | 0;
-    D2 = f2 + 120 | 0;
-    i2 = c[D2 >> 2] | 0;
-    y2 = f2 + 94 | 0;
-    if ((a[y2 >> 0] | 0) != 0 ? (h2 = c[f2 + 136 >> 2] | 0, (c[h2 >> 2] | 0) <= 0) : 0)
-      j2 = da(c[f2 + 132 >> 2] | 0, h2, 0) | 0;
+  function ia(f4, g3) {
+    f4 = f4 | 0;
+    g3 = g3 | 0;
+    var h4 = 0, i5 = 0, j3 = 0, k3 = 0, l4 = 0, m3 = 0, n6 = 0, o5 = 0, p4 = 0, q2 = 0, r6 = 0, s5 = 0, t5 = 0, u4 = 0, v3 = 0, w3 = 0, x3 = 0, y4 = 0, z2 = 0, A3 = 0, B2 = 0, C3 = 0, D2 = 0, F2 = 0, G2 = 0, H3 = 0, I3 = 0, J2 = 0, K2 = 0, L3 = 0;
+    L3 = E2;
+    E2 = E2 + 5328 | 0;
+    o5 = L3 + 2788 | 0;
+    B2 = L3;
+    C3 = L3 + 256 | 0;
+    I3 = c4[f4 + 72 >> 2] | 0;
+    K2 = c4[f4 + 76 >> 2] | 0;
+    G2 = c4[f4 + 4 >> 2] | 0;
+    H3 = c4[f4 + 12 >> 2] | 0;
+    D2 = f4 + 120 | 0;
+    i5 = c4[D2 >> 2] | 0;
+    y4 = f4 + 94 | 0;
+    if ((a3[y4 >> 0] | 0) != 0 ? (h4 = c4[f4 + 136 >> 2] | 0, (c4[h4 >> 2] | 0) <= 0) : 0)
+      j3 = da(c4[f4 + 132 >> 2] | 0, h4, 0) | 0;
     else
-      j2 = a[f2 + 93 >> 0] | 0;
-    x2 = f2 + 240 | 0;
-    c[x2 >> 2] = 0;
-    if (($(c[g2 >> 2] | 0) | 0) << 24 >> 24) {
+      j3 = a3[f4 + 93 >> 0] | 0;
+    x3 = f4 + 240 | 0;
+    c4[x3 >> 2] = 0;
+    if (($2(c4[g3 >> 2] | 0) | 0) << 24 >> 24) {
       K2 = 0;
-      E = L2;
+      E2 = L3;
       return K2 | 0;
     }
-    h2 = ra(i2) | 0;
-    if ((h2 | 0) != 2) {
-      K2 = h2;
-      E = L2;
+    h4 = ra(i5) | 0;
+    if ((h4 | 0) != 2) {
+      K2 = h4;
+      E2 = L3;
       return K2 | 0;
     }
-    if ((c[f2 + 84 >> 2] | 0) > 1) {
-      m2 = f2 + 132 | 0;
-      k2 = f2 + 136 | 0;
-      j2 = 0;
+    if ((c4[f4 + 84 >> 2] | 0) > 1) {
+      m3 = f4 + 132 | 0;
+      k3 = f4 + 136 | 0;
+      j3 = 0;
       while (1) {
-        if ((j2 | 0) >= (c[m2 >> 2] | 0)) {
+        if ((j3 | 0) >= (c4[m3 >> 2] | 0)) {
           F2 = 2;
           break;
         }
-        if (!j2) {
-          h2 = 0;
-          i2 = c[k2 >> 2] | 0;
+        if (!j3) {
+          h4 = 0;
+          i5 = c4[k3 >> 2] | 0;
         } else {
-          i2 = c[k2 >> 2] | 0;
-          h2 = c[i2 + (j2 + -1 << 3) >> 2] | 0;
+          i5 = c4[k3 >> 2] | 0;
+          h4 = c4[i5 + (j3 + -1 << 3) >> 2] | 0;
         }
-        l2 = c[i2 + (j2 << 3) >> 2] | 0;
-        i2 = c[i2 + (j2 << 3) + 4 >> 2] & 255;
+        l4 = c4[i5 + (j3 << 3) >> 2] | 0;
+        i5 = c4[i5 + (j3 << 3) + 4 >> 2] & 255;
         while (1) {
-          if ((h2 | 0) >= (l2 | 0))
+          if ((h4 | 0) >= (l4 | 0))
             break;
-          a[K2 + h2 >> 0] = i2;
-          h2 = h2 + 1 | 0;
+          a3[K2 + h4 >> 0] = i5;
+          h4 = h4 + 1 | 0;
         }
-        j2 = j2 + 1 | 0;
+        j3 = j3 + 1 | 0;
       }
-      E = L2;
+      E2 = L3;
       return F2 | 0;
     }
-    if (!(i2 & 7985152)) {
-      sa(f2, o2);
-      n2 = f2 + 132 | 0;
-      l2 = f2 + 136 | 0;
-      k2 = 0;
+    if (!(i5 & 7985152)) {
+      sa(f4, o5);
+      n6 = f4 + 132 | 0;
+      l4 = f4 + 136 | 0;
+      k3 = 0;
       a:
         while (1) {
-          if ((k2 | 0) >= (c[n2 >> 2] | 0)) {
+          if ((k3 | 0) >= (c4[n6 >> 2] | 0)) {
             F2 = 2;
             J2 = 89;
             break;
           }
-          if (!k2) {
-            i2 = 0;
-            h2 = c[l2 >> 2] | 0;
+          if (!k3) {
+            i5 = 0;
+            h4 = c4[l4 >> 2] | 0;
           } else {
-            h2 = c[l2 >> 2] | 0;
-            i2 = c[h2 + (k2 + -1 << 3) >> 2] | 0;
+            h4 = c4[l4 >> 2] | 0;
+            i5 = c4[h4 + (k3 + -1 << 3) >> 2] | 0;
           }
-          m2 = c[h2 + (k2 << 3) >> 2] | 0;
-          j2 = c[h2 + (k2 << 3) + 4 >> 2] & 255;
+          m3 = c4[h4 + (k3 << 3) >> 2] | 0;
+          j3 = c4[h4 + (k3 << 3) + 4 >> 2] & 255;
           while (1) {
-            if ((i2 | 0) >= (m2 | 0))
+            if ((i5 | 0) >= (m3 | 0))
               break;
-            a[K2 + i2 >> 0] = j2;
+            a3[K2 + i5 >> 0] = j3;
             b:
               do
-                switch (a[I2 + i2 >> 0] | 0) {
+                switch (a3[I3 + i5 >> 0] | 0) {
                   case 18:
                     break;
                   case 7: {
-                    h2 = i2 + 1 | 0;
-                    if ((h2 | 0) < (H2 | 0)) {
-                      if ((b[G2 + (i2 << 1) >> 1] | 0) == 13 ? (b[G2 + (h2 << 1) >> 1] | 0) == 10 : 0)
+                    h4 = i5 + 1 | 0;
+                    if ((h4 | 0) < (H3 | 0)) {
+                      if ((b3[G2 + (i5 << 1) >> 1] | 0) == 13 ? (b3[G2 + (h4 << 1) >> 1] | 0) == 10 : 0)
                         break b;
-                      ta(o2, j2);
+                      ta(o5, j3);
                     }
                     break;
                   }
                   default:
-                    if (!((ua(o2, i2) | 0) << 24 >> 24))
+                    if (!((ua(o5, i5) | 0) << 24 >> 24))
                       break a;
                 }
               while (0);
-            i2 = i2 + 1 | 0;
+            i5 = i5 + 1 | 0;
           }
-          k2 = k2 + 1 | 0;
+          k3 = k3 + 1 | 0;
         }
       if ((J2 | 0) == 89) {
-        E = L2;
+        E2 = L3;
         return F2 | 0;
       }
-      c[g2 >> 2] = 7;
+      c4[g3 >> 2] = 7;
       K2 = 0;
-      E = L2;
+      E2 = L3;
       return K2 | 0;
     }
-    sa(f2, C2);
-    b[B2 >> 1] = j2 & 255;
-    v2 = f2 + 93 | 0;
-    w2 = f2 + 136 | 0;
-    u2 = f2 + 132 | 0;
-    r2 = 0;
-    p2 = 0;
-    s2 = 0;
-    i2 = 0;
-    m2 = 0;
-    g2 = j2;
-    q2 = j2;
-    h2 = 0;
-    t2 = 0;
+    sa(f4, C3);
+    b3[B2 >> 1] = j3 & 255;
+    v3 = f4 + 93 | 0;
+    w3 = f4 + 136 | 0;
+    u4 = f4 + 132 | 0;
+    r6 = 0;
+    p4 = 0;
+    s5 = 0;
+    i5 = 0;
+    m3 = 0;
+    g3 = j3;
+    q2 = j3;
+    h4 = 0;
+    t5 = 0;
     c:
       while (1) {
-        if ((t2 | 0) >= (H2 | 0))
+        if ((t5 | 0) >= (H3 | 0))
           break;
-        o2 = I2 + t2 | 0;
-        l2 = a[o2 >> 0] | 0;
-        n2 = l2 & 255;
+        o5 = I3 + t5 | 0;
+        l4 = a3[o5 >> 0] | 0;
+        n6 = l4 & 255;
         d:
           do
-            switch (l2 << 24 >> 24) {
+            switch (l4 << 24 >> 24) {
               case 15:
               case 12:
               case 14:
               case 11: {
-                h2 = h2 | 262144;
-                a[K2 + t2 >> 0] = g2;
-                if ((l2 + -11 & 255) < 2)
-                  j2 = q2 + 2 & 126;
+                h4 = h4 | 262144;
+                a3[K2 + t5 >> 0] = g3;
+                if ((l4 + -11 & 255) < 2)
+                  j3 = q2 + 2 & 126;
                 else
-                  j2 = (q2 & 127) + 1 << 24 >> 24 | 1;
-                if (!((p2 | s2 | 0) == 0 & (j2 & 255) < 126)) {
-                  k2 = r2;
-                  p2 = p2 + ((s2 | 0) == 0 & 1) | 0;
-                  l2 = s2;
-                  j2 = q2;
+                  j3 = (q2 & 127) + 1 << 24 >> 24 | 1;
+                if (!((p4 | s5 | 0) == 0 & (j3 & 255) < 126)) {
+                  k3 = r6;
+                  p4 = p4 + ((s5 | 0) == 0 & 1) | 0;
+                  l4 = s5;
+                  j3 = q2;
                   break d;
                 }
-                switch (l2 << 24 >> 24) {
+                switch (l4 << 24 >> 24) {
                   case 15:
                   case 12: {
-                    j2 = j2 | -128;
+                    j3 = j3 | -128;
                     break;
                   }
                   default: {
                   }
                 }
-                i2 = i2 + 1 | 0;
-                b[B2 + (i2 << 1) >> 1] = j2 & 255;
-                k2 = r2;
-                l2 = s2;
-                m2 = t2;
+                i5 = i5 + 1 | 0;
+                b3[B2 + (i5 << 1) >> 1] = j3 & 255;
+                k3 = r6;
+                l4 = s5;
+                m3 = t5;
                 break;
               }
               case 16: {
-                h2 = h2 | 262144;
-                a[K2 + t2 >> 0] = g2;
-                if (!s2) {
-                  if (p2 | 0) {
-                    k2 = r2;
-                    p2 = p2 + -1 | 0;
-                    l2 = 0;
-                    j2 = q2;
+                h4 = h4 | 262144;
+                a3[K2 + t5 >> 0] = g3;
+                if (!s5) {
+                  if (p4 | 0) {
+                    k3 = r6;
+                    p4 = p4 + -1 | 0;
+                    l4 = 0;
+                    j3 = q2;
                     break d;
                   }
-                  if (i2) {
-                    n2 = i2 + -1 | 0;
-                    if ((e[B2 + (i2 << 1) >> 1] | 0) < 256) {
-                      k2 = r2;
-                      p2 = 0;
-                      l2 = 0;
-                      m2 = t2;
-                      j2 = b[B2 + (n2 << 1) >> 1] & 255;
-                      i2 = n2;
+                  if (i5) {
+                    n6 = i5 + -1 | 0;
+                    if ((e5[B2 + (i5 << 1) >> 1] | 0) < 256) {
+                      k3 = r6;
+                      p4 = 0;
+                      l4 = 0;
+                      m3 = t5;
+                      j3 = b3[B2 + (n6 << 1) >> 1] & 255;
+                      i5 = n6;
                     } else {
-                      k2 = r2;
-                      p2 = 0;
-                      l2 = 0;
-                      j2 = q2;
+                      k3 = r6;
+                      p4 = 0;
+                      l4 = 0;
+                      j3 = q2;
                     }
                   } else {
-                    k2 = r2;
-                    p2 = 0;
-                    l2 = 0;
-                    j2 = q2;
-                    i2 = 0;
+                    k3 = r6;
+                    p4 = 0;
+                    l4 = 0;
+                    j3 = q2;
+                    i5 = 0;
                   }
                 } else {
-                  k2 = r2;
-                  l2 = s2;
-                  j2 = q2;
+                  k3 = r6;
+                  l4 = s5;
+                  j3 = q2;
                 }
                 break;
               }
               case 21:
               case 20: {
-                k2 = q2 & 255;
-                h2 = h2 | c[69880 + ((k2 & 1) << 2) >> 2];
-                j2 = k2 & 127;
-                a[K2 + t2 >> 0] = j2;
-                if ((j2 | 0) == (g2 & 127 | 0))
-                  h2 = h2 | 1024;
+                k3 = q2 & 255;
+                h4 = h4 | c4[69880 + ((k3 & 1) << 2) >> 2];
+                j3 = k3 & 127;
+                a3[K2 + t5 >> 0] = j3;
+                if ((j3 | 0) == (g3 & 127 | 0))
+                  h4 = h4 | 1024;
                 else {
-                  va(C2, m2, g2, q2);
-                  h2 = h2 | -2147482624;
+                  va(C3, m3, g3, q2);
+                  h4 = h4 | -2147482624;
                 }
-                l2 = l2 << 24 >> 24 == 20 ? k2 + 2 & 382 : j2 + 1 | 1;
-                j2 = l2 & 255;
-                if (!((p2 | s2 | 0) == 0 & (l2 & 254) >>> 0 < 126)) {
-                  a[o2 >> 0] = 9;
-                  g2 = q2;
-                  k2 = r2;
-                  l2 = s2 + 1 | 0;
-                  j2 = q2;
+                l4 = l4 << 24 >> 24 == 20 ? k3 + 2 & 382 : j3 + 1 | 1;
+                j3 = l4 & 255;
+                if (!((p4 | s5 | 0) == 0 & (l4 & 254) >>> 0 < 126)) {
+                  a3[o5 >> 0] = 9;
+                  g3 = q2;
+                  k3 = r6;
+                  l4 = s5 + 1 | 0;
+                  j3 = q2;
                   break d;
                 }
-                k2 = r2 + 1 | 0;
-                if ((r2 | 0) >= (c[x2 >> 2] | 0))
-                  c[x2 >> 2] = k2;
-                i2 = i2 + 1 | 0;
-                b[B2 + (i2 << 1) >> 1] = l2 | 256;
-                wa(C2, j2);
-                g2 = q2;
-                l2 = s2;
-                m2 = t2;
-                h2 = h2 | 1 << n2;
+                k3 = r6 + 1 | 0;
+                if ((r6 | 0) >= (c4[x3 >> 2] | 0))
+                  c4[x3 >> 2] = k3;
+                i5 = i5 + 1 | 0;
+                b3[B2 + (i5 << 1) >> 1] = l4 | 256;
+                wa(C3, j3);
+                g3 = q2;
+                l4 = s5;
+                m3 = t5;
+                h4 = h4 | 1 << n6;
                 break;
               }
               case 22: {
-                if ((g2 ^ q2) & 127) {
-                  va(C2, m2, g2, q2);
-                  h2 = h2 | -2147483648;
+                if ((g3 ^ q2) & 127) {
+                  va(C3, m3, g3, q2);
+                  h4 = h4 | -2147483648;
                 }
                 do
-                  if (!s2) {
-                    if (!r2) {
-                      a[o2 >> 0] = 9;
-                      k2 = 0;
-                      j2 = p2;
-                      l2 = 0;
+                  if (!s5) {
+                    if (!r6) {
+                      a3[o5 >> 0] = 9;
+                      k3 = 0;
+                      j3 = p4;
+                      l4 = 0;
                       break;
                     }
                     do {
-                      s2 = i2;
-                      i2 = i2 + -1 | 0;
-                    } while ((e[B2 + (s2 << 1) >> 1] | 0) < 256);
-                    xa(C2);
-                    k2 = r2 + -1 | 0;
-                    j2 = 0;
-                    l2 = 0;
-                    m2 = t2;
-                    h2 = h2 | 4194304;
+                      s5 = i5;
+                      i5 = i5 + -1 | 0;
+                    } while ((e5[B2 + (s5 << 1) >> 1] | 0) < 256);
+                    xa(C3);
+                    k3 = r6 + -1 | 0;
+                    j3 = 0;
+                    l4 = 0;
+                    m3 = t5;
+                    h4 = h4 | 4194304;
                   } else {
-                    a[o2 >> 0] = 9;
-                    k2 = r2;
-                    j2 = p2;
-                    l2 = s2 + -1 | 0;
+                    a3[o5 >> 0] = 9;
+                    k3 = r6;
+                    j3 = p4;
+                    l4 = s5 + -1 | 0;
                   }
                 while (0);
-                g2 = b[B2 + (i2 << 1) >> 1] | 0;
-                s2 = g2 & 255;
-                g2 = g2 & 255;
-                h2 = h2 | c[69880 + ((g2 & 1) << 2) >> 2] | 1024;
-                a[K2 + t2 >> 0] = g2 & 127;
-                g2 = s2;
-                p2 = j2;
-                j2 = s2;
+                g3 = b3[B2 + (i5 << 1) >> 1] | 0;
+                s5 = g3 & 255;
+                g3 = g3 & 255;
+                h4 = h4 | c4[69880 + ((g3 & 1) << 2) >> 2] | 1024;
+                a3[K2 + t5 >> 0] = g3 & 127;
+                g3 = s5;
+                p4 = j3;
+                j3 = s5;
                 break;
               }
               case 7: {
-                h2 = h2 | 128;
-                if ((a[y2 >> 0] | 0) != 0 ? (z2 = c[w2 >> 2] | 0, (t2 | 0) >= (c[z2 >> 2] | 0)) : 0)
-                  j2 = da(c[u2 >> 2] | 0, z2, t2) | 0;
+                h4 = h4 | 128;
+                if ((a3[y4 >> 0] | 0) != 0 ? (z2 = c4[w3 >> 2] | 0, (t5 | 0) >= (c4[z2 >> 2] | 0)) : 0)
+                  j3 = da(c4[u4 >> 2] | 0, z2, t5) | 0;
                 else
-                  j2 = a[v2 >> 0] | 0;
-                a[K2 + t2 >> 0] = j2;
-                j2 = t2 + 1 | 0;
-                if ((j2 | 0) < (H2 | 0)) {
-                  if ((b[G2 + (t2 << 1) >> 1] | 0) == 13 ? (b[G2 + (j2 << 1) >> 1] | 0) == 10 : 0) {
-                    k2 = r2;
-                    l2 = s2;
-                    j2 = q2;
+                  j3 = a3[v3 >> 0] | 0;
+                a3[K2 + t5 >> 0] = j3;
+                j3 = t5 + 1 | 0;
+                if ((j3 | 0) < (H3 | 0)) {
+                  if ((b3[G2 + (t5 << 1) >> 1] | 0) == 13 ? (b3[G2 + (j3 << 1) >> 1] | 0) == 10 : 0) {
+                    k3 = r6;
+                    l4 = s5;
+                    j3 = q2;
                     break d;
                   }
-                  if ((a[y2 >> 0] | 0) != 0 ? (A2 = c[w2 >> 2] | 0, (j2 | 0) >= (c[A2 >> 2] | 0)) : 0)
-                    i2 = da(c[u2 >> 2] | 0, A2, j2) | 0;
+                  if ((a3[y4 >> 0] | 0) != 0 ? (A3 = c4[w3 >> 2] | 0, (j3 | 0) >= (c4[A3 >> 2] | 0)) : 0)
+                    i5 = da(c4[u4 >> 2] | 0, A3, j3) | 0;
                   else
-                    i2 = a[v2 >> 0] | 0;
-                  b[B2 >> 1] = i2 & 255;
-                  ta(C2, i2);
-                  g2 = i2;
-                  k2 = 0;
-                  p2 = 0;
-                  l2 = 0;
-                  j2 = i2;
-                  i2 = 0;
+                    i5 = a3[v3 >> 0] | 0;
+                  b3[B2 >> 1] = i5 & 255;
+                  ta(C3, i5);
+                  g3 = i5;
+                  k3 = 0;
+                  p4 = 0;
+                  l4 = 0;
+                  j3 = i5;
+                  i5 = 0;
                 } else {
-                  k2 = r2;
-                  l2 = s2;
-                  j2 = q2;
+                  k3 = r6;
+                  l4 = s5;
+                  j3 = q2;
                 }
                 break;
               }
               case 18: {
-                a[K2 + t2 >> 0] = g2;
-                k2 = r2;
-                l2 = s2;
-                j2 = q2;
-                h2 = h2 | 262144;
+                a3[K2 + t5 >> 0] = g3;
+                k3 = r6;
+                l4 = s5;
+                j3 = q2;
+                h4 = h4 | 262144;
                 break;
               }
               default: {
-                j2 = q2 & 255;
-                if ((j2 & 127 | 0) == (g2 & 127 | 0))
-                  n2 = h2;
+                j3 = q2 & 255;
+                if ((j3 & 127 | 0) == (g3 & 127 | 0))
+                  n6 = h4;
                 else {
-                  va(C2, m2, g2, q2);
-                  n2 = c[((j2 & 128 | 0) == 0 ? 70024 : 70016) + ((j2 & 1) << 2) >> 2] | (h2 | -2147483648);
+                  va(C3, m3, g3, q2);
+                  n6 = c4[((j3 & 128 | 0) == 0 ? 70024 : 70016) + ((j3 & 1) << 2) >> 2] | (h4 | -2147483648);
                 }
-                a[K2 + t2 >> 0] = q2;
-                if (!((ua(C2, t2) | 0) << 24 >> 24)) {
+                a3[K2 + t5 >> 0] = q2;
+                if (!((ua(C3, t5) | 0) << 24 >> 24)) {
                   F2 = -1;
                   J2 = 89;
                   break c;
                 }
-                g2 = q2;
-                k2 = r2;
-                l2 = s2;
-                j2 = q2;
-                h2 = 1 << d[o2 >> 0] | n2;
+                g3 = q2;
+                k3 = r6;
+                l4 = s5;
+                j3 = q2;
+                h4 = 1 << d3[o5 >> 0] | n6;
               }
             }
           while (0);
-        r2 = k2;
-        s2 = l2;
-        q2 = j2;
-        t2 = t2 + 1 | 0;
+        r6 = k3;
+        s5 = l4;
+        q2 = j3;
+        t5 = t5 + 1 | 0;
       }
     if ((J2 | 0) == 89) {
-      E = L2;
+      E2 = L3;
       return F2 | 0;
     }
-    if (h2 & 8380376)
-      h2 = c[69880 + ((a[v2 >> 0] & 1) << 2) >> 2] | h2;
-    K2 = h2 | (h2 & 128 | 0) != 0 & (a[f2 + 92 >> 0] | 0) != 0 & 1;
-    c[D2 >> 2] = K2;
+    if (h4 & 8380376)
+      h4 = c4[69880 + ((a3[v3 >> 0] & 1) << 2) >> 2] | h4;
+    K2 = h4 | (h4 & 128 | 0) != 0 & (a3[f4 + 92 >> 0] | 0) != 0 & 1;
+    c4[D2 >> 2] = K2;
     K2 = ra(K2) | 0;
-    E = L2;
+    E2 = L3;
     return K2 | 0;
   }
-  function ja(d2, e2, f2, g2, h2) {
-    d2 = d2 | 0;
-    e2 = e2 | 0;
-    f2 = f2 | 0;
-    g2 = g2 | 0;
-    h2 = h2 | 0;
-    var i2 = 0, j2 = 0, k2 = 0, l2 = 0, m2 = 0, n2 = 0, o2 = 0, p2 = 0, q2 = 0, r2 = 0, s2 = 0, t2 = 0, u2 = 0;
-    u2 = E;
-    E = E + 32 | 0;
-    s2 = u2;
-    t2 = c[d2 + 72 >> 2] | 0;
-    if ((c[d2 + 124 >> 2] | 0) > (e2 | 0)) {
-      if ((a[d2 + 94 >> 0] | 0) != 0 ? (i2 = c[d2 + 136 >> 2] | 0, (c[i2 >> 2] | 0) <= (e2 | 0)) : 0)
-        i2 = da(c[d2 + 132 >> 2] | 0, i2, e2) | 0;
+  function ja(d4, e6, f4, g3, h4) {
+    d4 = d4 | 0;
+    e6 = e6 | 0;
+    f4 = f4 | 0;
+    g3 = g3 | 0;
+    h4 = h4 | 0;
+    var i5 = 0, j3 = 0, k3 = 0, l4 = 0, m3 = 0, n6 = 0, o5 = 0, p4 = 0, q2 = 0, r6 = 0, s5 = 0, t5 = 0, u4 = 0;
+    u4 = E2;
+    E2 = E2 + 32 | 0;
+    s5 = u4;
+    t5 = c4[d4 + 72 >> 2] | 0;
+    if ((c4[d4 + 124 >> 2] | 0) > (e6 | 0)) {
+      if ((a3[d4 + 94 >> 0] | 0) != 0 ? (i5 = c4[d4 + 136 >> 2] | 0, (c4[i5 >> 2] | 0) <= (e6 | 0)) : 0)
+        i5 = da(c4[d4 + 132 >> 2] | 0, i5, e6) | 0;
       else
-        i2 = a[d2 + 93 >> 0] | 0;
-      if (i2 & 1)
-        q2 = ((c[d2 + 84 >> 2] | 0) + -5 | 0) >>> 0 < 2;
+        i5 = a3[d4 + 93 >> 0] | 0;
+      if (i5 & 1)
+        q2 = ((c4[d4 + 84 >> 2] | 0) + -5 | 0) >>> 0 < 2;
       else
         q2 = 0;
     } else
       q2 = 0;
-    c[s2 + 12 >> 2] = -1;
-    c[s2 + 16 >> 2] = -1;
-    c[s2 + 24 >> 2] = e2;
-    r2 = a[(c[d2 + 76 >> 2] | 0) + e2 >> 0] | 0;
-    a[s2 + 28 >> 0] = r2;
-    p2 = c[d2 + 112 >> 2] | 0;
-    r2 = r2 & 1;
-    c[s2 >> 2] = c[p2 + (r2 << 2) >> 2];
-    c[s2 + 4 >> 2] = c[p2 + 8 + (r2 << 2) >> 2];
-    if ((e2 | 0) == 0 ? (c[d2 + 100 >> 2] | 0) > 0 : 0) {
-      i2 = ma(d2) | 0;
-      i2 = i2 << 24 >> 24 == 4 ? g2 : i2;
+    c4[s5 + 12 >> 2] = -1;
+    c4[s5 + 16 >> 2] = -1;
+    c4[s5 + 24 >> 2] = e6;
+    r6 = a3[(c4[d4 + 76 >> 2] | 0) + e6 >> 0] | 0;
+    a3[s5 + 28 >> 0] = r6;
+    p4 = c4[d4 + 112 >> 2] | 0;
+    r6 = r6 & 1;
+    c4[s5 >> 2] = c4[p4 + (r6 << 2) >> 2];
+    c4[s5 + 4 >> 2] = c4[p4 + 8 + (r6 << 2) >> 2];
+    if ((e6 | 0) == 0 ? (c4[d4 + 100 >> 2] | 0) > 0 : 0) {
+      i5 = ma(d4) | 0;
+      i5 = i5 << 24 >> 24 == 4 ? g3 : i5;
     } else
-      i2 = g2;
-    g2 = t2 + e2 | 0;
-    r2 = d2 + 240 | 0;
-    if ((a[g2 >> 0] | 0) == 22 ? (j2 = c[r2 >> 2] | 0, (j2 | 0) > -1) : 0) {
-      o2 = c[d2 + 244 >> 2] | 0;
-      c[s2 + 8 >> 2] = c[o2 + (j2 << 4) >> 2];
-      g2 = c[o2 + (j2 << 4) + 4 >> 2] | 0;
-      p2 = b[o2 + (j2 << 4) + 12 >> 1] | 0;
-      c[s2 + 20 >> 2] = c[o2 + (j2 << 4) + 8 >> 2];
-      c[r2 >> 2] = j2 + -1;
-      j2 = p2;
+      i5 = g3;
+    g3 = t5 + e6 | 0;
+    r6 = d4 + 240 | 0;
+    if ((a3[g3 >> 0] | 0) == 22 ? (j3 = c4[r6 >> 2] | 0, (j3 | 0) > -1) : 0) {
+      o5 = c4[d4 + 244 >> 2] | 0;
+      c4[s5 + 8 >> 2] = c4[o5 + (j3 << 4) >> 2];
+      g3 = c4[o5 + (j3 << 4) + 4 >> 2] | 0;
+      p4 = b3[o5 + (j3 << 4) + 12 >> 1] | 0;
+      c4[s5 + 20 >> 2] = c4[o5 + (j3 << 4) + 8 >> 2];
+      c4[r6 >> 2] = j3 + -1;
+      j3 = p4;
     } else {
-      c[s2 + 8 >> 2] = -1;
-      j2 = (a[g2 >> 0] | 0) == 17 ? (i2 & 255) + 1 & 65535 : 0;
-      c[s2 + 20 >> 2] = 0;
-      na(d2, s2, i2, e2, e2);
-      g2 = e2;
+      c4[s5 + 8 >> 2] = -1;
+      j3 = (a3[g3 >> 0] | 0) == 17 ? (i5 & 255) + 1 & 65535 : 0;
+      c4[s5 + 20 >> 2] = 0;
+      na(d4, s5, i5, e6, e6);
+      g3 = e6;
     }
-    i2 = -1;
-    m2 = 1;
-    n2 = e2;
-    o2 = e2;
-    p2 = g2;
-    l2 = j2;
+    i5 = -1;
+    m3 = 1;
+    n6 = e6;
+    o5 = e6;
+    p4 = g3;
+    l4 = j3;
     while (1) {
-      if ((n2 | 0) > (f2 | 0))
+      if ((n6 | 0) > (f4 | 0))
         break;
-      if ((n2 | 0) >= (f2 | 0)) {
-        g2 = f2;
+      if ((n6 | 0) >= (f4 | 0)) {
+        g3 = f4;
         do {
-          g2 = g2 + -1 | 0;
-          j2 = a[t2 + g2 >> 0] | 0;
-          if ((g2 | 0) <= (e2 | 0))
+          g3 = g3 + -1 | 0;
+          j3 = a3[t5 + g3 >> 0] | 0;
+          if ((g3 | 0) <= (e6 | 0))
             break;
-        } while ((1 << (j2 & 255) & 382976 | 0) != 0);
-        if ((j2 & -2) << 24 >> 24 == 20)
+        } while ((1 << (j3 & 255) & 382976 | 0) != 0);
+        if ((j3 & -2) << 24 >> 24 == 20)
           break;
         else {
-          k2 = h2;
-          j2 = m2;
+          k3 = h4;
+          j3 = m3;
         }
       } else {
-        g2 = a[t2 + n2 >> 0] | 0;
-        if (g2 << 24 >> 24 == 7)
-          c[r2 >> 2] = -1;
+        g3 = a3[t5 + n6 >> 0] | 0;
+        if (g3 << 24 >> 24 == 7)
+          c4[r6 >> 2] = -1;
         a:
           do
             if (q2) {
-              switch (g2 << 24 >> 24) {
+              switch (g3 << 24 >> 24) {
                 case 13: {
-                  g2 = 1;
-                  j2 = m2;
+                  g3 = 1;
+                  j3 = m3;
                   break a;
                 }
                 case 2:
                   break;
                 default: {
-                  j2 = m2;
+                  j3 = m3;
                   break a;
                 }
               }
               b:
                 do
-                  if ((i2 | 0) > (n2 | 0))
-                    j2 = m2;
+                  if ((i5 | 0) > (n6 | 0))
+                    j3 = m3;
                   else {
-                    i2 = n2;
+                    i5 = n6;
                     while (1) {
-                      i2 = i2 + 1 | 0;
-                      if ((i2 | 0) >= (f2 | 0)) {
-                        g2 = 2;
-                        i2 = f2;
-                        j2 = 1;
+                      i5 = i5 + 1 | 0;
+                      if ((i5 | 0) >= (f4 | 0)) {
+                        g3 = 2;
+                        i5 = f4;
+                        j3 = 1;
                         break a;
                       }
-                      g2 = a[t2 + i2 >> 0] | 0;
-                      switch (g2 << 24 >> 24) {
+                      g3 = a3[t5 + i5 >> 0] | 0;
+                      switch (g3 << 24 >> 24) {
                         case 13:
                         case 1:
                         case 0: {
-                          j2 = g2;
+                          j3 = g3;
                           break b;
                         }
                         default: {
@@ -22635,1505 +22756,1505 @@ var asm = function(global, env, buffer2) {
                     }
                   }
                 while (0);
-              g2 = j2 << 24 >> 24 == 13 ? 5 : 2;
+              g3 = j3 << 24 >> 24 == 13 ? 5 : 2;
             } else
-              j2 = m2;
+              j3 = m3;
           while (0);
-        k2 = a[16 + (g2 & 255) >> 0] | 0;
+        k3 = a3[16 + (g3 & 255) >> 0] | 0;
       }
-      g2 = l2 & 65535;
-      k2 = a[(k2 & 255) + (48 + (g2 << 4)) >> 0] | 0;
-      l2 = k2 & 31;
-      k2 = (k2 & 255) >>> 5;
-      k2 = (n2 | 0) == (f2 | 0) & k2 << 24 >> 24 == 0 ? 1 : k2 & 255;
+      g3 = l4 & 65535;
+      k3 = a3[(k3 & 255) + (48 + (g3 << 4)) >> 0] | 0;
+      l4 = k3 & 31;
+      k3 = (k3 & 255) >>> 5;
+      k3 = (n6 | 0) == (f4 | 0) & k3 << 24 >> 24 == 0 ? 1 : k3 & 255;
       c:
         do
-          if (!(k2 << 16 >> 16)) {
-            k2 = o2;
-            g2 = p2;
+          if (!(k3 << 16 >> 16)) {
+            k3 = o5;
+            g3 = p4;
           } else {
-            g2 = a[48 + (g2 << 4) + 15 >> 0] | 0;
-            switch (k2 & 7) {
+            g3 = a3[48 + (g3 << 4) + 15 >> 0] | 0;
+            switch (k3 & 7) {
               case 1: {
-                na(d2, s2, g2, p2, n2);
-                k2 = o2;
-                g2 = n2;
+                na(d4, s5, g3, p4, n6);
+                k3 = o5;
+                g3 = n6;
                 break c;
               }
               case 2: {
-                k2 = n2;
-                g2 = p2;
+                k3 = n6;
+                g3 = p4;
                 break c;
               }
               case 3: {
-                na(d2, s2, g2, p2, o2);
-                na(d2, s2, 4, o2, n2);
-                k2 = o2;
-                g2 = n2;
+                na(d4, s5, g3, p4, o5);
+                na(d4, s5, 4, o5, n6);
+                k3 = o5;
+                g3 = n6;
                 break c;
               }
               case 4: {
-                na(d2, s2, g2, p2, o2);
-                k2 = n2;
-                g2 = o2;
+                na(d4, s5, g3, p4, o5);
+                k3 = n6;
+                g3 = o5;
                 break c;
               }
               default: {
-                k2 = o2;
-                g2 = p2;
+                k3 = o5;
+                g3 = p4;
                 break c;
               }
             }
           }
         while (0);
-      m2 = j2;
-      n2 = n2 + 1 | 0;
-      o2 = k2;
-      p2 = g2;
+      m3 = j3;
+      n6 = n6 + 1 | 0;
+      o5 = k3;
+      p4 = g3;
     }
-    k2 = d2 + 12 | 0;
-    if ((c[k2 >> 2] | 0) == (f2 | 0) ? (c[d2 + 108 >> 2] | 0) > 0 : 0) {
-      i2 = oa(d2) | 0;
-      i2 = i2 << 24 >> 24 == 4 ? h2 : i2;
+    k3 = d4 + 12 | 0;
+    if ((c4[k3 >> 2] | 0) == (f4 | 0) ? (c4[d4 + 108 >> 2] | 0) > 0 : 0) {
+      i5 = oa(d4) | 0;
+      i5 = i5 << 24 >> 24 == 4 ? h4 : i5;
     } else
-      i2 = h2;
-    g2 = f2;
+      i5 = h4;
+    g3 = f4;
     do {
-      g2 = g2 + -1 | 0;
-      j2 = a[t2 + g2 >> 0] | 0;
-      if ((g2 | 0) <= (e2 | 0))
+      g3 = g3 + -1 | 0;
+      j3 = a3[t5 + g3 >> 0] | 0;
+      if ((g3 | 0) <= (e6 | 0))
         break;
-    } while ((1 << (j2 & 255) & 382976 | 0) != 0);
-    if ((j2 & -2) << 24 >> 24 == 20 ? (c[k2 >> 2] | 0) > (f2 | 0) : 0) {
-      f2 = (c[r2 >> 2] | 0) + 1 | 0;
-      c[r2 >> 2] = f2;
-      t2 = d2 + 244 | 0;
-      b[(c[t2 >> 2] | 0) + (f2 << 4) + 12 >> 1] = l2;
-      c[(c[t2 >> 2] | 0) + (c[r2 >> 2] << 4) + 8 >> 2] = c[s2 + 20 >> 2];
-      c[(c[t2 >> 2] | 0) + (c[r2 >> 2] << 4) + 4 >> 2] = p2;
-      c[(c[t2 >> 2] | 0) + (c[r2 >> 2] << 4) >> 2] = c[s2 + 8 >> 2];
-      E = u2;
+    } while ((1 << (j3 & 255) & 382976 | 0) != 0);
+    if ((j3 & -2) << 24 >> 24 == 20 ? (c4[k3 >> 2] | 0) > (f4 | 0) : 0) {
+      f4 = (c4[r6 >> 2] | 0) + 1 | 0;
+      c4[r6 >> 2] = f4;
+      t5 = d4 + 244 | 0;
+      b3[(c4[t5 >> 2] | 0) + (f4 << 4) + 12 >> 1] = l4;
+      c4[(c4[t5 >> 2] | 0) + (c4[r6 >> 2] << 4) + 8 >> 2] = c4[s5 + 20 >> 2];
+      c4[(c4[t5 >> 2] | 0) + (c4[r6 >> 2] << 4) + 4 >> 2] = p4;
+      c4[(c4[t5 >> 2] | 0) + (c4[r6 >> 2] << 4) >> 2] = c4[s5 + 8 >> 2];
+      E2 = u4;
       return;
     }
-    na(d2, s2, i2, f2, f2);
-    E = u2;
+    na(d4, s5, i5, f4, f4);
+    E2 = u4;
     return;
   }
-  function ka(b2) {
-    b2 = b2 | 0;
-    var d2 = 0, e2 = 0, f2 = 0, g2 = 0, h2 = 0, i2 = 0, j2 = 0, k2 = 0, l2 = 0, m2 = 0, n2 = 0, o2 = 0, p2 = 0;
-    l2 = c[b2 + 72 >> 2] | 0;
-    n2 = c[b2 + 76 >> 2] | 0;
-    if (!(c[b2 + 120 >> 2] & 8248192))
+  function ka(b4) {
+    b4 = b4 | 0;
+    var d4 = 0, e6 = 0, f4 = 0, g3 = 0, h4 = 0, i5 = 0, j3 = 0, k3 = 0, l4 = 0, m3 = 0, n6 = 0, o5 = 0, p4 = 0;
+    l4 = c4[b4 + 72 >> 2] | 0;
+    n6 = c4[b4 + 76 >> 2] | 0;
+    if (!(c4[b4 + 120 >> 2] & 8248192))
       return;
-    h2 = (a[b2 + 92 >> 0] | 0) != 0;
-    i2 = b2 + 94 | 0;
-    j2 = b2 + 93 | 0;
-    k2 = b2 + 136 | 0;
-    g2 = b2 + 132 | 0;
-    b2 = c[b2 + 128 >> 2] | 0;
+    h4 = (a3[b4 + 92 >> 0] | 0) != 0;
+    i5 = b4 + 94 | 0;
+    j3 = b4 + 93 | 0;
+    k3 = b4 + 136 | 0;
+    g3 = b4 + 132 | 0;
+    b4 = c4[b4 + 128 >> 2] | 0;
     while (1) {
-      if ((b2 | 0) <= 0)
+      if ((b4 | 0) <= 0)
         break;
       while (1) {
-        if ((b2 | 0) <= 0)
+        if ((b4 | 0) <= 0)
           break;
-        e2 = b2 + -1 | 0;
-        d2 = a[l2 + e2 >> 0] | 0;
-        if (!(1 << (d2 & 255) & 8248192)) {
-          b2 = e2;
+        e6 = b4 + -1 | 0;
+        d4 = a3[l4 + e6 >> 0] | 0;
+        if (!(1 << (d4 & 255) & 8248192)) {
+          b4 = e6;
           break;
         }
         do
-          if (h2 & d2 << 24 >> 24 == 7)
-            b2 = 0;
+          if (h4 & d4 << 24 >> 24 == 7)
+            b4 = 0;
           else {
-            if (a[i2 >> 0] | 0 ? (m2 = c[k2 >> 2] | 0, (b2 | 0) > (c[m2 >> 2] | 0)) : 0) {
-              b2 = da(c[g2 >> 2] | 0, m2, e2) | 0;
+            if (a3[i5 >> 0] | 0 ? (m3 = c4[k3 >> 2] | 0, (b4 | 0) > (c4[m3 >> 2] | 0)) : 0) {
+              b4 = da(c4[g3 >> 2] | 0, m3, e6) | 0;
               break;
             }
-            b2 = a[j2 >> 0] | 0;
+            b4 = a3[j3 >> 0] | 0;
           }
         while (0);
-        a[n2 + e2 >> 0] = b2;
-        b2 = e2;
+        a3[n6 + e6 >> 0] = b4;
+        b4 = e6;
       }
       while (1) {
-        if ((b2 | 0) <= 0)
+        if ((b4 | 0) <= 0)
           break;
-        f2 = b2 + -1 | 0;
-        d2 = a[l2 + f2 >> 0] | 0;
-        e2 = 1 << (d2 & 255);
-        if (!(e2 & 382976)) {
-          if (h2 & d2 << 24 >> 24 == 7) {
-            b2 = 0;
-            p2 = 24;
+        f4 = b4 + -1 | 0;
+        d4 = a3[l4 + f4 >> 0] | 0;
+        e6 = 1 << (d4 & 255);
+        if (!(e6 & 382976)) {
+          if (h4 & d4 << 24 >> 24 == 7) {
+            b4 = 0;
+            p4 = 24;
             break;
           }
-          if (e2 & 384 | 0) {
-            p2 = 20;
+          if (e6 & 384 | 0) {
+            p4 = 20;
             break;
           }
         } else
-          a[n2 + f2 >> 0] = a[n2 + b2 >> 0] | 0;
-        b2 = f2;
+          a3[n6 + f4 >> 0] = a3[n6 + b4 >> 0] | 0;
+        b4 = f4;
       }
       do
-        if ((p2 | 0) == 20) {
-          if (a[i2 >> 0] | 0 ? (o2 = c[k2 >> 2] | 0, (b2 | 0) > (c[o2 >> 2] | 0)) : 0) {
-            b2 = da(c[g2 >> 2] | 0, o2, f2) | 0;
-            p2 = 24;
+        if ((p4 | 0) == 20) {
+          if (a3[i5 >> 0] | 0 ? (o5 = c4[k3 >> 2] | 0, (b4 | 0) > (c4[o5 >> 2] | 0)) : 0) {
+            b4 = da(c4[g3 >> 2] | 0, o5, f4) | 0;
+            p4 = 24;
             break;
           }
-          b2 = a[j2 >> 0] | 0;
-          p2 = 24;
+          b4 = a3[j3 >> 0] | 0;
+          p4 = 24;
         }
       while (0);
-      if ((p2 | 0) == 24) {
-        p2 = 0;
-        a[n2 + f2 >> 0] = b2;
-        b2 = f2;
+      if ((p4 | 0) == 24) {
+        p4 = 0;
+        a3[n6 + f4 >> 0] = b4;
+        b4 = f4;
       }
     }
     return;
   }
-  function la(a2, b2, d2) {
-    a2 = a2 | 0;
-    b2 = b2 | 0;
-    d2 = d2 | 0;
-    var e2 = 0, f2 = 0, g2 = 0, h2 = 0, i2 = 0, j2 = 0, k2 = 0;
-    k2 = a2 + 328 | 0;
-    e2 = c[k2 >> 2] | 0;
+  function la(a4, b4, d4) {
+    a4 = a4 | 0;
+    b4 = b4 | 0;
+    d4 = d4 | 0;
+    var e6 = 0, f4 = 0, g3 = 0, h4 = 0, i5 = 0, j3 = 0, k3 = 0;
+    k3 = a4 + 328 | 0;
+    e6 = c4[k3 >> 2] | 0;
     do
-      if (!e2) {
-        g2 = lb(80) | 0;
-        e2 = a2 + 344 | 0;
-        c[e2 >> 2] = g2;
-        if (g2 | 0) {
-          c[k2 >> 2] = 10;
-          i2 = e2;
-          f2 = g2;
-          h2 = 10;
+      if (!e6) {
+        g3 = lb(80) | 0;
+        e6 = a4 + 344 | 0;
+        c4[e6 >> 2] = g3;
+        if (g3 | 0) {
+          c4[k3 >> 2] = 10;
+          i5 = e6;
+          f4 = g3;
+          h4 = 10;
           break;
         }
-        c[a2 + 340 >> 2] = 7;
+        c4[a4 + 340 >> 2] = 7;
         return;
       } else {
-        i2 = a2 + 344 | 0;
-        g2 = c[i2 >> 2] | 0;
-        f2 = g2;
-        h2 = e2;
+        i5 = a4 + 344 | 0;
+        g3 = c4[i5 >> 2] | 0;
+        f4 = g3;
+        h4 = e6;
       }
     while (0);
-    j2 = a2 + 332 | 0;
-    e2 = c[j2 >> 2] | 0;
+    j3 = a4 + 332 | 0;
+    e6 = c4[j3 >> 2] | 0;
     do
-      if ((e2 | 0) >= (h2 | 0)) {
-        f2 = mb(g2, h2 << 4) | 0;
-        c[i2 >> 2] = f2;
-        if (f2 | 0) {
-          c[k2 >> 2] = c[k2 >> 2] << 1;
-          e2 = c[j2 >> 2] | 0;
+      if ((e6 | 0) >= (h4 | 0)) {
+        f4 = mb(g3, h4 << 4) | 0;
+        c4[i5 >> 2] = f4;
+        if (f4 | 0) {
+          c4[k3 >> 2] = c4[k3 >> 2] << 1;
+          e6 = c4[j3 >> 2] | 0;
           break;
         }
-        c[i2 >> 2] = g2;
-        c[a2 + 340 >> 2] = 7;
+        c4[i5 >> 2] = g3;
+        c4[a4 + 340 >> 2] = 7;
         return;
       }
     while (0);
-    c[f2 + (e2 << 3) >> 2] = b2;
-    c[f2 + (e2 << 3) + 4 >> 2] = d2;
-    c[j2 >> 2] = (c[j2 >> 2] | 0) + 1;
+    c4[f4 + (e6 << 3) >> 2] = b4;
+    c4[f4 + (e6 << 3) + 4 >> 2] = d4;
+    c4[j3 >> 2] = (c4[j3 >> 2] | 0) + 1;
     return;
   }
-  function ma(a2) {
-    a2 = a2 | 0;
-    var b2 = 0, d2 = 0, f2 = 0, g2 = 0, h2 = 0, i2 = 0;
-    g2 = c[a2 + 96 >> 2] | 0;
-    b2 = c[a2 + 100 >> 2] | 0;
+  function ma(a4) {
+    a4 = a4 | 0;
+    var b4 = 0, d4 = 0, f4 = 0, g3 = 0, h4 = 0, i5 = 0;
+    g3 = c4[a4 + 96 >> 2] | 0;
+    b4 = c4[a4 + 100 >> 2] | 0;
     a:
       while (1) {
-        if ((b2 | 0) <= 0) {
-          b2 = 4;
-          d2 = 8;
+        if ((b4 | 0) <= 0) {
+          b4 = 4;
+          d4 = 8;
           break;
         }
-        f2 = b2 + -1 | 0;
-        d2 = e[g2 + (f2 << 1) >> 1] | 0;
-        if ((b2 | 0) != 1 & (d2 & 64512 | 0) == 56320) {
-          b2 = b2 + -2 | 0;
-          i2 = e[g2 + (b2 << 1) >> 1] | 0;
-          h2 = (i2 & 64512 | 0) == 55296;
-          d2 = h2 ? d2 + -56613888 + (i2 << 10) | 0 : d2;
-          b2 = h2 ? b2 : f2;
+        f4 = b4 + -1 | 0;
+        d4 = e5[g3 + (f4 << 1) >> 1] | 0;
+        if ((b4 | 0) != 1 & (d4 & 64512 | 0) == 56320) {
+          b4 = b4 + -2 | 0;
+          i5 = e5[g3 + (b4 << 1) >> 1] | 0;
+          h4 = (i5 & 64512 | 0) == 55296;
+          d4 = h4 ? d4 + -56613888 + (i5 << 10) | 0 : d4;
+          b4 = h4 ? b4 : f4;
         } else
-          b2 = f2;
-        switch (((pa(a2, d2) | 0) & 255) << 24 >> 24) {
+          b4 = f4;
+        switch (((pa(a4, d4) | 0) & 255) << 24 >> 24) {
           case 13:
           case 1: {
-            d2 = 6;
+            d4 = 6;
             break a;
           }
           case 7: {
-            d2 = 7;
+            d4 = 7;
             break a;
           }
           case 0: {
-            b2 = 0;
-            d2 = 8;
+            b4 = 0;
+            d4 = 8;
             break a;
           }
           default: {
           }
         }
       }
-    if ((d2 | 0) == 6) {
-      i2 = 1;
-      return i2 | 0;
-    } else if ((d2 | 0) == 7) {
-      i2 = 4;
-      return i2 | 0;
-    } else if ((d2 | 0) == 8)
-      return b2 | 0;
+    if ((d4 | 0) == 6) {
+      i5 = 1;
+      return i5 | 0;
+    } else if ((d4 | 0) == 7) {
+      i5 = 4;
+      return i5 | 0;
+    } else if ((d4 | 0) == 8)
+      return b4 | 0;
     return 0;
   }
-  function na(b2, e2, f2, g2, h2) {
-    b2 = b2 | 0;
-    e2 = e2 | 0;
-    f2 = f2 | 0;
-    g2 = g2 | 0;
-    h2 = h2 | 0;
-    var i2 = 0, j2 = 0, k2 = 0, l2 = 0, m2 = 0, n2 = 0, o2 = 0, p2 = 0, q2 = 0, r2 = 0, s2 = 0, t2 = 0;
-    l2 = c[e2 >> 2] | 0;
-    p2 = c[e2 + 4 >> 2] | 0;
-    s2 = b2 + 76 | 0;
-    t2 = c[s2 >> 2] | 0;
-    o2 = e2 + 20 | 0;
-    k2 = c[o2 >> 2] & 255;
-    q2 = d[(f2 & 255) + (l2 + (k2 << 3)) >> 0] | 0;
-    r2 = q2 & 15;
-    c[o2 >> 2] = r2;
-    r2 = a[l2 + (r2 << 3) + 7 >> 0] | 0;
+  function na(b4, e6, f4, g3, h4) {
+    b4 = b4 | 0;
+    e6 = e6 | 0;
+    f4 = f4 | 0;
+    g3 = g3 | 0;
+    h4 = h4 | 0;
+    var i5 = 0, j3 = 0, k3 = 0, l4 = 0, m3 = 0, n6 = 0, o5 = 0, p4 = 0, q2 = 0, r6 = 0, s5 = 0, t5 = 0;
+    l4 = c4[e6 >> 2] | 0;
+    p4 = c4[e6 + 4 >> 2] | 0;
+    s5 = b4 + 76 | 0;
+    t5 = c4[s5 >> 2] | 0;
+    o5 = e6 + 20 | 0;
+    k3 = c4[o5 >> 2] & 255;
+    q2 = d3[(f4 & 255) + (l4 + (k3 << 3)) >> 0] | 0;
+    r6 = q2 & 15;
+    c4[o5 >> 2] = r6;
+    r6 = a3[l4 + (r6 << 3) + 7 >> 0] | 0;
     a:
       do
-        switch (a[p2 + (q2 >>> 4) >> 0] | 0) {
+        switch (a3[p4 + (q2 >>> 4) >> 0] | 0) {
           case 14: {
-            l2 = e2 + 8 | 0;
-            m2 = (a[e2 + 28 >> 0] | 0) + 1 << 24 >> 24;
-            i2 = g2;
+            l4 = e6 + 8 | 0;
+            m3 = (a3[e6 + 28 >> 0] | 0) + 1 << 24 >> 24;
+            i5 = g3;
             while (1) {
-              k2 = i2 + -1 | 0;
-              if ((i2 | 0) <= (c[l2 >> 2] | 0)) {
-                i2 = g2;
+              k3 = i5 + -1 | 0;
+              if ((i5 | 0) <= (c4[l4 >> 2] | 0)) {
+                i5 = g3;
                 break a;
               }
-              i2 = t2 + k2 | 0;
-              j2 = a[i2 >> 0] | 0;
-              if ((j2 & 255) > (m2 & 255))
-                a[i2 >> 0] = (j2 & 255) + 254;
-              i2 = k2;
+              i5 = t5 + k3 | 0;
+              j3 = a3[i5 >> 0] | 0;
+              if ((j3 & 255) > (m3 & 255))
+                a3[i5 >> 0] = (j3 & 255) + 254;
+              i5 = k3;
             }
           }
           case 1: {
-            c[e2 + 8 >> 2] = g2;
-            i2 = g2;
+            c4[e6 + 8 >> 2] = g3;
+            i5 = g3;
             break;
           }
           case 2: {
-            i2 = c[e2 + 8 >> 2] | 0;
+            i5 = c4[e6 + 8 >> 2] | 0;
             break;
           }
           case 3: {
-            qa(c[b2 + 72 >> 2] | 0, c[s2 >> 2] | 0, c[e2 + 8 >> 2] | 0, g2, (d[e2 + 28 >> 0] | 0) + 1 & 255);
-            i2 = g2;
+            qa(c4[b4 + 72 >> 2] | 0, c4[s5 >> 2] | 0, c4[e6 + 8 >> 2] | 0, g3, (d3[e6 + 28 >> 0] | 0) + 1 & 255);
+            i5 = g3;
             break;
           }
           case 4: {
-            qa(c[b2 + 72 >> 2] | 0, c[s2 >> 2] | 0, c[e2 + 8 >> 2] | 0, g2, (d[e2 + 28 >> 0] | 0) + 2 & 255);
-            i2 = g2;
+            qa(c4[b4 + 72 >> 2] | 0, c4[s5 >> 2] | 0, c4[e6 + 8 >> 2] | 0, g3, (d3[e6 + 28 >> 0] | 0) + 2 & 255);
+            i5 = g3;
             break;
           }
           case 5: {
-            i2 = e2 + 12 | 0;
-            j2 = c[i2 >> 2] | 0;
-            if ((j2 | 0) > -1)
-              la(b2, j2, 1);
-            c[i2 >> 2] = -1;
-            if (c[b2 + 328 >> 2] | 0 ? (m2 = b2 + 332 | 0, n2 = b2 + 336 | 0, (c[m2 >> 2] | 0) > (c[n2 >> 2] | 0)) : 0) {
-              j2 = e2 + 16 | 0;
-              i2 = c[j2 >> 2] | 0;
+            i5 = e6 + 12 | 0;
+            j3 = c4[i5 >> 2] | 0;
+            if ((j3 | 0) > -1)
+              la(b4, j3, 1);
+            c4[i5 >> 2] = -1;
+            if (c4[b4 + 328 >> 2] | 0 ? (m3 = b4 + 332 | 0, n6 = b4 + 336 | 0, (c4[m3 >> 2] | 0) > (c4[n6 >> 2] | 0)) : 0) {
+              j3 = e6 + 16 | 0;
+              i5 = c4[j3 >> 2] | 0;
               while (1) {
-                i2 = i2 + 1 | 0;
-                if ((i2 | 0) >= (g2 | 0))
+                i5 = i5 + 1 | 0;
+                if ((i5 | 0) >= (g3 | 0))
                   break;
-                q2 = t2 + i2 | 0;
-                a[q2 >> 0] = (a[q2 >> 0] | 0) + -2 << 24 >> 24 & -2;
+                q2 = t5 + i5 | 0;
+                a3[q2 >> 0] = (a3[q2 >> 0] | 0) + -2 << 24 >> 24 & -2;
               }
-              c[n2 >> 2] = c[m2 >> 2];
-              c[j2 >> 2] = -1;
-              if (f2 << 24 >> 24 != 5) {
-                i2 = g2;
+              c4[n6 >> 2] = c4[m3 >> 2];
+              c4[j3 >> 2] = -1;
+              if (f4 << 24 >> 24 != 5) {
+                i5 = g3;
                 break a;
               }
-              la(b2, g2, 1);
-              c[n2 >> 2] = c[m2 >> 2];
-              i2 = g2;
+              la(b4, g3, 1);
+              c4[n6 >> 2] = c4[m3 >> 2];
+              i5 = g3;
               break a;
             }
-            c[e2 + 16 >> 2] = -1;
-            if (!(a[l2 + (k2 << 3) + 7 >> 0] & 1))
-              i2 = g2;
+            c4[e6 + 16 >> 2] = -1;
+            if (!(a3[l4 + (k3 << 3) + 7 >> 0] & 1))
+              i5 = g3;
             else {
-              i2 = c[e2 + 8 >> 2] | 0;
-              i2 = (i2 | 0) > 0 ? i2 : g2;
+              i5 = c4[e6 + 8 >> 2] | 0;
+              i5 = (i5 | 0) > 0 ? i5 : g3;
             }
-            if (f2 << 24 >> 24 == 5) {
-              la(b2, g2, 1);
-              c[b2 + 336 >> 2] = c[b2 + 332 >> 2];
+            if (f4 << 24 >> 24 == 5) {
+              la(b4, g3, 1);
+              c4[b4 + 336 >> 2] = c4[b4 + 332 >> 2];
             }
             break;
           }
           case 6: {
-            if ((c[b2 + 328 >> 2] | 0) > 0)
-              c[b2 + 332 >> 2] = c[b2 + 336 >> 2];
-            c[e2 + 8 >> 2] = -1;
-            c[e2 + 12 >> 2] = -1;
-            c[e2 + 16 >> 2] = h2 + -1;
-            i2 = g2;
+            if ((c4[b4 + 328 >> 2] | 0) > 0)
+              c4[b4 + 332 >> 2] = c4[b4 + 336 >> 2];
+            c4[e6 + 8 >> 2] = -1;
+            c4[e6 + 12 >> 2] = -1;
+            c4[e6 + 16 >> 2] = h4 + -1;
+            i5 = g3;
             break;
           }
           case 7: {
-            if ((f2 << 24 >> 24 == 3 ? (a[(c[b2 + 72 >> 2] | 0) + g2 >> 0] | 0) == 5 : 0) ? (c[b2 + 84 >> 2] | 0) != 6 : 0) {
-              i2 = e2 + 12 | 0;
-              j2 = c[i2 >> 2] | 0;
-              if ((j2 | 0) == -1) {
-                c[e2 + 16 >> 2] = h2 + -1;
-                i2 = g2;
+            if ((f4 << 24 >> 24 == 3 ? (a3[(c4[b4 + 72 >> 2] | 0) + g3 >> 0] | 0) == 5 : 0) ? (c4[b4 + 84 >> 2] | 0) != 6 : 0) {
+              i5 = e6 + 12 | 0;
+              j3 = c4[i5 >> 2] | 0;
+              if ((j3 | 0) == -1) {
+                c4[e6 + 16 >> 2] = h4 + -1;
+                i5 = g3;
                 break a;
               }
-              if ((j2 | 0) > -1) {
-                la(b2, j2, 1);
-                c[i2 >> 2] = -2;
+              if ((j3 | 0) > -1) {
+                la(b4, j3, 1);
+                c4[i5 >> 2] = -2;
               }
-              la(b2, g2, 1);
-              i2 = g2;
+              la(b4, g3, 1);
+              i5 = g3;
               break a;
             }
-            i2 = e2 + 12 | 0;
-            if ((c[i2 >> 2] | 0) == -1) {
-              c[i2 >> 2] = g2;
-              i2 = g2;
+            i5 = e6 + 12 | 0;
+            if ((c4[i5 >> 2] | 0) == -1) {
+              c4[i5 >> 2] = g3;
+              i5 = g3;
             } else
-              i2 = g2;
+              i5 = g3;
             break;
           }
           case 8: {
-            c[e2 + 16 >> 2] = h2 + -1;
-            c[e2 + 8 >> 2] = -1;
-            i2 = g2;
+            c4[e6 + 16 >> 2] = h4 + -1;
+            c4[e6 + 8 >> 2] = -1;
+            i5 = g3;
             break;
           }
           case 9: {
-            i2 = g2;
+            i5 = g3;
             while (1) {
-              q2 = i2;
-              i2 = i2 + -1 | 0;
+              q2 = i5;
+              i5 = i5 + -1 | 0;
               if ((q2 | 0) <= 0)
                 break;
-              if (a[t2 + i2 >> 0] & 1) {
-                j2 = 36;
+              if (a3[t5 + i5 >> 0] & 1) {
+                j3 = 36;
                 break;
               }
             }
-            if ((j2 | 0) == 36) {
-              la(b2, i2, 4);
-              c[b2 + 336 >> 2] = c[b2 + 332 >> 2];
+            if ((j3 | 0) == 36) {
+              la(b4, i5, 4);
+              c4[b4 + 336 >> 2] = c4[b4 + 332 >> 2];
             }
-            c[e2 + 8 >> 2] = g2;
-            i2 = g2;
+            c4[e6 + 8 >> 2] = g3;
+            i5 = g3;
             break;
           }
           case 10: {
-            la(b2, g2, 1);
-            la(b2, g2, 2);
-            i2 = g2;
+            la(b4, g3, 1);
+            la(b4, g3, 2);
+            i5 = g3;
             break;
           }
           case 11: {
-            i2 = b2 + 336 | 0;
-            j2 = b2 + 332 | 0;
-            c[j2 >> 2] = c[i2 >> 2];
-            if (f2 << 24 >> 24 == 5) {
-              la(b2, g2, 4);
-              c[i2 >> 2] = c[j2 >> 2];
-              i2 = g2;
+            i5 = b4 + 336 | 0;
+            j3 = b4 + 332 | 0;
+            c4[j3 >> 2] = c4[i5 >> 2];
+            if (f4 << 24 >> 24 == 5) {
+              la(b4, g3, 4);
+              c4[i5 >> 2] = c4[j3 >> 2];
+              i5 = g3;
             } else
-              i2 = g2;
+              i5 = g3;
             break;
           }
           case 12: {
-            l2 = (d[e2 + 28 >> 0] | 0) + (r2 & 255) | 0;
-            j2 = l2 & 255;
-            k2 = e2 + 8 | 0;
-            l2 = l2 & 255;
-            i2 = c[k2 >> 2] | 0;
+            l4 = (d3[e6 + 28 >> 0] | 0) + (r6 & 255) | 0;
+            j3 = l4 & 255;
+            k3 = e6 + 8 | 0;
+            l4 = l4 & 255;
+            i5 = c4[k3 >> 2] | 0;
             while (1) {
-              if ((i2 | 0) >= (g2 | 0))
+              if ((i5 | 0) >= (g3 | 0))
                 break;
-              m2 = t2 + i2 | 0;
-              if (l2 >>> 0 > (d[m2 >> 0] | 0) >>> 0)
-                a[m2 >> 0] = j2;
-              i2 = i2 + 1 | 0;
+              m3 = t5 + i5 | 0;
+              if (l4 >>> 0 > (d3[m3 >> 0] | 0) >>> 0)
+                a3[m3 >> 0] = j3;
+              i5 = i5 + 1 | 0;
             }
-            c[b2 + 336 >> 2] = c[b2 + 332 >> 2];
-            c[k2 >> 2] = g2;
-            i2 = g2;
+            c4[b4 + 336 >> 2] = c4[b4 + 332 >> 2];
+            c4[k3 >> 2] = g3;
+            i5 = g3;
             break;
           }
           case 13: {
-            n2 = a[e2 + 28 >> 0] | 0;
-            f2 = e2 + 8 | 0;
-            q2 = n2 & 255;
-            o2 = q2 + 3 | 0;
-            p2 = q2 + 2 | 0;
+            n6 = a3[e6 + 28 >> 0] | 0;
+            f4 = e6 + 8 | 0;
+            q2 = n6 & 255;
+            o5 = q2 + 3 | 0;
+            p4 = q2 + 2 | 0;
             q2 = q2 + 1 & 255;
-            i2 = g2;
+            i5 = g3;
             while (1) {
-              k2 = i2 + -1 | 0;
-              if ((i2 | 0) <= (c[f2 >> 2] | 0)) {
-                i2 = g2;
+              k3 = i5 + -1 | 0;
+              if ((i5 | 0) <= (c4[f4 >> 2] | 0)) {
+                i5 = g3;
                 break a;
               }
-              j2 = t2 + k2 | 0;
-              l2 = a[j2 >> 0] | 0;
-              m2 = l2 & 255;
-              if ((o2 | 0) == (m2 | 0)) {
-                i2 = k2;
-                j2 = l2;
+              j3 = t5 + k3 | 0;
+              l4 = a3[j3 >> 0] | 0;
+              m3 = l4 & 255;
+              if ((o5 | 0) == (m3 | 0)) {
+                i5 = k3;
+                j3 = l4;
                 while (1) {
-                  if ((o2 | 0) != (j2 & 255 | 0))
+                  if ((o5 | 0) != (j3 & 255 | 0))
                     break;
-                  j2 = i2 + -1 | 0;
-                  a[t2 + i2 >> 0] = q2;
-                  i2 = j2;
-                  j2 = a[t2 + j2 >> 0] | 0;
+                  j3 = i5 + -1 | 0;
+                  a3[t5 + i5 >> 0] = q2;
+                  i5 = j3;
+                  j3 = a3[t5 + j3 >> 0] | 0;
                 }
-                l2 = i2;
+                l4 = i5;
                 while (1) {
-                  i2 = l2 + -1 | 0;
-                  if (j2 << 24 >> 24 != n2 << 24 >> 24)
+                  i5 = l4 + -1 | 0;
+                  if (j3 << 24 >> 24 != n6 << 24 >> 24)
                     break;
-                  l2 = i2;
-                  j2 = a[t2 + i2 >> 0] | 0;
+                  l4 = i5;
+                  j3 = a3[t5 + i5 >> 0] | 0;
                 }
-                i2 = l2;
-                k2 = j2 & 255;
-                j2 = t2 + l2 | 0;
+                i5 = l4;
+                k3 = j3 & 255;
+                j3 = t5 + l4 | 0;
               } else {
-                i2 = k2;
-                k2 = m2;
+                i5 = k3;
+                k3 = m3;
               }
-              a[j2 >> 0] = (p2 | 0) == (k2 | 0) ? n2 : q2;
+              a3[j3 >> 0] = (p4 | 0) == (k3 | 0) ? n6 : q2;
             }
           }
           default:
-            i2 = g2;
+            i5 = g3;
         }
       while (0);
-    if (!(r2 << 24 >> 24 != 0 | (i2 | 0) < (g2 | 0)))
+    if (!(r6 << 24 >> 24 != 0 | (i5 | 0) < (g3 | 0)))
       return;
-    j2 = (d[e2 + 28 >> 0] | 0) + (r2 & 255) & 255;
-    if ((i2 | 0) < (c[e2 + 24 >> 2] | 0)) {
-      qa(c[b2 + 72 >> 2] | 0, c[s2 >> 2] | 0, i2, h2, j2);
+    j3 = (d3[e6 + 28 >> 0] | 0) + (r6 & 255) & 255;
+    if ((i5 | 0) < (c4[e6 + 24 >> 2] | 0)) {
+      qa(c4[b4 + 72 >> 2] | 0, c4[s5 >> 2] | 0, i5, h4, j3);
       return;
     }
     while (1) {
-      if ((i2 | 0) >= (h2 | 0))
+      if ((i5 | 0) >= (h4 | 0))
         break;
-      a[t2 + i2 >> 0] = j2;
-      i2 = i2 + 1 | 0;
+      a3[t5 + i5 >> 0] = j3;
+      i5 = i5 + 1 | 0;
     }
     return;
   }
-  function oa(a2) {
-    a2 = a2 | 0;
-    var b2 = 0, d2 = 0, f2 = 0, g2 = 0, h2 = 0, i2 = 0, j2 = 0;
-    g2 = c[a2 + 104 >> 2] | 0;
-    h2 = c[a2 + 108 >> 2] | 0;
-    b2 = 0;
+  function oa(a4) {
+    a4 = a4 | 0;
+    var b4 = 0, d4 = 0, f4 = 0, g3 = 0, h4 = 0, i5 = 0, j3 = 0;
+    g3 = c4[a4 + 104 >> 2] | 0;
+    h4 = c4[a4 + 108 >> 2] | 0;
+    b4 = 0;
     a:
       while (1) {
-        if ((b2 | 0) >= (h2 | 0)) {
-          b2 = 4;
-          d2 = 7;
+        if ((b4 | 0) >= (h4 | 0)) {
+          b4 = 4;
+          d4 = 7;
           break;
         }
-        f2 = b2 + 1 | 0;
-        d2 = e[g2 + (b2 << 1) >> 1] | 0;
-        if ((f2 | 0) == (h2 | 0) | (d2 & 64512 | 0) != 55296)
-          b2 = f2;
+        f4 = b4 + 1 | 0;
+        d4 = e5[g3 + (b4 << 1) >> 1] | 0;
+        if ((f4 | 0) == (h4 | 0) | (d4 & 64512 | 0) != 55296)
+          b4 = f4;
         else {
-          j2 = e[g2 + (f2 << 1) >> 1] | 0;
-          i2 = (j2 & 64512 | 0) == 56320;
-          d2 = i2 ? (d2 << 10) + -56613888 + j2 | 0 : d2;
-          b2 = i2 ? b2 + 2 | 0 : f2;
+          j3 = e5[g3 + (f4 << 1) >> 1] | 0;
+          i5 = (j3 & 64512 | 0) == 56320;
+          d4 = i5 ? (d4 << 10) + -56613888 + j3 | 0 : d4;
+          b4 = i5 ? b4 + 2 | 0 : f4;
         }
-        switch (((pa(a2, d2) | 0) & 255) << 24 >> 24) {
+        switch (((pa(a4, d4) | 0) & 255) << 24 >> 24) {
           case 0: {
-            b2 = 0;
-            d2 = 7;
+            b4 = 0;
+            d4 = 7;
             break a;
           }
           case 13:
           case 1: {
-            d2 = 8;
+            d4 = 8;
             break a;
           }
           case 5: {
-            d2 = 6;
+            d4 = 6;
             break a;
           }
           case 2: {
-            b2 = 2;
-            d2 = 9;
+            b4 = 2;
+            d4 = 9;
             break a;
           }
           default: {
           }
         }
       }
-    if ((d2 | 0) == 6) {
-      j2 = 3;
-      return j2 | 0;
-    } else if ((d2 | 0) == 7) {
-      j2 = b2;
-      return j2 | 0;
-    } else if ((d2 | 0) == 8) {
-      j2 = 1;
-      return j2 | 0;
-    } else if ((d2 | 0) == 9)
-      return b2 | 0;
+    if ((d4 | 0) == 6) {
+      j3 = 3;
+      return j3 | 0;
+    } else if ((d4 | 0) == 7) {
+      j3 = b4;
+      return j3 | 0;
+    } else if ((d4 | 0) == 8) {
+      j3 = 1;
+      return j3 | 0;
+    } else if ((d4 | 0) == 9)
+      return b4 | 0;
     return 0;
   }
-  function pa(a2, b2) {
-    a2 = a2 | 0;
-    b2 = b2 | 0;
-    var d2 = 0, e2 = 0;
-    e2 = c[a2 + 352 >> 2] | 0;
-    if (!((e2 | 0) != 0 ? (d2 = I[e2 & 0](c[a2 + 356 >> 2] | 0, b2) | 0, (d2 | 0) != 23) : 0))
-      d2 = tb(b2) | 0;
-    return ((d2 | 0) > 22 ? 10 : d2) | 0;
+  function pa(a4, b4) {
+    a4 = a4 | 0;
+    b4 = b4 | 0;
+    var d4 = 0, e6 = 0;
+    e6 = c4[a4 + 352 >> 2] | 0;
+    if (!((e6 | 0) != 0 ? (d4 = I2[e6 & 0](c4[a4 + 356 >> 2] | 0, b4) | 0, (d4 | 0) != 23) : 0))
+      d4 = tb(b4) | 0;
+    return ((d4 | 0) > 22 ? 10 : d4) | 0;
   }
-  function qa(b2, c2, d2, e2, f2) {
-    b2 = b2 | 0;
-    c2 = c2 | 0;
-    d2 = d2 | 0;
-    e2 = e2 | 0;
-    f2 = f2 | 0;
-    var g2 = 0, h2 = 0;
-    g2 = 0;
+  function qa(b4, c5, d4, e6, f4) {
+    b4 = b4 | 0;
+    c5 = c5 | 0;
+    d4 = d4 | 0;
+    e6 = e6 | 0;
+    f4 = f4 | 0;
+    var g3 = 0, h4 = 0;
+    g3 = 0;
     while (1) {
-      if ((d2 | 0) >= (e2 | 0))
+      if ((d4 | 0) >= (e6 | 0))
         break;
-      h2 = a[b2 + d2 >> 0] | 0;
-      g2 = g2 + ((h2 << 24 >> 24 == 22) << 31 >> 31) | 0;
-      if (!g2)
-        a[c2 + d2 >> 0] = f2;
-      d2 = d2 + 1 | 0;
-      g2 = g2 + ((h2 & -2) << 24 >> 24 == 20 & 1) | 0;
+      h4 = a3[b4 + d4 >> 0] | 0;
+      g3 = g3 + ((h4 << 24 >> 24 == 22) << 31 >> 31) | 0;
+      if (!g3)
+        a3[c5 + d4 >> 0] = f4;
+      d4 = d4 + 1 | 0;
+      g3 = g3 + ((h4 & -2) << 24 >> 24 == 20 & 1) | 0;
     }
     return;
   }
-  function ra(a2) {
-    a2 = a2 | 0;
-    if ((a2 & 2154498 | 0) == 0 ? (a2 & 32 | 0) == 0 | (a2 & 8249304 | 0) == 0 : 0) {
-      a2 = 0;
-      return a2 | 0;
+  function ra(a4) {
+    a4 = a4 | 0;
+    if ((a4 & 2154498 | 0) == 0 ? (a4 & 32 | 0) == 0 | (a4 & 8249304 | 0) == 0 : 0) {
+      a4 = 0;
+      return a4 | 0;
     }
-    a2 = (a2 & 26220581 | 0) == 0 ? 1 : 2;
-    return a2 | 0;
+    a4 = (a4 & 26220581 | 0) == 0 ? 1 : 2;
+    return a4 | 0;
   }
-  function sa(d2, e2) {
-    d2 = d2 | 0;
-    e2 = e2 | 0;
-    var f2 = 0, g2 = 0, h2 = 0;
-    c[e2 >> 2] = d2;
-    c[e2 + 492 >> 2] = 0;
-    b[e2 + 500 >> 1] = 0;
-    b[e2 + 502 >> 1] = 0;
-    h2 = d2 + 94 | 0;
-    if ((a[h2 >> 0] | 0) != 0 ? (f2 = c[d2 + 136 >> 2] | 0, (c[f2 >> 2] | 0) <= 0) : 0)
-      f2 = da(c[d2 + 132 >> 2] | 0, f2, 0) | 0;
+  function sa(d4, e6) {
+    d4 = d4 | 0;
+    e6 = e6 | 0;
+    var f4 = 0, g3 = 0, h4 = 0;
+    c4[e6 >> 2] = d4;
+    c4[e6 + 492 >> 2] = 0;
+    b3[e6 + 500 >> 1] = 0;
+    b3[e6 + 502 >> 1] = 0;
+    h4 = d4 + 94 | 0;
+    if ((a3[h4 >> 0] | 0) != 0 ? (f4 = c4[d4 + 136 >> 2] | 0, (c4[f4 >> 2] | 0) <= 0) : 0)
+      f4 = da(c4[d4 + 132 >> 2] | 0, f4, 0) | 0;
     else
-      f2 = a[d2 + 93 >> 0] | 0;
-    a[e2 + 504 >> 0] = f2;
-    if ((a[h2 >> 0] | 0) != 0 ? (g2 = c[d2 + 136 >> 2] | 0, (c[g2 >> 2] | 0) <= 0) : 0)
-      f2 = da(c[d2 + 132 >> 2] | 0, g2, 0) | 0;
+      f4 = a3[d4 + 93 >> 0] | 0;
+    a3[e6 + 504 >> 0] = f4;
+    if ((a3[h4 >> 0] | 0) != 0 ? (g3 = c4[d4 + 136 >> 2] | 0, (c4[g3 >> 2] | 0) <= 0) : 0)
+      f4 = da(c4[d4 + 132 >> 2] | 0, g3, 0) | 0;
     else
-      f2 = a[d2 + 93 >> 0] | 0;
-    f2 = f2 & 1;
-    a[e2 + 506 >> 0] = f2;
-    a[e2 + 505 >> 0] = f2;
-    c[e2 + 508 >> 2] = f2 & 255;
-    c[e2 + 496 >> 2] = 0;
-    f2 = c[d2 + 52 >> 2] | 0;
-    if (!f2) {
-      c[e2 + 484 >> 2] = e2 + 4;
-      g2 = 20;
-      h2 = e2 + 488 | 0;
-      c[h2 >> 2] = g2;
-      d2 = d2 + 84 | 0;
-      d2 = c[d2 >> 2] | 0;
-      h2 = (d2 | 0) == 1;
-      d2 = (d2 | 0) == 6;
-      d2 = h2 | d2;
-      d2 = d2 & 1;
-      e2 = e2 + 2528 | 0;
-      a[e2 >> 0] = d2;
+      f4 = a3[d4 + 93 >> 0] | 0;
+    f4 = f4 & 1;
+    a3[e6 + 506 >> 0] = f4;
+    a3[e6 + 505 >> 0] = f4;
+    c4[e6 + 508 >> 2] = f4 & 255;
+    c4[e6 + 496 >> 2] = 0;
+    f4 = c4[d4 + 52 >> 2] | 0;
+    if (!f4) {
+      c4[e6 + 484 >> 2] = e6 + 4;
+      g3 = 20;
+      h4 = e6 + 488 | 0;
+      c4[h4 >> 2] = g3;
+      d4 = d4 + 84 | 0;
+      d4 = c4[d4 >> 2] | 0;
+      h4 = (d4 | 0) == 1;
+      d4 = (d4 | 0) == 6;
+      d4 = h4 | d4;
+      d4 = d4 & 1;
+      e6 = e6 + 2528 | 0;
+      a3[e6 >> 0] = d4;
       return;
     } else {
-      c[e2 + 484 >> 2] = f2;
-      g2 = ((c[d2 + 28 >> 2] | 0) >>> 0) / 24 | 0;
-      h2 = e2 + 488 | 0;
-      c[h2 >> 2] = g2;
-      d2 = d2 + 84 | 0;
-      d2 = c[d2 >> 2] | 0;
-      h2 = (d2 | 0) == 1;
-      d2 = (d2 | 0) == 6;
-      d2 = h2 | d2;
-      d2 = d2 & 1;
-      e2 = e2 + 2528 | 0;
-      a[e2 >> 0] = d2;
+      c4[e6 + 484 >> 2] = f4;
+      g3 = ((c4[d4 + 28 >> 2] | 0) >>> 0) / 24 | 0;
+      h4 = e6 + 488 | 0;
+      c4[h4 >> 2] = g3;
+      d4 = d4 + 84 | 0;
+      d4 = c4[d4 >> 2] | 0;
+      h4 = (d4 | 0) == 1;
+      d4 = (d4 | 0) == 6;
+      d4 = h4 | d4;
+      d4 = d4 & 1;
+      e6 = e6 + 2528 | 0;
+      a3[e6 >> 0] = d4;
       return;
     }
   }
-  function ta(d2, e2) {
-    d2 = d2 | 0;
-    e2 = e2 | 0;
-    c[d2 + 492 >> 2] = 0;
-    b[d2 + 502 >> 1] = 0;
-    a[d2 + 504 >> 0] = e2;
-    e2 = e2 & 1;
-    a[d2 + 506 >> 0] = e2;
-    a[d2 + 505 >> 0] = e2;
-    c[d2 + 508 >> 2] = e2 & 255;
-    c[d2 + 496 >> 2] = 0;
+  function ta(d4, e6) {
+    d4 = d4 | 0;
+    e6 = e6 | 0;
+    c4[d4 + 492 >> 2] = 0;
+    b3[d4 + 502 >> 1] = 0;
+    a3[d4 + 504 >> 0] = e6;
+    e6 = e6 & 1;
+    a3[d4 + 506 >> 0] = e6;
+    a3[d4 + 505 >> 0] = e6;
+    c4[d4 + 508 >> 2] = e6 & 255;
+    c4[d4 + 496 >> 2] = 0;
     return;
   }
-  function ua(f2, g2) {
-    f2 = f2 | 0;
-    g2 = g2 | 0;
-    var h2 = 0, i2 = 0, j2 = 0, k2 = 0, l2 = 0, m2 = 0, n2 = 0, o2 = 0, p2 = 0, q2 = 0, r2 = 0, s2 = 0, t2 = 0;
-    s2 = c[f2 + 492 >> 2] | 0;
-    p2 = f2 + 496 + (s2 << 4) | 0;
-    h2 = c[f2 >> 2] | 0;
-    r2 = (c[h2 + 72 >> 2] | 0) + g2 | 0;
-    m2 = a[r2 >> 0] | 0;
+  function ua(f4, g3) {
+    f4 = f4 | 0;
+    g3 = g3 | 0;
+    var h4 = 0, i5 = 0, j3 = 0, k3 = 0, l4 = 0, m3 = 0, n6 = 0, o5 = 0, p4 = 0, q2 = 0, r6 = 0, s5 = 0, t5 = 0;
+    s5 = c4[f4 + 492 >> 2] | 0;
+    p4 = f4 + 496 + (s5 << 4) | 0;
+    h4 = c4[f4 >> 2] | 0;
+    r6 = (c4[h4 + 72 >> 2] | 0) + g3 | 0;
+    m3 = a3[r6 >> 0] | 0;
     do
-      if (m2 << 24 >> 24 == 10) {
-        h2 = b[(c[h2 + 4 >> 2] | 0) + (g2 << 1) >> 1] | 0;
-        l2 = f2 + 496 + (s2 << 4) + 4 | 0;
-        i2 = e[l2 >> 1] | 0;
-        o2 = f2 + 484 | 0;
-        j2 = h2 & 65535;
-        n2 = e[f2 + 496 + (s2 << 4) + 6 >> 1] | 0;
+      if (m3 << 24 >> 24 == 10) {
+        h4 = b3[(c4[h4 + 4 >> 2] | 0) + (g3 << 1) >> 1] | 0;
+        l4 = f4 + 496 + (s5 << 4) + 4 | 0;
+        i5 = e5[l4 >> 1] | 0;
+        o5 = f4 + 484 | 0;
+        j3 = h4 & 65535;
+        n6 = e5[f4 + 496 + (s5 << 4) + 6 >> 1] | 0;
         while (1) {
-          t2 = n2;
-          n2 = n2 + -1 | 0;
-          if ((t2 | 0) <= (i2 | 0))
+          t5 = n6;
+          n6 = n6 + -1 | 0;
+          if ((t5 | 0) <= (i5 | 0))
             break;
-          if ((c[(c[o2 >> 2] | 0) + (n2 * 24 | 0) + 4 >> 2] | 0) == (j2 | 0)) {
+          if ((c4[(c4[o5 >> 2] | 0) + (n6 * 24 | 0) + 4 >> 2] | 0) == (j3 | 0)) {
             q2 = 5;
             break;
           }
         }
         if ((q2 | 0) == 5) {
-          h2 = ya(f2, n2, g2) | 0;
-          if (h2 << 24 >> 24 == 10)
+          h4 = ya(f4, n6, g3) | 0;
+          if (h4 << 24 >> 24 == 10)
             break;
-          a[f2 + 496 + (s2 << 4) + 10 >> 0] = 10;
-          c[f2 + 496 + (s2 << 4) + 12 >> 2] = h2 & 255;
-          c[p2 >> 2] = g2;
-          h2 = c[(c[f2 >> 2] | 0) + 76 >> 2] | 0;
-          i2 = d[h2 + g2 >> 0] | 0;
-          if (i2 & 128) {
-            i2 = i2 & 1;
-            a[f2 + 496 + (s2 << 4) + 9 >> 0] = i2;
-            i2 = 1 << i2;
-            h2 = e[l2 >> 1] | 0;
+          a3[f4 + 496 + (s5 << 4) + 10 >> 0] = 10;
+          c4[f4 + 496 + (s5 << 4) + 12 >> 2] = h4 & 255;
+          c4[p4 >> 2] = g3;
+          h4 = c4[(c4[f4 >> 2] | 0) + 76 >> 2] | 0;
+          i5 = d3[h4 + g3 >> 0] | 0;
+          if (i5 & 128) {
+            i5 = i5 & 1;
+            a3[f4 + 496 + (s5 << 4) + 9 >> 0] = i5;
+            i5 = 1 << i5;
+            h4 = e5[l4 >> 1] | 0;
             while (1) {
-              if ((h2 | 0) >= (n2 | 0))
+              if ((h4 | 0) >= (n6 | 0))
                 break;
-              t2 = (c[o2 >> 2] | 0) + (h2 * 24 | 0) + 12 | 0;
-              b[t2 >> 1] = i2 | e[t2 >> 1];
-              h2 = h2 + 1 | 0;
+              t5 = (c4[o5 >> 2] | 0) + (h4 * 24 | 0) + 12 | 0;
+              b3[t5 >> 1] = i5 | e5[t5 >> 1];
+              h4 = h4 + 1 | 0;
             }
-            h2 = (c[(c[f2 >> 2] | 0) + 76 >> 2] | 0) + g2 | 0;
-            a[h2 >> 0] = a[h2 >> 0] & 127;
-            h2 = c[(c[f2 >> 2] | 0) + 76 >> 2] | 0;
+            h4 = (c4[(c4[f4 >> 2] | 0) + 76 >> 2] | 0) + g3 | 0;
+            a3[h4 >> 0] = a3[h4 >> 0] & 127;
+            h4 = c4[(c4[f4 >> 2] | 0) + 76 >> 2] | 0;
           }
-          t2 = h2 + (c[(c[o2 >> 2] | 0) + (n2 * 24 | 0) >> 2] | 0) | 0;
-          a[t2 >> 0] = a[t2 >> 0] & 127;
-          t2 = 1;
-          return t2 | 0;
+          t5 = h4 + (c4[(c4[o5 >> 2] | 0) + (n6 * 24 | 0) >> 2] | 0) | 0;
+          a3[t5 >> 0] = a3[t5 >> 0] & 127;
+          t5 = 1;
+          return t5 | 0;
         }
-        if ((h2 << 16 >> 16 ? (k2 = (zb(j2) | 0) & 65535, h2 << 16 >> 16 != k2 << 16 >> 16) : 0) ? (wb(j2) | 0) == 1 : 0) {
+        if ((h4 << 16 >> 16 ? (k3 = (zb(j3) | 0) & 65535, h4 << 16 >> 16 != k3 << 16 >> 16) : 0) ? (wb(j3) | 0) == 1 : 0) {
           a:
             do
-              if (k2 << 16 >> 16 < 12297) {
-                switch (k2 << 16 >> 16) {
+              if (k3 << 16 >> 16 < 12297) {
+                switch (k3 << 16 >> 16) {
                   case 9002:
                     break;
                   default:
                     break a;
                 }
-                if (!((za(f2, 12297, g2) | 0) << 24 >> 24)) {
-                  t2 = 0;
-                  return t2 | 0;
+                if (!((za(f4, 12297, g3) | 0) << 24 >> 24)) {
+                  t5 = 0;
+                  return t5 | 0;
                 }
               } else {
-                switch (k2 << 16 >> 16) {
+                switch (k3 << 16 >> 16) {
                   case 12297:
                     break;
                   default:
                     break a;
                 }
-                if (!((za(f2, 9002, g2) | 0) << 24 >> 24)) {
-                  t2 = 0;
-                  return t2 | 0;
+                if (!((za(f4, 9002, g3) | 0) << 24 >> 24)) {
+                  t5 = 0;
+                  return t5 | 0;
                 }
               }
             while (0);
-          if (!((za(f2, k2, g2) | 0) << 24 >> 24)) {
-            t2 = 0;
-            return t2 | 0;
+          if (!((za(f4, k3, g3) | 0) << 24 >> 24)) {
+            t5 = 0;
+            return t5 | 0;
           }
         }
       }
     while (0);
-    h2 = d[(c[(c[f2 >> 2] | 0) + 76 >> 2] | 0) + g2 >> 0] | 0;
+    h4 = d3[(c4[(c4[f4 >> 2] | 0) + 76 >> 2] | 0) + g3 >> 0] | 0;
     b:
       do
-        if (!(h2 & 128))
-          switch (m2 << 24 >> 24) {
+        if (!(h4 & 128))
+          switch (m3 << 24 >> 24) {
             case 0:
             case 1:
             case 13: {
-              h2 = m2 << 24 >> 24 != 0;
-              a[f2 + 496 + (s2 << 4) + 10 >> 0] = m2;
-              a[f2 + 496 + (s2 << 4) + 9 >> 0] = m2;
-              c[f2 + 496 + (s2 << 4) + 12 >> 2] = h2 & 1;
-              c[p2 >> 2] = g2;
-              h2 = h2 & 1;
+              h4 = m3 << 24 >> 24 != 0;
+              a3[f4 + 496 + (s5 << 4) + 10 >> 0] = m3;
+              a3[f4 + 496 + (s5 << 4) + 9 >> 0] = m3;
+              c4[f4 + 496 + (s5 << 4) + 12 >> 2] = h4 & 1;
+              c4[p4 >> 2] = g3;
+              h4 = h4 & 1;
               q2 = 35;
               break b;
             }
             case 2: {
-              a[f2 + 496 + (s2 << 4) + 10 >> 0] = 2;
-              switch (a[f2 + 496 + (s2 << 4) + 9 >> 0] | 0) {
+              a3[f4 + 496 + (s5 << 4) + 10 >> 0] = 2;
+              switch (a3[f4 + 496 + (s5 << 4) + 9 >> 0] | 0) {
                 case 0: {
-                  if (!(a[f2 + 2528 >> 0] | 0))
-                    a[r2 >> 0] = 23;
-                  c[f2 + 496 + (s2 << 4) + 12 >> 2] = 0;
-                  c[p2 >> 2] = g2;
-                  h2 = 0;
+                  if (!(a3[f4 + 2528 >> 0] | 0))
+                    a3[r6 >> 0] = 23;
+                  c4[f4 + 496 + (s5 << 4) + 12 >> 2] = 0;
+                  c4[p4 >> 2] = g3;
+                  h4 = 0;
                   break b;
                 }
                 case 13: {
-                  h2 = 5;
+                  h4 = 5;
                   break;
                 }
                 default:
-                  h2 = 24;
+                  h4 = 24;
               }
-              a[r2 >> 0] = h2;
-              c[f2 + 496 + (s2 << 4) + 12 >> 2] = 1;
-              c[p2 >> 2] = g2;
-              h2 = 1;
+              a3[r6 >> 0] = h4;
+              c4[f4 + 496 + (s5 << 4) + 12 >> 2] = 1;
+              c4[p4 >> 2] = g3;
+              h4 = 1;
               break b;
             }
             case 5: {
-              a[f2 + 496 + (s2 << 4) + 10 >> 0] = 5;
-              c[f2 + 496 + (s2 << 4) + 12 >> 2] = 1;
-              c[p2 >> 2] = g2;
-              h2 = 1;
+              a3[f4 + 496 + (s5 << 4) + 10 >> 0] = 5;
+              c4[f4 + 496 + (s5 << 4) + 12 >> 2] = 1;
+              c4[p4 >> 2] = g3;
+              h4 = 1;
               break b;
             }
             case 17: {
-              h2 = a[f2 + 496 + (s2 << 4) + 10 >> 0] | 0;
-              if (h2 << 24 >> 24 != 10) {
+              h4 = a3[f4 + 496 + (s5 << 4) + 10 >> 0] | 0;
+              if (h4 << 24 >> 24 != 10) {
                 q2 = 35;
                 break b;
               }
-              a[r2 >> 0] = 10;
-              t2 = 1;
-              return t2 | 0;
+              a3[r6 >> 0] = 10;
+              t5 = 1;
+              return t5 | 0;
             }
             default: {
-              a[f2 + 496 + (s2 << 4) + 10 >> 0] = m2;
-              h2 = m2;
+              a3[f4 + 496 + (s5 << 4) + 10 >> 0] = m3;
+              h4 = m3;
               q2 = 35;
               break b;
             }
           }
         else {
-          i2 = h2 & 1;
-          h2 = i2 & 255;
-          if ((m2 + -8 & 255) >= 3)
-            a[r2 >> 0] = h2;
-          a[f2 + 496 + (s2 << 4) + 10 >> 0] = h2;
-          a[f2 + 496 + (s2 << 4) + 9 >> 0] = h2;
-          c[f2 + 496 + (s2 << 4) + 12 >> 2] = i2;
-          c[p2 >> 2] = g2;
+          i5 = h4 & 1;
+          h4 = i5 & 255;
+          if ((m3 + -8 & 255) >= 3)
+            a3[r6 >> 0] = h4;
+          a3[f4 + 496 + (s5 << 4) + 10 >> 0] = h4;
+          a3[f4 + 496 + (s5 << 4) + 9 >> 0] = h4;
+          c4[f4 + 496 + (s5 << 4) + 12 >> 2] = i5;
+          c4[p4 >> 2] = g3;
           q2 = 35;
         }
       while (0);
     c:
       do
         if ((q2 | 0) == 35) {
-          switch (h2 << 24 >> 24) {
+          switch (h4 << 24 >> 24) {
             case 0:
             case 1:
             case 13:
               break c;
             default:
-              h2 = 1;
+              h4 = 1;
           }
-          return h2 | 0;
+          return h4 | 0;
         }
       while (0);
-    j2 = 1 << (h2 << 24 >> 24 != 0 & 1);
-    k2 = f2 + 496 + (s2 << 4) + 6 | 0;
-    l2 = f2 + 484 | 0;
-    h2 = e[f2 + 496 + (s2 << 4) + 4 >> 1] | 0;
+    j3 = 1 << (h4 << 24 >> 24 != 0 & 1);
+    k3 = f4 + 496 + (s5 << 4) + 6 | 0;
+    l4 = f4 + 484 | 0;
+    h4 = e5[f4 + 496 + (s5 << 4) + 4 >> 1] | 0;
     while (1) {
-      if (h2 >>> 0 >= (e[k2 >> 1] | 0) >>> 0) {
-        h2 = 1;
+      if (h4 >>> 0 >= (e5[k3 >> 1] | 0) >>> 0) {
+        h4 = 1;
         break;
       }
-      i2 = c[l2 >> 2] | 0;
-      if ((c[i2 + (h2 * 24 | 0) >> 2] | 0) < (g2 | 0)) {
-        t2 = i2 + (h2 * 24 | 0) + 12 | 0;
-        b[t2 >> 1] = j2 | e[t2 >> 1];
+      i5 = c4[l4 >> 2] | 0;
+      if ((c4[i5 + (h4 * 24 | 0) >> 2] | 0) < (g3 | 0)) {
+        t5 = i5 + (h4 * 24 | 0) + 12 | 0;
+        b3[t5 >> 1] = j3 | e5[t5 >> 1];
       }
-      h2 = h2 + 1 | 0;
+      h4 = h4 + 1 | 0;
     }
-    return h2 | 0;
+    return h4 | 0;
   }
-  function va(e2, f2, g2, h2) {
-    e2 = e2 | 0;
-    f2 = f2 | 0;
-    g2 = g2 | 0;
-    h2 = h2 | 0;
-    var i2 = 0;
-    i2 = c[e2 + 492 >> 2] | 0;
-    if (1 << (d[(c[(c[e2 >> 2] | 0) + 72 >> 2] | 0) + f2 >> 0] | 0) & 7864320 | 0)
+  function va(e6, f4, g3, h4) {
+    e6 = e6 | 0;
+    f4 = f4 | 0;
+    g3 = g3 | 0;
+    h4 = h4 | 0;
+    var i5 = 0;
+    i5 = c4[e6 + 492 >> 2] | 0;
+    if (1 << (d3[(c4[(c4[e6 >> 2] | 0) + 72 >> 2] | 0) + f4 >> 0] | 0) & 7864320 | 0)
       return;
-    b[e2 + 496 + (i2 << 4) + 6 >> 1] = b[e2 + 496 + (i2 << 4) + 4 >> 1] | 0;
-    a[e2 + 496 + (i2 << 4) + 8 >> 0] = h2;
-    h2 = ((h2 & 127) > (g2 & 127) ? h2 : g2) & 1;
-    a[e2 + 496 + (i2 << 4) + 10 >> 0] = h2;
-    a[e2 + 496 + (i2 << 4) + 9 >> 0] = h2;
-    c[e2 + 496 + (i2 << 4) + 12 >> 2] = h2 & 255;
-    c[e2 + 496 + (i2 << 4) >> 2] = f2;
+    b3[e6 + 496 + (i5 << 4) + 6 >> 1] = b3[e6 + 496 + (i5 << 4) + 4 >> 1] | 0;
+    a3[e6 + 496 + (i5 << 4) + 8 >> 0] = h4;
+    h4 = ((h4 & 127) > (g3 & 127) ? h4 : g3) & 1;
+    a3[e6 + 496 + (i5 << 4) + 10 >> 0] = h4;
+    a3[e6 + 496 + (i5 << 4) + 9 >> 0] = h4;
+    c4[e6 + 496 + (i5 << 4) + 12 >> 2] = h4 & 255;
+    c4[e6 + 496 + (i5 << 4) >> 2] = f4;
     return;
   }
-  function wa(d2, e2) {
-    d2 = d2 | 0;
-    e2 = e2 | 0;
-    var f2 = 0, g2 = 0, h2 = 0;
-    g2 = d2 + 492 | 0;
-    h2 = c[g2 >> 2] | 0;
-    f2 = d2 + 496 + (h2 << 4) | 0;
-    a[d2 + 496 + (h2 << 4) + 10 >> 0] = 10;
-    d2 = b[d2 + 496 + (h2 << 4) + 6 >> 1] | 0;
-    c[g2 >> 2] = h2 + 1;
-    b[f2 + 22 >> 1] = d2;
-    b[f2 + 20 >> 1] = d2;
-    a[f2 + 24 >> 0] = e2;
-    e2 = e2 & 1;
-    a[f2 + 26 >> 0] = e2;
-    a[f2 + 25 >> 0] = e2;
-    c[f2 + 28 >> 2] = e2 & 255;
-    c[f2 + 16 >> 2] = 0;
+  function wa(d4, e6) {
+    d4 = d4 | 0;
+    e6 = e6 | 0;
+    var f4 = 0, g3 = 0, h4 = 0;
+    g3 = d4 + 492 | 0;
+    h4 = c4[g3 >> 2] | 0;
+    f4 = d4 + 496 + (h4 << 4) | 0;
+    a3[d4 + 496 + (h4 << 4) + 10 >> 0] = 10;
+    d4 = b3[d4 + 496 + (h4 << 4) + 6 >> 1] | 0;
+    c4[g3 >> 2] = h4 + 1;
+    b3[f4 + 22 >> 1] = d4;
+    b3[f4 + 20 >> 1] = d4;
+    a3[f4 + 24 >> 0] = e6;
+    e6 = e6 & 1;
+    a3[f4 + 26 >> 0] = e6;
+    a3[f4 + 25 >> 0] = e6;
+    c4[f4 + 28 >> 2] = e6 & 255;
+    c4[f4 + 16 >> 2] = 0;
     return;
   }
-  function xa(b2) {
-    b2 = b2 | 0;
-    var d2 = 0, e2 = 0;
-    e2 = b2 + 492 | 0;
-    d2 = (c[e2 >> 2] | 0) + -1 | 0;
-    c[e2 >> 2] = d2;
-    a[b2 + 496 + (d2 << 4) + 10 >> 0] = 10;
+  function xa(b4) {
+    b4 = b4 | 0;
+    var d4 = 0, e6 = 0;
+    e6 = b4 + 492 | 0;
+    d4 = (c4[e6 >> 2] | 0) + -1 | 0;
+    c4[e6 >> 2] = d4;
+    a3[b4 + 496 + (d4 << 4) + 10 >> 0] = 10;
     return;
   }
-  function ya(d2, f2, g2) {
-    d2 = d2 | 0;
-    f2 = f2 | 0;
-    g2 = g2 | 0;
-    var h2 = 0, i2 = 0, j2 = 0, k2 = 0, l2 = 0, m2 = 0, n2 = 0, o2 = 0, p2 = 0, q2 = 0;
-    o2 = c[d2 + 492 >> 2] | 0;
-    q2 = d2 + 484 | 0;
-    m2 = c[q2 >> 2] | 0;
-    j2 = a[d2 + 496 + (o2 << 4) + 8 >> 0] & 1;
-    h2 = j2 & 255;
-    i2 = b[m2 + (f2 * 24 | 0) + 12 >> 1] | 0;
-    if (!(j2 << 24 >> 24))
-      if (!(i2 & 1))
-        l2 = 4;
+  function ya(d4, f4, g3) {
+    d4 = d4 | 0;
+    f4 = f4 | 0;
+    g3 = g3 | 0;
+    var h4 = 0, i5 = 0, j3 = 0, k3 = 0, l4 = 0, m3 = 0, n6 = 0, o5 = 0, p4 = 0, q2 = 0;
+    o5 = c4[d4 + 492 >> 2] | 0;
+    q2 = d4 + 484 | 0;
+    m3 = c4[q2 >> 2] | 0;
+    j3 = a3[d4 + 496 + (o5 << 4) + 8 >> 0] & 1;
+    h4 = j3 & 255;
+    i5 = b3[m3 + (f4 * 24 | 0) + 12 >> 1] | 0;
+    if (!(j3 << 24 >> 24))
+      if (!(i5 & 1))
+        l4 = 4;
       else {
-        p2 = 0;
-        k2 = 0;
+        p4 = 0;
+        k3 = 0;
       }
-    else if (!(i2 & 2))
-      l2 = 4;
+    else if (!(i5 & 2))
+      l4 = 4;
     else {
-      p2 = 1;
-      k2 = 0;
+      p4 = 1;
+      k3 = 0;
     }
     do
-      if ((l2 | 0) == 4) {
-        if (i2 & 3) {
-          p2 = c[m2 + (f2 * 24 | 0) + 16 >> 2] | 0;
-          p2 = (p2 | 0) == (h2 | 0) ? j2 : p2 & 255;
-          k2 = (e[d2 + 496 + (o2 << 4) + 4 >> 1] | 0 | 0) != (f2 | 0);
+      if ((l4 | 0) == 4) {
+        if (i5 & 3) {
+          p4 = c4[m3 + (f4 * 24 | 0) + 16 >> 2] | 0;
+          p4 = (p4 | 0) == (h4 | 0) ? j3 : p4 & 255;
+          k3 = (e5[d4 + 496 + (o5 << 4) + 4 >> 1] | 0 | 0) != (f4 | 0);
           break;
         }
-        b[d2 + 496 + (o2 << 4) + 6 >> 1] = f2;
+        b3[d4 + 496 + (o5 << 4) + 6 >> 1] = f4;
         q2 = 10;
         return q2 | 0;
       }
     while (0);
-    n2 = m2 + (f2 * 24 | 0) | 0;
-    a[(c[(c[d2 >> 2] | 0) + 72 >> 2] | 0) + (c[n2 >> 2] | 0) >> 0] = p2;
-    a[(c[(c[d2 >> 2] | 0) + 72 >> 2] | 0) + g2 >> 0] = p2;
-    Aa(d2, f2, c[n2 >> 2] | 0, p2);
-    if (!k2) {
-      i2 = d2 + 496 + (o2 << 4) + 6 | 0;
-      h2 = b[d2 + 496 + (o2 << 4) + 4 >> 1] | 0;
-      j2 = f2 & 65535;
+    n6 = m3 + (f4 * 24 | 0) | 0;
+    a3[(c4[(c4[d4 >> 2] | 0) + 72 >> 2] | 0) + (c4[n6 >> 2] | 0) >> 0] = p4;
+    a3[(c4[(c4[d4 >> 2] | 0) + 72 >> 2] | 0) + g3 >> 0] = p4;
+    Aa(d4, f4, c4[n6 >> 2] | 0, p4);
+    if (!k3) {
+      i5 = d4 + 496 + (o5 << 4) + 6 | 0;
+      h4 = b3[d4 + 496 + (o5 << 4) + 4 >> 1] | 0;
+      j3 = f4 & 65535;
       while (1) {
-        b[i2 >> 1] = j2;
-        if ((j2 & 65535) <= (h2 & 65535)) {
-          h2 = p2;
-          l2 = 21;
+        b3[i5 >> 1] = j3;
+        if ((j3 & 65535) <= (h4 & 65535)) {
+          h4 = p4;
+          l4 = 21;
           break;
         }
-        if ((c[(c[q2 >> 2] | 0) + (((j2 & 65535) + -1 | 0) * 24 | 0) >> 2] | 0) == (c[n2 >> 2] | 0))
-          j2 = j2 + -1 << 16 >> 16;
+        if ((c4[(c4[q2 >> 2] | 0) + (((j3 & 65535) + -1 | 0) * 24 | 0) >> 2] | 0) == (c4[n6 >> 2] | 0))
+          j3 = j3 + -1 << 16 >> 16;
         else {
-          h2 = p2;
-          l2 = 21;
+          h4 = p4;
+          l4 = 21;
           break;
         }
       }
-      if ((l2 | 0) == 21)
-        return h2 | 0;
+      if ((l4 | 0) == 21)
+        return h4 | 0;
     }
-    c[m2 + (f2 * 24 | 0) + 4 >> 2] = 0 - g2;
-    j2 = d2 + 496 + (o2 << 4) + 4 | 0;
-    h2 = f2;
+    c4[m3 + (f4 * 24 | 0) + 4 >> 2] = 0 - g3;
+    j3 = d4 + 496 + (o5 << 4) + 4 | 0;
+    h4 = f4;
     while (1) {
-      i2 = h2 + -1 | 0;
-      if ((h2 | 0) <= (e[j2 >> 1] | 0 | 0))
+      i5 = h4 + -1 | 0;
+      if ((h4 | 0) <= (e5[j3 >> 1] | 0 | 0))
         break;
-      h2 = c[q2 >> 2] | 0;
-      if ((c[h2 + (i2 * 24 | 0) >> 2] | 0) != (c[n2 >> 2] | 0))
+      h4 = c4[q2 >> 2] | 0;
+      if ((c4[h4 + (i5 * 24 | 0) >> 2] | 0) != (c4[n6 >> 2] | 0))
         break;
-      c[h2 + (i2 * 24 | 0) + 4 >> 2] = 0;
-      h2 = i2;
+      c4[h4 + (i5 * 24 | 0) + 4 >> 2] = 0;
+      h4 = i5;
     }
-    i2 = d2 + 496 + (o2 << 4) + 6 | 0;
+    i5 = d4 + 496 + (o5 << 4) + 6 | 0;
     while (1) {
-      f2 = f2 + 1 | 0;
-      if ((f2 | 0) >= (e[i2 >> 1] | 0 | 0)) {
-        h2 = p2;
-        l2 = 21;
+      f4 = f4 + 1 | 0;
+      if ((f4 | 0) >= (e5[i5 >> 1] | 0 | 0)) {
+        h4 = p4;
+        l4 = 21;
         break;
       }
-      h2 = c[q2 >> 2] | 0;
-      if ((c[h2 + (f2 * 24 | 0) >> 2] | 0) >= (g2 | 0)) {
-        h2 = p2;
-        l2 = 21;
+      h4 = c4[q2 >> 2] | 0;
+      if ((c4[h4 + (f4 * 24 | 0) >> 2] | 0) >= (g3 | 0)) {
+        h4 = p4;
+        l4 = 21;
         break;
       }
-      h2 = h2 + (f2 * 24 | 0) + 4 | 0;
-      if ((c[h2 >> 2] | 0) > 0)
-        c[h2 >> 2] = 0;
+      h4 = h4 + (f4 * 24 | 0) + 4 | 0;
+      if ((c4[h4 >> 2] | 0) > 0)
+        c4[h4 >> 2] = 0;
     }
-    if ((l2 | 0) == 21)
-      return h2 | 0;
+    if ((l4 | 0) == 21)
+      return h4 | 0;
     return 0;
   }
-  function za(a2, d2, f2) {
-    a2 = a2 | 0;
-    d2 = d2 | 0;
-    f2 = f2 | 0;
-    var g2 = 0, h2 = 0, i2 = 0, j2 = 0, k2 = 0, l2 = 0, m2 = 0;
-    l2 = c[a2 + 492 >> 2] | 0;
-    m2 = a2 + 496 + (l2 << 4) + 6 | 0;
-    g2 = e[m2 >> 1] | 0;
-    k2 = a2 + 488 | 0;
-    if ((c[k2 >> 2] | 0) > (g2 | 0))
-      h2 = c[a2 + 484 >> 2] | 0;
+  function za(a4, d4, f4) {
+    a4 = a4 | 0;
+    d4 = d4 | 0;
+    f4 = f4 | 0;
+    var g3 = 0, h4 = 0, i5 = 0, j3 = 0, k3 = 0, l4 = 0, m3 = 0;
+    l4 = c4[a4 + 492 >> 2] | 0;
+    m3 = a4 + 496 + (l4 << 4) + 6 | 0;
+    g3 = e5[m3 >> 1] | 0;
+    k3 = a4 + 488 | 0;
+    if ((c4[k3 >> 2] | 0) > (g3 | 0))
+      h4 = c4[a4 + 484 >> 2] | 0;
     else {
-      j2 = c[a2 >> 2] | 0;
-      i2 = j2 + 52 | 0;
-      j2 = j2 + 28 | 0;
-      if (!((aa(i2, j2, 1, g2 * 48 | 0) | 0) << 24 >> 24)) {
-        m2 = 0;
-        return m2 | 0;
+      j3 = c4[a4 >> 2] | 0;
+      i5 = j3 + 52 | 0;
+      j3 = j3 + 28 | 0;
+      if (!((aa(i5, j3, 1, g3 * 48 | 0) | 0) << 24 >> 24)) {
+        m3 = 0;
+        return m3 | 0;
       }
-      g2 = a2 + 484 | 0;
-      h2 = c[g2 >> 2] | 0;
-      if ((h2 | 0) == (a2 + 4 | 0))
-        ec(c[i2 >> 2] | 0, h2 | 0, 480) | 0;
-      h2 = c[i2 >> 2] | 0;
-      c[g2 >> 2] = h2;
-      c[k2 >> 2] = ((c[j2 >> 2] | 0) >>> 0) / 24 | 0;
-      g2 = e[m2 >> 1] | 0;
+      g3 = a4 + 484 | 0;
+      h4 = c4[g3 >> 2] | 0;
+      if ((h4 | 0) == (a4 + 4 | 0))
+        ec(c4[i5 >> 2] | 0, h4 | 0, 480) | 0;
+      h4 = c4[i5 >> 2] | 0;
+      c4[g3 >> 2] = h4;
+      c4[k3 >> 2] = ((c4[j3 >> 2] | 0) >>> 0) / 24 | 0;
+      g3 = e5[m3 >> 1] | 0;
     }
-    c[h2 + (g2 * 24 | 0) >> 2] = f2;
-    c[h2 + (g2 * 24 | 0) + 4 >> 2] = d2 & 65535;
-    c[h2 + (g2 * 24 | 0) + 16 >> 2] = c[a2 + 496 + (l2 << 4) + 12 >> 2];
-    c[h2 + (g2 * 24 | 0) + 8 >> 2] = c[a2 + 496 + (l2 << 4) >> 2];
-    b[h2 + (g2 * 24 | 0) + 12 >> 1] = 0;
-    b[m2 >> 1] = (b[m2 >> 1] | 0) + 1 << 16 >> 16;
-    m2 = 1;
-    return m2 | 0;
+    c4[h4 + (g3 * 24 | 0) >> 2] = f4;
+    c4[h4 + (g3 * 24 | 0) + 4 >> 2] = d4 & 65535;
+    c4[h4 + (g3 * 24 | 0) + 16 >> 2] = c4[a4 + 496 + (l4 << 4) + 12 >> 2];
+    c4[h4 + (g3 * 24 | 0) + 8 >> 2] = c4[a4 + 496 + (l4 << 4) >> 2];
+    b3[h4 + (g3 * 24 | 0) + 12 >> 1] = 0;
+    b3[m3 >> 1] = (b3[m3 >> 1] | 0) + 1 << 16 >> 16;
+    m3 = 1;
+    return m3 | 0;
   }
-  function Aa(b2, d2, f2, g2) {
-    b2 = b2 | 0;
-    d2 = d2 | 0;
-    f2 = f2 | 0;
-    g2 = g2 | 0;
-    var h2 = 0, i2 = 0, j2 = 0, k2 = 0, l2 = 0, m2 = 0, n2 = 0;
-    m2 = c[(c[b2 >> 2] | 0) + 72 >> 2] | 0;
-    h2 = d2 + 1 | 0;
-    i2 = g2 & 255;
-    j2 = b2 + 496 + (c[b2 + 492 >> 2] << 4) + 6 | 0;
-    d2 = (c[b2 + 484 >> 2] | 0) + (h2 * 24 | 0) | 0;
+  function Aa(b4, d4, f4, g3) {
+    b4 = b4 | 0;
+    d4 = d4 | 0;
+    f4 = f4 | 0;
+    g3 = g3 | 0;
+    var h4 = 0, i5 = 0, j3 = 0, k3 = 0, l4 = 0, m3 = 0, n6 = 0;
+    m3 = c4[(c4[b4 >> 2] | 0) + 72 >> 2] | 0;
+    h4 = d4 + 1 | 0;
+    i5 = g3 & 255;
+    j3 = b4 + 496 + (c4[b4 + 492 >> 2] << 4) + 6 | 0;
+    d4 = (c4[b4 + 484 >> 2] | 0) + (h4 * 24 | 0) | 0;
     while (1) {
-      if ((h2 | 0) >= (e[j2 >> 1] | 0 | 0)) {
-        d2 = 9;
+      if ((h4 | 0) >= (e5[j3 >> 1] | 0 | 0)) {
+        d4 = 9;
         break;
       }
-      k2 = d2 + 4 | 0;
-      if ((c[k2 >> 2] | 0) <= -1) {
-        if ((c[d2 + 8 >> 2] | 0) > (f2 | 0)) {
-          d2 = 9;
+      k3 = d4 + 4 | 0;
+      if ((c4[k3 >> 2] | 0) <= -1) {
+        if ((c4[d4 + 8 >> 2] | 0) > (f4 | 0)) {
+          d4 = 9;
           break;
         }
-        l2 = c[d2 >> 2] | 0;
-        if ((l2 | 0) > (f2 | 0)) {
-          if ((c[d2 + 16 >> 2] | 0) == (i2 | 0)) {
-            d2 = 9;
+        l4 = c4[d4 >> 2] | 0;
+        if ((l4 | 0) > (f4 | 0)) {
+          if ((c4[d4 + 16 >> 2] | 0) == (i5 | 0)) {
+            d4 = 9;
             break;
           }
-          a[m2 + l2 >> 0] = g2;
-          n2 = 0 - (c[k2 >> 2] | 0) | 0;
-          a[m2 + n2 >> 0] = g2;
-          c[k2 >> 2] = 0;
-          Aa(b2, h2, l2, g2);
-          Aa(b2, h2, n2, g2);
+          a3[m3 + l4 >> 0] = g3;
+          n6 = 0 - (c4[k3 >> 2] | 0) | 0;
+          a3[m3 + n6 >> 0] = g3;
+          c4[k3 >> 2] = 0;
+          Aa(b4, h4, l4, g3);
+          Aa(b4, h4, n6, g3);
         }
       }
-      d2 = d2 + 24 | 0;
-      h2 = h2 + 1 | 0;
+      d4 = d4 + 24 | 0;
+      h4 = h4 + 1 | 0;
     }
-    if ((d2 | 0) == 9)
+    if ((d4 | 0) == 9)
       return;
   }
-  function Ba(a2) {
-    a2 = a2 | 0;
-    var b2 = 0, d2 = 0, f2 = 0, g2 = 0, h2 = 0, i2 = 0, j2 = 0, k2 = 0;
-    h2 = c[a2 + 96 >> 2] | 0;
-    i2 = c[a2 + 100 >> 2] | 0;
-    g2 = 0;
-    b2 = 10;
+  function Ba(a4) {
+    a4 = a4 | 0;
+    var b4 = 0, d4 = 0, f4 = 0, g3 = 0, h4 = 0, i5 = 0, j3 = 0, k3 = 0;
+    h4 = c4[a4 + 96 >> 2] | 0;
+    i5 = c4[a4 + 100 >> 2] | 0;
+    g3 = 0;
+    b4 = 10;
     while (1) {
-      if ((g2 | 0) >= (i2 | 0))
+      if ((g3 | 0) >= (i5 | 0))
         break;
-      f2 = g2 + 1 | 0;
-      d2 = e[h2 + (g2 << 1) >> 1] | 0;
-      if ((f2 | 0) == (i2 | 0) | (d2 & 64512 | 0) != 55296)
-        g2 = f2;
+      f4 = g3 + 1 | 0;
+      d4 = e5[h4 + (g3 << 1) >> 1] | 0;
+      if ((f4 | 0) == (i5 | 0) | (d4 & 64512 | 0) != 55296)
+        g3 = f4;
       else {
-        k2 = e[h2 + (f2 << 1) >> 1] | 0;
-        j2 = (k2 & 64512 | 0) == 56320;
-        d2 = j2 ? (d2 << 10) + -56613888 + k2 | 0 : d2;
-        g2 = j2 ? g2 + 2 | 0 : f2;
+        k3 = e5[h4 + (f4 << 1) >> 1] | 0;
+        j3 = (k3 & 64512 | 0) == 56320;
+        d4 = j3 ? (d4 << 10) + -56613888 + k3 | 0 : d4;
+        g3 = j3 ? g3 + 2 | 0 : f4;
       }
-      d2 = pa(a2, d2) | 0;
-      f2 = d2 & 255;
+      d4 = pa(a4, d4) | 0;
+      f4 = d4 & 255;
       a:
         do
-          if (b2 << 24 >> 24 == 10) {
-            switch (f2 << 24 >> 24) {
+          if (b4 << 24 >> 24 == 10) {
+            switch (f4 << 24 >> 24) {
               case 13:
               case 1:
               case 0:
                 break;
               default: {
-                b2 = 10;
+                b4 = 10;
                 break a;
               }
             }
-            b2 = f2;
+            b4 = f4;
           } else
-            b2 = (d2 & 255 | 0) == 7 ? 10 : b2;
+            b4 = (d4 & 255 | 0) == 7 ? 10 : b4;
         while (0);
     }
-    return b2 | 0;
+    return b4 | 0;
   }
-  function Ca(a2) {
-    a2 = a2 | 0;
-    var b2 = 0, d2 = 0, e2 = 0;
-    d2 = c[a2 + 132 >> 2] | 0;
-    e2 = a2 + 136 | 0;
-    b2 = c[e2 >> 2] | 0;
-    if ((b2 | 0) != (a2 + 140 | 0)) {
-      b2 = a2 + 56 | 0;
-      if (!((aa(b2, a2 + 32 | 0, 1, d2 << 4) | 0) << 24 >> 24)) {
-        e2 = 0;
-        return e2 | 0;
+  function Ca(a4) {
+    a4 = a4 | 0;
+    var b4 = 0, d4 = 0, e6 = 0;
+    d4 = c4[a4 + 132 >> 2] | 0;
+    e6 = a4 + 136 | 0;
+    b4 = c4[e6 >> 2] | 0;
+    if ((b4 | 0) != (a4 + 140 | 0)) {
+      b4 = a4 + 56 | 0;
+      if (!((aa(b4, a4 + 32 | 0, 1, d4 << 4) | 0) << 24 >> 24)) {
+        e6 = 0;
+        return e6 | 0;
       }
-      c[e2 >> 2] = c[b2 >> 2];
-      e2 = 1;
-      return e2 | 0;
+      c4[e6 >> 2] = c4[b4 >> 2];
+      e6 = 1;
+      return e6 | 0;
     }
-    if ((d2 | 0) < 11) {
-      e2 = 1;
-      return e2 | 0;
+    if ((d4 | 0) < 11) {
+      e6 = 1;
+      return e6 | 0;
     }
-    d2 = a2 + 56 | 0;
-    if (!((aa(d2, a2 + 32 | 0, 1, 160) | 0) << 24 >> 24)) {
-      e2 = 0;
-      return e2 | 0;
+    d4 = a4 + 56 | 0;
+    if (!((aa(d4, a4 + 32 | 0, 1, 160) | 0) << 24 >> 24)) {
+      e6 = 0;
+      return e6 | 0;
     }
-    a2 = c[d2 >> 2] | 0;
-    c[e2 >> 2] = a2;
-    d2 = a2 + 80 | 0;
+    a4 = c4[d4 >> 2] | 0;
+    c4[e6 >> 2] = a4;
+    d4 = a4 + 80 | 0;
     do {
-      c[a2 >> 2] = c[b2 >> 2];
-      a2 = a2 + 4 | 0;
-      b2 = b2 + 4 | 0;
-    } while ((a2 | 0) < (d2 | 0));
-    e2 = 1;
-    return e2 | 0;
+      c4[a4 >> 2] = c4[b4 >> 2];
+      a4 = a4 + 4 | 0;
+      b4 = b4 + 4 | 0;
+    } while ((a4 | 0) < (d4 | 0));
+    e6 = 1;
+    return e6 | 0;
   }
-  function Da(a2) {
-    a2 = a2 | 0;
-    var b2 = 0;
+  function Da(a4) {
+    a4 = a4 | 0;
+    var b4 = 0;
     do
-      if (!a2)
-        a2 = 0;
+      if (!a4)
+        a4 = 0;
       else {
-        b2 = c[a2 >> 2] | 0;
-        if ((b2 | 0) != (a2 | 0)) {
-          if (!b2) {
-            a2 = 0;
+        b4 = c4[a4 >> 2] | 0;
+        if ((b4 | 0) != (a4 | 0)) {
+          if (!b4) {
+            a4 = 0;
             break;
           }
-          if ((c[b2 >> 2] | 0) != (b2 | 0)) {
-            a2 = 0;
+          if ((c4[b4 >> 2] | 0) != (b4 | 0)) {
+            a4 = 0;
             break;
           }
         }
-        a2 = c[a2 + 12 >> 2] | 0;
+        a4 = c4[a4 + 12 >> 2] | 0;
       }
     while (0);
-    return a2 | 0;
+    return a4 | 0;
   }
-  function Ea(a2) {
-    a2 = a2 | 0;
-    var b2 = 0;
+  function Ea(a4) {
+    a4 = a4 | 0;
+    var b4 = 0;
     do
-      if (!a2)
-        a2 = 0;
+      if (!a4)
+        a4 = 0;
       else {
-        b2 = c[a2 >> 2] | 0;
-        if ((b2 | 0) != (a2 | 0)) {
-          if (!b2) {
-            a2 = 0;
+        b4 = c4[a4 >> 2] | 0;
+        if ((b4 | 0) != (a4 | 0)) {
+          if (!b4) {
+            a4 = 0;
             break;
           }
-          if ((c[b2 >> 2] | 0) != (b2 | 0)) {
-            a2 = 0;
+          if ((c4[b4 >> 2] | 0) != (b4 | 0)) {
+            a4 = 0;
             break;
           }
         }
-        a2 = c[a2 + 132 >> 2] | 0;
+        a4 = c4[a4 + 132 >> 2] | 0;
       }
     while (0);
-    return a2 | 0;
+    return a4 | 0;
   }
-  function Fa(a2, b2, d2, e2) {
-    a2 = a2 | 0;
-    b2 = b2 | 0;
-    d2 = d2 | 0;
-    e2 = e2 | 0;
-    var f2 = 0;
-    if (!e2)
+  function Fa(a4, b4, d4, e6) {
+    a4 = a4 | 0;
+    b4 = b4 | 0;
+    d4 = d4 | 0;
+    e6 = e6 | 0;
+    var f4 = 0;
+    if (!e6)
       return;
-    if (($(c[e2 >> 2] | 0) | 0) << 24 >> 24)
+    if (($2(c4[e6 >> 2] | 0) | 0) << 24 >> 24)
       return;
     do
-      if (a2 | 0) {
-        f2 = c[a2 >> 2] | 0;
-        if ((f2 | 0) != (a2 | 0)) {
-          if (!f2)
+      if (a4 | 0) {
+        f4 = c4[a4 >> 2] | 0;
+        if ((f4 | 0) != (a4 | 0)) {
+          if (!f4)
             break;
-          if ((c[f2 >> 2] | 0) != (f2 | 0))
+          if ((c4[f4 >> 2] | 0) != (f4 | 0))
             break;
         }
-        if ((b2 | 0) >= 0 ? (c[a2 + 132 >> 2] | 0) > (b2 | 0) : 0) {
-          if (!d2)
+        if ((b4 | 0) >= 0 ? (c4[a4 + 132 >> 2] | 0) > (b4 | 0) : 0) {
+          if (!d4)
             return;
-          c[d2 >> 2] = c[(c[f2 + 136 >> 2] | 0) + (b2 << 3) >> 2];
+          c4[d4 >> 2] = c4[(c4[f4 + 136 >> 2] | 0) + (b4 << 3) >> 2];
           return;
         }
-        c[e2 >> 2] = 1;
+        c4[e6 >> 2] = 1;
         return;
       }
     while (0);
-    c[e2 >> 2] = 27;
+    c4[e6 >> 2] = 27;
     return;
   }
-  function Ga(a2, b2, d2) {
-    a2 = a2 | 0;
-    b2 = b2 | 0;
-    d2 = d2 | 0;
-    var e2 = 0, f2 = 0;
-    if (!d2) {
-      f2 = -1;
-      return f2 | 0;
+  function Ga(a4, b4, d4) {
+    a4 = a4 | 0;
+    b4 = b4 | 0;
+    d4 = d4 | 0;
+    var e6 = 0, f4 = 0;
+    if (!d4) {
+      f4 = -1;
+      return f4 | 0;
     }
-    if (($(c[d2 >> 2] | 0) | 0) << 24 >> 24) {
-      f2 = -1;
-      return f2 | 0;
+    if (($2(c4[d4 >> 2] | 0) | 0) << 24 >> 24) {
+      f4 = -1;
+      return f4 | 0;
     }
     do
-      if (a2 | 0) {
-        f2 = c[a2 >> 2] | 0;
-        if ((f2 | 0) != (a2 | 0)) {
-          if (!f2)
+      if (a4 | 0) {
+        f4 = c4[a4 >> 2] | 0;
+        if ((f4 | 0) != (a4 | 0)) {
+          if (!f4)
             break;
-          if ((c[f2 >> 2] | 0) != (f2 | 0))
+          if ((c4[f4 >> 2] | 0) != (f4 | 0))
             break;
         }
-        if ((b2 | 0) >= 0 ? (c[f2 + 12 >> 2] | 0) > (b2 | 0) : 0) {
-          e2 = c[f2 + 136 >> 2] | 0;
-          a2 = 0;
+        if ((b4 | 0) >= 0 ? (c4[f4 + 12 >> 2] | 0) > (b4 | 0) : 0) {
+          e6 = c4[f4 + 136 >> 2] | 0;
+          a4 = 0;
           while (1)
-            if ((c[e2 + (a2 << 3) >> 2] | 0) > (b2 | 0))
+            if ((c4[e6 + (a4 << 3) >> 2] | 0) > (b4 | 0))
               break;
             else
-              a2 = a2 + 1 | 0;
-          Fa(f2, a2, 0, d2);
-          f2 = a2;
-          return f2 | 0;
+              a4 = a4 + 1 | 0;
+          Fa(f4, a4, 0, d4);
+          f4 = a4;
+          return f4 | 0;
         }
-        c[d2 >> 2] = 1;
-        f2 = -1;
-        return f2 | 0;
+        c4[d4 >> 2] = 1;
+        f4 = -1;
+        return f4 | 0;
       }
     while (0);
-    c[d2 >> 2] = 27;
-    f2 = -1;
-    return f2 | 0;
+    c4[d4 >> 2] = 27;
+    f4 = -1;
+    return f4 | 0;
   }
-  function Ha(a2, b2, d2, e2, f2) {
-    a2 = a2 | 0;
-    b2 = b2 | 0;
-    d2 = d2 | 0;
-    e2 = e2 | 0;
-    f2 = f2 | 0;
-    var g2 = 0;
-    if (!f2) {
-      f2 = 0;
-      return f2 | 0;
+  function Ha(a4, b4, d4, e6, f4) {
+    a4 = a4 | 0;
+    b4 = b4 | 0;
+    d4 = d4 | 0;
+    e6 = e6 | 0;
+    f4 = f4 | 0;
+    var g3 = 0;
+    if (!f4) {
+      f4 = 0;
+      return f4 | 0;
     }
-    if ((Ia(c[f2 >> 2] | 0) | 0) << 24 >> 24) {
-      f2 = 0;
-      return f2 | 0;
+    if ((Ia(c4[f4 >> 2] | 0) | 0) << 24 >> 24) {
+      f4 = 0;
+      return f4 | 0;
     }
-    if (!((a2 | 0) == 0 | (b2 | 0) < -1 | (e2 | 0) < 0) ? (g2 = (d2 | 0) == 0, !(g2 & (e2 | 0) > 0)) : 0) {
+    if (!((a4 | 0) == 0 | (b4 | 0) < -1 | (e6 | 0) < 0) ? (g3 = (d4 | 0) == 0, !(g3 & (e6 | 0) > 0)) : 0) {
       do
-        if (!g2) {
-          if (!(a2 >>> 0 >= d2 >>> 0 & (d2 + (e2 << 1) | 0) >>> 0 > a2 >>> 0) ? !(d2 >>> 0 >= a2 >>> 0 & (a2 + (b2 << 1) | 0) >>> 0 > d2 >>> 0) : 0)
+        if (!g3) {
+          if (!(a4 >>> 0 >= d4 >>> 0 & (d4 + (e6 << 1) | 0) >>> 0 > a4 >>> 0) ? !(d4 >>> 0 >= a4 >>> 0 & (a4 + (b4 << 1) | 0) >>> 0 > d4 >>> 0) : 0)
             break;
-          c[f2 >> 2] = 1;
-          f2 = 0;
-          return f2 | 0;
+          c4[f4 >> 2] = 1;
+          f4 = 0;
+          return f4 | 0;
         }
       while (0);
-      if ((b2 | 0) == -1)
-        b2 = ob(a2) | 0;
-      if ((b2 | 0) > 0)
-        b2 = Ja(a2, b2, d2, e2, 10, f2) | 0;
+      if ((b4 | 0) == -1)
+        b4 = ob(a4) | 0;
+      if ((b4 | 0) > 0)
+        b4 = Ja(a4, b4, d4, e6, 10, f4) | 0;
       else
-        b2 = 0;
-      f2 = qb(d2, e2, b2, f2) | 0;
-      return f2 | 0;
+        b4 = 0;
+      f4 = qb(d4, e6, b4, f4) | 0;
+      return f4 | 0;
     }
-    c[f2 >> 2] = 1;
-    f2 = 0;
-    return f2 | 0;
+    c4[f4 >> 2] = 1;
+    f4 = 0;
+    return f4 | 0;
   }
-  function Ia(a2) {
-    a2 = a2 | 0;
-    return (a2 | 0) > 0 | 0;
+  function Ia(a4) {
+    a4 = a4 | 0;
+    return (a4 | 0) > 0 | 0;
   }
-  function Ja(a2, d2, f2, g2, h2, i2) {
-    a2 = a2 | 0;
-    d2 = d2 | 0;
-    f2 = f2 | 0;
-    g2 = g2 | 0;
-    h2 = h2 | 0;
-    i2 = i2 | 0;
-    var j2 = 0, k2 = 0, l2 = 0, m2 = 0, n2 = 0, o2 = 0, p2 = 0;
-    l2 = h2 & 65535;
-    switch (l2 & 11) {
+  function Ja(a4, d4, f4, g3, h4, i5) {
+    a4 = a4 | 0;
+    d4 = d4 | 0;
+    f4 = f4 | 0;
+    g3 = g3 | 0;
+    h4 = h4 | 0;
+    i5 = i5 | 0;
+    var j3 = 0, k3 = 0, l4 = 0, m3 = 0, n6 = 0, o5 = 0, p4 = 0;
+    l4 = h4 & 65535;
+    switch (l4 & 11) {
       case 0: {
-        if ((g2 | 0) < (d2 | 0)) {
-          c[i2 >> 2] = 15;
-          o2 = d2;
-          return o2 | 0;
+        if ((g3 | 0) < (d4 | 0)) {
+          c4[i5 >> 2] = 15;
+          o5 = d4;
+          return o5 | 0;
         }
-        k2 = d2;
-        h2 = f2;
+        k3 = d4;
+        h4 = f4;
         while (1) {
-          j2 = k2 + -1 | 0;
-          f2 = k2 + -2 | 0;
-          if ((k2 | 0) > 1 ? (b[a2 + (j2 << 1) >> 1] & -1024) << 16 >> 16 == -9216 : 0)
-            j2 = (b[a2 + (f2 << 1) >> 1] & -1024) << 16 >> 16 == -10240 ? f2 : j2;
-          f2 = j2;
+          j3 = k3 + -1 | 0;
+          f4 = k3 + -2 | 0;
+          if ((k3 | 0) > 1 ? (b3[a4 + (j3 << 1) >> 1] & -1024) << 16 >> 16 == -9216 : 0)
+            j3 = (b3[a4 + (f4 << 1) >> 1] & -1024) << 16 >> 16 == -10240 ? f4 : j3;
+          f4 = j3;
           do {
-            n2 = f2;
-            f2 = f2 + 1 | 0;
-            o2 = h2;
-            h2 = h2 + 2 | 0;
-            b[o2 >> 1] = b[a2 + (n2 << 1) >> 1] | 0;
-          } while ((f2 | 0) < (k2 | 0));
-          if ((j2 | 0) > 0)
-            k2 = j2;
+            n6 = f4;
+            f4 = f4 + 1 | 0;
+            o5 = h4;
+            h4 = h4 + 2 | 0;
+            b3[o5 >> 1] = b3[a4 + (n6 << 1) >> 1] | 0;
+          } while ((f4 | 0) < (k3 | 0));
+          if ((j3 | 0) > 0)
+            k3 = j3;
           else {
-            h2 = d2;
+            h4 = d4;
             break;
           }
         }
-        return h2 | 0;
+        return h4 | 0;
       }
       case 1: {
-        if ((g2 | 0) < (d2 | 0)) {
-          c[i2 >> 2] = 15;
-          o2 = d2;
-          return o2 | 0;
+        if ((g3 | 0) < (d4 | 0)) {
+          c4[i5 >> 2] = 15;
+          o5 = d4;
+          return o5 | 0;
         }
-        i2 = d2;
-        g2 = f2;
+        i5 = d4;
+        g3 = f4;
         while (1) {
-          f2 = i2;
+          f4 = i5;
           while (1) {
-            j2 = f2 + -1 | 0;
-            h2 = e[a2 + (j2 << 1) >> 1] | 0;
-            if ((f2 | 0) > 1 & (h2 & 64512 | 0) == 56320) {
-              f2 = f2 + -2 | 0;
-              n2 = e[a2 + (f2 << 1) >> 1] | 0;
-              o2 = (n2 & 64512 | 0) == 55296;
-              h2 = o2 ? h2 + -56613888 + (n2 << 10) | 0 : h2;
-              f2 = o2 ? f2 : j2;
+            j3 = f4 + -1 | 0;
+            h4 = e5[a4 + (j3 << 1) >> 1] | 0;
+            if ((f4 | 0) > 1 & (h4 & 64512 | 0) == 56320) {
+              f4 = f4 + -2 | 0;
+              n6 = e5[a4 + (f4 << 1) >> 1] | 0;
+              o5 = (n6 & 64512 | 0) == 55296;
+              h4 = o5 ? h4 + -56613888 + (n6 << 10) | 0 : h4;
+              f4 = o5 ? f4 : j3;
             } else
-              f2 = j2;
-            if ((f2 | 0) <= 0) {
-              k2 = 0;
+              f4 = j3;
+            if ((f4 | 0) <= 0) {
+              k3 = 0;
               break;
             }
-            if (!(1 << ((sb(h2) | 0) << 24 >> 24) & 448)) {
-              k2 = 1;
+            if (!(1 << ((sb(h4) | 0) << 24 >> 24) & 448)) {
+              k3 = 1;
               break;
             }
           }
-          j2 = f2;
-          h2 = g2;
+          j3 = f4;
+          h4 = g3;
           do {
-            n2 = j2;
-            j2 = j2 + 1 | 0;
-            o2 = h2;
-            h2 = h2 + 2 | 0;
-            b[o2 >> 1] = b[a2 + (n2 << 1) >> 1] | 0;
-          } while ((j2 | 0) < (i2 | 0));
-          if (k2) {
-            i2 = f2;
-            g2 = h2;
+            n6 = j3;
+            j3 = j3 + 1 | 0;
+            o5 = h4;
+            h4 = h4 + 2 | 0;
+            b3[o5 >> 1] = b3[a4 + (n6 << 1) >> 1] | 0;
+          } while ((j3 | 0) < (i5 | 0));
+          if (k3) {
+            i5 = f4;
+            g3 = h4;
           } else {
-            h2 = d2;
+            h4 = d4;
             break;
           }
         }
-        return h2 | 0;
+        return h4 | 0;
       }
       default: {
-        n2 = (l2 & 8 | 0) != 0;
-        if (n2) {
-          j2 = a2;
-          k2 = d2;
-          h2 = 0;
+        n6 = (l4 & 8 | 0) != 0;
+        if (n6) {
+          j3 = a4;
+          k3 = d4;
+          h4 = 0;
           while (1) {
-            m2 = j2;
-            j2 = j2 + 2 | 0;
-            m2 = e[m2 >> 1] | 0;
-            h2 = h2 + ((((m2 + -8294 | 0) >>> 0 < 4 | ((m2 & 65532 | 0) == 8204 | (m2 + -8234 | 0) >>> 0 < 5)) ^ 1) & 1) | 0;
-            if ((k2 | 0) <= 1)
+            m3 = j3;
+            j3 = j3 + 2 | 0;
+            m3 = e5[m3 >> 1] | 0;
+            h4 = h4 + ((((m3 + -8294 | 0) >>> 0 < 4 | ((m3 & 65532 | 0) == 8204 | (m3 + -8234 | 0) >>> 0 < 5)) ^ 1) & 1) | 0;
+            if ((k3 | 0) <= 1)
               break;
             else
-              k2 = k2 + -1 | 0;
+              k3 = k3 + -1 | 0;
           }
-          a2 = j2 + (0 - d2 << 1) | 0;
+          a4 = j3 + (0 - d4 << 1) | 0;
         } else
-          h2 = d2;
-        if ((h2 | 0) > (g2 | 0)) {
-          c[i2 >> 2] = 15;
-          o2 = h2;
-          return o2 | 0;
+          h4 = d4;
+        if ((h4 | 0) > (g3 | 0)) {
+          c4[i5 >> 2] = 15;
+          o5 = h4;
+          return o5 | 0;
         }
-        m2 = (l2 & 1 | 0) == 0;
-        l2 = (l2 & 2 | 0) == 0;
-        i2 = d2;
+        m3 = (l4 & 1 | 0) == 0;
+        l4 = (l4 & 2 | 0) == 0;
+        i5 = d4;
         while (1) {
-          k2 = i2 + -1 | 0;
-          j2 = e[a2 + (k2 << 1) >> 1] | 0;
-          if ((i2 | 0) > 1 & (j2 & 64512 | 0) == 56320) {
-            d2 = i2 + -2 | 0;
-            p2 = e[a2 + (d2 << 1) >> 1] | 0;
-            g2 = (p2 & 64512 | 0) == 55296;
-            j2 = g2 ? j2 + -56613888 + (p2 << 10) | 0 : j2;
-            k2 = g2 ? d2 : k2;
+          k3 = i5 + -1 | 0;
+          j3 = e5[a4 + (k3 << 1) >> 1] | 0;
+          if ((i5 | 0) > 1 & (j3 & 64512 | 0) == 56320) {
+            d4 = i5 + -2 | 0;
+            p4 = e5[a4 + (d4 << 1) >> 1] | 0;
+            g3 = (p4 & 64512 | 0) == 55296;
+            j3 = g3 ? j3 + -56613888 + (p4 << 10) | 0 : j3;
+            k3 = g3 ? d4 : k3;
           }
           a:
             do
-              if (!m2)
+              if (!m3)
                 while (1) {
-                  if ((k2 | 0) <= 0)
+                  if ((k3 | 0) <= 0)
                     break a;
-                  if (!(1 << ((sb(j2) | 0) << 24 >> 24) & 448))
+                  if (!(1 << ((sb(j3) | 0) << 24 >> 24) & 448))
                     break a;
-                  g2 = k2 + -1 | 0;
-                  j2 = e[a2 + (g2 << 1) >> 1] | 0;
-                  if ((k2 | 0) > 1 & (j2 & 64512 | 0) == 56320) {
-                    k2 = k2 + -2 | 0;
-                    d2 = e[a2 + (k2 << 1) >> 1] | 0;
-                    p2 = (d2 & 64512 | 0) == 55296;
-                    j2 = p2 ? j2 + -56613888 + (d2 << 10) | 0 : j2;
-                    k2 = p2 ? k2 : g2;
+                  g3 = k3 + -1 | 0;
+                  j3 = e5[a4 + (g3 << 1) >> 1] | 0;
+                  if ((k3 | 0) > 1 & (j3 & 64512 | 0) == 56320) {
+                    k3 = k3 + -2 | 0;
+                    d4 = e5[a4 + (k3 << 1) >> 1] | 0;
+                    p4 = (d4 & 64512 | 0) == 55296;
+                    j3 = p4 ? j3 + -56613888 + (d4 << 10) | 0 : j3;
+                    k3 = p4 ? k3 : g3;
                   } else
-                    k2 = g2;
+                    k3 = g3;
                 }
             while (0);
-          if (n2) {
-            if ((j2 & -4 | 0) != 8204)
-              switch (j2 | 0) {
+          if (n6) {
+            if ((j3 & -4 | 0) != 8204)
+              switch (j3 | 0) {
                 case 8234:
                 case 8235:
                 case 8236:
@@ -24145,367 +24266,367 @@ var asm = function(global, env, buffer2) {
                 case 8297:
                   break;
                 default:
-                  o2 = 40;
+                  o5 = 40;
               }
           } else
-            o2 = 40;
+            o5 = 40;
           b:
             do
-              if ((o2 | 0) == 40) {
-                o2 = 0;
-                if (l2)
-                  g2 = k2;
+              if ((o5 | 0) == 40) {
+                o5 = 0;
+                if (l4)
+                  g3 = k3;
                 else {
-                  j2 = yb(j2) | 0;
-                  if (j2 >>> 0 < 65536) {
-                    b[f2 >> 1] = j2;
-                    j2 = 1;
+                  j3 = yb(j3) | 0;
+                  if (j3 >>> 0 < 65536) {
+                    b3[f4 >> 1] = j3;
+                    j3 = 1;
                   } else {
-                    b[f2 >> 1] = (j2 >>> 10) + 55232;
-                    b[f2 + 2 >> 1] = j2 & 1023 | 56320;
-                    j2 = 2;
+                    b3[f4 >> 1] = (j3 >>> 10) + 55232;
+                    b3[f4 + 2 >> 1] = j3 & 1023 | 56320;
+                    j3 = 2;
                   }
-                  g2 = j2 + k2 | 0;
-                  f2 = f2 + (j2 << 1) | 0;
+                  g3 = j3 + k3 | 0;
+                  f4 = f4 + (j3 << 1) | 0;
                 }
-                j2 = g2;
+                j3 = g3;
                 while (1) {
-                  if ((j2 | 0) >= (i2 | 0))
+                  if ((j3 | 0) >= (i5 | 0))
                     break b;
-                  b[f2 >> 1] = b[a2 + (j2 << 1) >> 1] | 0;
-                  j2 = j2 + 1 | 0;
-                  f2 = f2 + 2 | 0;
+                  b3[f4 >> 1] = b3[a4 + (j3 << 1) >> 1] | 0;
+                  j3 = j3 + 1 | 0;
+                  f4 = f4 + 2 | 0;
                 }
               }
             while (0);
-          if ((k2 | 0) > 0)
-            i2 = k2;
+          if ((k3 | 0) > 0)
+            i5 = k3;
           else
             break;
         }
-        return h2 | 0;
+        return h4 | 0;
       }
     }
     return 0;
   }
-  function Ka(e2, f2, g2, h2, i2) {
-    e2 = e2 | 0;
-    f2 = f2 | 0;
-    g2 = g2 | 0;
-    h2 = h2 | 0;
-    i2 = i2 | 0;
-    var j2 = 0, k2 = 0, l2 = 0, m2 = 0, n2 = 0, o2 = 0, p2 = 0, q2 = 0, r2 = 0, s2 = 0, t2 = 0, u2 = 0, v2 = 0, w2 = 0, x2 = 0, y2 = 0, z2 = 0;
-    y2 = E;
-    E = E + 16 | 0;
-    w2 = y2 + 4 | 0;
-    x2 = y2;
-    if (!i2) {
-      i2 = 0;
-      E = y2;
-      return i2 | 0;
+  function Ka(e6, f4, g3, h4, i5) {
+    e6 = e6 | 0;
+    f4 = f4 | 0;
+    g3 = g3 | 0;
+    h4 = h4 | 0;
+    i5 = i5 | 0;
+    var j3 = 0, k3 = 0, l4 = 0, m3 = 0, n6 = 0, o5 = 0, p4 = 0, q2 = 0, r6 = 0, s5 = 0, t5 = 0, u4 = 0, v3 = 0, w3 = 0, x3 = 0, y4 = 0, z2 = 0;
+    y4 = E2;
+    E2 = E2 + 16 | 0;
+    w3 = y4 + 4 | 0;
+    x3 = y4;
+    if (!i5) {
+      i5 = 0;
+      E2 = y4;
+      return i5 | 0;
     }
-    if ((Ia(c[i2 >> 2] | 0) | 0) << 24 >> 24) {
-      i2 = 0;
-      E = y2;
-      return i2 | 0;
+    if ((Ia(c4[i5 >> 2] | 0) | 0) << 24 >> 24) {
+      i5 = 0;
+      E2 = y4;
+      return i5 | 0;
     }
-    if (((e2 | 0 ? (v2 = c[e2 + 4 >> 2] | 0, v2 | 0) : 0) ? (j2 = c[e2 + 12 >> 2] | 0, (j2 | g2 | 0) >= 0) : 0) ? (k2 = (f2 | 0) == 0, !(k2 & (g2 | 0) > 0)) : 0) {
+    if (((e6 | 0 ? (v3 = c4[e6 + 4 >> 2] | 0, v3 | 0) : 0) ? (j3 = c4[e6 + 12 >> 2] | 0, (j3 | g3 | 0) >= 0) : 0) ? (k3 = (f4 | 0) == 0, !(k3 & (g3 | 0) > 0)) : 0) {
       do
-        if (!k2) {
-          if (!(v2 >>> 0 >= f2 >>> 0 & v2 >>> 0 < (f2 + (g2 << 1) | 0) >>> 0)) {
-            if (v2 >>> 0 > f2 >>> 0)
+        if (!k3) {
+          if (!(v3 >>> 0 >= f4 >>> 0 & v3 >>> 0 < (f4 + (g3 << 1) | 0) >>> 0)) {
+            if (v3 >>> 0 > f4 >>> 0)
               break;
-            if ((v2 + (c[e2 + 8 >> 2] << 1) | 0) >>> 0 <= f2 >>> 0)
+            if ((v3 + (c4[e6 + 8 >> 2] << 1) | 0) >>> 0 <= f4 >>> 0)
               break;
           }
-          c[i2 >> 2] = 1;
-          i2 = 0;
-          E = y2;
-          return i2 | 0;
+          c4[i5 >> 2] = 1;
+          i5 = 0;
+          E2 = y4;
+          return i5 | 0;
         }
       while (0);
-      if (!j2) {
-        qb(f2, g2, 0, i2) | 0;
-        i2 = 0;
-        E = y2;
-        return i2 | 0;
+      if (!j3) {
+        qb(f4, g3, 0, i5) | 0;
+        i5 = 0;
+        E2 = y4;
+        return i5 | 0;
       }
-      t2 = Qa(e2, i2) | 0;
-      if ((Ia(c[i2 >> 2] | 0) | 0) << 24 >> 24) {
-        i2 = 0;
-        E = y2;
-        return i2 | 0;
+      t5 = Qa(e6, i5) | 0;
+      if ((Ia(c4[i5 >> 2] | 0) | 0) << 24 >> 24) {
+        i5 = 0;
+        E2 = y4;
+        return i5 | 0;
       }
-      k2 = c[e2 + 88 >> 2] | 0;
-      u2 = h2 & -13;
-      u2 = (k2 & 2 | 0) == 0 ? (k2 & 1 | 0) == 0 ? h2 : u2 | 4 : u2 | 8;
-      u2 = ((c[e2 + 84 >> 2] | 0) + -3 | 0) >>> 0 < 4 ? u2 : u2 & -5;
-      k2 = u2 & 65535;
-      j2 = (k2 & 4 | 0) != 0;
+      k3 = c4[e6 + 88 >> 2] | 0;
+      u4 = h4 & -13;
+      u4 = (k3 & 2 | 0) == 0 ? (k3 & 1 | 0) == 0 ? h4 : u4 | 4 : u4 | 8;
+      u4 = ((c4[e6 + 84 >> 2] | 0) + -3 | 0) >>> 0 < 4 ? u4 : u4 & -5;
+      k3 = u4 & 65535;
+      j3 = (k3 & 4 | 0) != 0;
       a:
         do
-          if (!(k2 & 16)) {
-            if (!j2) {
-              n2 = k2 & 65533;
-              l2 = f2;
-              j2 = g2;
-              m2 = 0;
+          if (!(k3 & 16)) {
+            if (!j3) {
+              n6 = k3 & 65533;
+              l4 = f4;
+              j3 = g3;
+              m3 = 0;
               while (1) {
-                if ((m2 | 0) >= (t2 | 0))
+                if ((m3 | 0) >= (t5 | 0))
                   break a;
-                s2 = (Va(e2, m2, w2, x2) | 0) == 0;
-                k2 = v2 + (c[w2 >> 2] << 1) | 0;
-                h2 = c[x2 >> 2] | 0;
-                if (s2)
-                  k2 = La(k2, h2, l2, j2, n2, i2) | 0;
+                s5 = (Va(e6, m3, w3, x3) | 0) == 0;
+                k3 = v3 + (c4[w3 >> 2] << 1) | 0;
+                h4 = c4[x3 >> 2] | 0;
+                if (s5)
+                  k3 = La(k3, h4, l4, j3, n6, i5) | 0;
                 else
-                  k2 = Ja(k2, h2, l2, j2, u2, i2) | 0;
-                c[x2 >> 2] = k2;
-                l2 = (l2 | 0) == 0 ? 0 : l2 + (k2 << 1) | 0;
-                j2 = j2 - k2 | 0;
-                m2 = m2 + 1 | 0;
+                  k3 = Ja(k3, h4, l4, j3, u4, i5) | 0;
+                c4[x3 >> 2] = k3;
+                l4 = (l4 | 0) == 0 ? 0 : l4 + (k3 << 1) | 0;
+                j3 = j3 - k3 | 0;
+                m3 = m3 + 1 | 0;
               }
             }
-            q2 = c[e2 + 72 >> 2] | 0;
-            r2 = e2 + 224 | 0;
-            s2 = e2 + 80 | 0;
-            p2 = k2 & 65533;
-            j2 = g2;
-            o2 = 0;
-            k2 = f2;
+            q2 = c4[e6 + 72 >> 2] | 0;
+            r6 = e6 + 224 | 0;
+            s5 = e6 + 80 | 0;
+            p4 = k3 & 65533;
+            j3 = g3;
+            o5 = 0;
+            k3 = f4;
             while (1) {
-              if ((o2 | 0) >= (t2 | 0))
+              if ((o5 | 0) >= (t5 | 0))
                 break a;
-              z2 = Va(e2, o2, w2, x2) | 0;
-              l2 = c[w2 >> 2] | 0;
-              n2 = v2 + (l2 << 1) | 0;
-              h2 = c[(c[r2 >> 2] | 0) + (o2 * 12 | 0) + 8 >> 2] | 0;
-              h2 = (h2 | 0) > 0 ? h2 : 0;
-              m2 = (a[s2 >> 0] | 0) != 0;
+              z2 = Va(e6, o5, w3, x3) | 0;
+              l4 = c4[w3 >> 2] | 0;
+              n6 = v3 + (l4 << 1) | 0;
+              h4 = c4[(c4[r6 >> 2] | 0) + (o5 * 12 | 0) + 8 >> 2] | 0;
+              h4 = (h4 | 0) > 0 ? h4 : 0;
+              m3 = (a3[s5 >> 0] | 0) != 0;
               do
                 if (!z2) {
-                  if (m2)
-                    h2 = h2 | (a[q2 + l2 >> 0] | 0) != 0;
-                  l2 = 8207 - (h2 & 1) << 16 >> 16;
-                  if (h2 & 5) {
-                    if ((j2 | 0) > 0) {
-                      b[k2 >> 1] = l2;
-                      k2 = k2 + 2 | 0;
+                  if (m3)
+                    h4 = h4 | (a3[q2 + l4 >> 0] | 0) != 0;
+                  l4 = 8207 - (h4 & 1) << 16 >> 16;
+                  if (h4 & 5) {
+                    if ((j3 | 0) > 0) {
+                      b3[k3 >> 1] = l4;
+                      k3 = k3 + 2 | 0;
                     }
-                    j2 = j2 + -1 | 0;
+                    j3 = j3 + -1 | 0;
                   }
-                  l2 = La(n2, c[x2 >> 2] | 0, k2, j2, p2, i2) | 0;
-                  c[x2 >> 2] = l2;
-                  k2 = (k2 | 0) == 0 ? 0 : k2 + (l2 << 1) | 0;
-                  j2 = j2 - l2 | 0;
-                  if (a[s2 >> 0] | 0)
-                    h2 = (a[q2 + (l2 + -1 + (c[w2 >> 2] | 0)) >> 0] | 0) == 0 ? h2 : h2 | 2;
-                  if (!(h2 & 10))
+                  l4 = La(n6, c4[x3 >> 2] | 0, k3, j3, p4, i5) | 0;
+                  c4[x3 >> 2] = l4;
+                  k3 = (k3 | 0) == 0 ? 0 : k3 + (l4 << 1) | 0;
+                  j3 = j3 - l4 | 0;
+                  if (a3[s5 >> 0] | 0)
+                    h4 = (a3[q2 + (l4 + -1 + (c4[w3 >> 2] | 0)) >> 0] | 0) == 0 ? h4 : h4 | 2;
+                  if (!(h4 & 10))
                     break;
-                  if ((j2 | 0) > 0) {
-                    b[k2 >> 1] = 8207 - (h2 >>> 1 & 1) << 16 >> 16;
-                    k2 = k2 + 2 | 0;
+                  if ((j3 | 0) > 0) {
+                    b3[k3 >> 1] = 8207 - (h4 >>> 1 & 1) << 16 >> 16;
+                    k3 = k3 + 2 | 0;
                   }
-                  j2 = j2 + -1 | 0;
+                  j3 = j3 + -1 | 0;
                 } else {
-                  if (m2)
-                    h2 = (1 << d[q2 + (l2 + -1 + (c[x2 >> 2] | 0)) >> 0] & 8194 | 0) == 0 ? h2 | 4 : h2;
-                  l2 = 8207 - (h2 & 1) << 16 >> 16;
-                  if (h2 & 5) {
-                    if ((j2 | 0) > 0) {
-                      b[k2 >> 1] = l2;
-                      k2 = k2 + 2 | 0;
+                  if (m3)
+                    h4 = (1 << d3[q2 + (l4 + -1 + (c4[x3 >> 2] | 0)) >> 0] & 8194 | 0) == 0 ? h4 | 4 : h4;
+                  l4 = 8207 - (h4 & 1) << 16 >> 16;
+                  if (h4 & 5) {
+                    if ((j3 | 0) > 0) {
+                      b3[k3 >> 1] = l4;
+                      k3 = k3 + 2 | 0;
                     }
-                    j2 = j2 + -1 | 0;
+                    j3 = j3 + -1 | 0;
                   }
-                  z2 = Ja(n2, c[x2 >> 2] | 0, k2, j2, u2, i2) | 0;
-                  c[x2 >> 2] = z2;
-                  k2 = (k2 | 0) == 0 ? 0 : k2 + (z2 << 1) | 0;
-                  j2 = j2 - z2 | 0;
-                  if (a[s2 >> 0] | 0)
-                    h2 = (1 << d[q2 + (c[w2 >> 2] | 0) >> 0] & 8194 | 0) == 0 ? h2 | 8 : h2;
-                  if (!(h2 & 10))
+                  z2 = Ja(n6, c4[x3 >> 2] | 0, k3, j3, u4, i5) | 0;
+                  c4[x3 >> 2] = z2;
+                  k3 = (k3 | 0) == 0 ? 0 : k3 + (z2 << 1) | 0;
+                  j3 = j3 - z2 | 0;
+                  if (a3[s5 >> 0] | 0)
+                    h4 = (1 << d3[q2 + (c4[w3 >> 2] | 0) >> 0] & 8194 | 0) == 0 ? h4 | 8 : h4;
+                  if (!(h4 & 10))
                     break;
-                  if ((j2 | 0) > 0) {
-                    b[k2 >> 1] = 8207 - (h2 >>> 1 & 1) << 16 >> 16;
-                    k2 = k2 + 2 | 0;
+                  if ((j3 | 0) > 0) {
+                    b3[k3 >> 1] = 8207 - (h4 >>> 1 & 1) << 16 >> 16;
+                    k3 = k3 + 2 | 0;
                   }
-                  j2 = j2 + -1 | 0;
+                  j3 = j3 + -1 | 0;
                 }
               while (0);
-              o2 = o2 + 1 | 0;
+              o5 = o5 + 1 | 0;
             }
           } else {
-            if (!j2) {
-              n2 = k2 & 65533;
-              m2 = f2;
-              k2 = t2;
-              j2 = g2;
+            if (!j3) {
+              n6 = k3 & 65533;
+              m3 = f4;
+              k3 = t5;
+              j3 = g3;
               while (1) {
-                l2 = k2 + -1 | 0;
-                if ((k2 | 0) <= 0)
+                l4 = k3 + -1 | 0;
+                if ((k3 | 0) <= 0)
                   break a;
-                z2 = (Va(e2, l2, w2, x2) | 0) == 0;
-                k2 = v2 + (c[w2 >> 2] << 1) | 0;
-                h2 = c[x2 >> 2] | 0;
+                z2 = (Va(e6, l4, w3, x3) | 0) == 0;
+                k3 = v3 + (c4[w3 >> 2] << 1) | 0;
+                h4 = c4[x3 >> 2] | 0;
                 if (z2)
-                  h2 = Ja(k2, h2, m2, j2, n2, i2) | 0;
+                  h4 = Ja(k3, h4, m3, j3, n6, i5) | 0;
                 else
-                  h2 = La(k2, h2, m2, j2, u2, i2) | 0;
-                c[x2 >> 2] = h2;
-                m2 = (m2 | 0) == 0 ? 0 : m2 + (h2 << 1) | 0;
-                k2 = l2;
-                j2 = j2 - h2 | 0;
+                  h4 = La(k3, h4, m3, j3, u4, i5) | 0;
+                c4[x3 >> 2] = h4;
+                m3 = (m3 | 0) == 0 ? 0 : m3 + (h4 << 1) | 0;
+                k3 = l4;
+                j3 = j3 - h4 | 0;
               }
             }
-            p2 = c[e2 + 72 >> 2] | 0;
-            o2 = k2 & 65533;
-            k2 = f2;
-            h2 = t2;
-            j2 = g2;
+            p4 = c4[e6 + 72 >> 2] | 0;
+            o5 = k3 & 65533;
+            k3 = f4;
+            h4 = t5;
+            j3 = g3;
             while (1) {
-              n2 = h2 + -1 | 0;
-              if ((h2 | 0) <= 0)
+              n6 = h4 + -1 | 0;
+              if ((h4 | 0) <= 0)
                 break a;
-              z2 = Va(e2, n2, w2, x2) | 0;
-              l2 = c[w2 >> 2] | 0;
-              m2 = v2 + (l2 << 1) | 0;
+              z2 = Va(e6, n6, w3, x3) | 0;
+              l4 = c4[w3 >> 2] | 0;
+              m3 = v3 + (l4 << 1) | 0;
               if (!z2) {
-                h2 = c[x2 >> 2] | 0;
-                if (a[p2 + (l2 + -1 + h2) >> 0] | 0) {
-                  if ((j2 | 0) > 0) {
-                    b[k2 >> 1] = 8206;
-                    k2 = k2 + 2 | 0;
-                    h2 = c[x2 >> 2] | 0;
+                h4 = c4[x3 >> 2] | 0;
+                if (a3[p4 + (l4 + -1 + h4) >> 0] | 0) {
+                  if ((j3 | 0) > 0) {
+                    b3[k3 >> 1] = 8206;
+                    k3 = k3 + 2 | 0;
+                    h4 = c4[x3 >> 2] | 0;
                   }
-                  j2 = j2 + -1 | 0;
+                  j3 = j3 + -1 | 0;
                 }
-                z2 = Ja(m2, h2, k2, j2, o2, i2) | 0;
-                c[x2 >> 2] = z2;
-                k2 = (k2 | 0) == 0 ? 0 : k2 + (z2 << 1) | 0;
-                j2 = j2 - z2 | 0;
-                if (a[p2 + (c[w2 >> 2] | 0) >> 0] | 0) {
-                  if ((j2 | 0) > 0) {
-                    b[k2 >> 1] = 8206;
-                    k2 = k2 + 2 | 0;
+                z2 = Ja(m3, h4, k3, j3, o5, i5) | 0;
+                c4[x3 >> 2] = z2;
+                k3 = (k3 | 0) == 0 ? 0 : k3 + (z2 << 1) | 0;
+                j3 = j3 - z2 | 0;
+                if (a3[p4 + (c4[w3 >> 2] | 0) >> 0] | 0) {
+                  if ((j3 | 0) > 0) {
+                    b3[k3 >> 1] = 8206;
+                    k3 = k3 + 2 | 0;
                   }
-                  j2 = j2 + -1 | 0;
+                  j3 = j3 + -1 | 0;
                 }
               } else {
-                if (!(1 << d[p2 + l2 >> 0] & 8194)) {
-                  if ((j2 | 0) > 0) {
-                    b[k2 >> 1] = 8207;
-                    k2 = k2 + 2 | 0;
+                if (!(1 << d3[p4 + l4 >> 0] & 8194)) {
+                  if ((j3 | 0) > 0) {
+                    b3[k3 >> 1] = 8207;
+                    k3 = k3 + 2 | 0;
                   }
-                  j2 = j2 + -1 | 0;
+                  j3 = j3 + -1 | 0;
                 }
-                z2 = La(m2, c[x2 >> 2] | 0, k2, j2, u2, i2) | 0;
-                c[x2 >> 2] = z2;
-                k2 = (k2 | 0) == 0 ? 0 : k2 + (z2 << 1) | 0;
-                j2 = j2 - z2 | 0;
-                if (!(1 << d[p2 + (z2 + -1 + (c[w2 >> 2] | 0)) >> 0] & 8194)) {
-                  if ((j2 | 0) > 0) {
-                    b[k2 >> 1] = 8207;
-                    k2 = k2 + 2 | 0;
+                z2 = La(m3, c4[x3 >> 2] | 0, k3, j3, u4, i5) | 0;
+                c4[x3 >> 2] = z2;
+                k3 = (k3 | 0) == 0 ? 0 : k3 + (z2 << 1) | 0;
+                j3 = j3 - z2 | 0;
+                if (!(1 << d3[p4 + (z2 + -1 + (c4[w3 >> 2] | 0)) >> 0] & 8194)) {
+                  if ((j3 | 0) > 0) {
+                    b3[k3 >> 1] = 8207;
+                    k3 = k3 + 2 | 0;
                   }
-                  j2 = j2 + -1 | 0;
+                  j3 = j3 + -1 | 0;
                 }
               }
-              h2 = n2;
+              h4 = n6;
             }
           }
         while (0);
-      z2 = qb(f2, g2, g2 - j2 | 0, i2) | 0;
-      E = y2;
+      z2 = qb(f4, g3, g3 - j3 | 0, i5) | 0;
+      E2 = y4;
       return z2 | 0;
     }
-    c[i2 >> 2] = 1;
+    c4[i5 >> 2] = 1;
     z2 = 0;
-    E = y2;
+    E2 = y4;
     return z2 | 0;
   }
-  function La(a2, d2, f2, g2, h2, i2) {
-    a2 = a2 | 0;
-    d2 = d2 | 0;
-    f2 = f2 | 0;
-    g2 = g2 | 0;
-    h2 = h2 | 0;
-    i2 = i2 | 0;
-    var j2 = 0, k2 = 0, l2 = 0, m2 = 0, n2 = 0;
-    switch (h2 & 10) {
+  function La(a4, d4, f4, g3, h4, i5) {
+    a4 = a4 | 0;
+    d4 = d4 | 0;
+    f4 = f4 | 0;
+    g3 = g3 | 0;
+    h4 = h4 | 0;
+    i5 = i5 | 0;
+    var j3 = 0, k3 = 0, l4 = 0, m3 = 0, n6 = 0;
+    switch (h4 & 10) {
       case 0: {
-        if ((g2 | 0) < (d2 | 0)) {
-          c[i2 >> 2] = 15;
-          g2 = d2;
-          return g2 | 0;
+        if ((g3 | 0) < (d4 | 0)) {
+          c4[i5 >> 2] = 15;
+          g3 = d4;
+          return g3 | 0;
         }
-        j2 = d2;
-        h2 = f2;
+        j3 = d4;
+        h4 = f4;
         while (1) {
-          b[h2 >> 1] = b[a2 >> 1] | 0;
-          if ((j2 | 0) > 1) {
-            a2 = a2 + 2 | 0;
-            j2 = j2 + -1 | 0;
-            h2 = h2 + 2 | 0;
+          b3[h4 >> 1] = b3[a4 >> 1] | 0;
+          if ((j3 | 0) > 1) {
+            a4 = a4 + 2 | 0;
+            j3 = j3 + -1 | 0;
+            h4 = h4 + 2 | 0;
           } else {
-            h2 = d2;
+            h4 = d4;
             break;
           }
         }
-        return h2 | 0;
+        return h4 | 0;
       }
       case 2: {
-        if ((g2 | 0) < (d2 | 0)) {
-          c[i2 >> 2] = 15;
-          g2 = d2;
-          return g2 | 0;
+        if ((g3 | 0) < (d4 | 0)) {
+          c4[i5 >> 2] = 15;
+          g3 = d4;
+          return g3 | 0;
         }
-        l2 = 0;
-        j2 = 0;
+        l4 = 0;
+        j3 = 0;
         while (1) {
-          k2 = j2 + 1 | 0;
-          h2 = e[a2 + (j2 << 1) >> 1] | 0;
-          if ((k2 | 0) == (d2 | 0) | (h2 & 64512 | 0) != 55296)
-            j2 = k2;
+          k3 = j3 + 1 | 0;
+          h4 = e5[a4 + (j3 << 1) >> 1] | 0;
+          if ((k3 | 0) == (d4 | 0) | (h4 & 64512 | 0) != 55296)
+            j3 = k3;
           else {
-            m2 = e[a2 + (k2 << 1) >> 1] | 0;
-            g2 = (m2 & 64512 | 0) == 56320;
-            h2 = g2 ? (h2 << 10) + -56613888 + m2 | 0 : h2;
-            j2 = g2 ? j2 + 2 | 0 : k2;
+            m3 = e5[a4 + (k3 << 1) >> 1] | 0;
+            g3 = (m3 & 64512 | 0) == 56320;
+            h4 = g3 ? (h4 << 10) + -56613888 + m3 | 0 : h4;
+            j3 = g3 ? j3 + 2 | 0 : k3;
           }
-          h2 = yb(h2) | 0;
-          if (h2 >>> 0 < 65536)
-            k2 = l2 + 1 | 0;
+          h4 = yb(h4) | 0;
+          if (h4 >>> 0 < 65536)
+            k3 = l4 + 1 | 0;
           else {
-            b[f2 + (l2 + 1 << 1) >> 1] = h2 & 1023 | 56320;
-            k2 = l2 + 2 | 0;
-            h2 = (h2 >>> 10) + 55232 | 0;
+            b3[f4 + (l4 + 1 << 1) >> 1] = h4 & 1023 | 56320;
+            k3 = l4 + 2 | 0;
+            h4 = (h4 >>> 10) + 55232 | 0;
           }
-          b[f2 + (l2 << 1) >> 1] = h2;
-          if ((j2 | 0) < (d2 | 0))
-            l2 = k2;
+          b3[f4 + (l4 << 1) >> 1] = h4;
+          if ((j3 | 0) < (d4 | 0))
+            l4 = k3;
           else {
-            h2 = d2;
+            h4 = d4;
             break;
           }
         }
-        return h2 | 0;
+        return h4 | 0;
       }
       case 8: {
-        l2 = g2;
-        h2 = a2;
-        a2 = f2;
+        l4 = g3;
+        h4 = a4;
+        a4 = f4;
         a:
           while (1) {
-            k2 = h2;
-            h2 = h2 + 2 | 0;
-            k2 = b[k2 >> 1] | 0;
+            k3 = h4;
+            h4 = h4 + 2 | 0;
+            k3 = b3[k3 >> 1] | 0;
             b:
               do
-                if ((k2 & -4) << 16 >> 16 == 8204)
-                  j2 = l2;
+                if ((k3 & -4) << 16 >> 16 == 8204)
+                  j3 = l4;
                 else {
-                  switch (k2 << 16 >> 16) {
+                  switch (k3 << 16 >> 16) {
                     case 8234:
                     case 8235:
                     case 8236:
@@ -24515,65 +24636,65 @@ var asm = function(global, env, buffer2) {
                     case 8295:
                     case 8296:
                     case 8297: {
-                      j2 = l2;
+                      j3 = l4;
                       break b;
                     }
                     default: {
                     }
                   }
-                  j2 = l2 + -1 | 0;
-                  if ((l2 | 0) < 1)
+                  j3 = l4 + -1 | 0;
+                  if ((l4 | 0) < 1)
                     break a;
-                  b[a2 >> 1] = k2;
-                  a2 = a2 + 2 | 0;
+                  b3[a4 >> 1] = k3;
+                  a4 = a4 + 2 | 0;
                 }
               while (0);
-            if ((d2 | 0) <= 1) {
-              m2 = 26;
+            if ((d4 | 0) <= 1) {
+              m3 = 26;
               break;
             } else {
-              l2 = j2;
-              d2 = d2 + -1 | 0;
+              l4 = j3;
+              d4 = d4 + -1 | 0;
             }
           }
-        if ((m2 | 0) == 26) {
-          g2 = g2 - j2 | 0;
-          return g2 | 0;
+        if ((m3 | 0) == 26) {
+          g3 = g3 - j3 | 0;
+          return g3 | 0;
         }
-        c[i2 >> 2] = 15;
-        a2 = d2;
+        c4[i5 >> 2] = 15;
+        a4 = d4;
         while (1) {
-          if ((a2 | 0) <= 1)
+          if ((a4 | 0) <= 1)
             break;
-          f2 = e[h2 >> 1] | 0;
-          j2 = j2 + ((((f2 + -8294 | 0) >>> 0 < 4 | ((f2 & 65532 | 0) == 8204 | (f2 + -8234 | 0) >>> 0 < 5)) ^ 1) << 31 >> 31) | 0;
-          a2 = a2 + -1 | 0;
-          h2 = h2 + 2 | 0;
+          f4 = e5[h4 >> 1] | 0;
+          j3 = j3 + ((((f4 + -8294 | 0) >>> 0 < 4 | ((f4 & 65532 | 0) == 8204 | (f4 + -8234 | 0) >>> 0 < 5)) ^ 1) << 31 >> 31) | 0;
+          a4 = a4 + -1 | 0;
+          h4 = h4 + 2 | 0;
         }
-        g2 = g2 - j2 | 0;
-        return g2 | 0;
+        g3 = g3 - j3 | 0;
+        return g3 | 0;
       }
       default: {
-        h2 = 0;
-        k2 = g2;
-        j2 = d2;
+        h4 = 0;
+        k3 = g3;
+        j3 = d4;
         c:
           while (1) {
-            l2 = e[a2 >> 1] | 0;
-            if ((j2 | 0) == 1 | (l2 & 64512 | 0) != 55296)
-              d2 = 1;
+            l4 = e5[a4 >> 1] | 0;
+            if ((j3 | 0) == 1 | (l4 & 64512 | 0) != 55296)
+              d4 = 1;
             else {
-              n2 = e[a2 + 2 >> 1] | 0;
-              d2 = (n2 & 64512 | 0) == 56320;
-              l2 = d2 ? (l2 << 10) + -56613888 + n2 | 0 : l2;
-              d2 = d2 ? 2 : 1;
+              n6 = e5[a4 + 2 >> 1] | 0;
+              d4 = (n6 & 64512 | 0) == 56320;
+              l4 = d4 ? (l4 << 10) + -56613888 + n6 | 0 : l4;
+              d4 = d4 ? 2 : 1;
             }
-            a2 = a2 + (d2 << 1) | 0;
-            j2 = j2 - d2 | 0;
+            a4 = a4 + (d4 << 1) | 0;
+            j3 = j3 - d4 | 0;
             d:
               do
-                if ((l2 & -4 | 0) != 8204) {
-                  switch (l2 | 0) {
+                if ((l4 & -4 | 0) != 8204) {
+                  switch (l4 | 0) {
                     case 8234:
                     case 8235:
                     case 8236:
@@ -24587,107 +24708,107 @@ var asm = function(global, env, buffer2) {
                     default: {
                     }
                   }
-                  k2 = k2 - d2 | 0;
-                  if ((k2 | 0) < 0)
+                  k3 = k3 - d4 | 0;
+                  if ((k3 | 0) < 0)
                     break c;
-                  l2 = yb(l2) | 0;
-                  if (l2 >>> 0 < 65536) {
-                    b[f2 + (h2 << 1) >> 1] = l2;
-                    h2 = h2 + 1 | 0;
+                  l4 = yb(l4) | 0;
+                  if (l4 >>> 0 < 65536) {
+                    b3[f4 + (h4 << 1) >> 1] = l4;
+                    h4 = h4 + 1 | 0;
                     break;
                   } else {
-                    b[f2 + (h2 << 1) >> 1] = (l2 >>> 10) + 55232;
-                    b[f2 + (h2 + 1 << 1) >> 1] = l2 & 1023 | 56320;
-                    h2 = h2 + 2 | 0;
+                    b3[f4 + (h4 << 1) >> 1] = (l4 >>> 10) + 55232;
+                    b3[f4 + (h4 + 1 << 1) >> 1] = l4 & 1023 | 56320;
+                    h4 = h4 + 2 | 0;
                     break;
                   }
                 }
               while (0);
-            if ((j2 | 0) <= 0) {
-              m2 = 40;
+            if ((j3 | 0) <= 0) {
+              m3 = 40;
               break;
             }
           }
-        if ((m2 | 0) == 40)
-          return h2 | 0;
-        c[i2 >> 2] = 15;
-        h2 = a2;
+        if ((m3 | 0) == 40)
+          return h4 | 0;
+        c4[i5 >> 2] = 15;
+        h4 = a4;
         while (1) {
-          if ((j2 | 0) <= 0)
+          if ((j3 | 0) <= 0)
             break;
-          n2 = e[h2 >> 1] | 0;
-          k2 = k2 + ((((n2 + -8294 | 0) >>> 0 < 4 | ((n2 & 65532 | 0) == 8204 | (n2 + -8234 | 0) >>> 0 < 5)) ^ 1) << 31 >> 31) | 0;
-          j2 = j2 + -1 | 0;
-          h2 = h2 + 2 | 0;
+          n6 = e5[h4 >> 1] | 0;
+          k3 = k3 + ((((n6 + -8294 | 0) >>> 0 < 4 | ((n6 & 65532 | 0) == 8204 | (n6 + -8234 | 0) >>> 0 < 5)) ^ 1) << 31 >> 31) | 0;
+          j3 = j3 + -1 | 0;
+          h4 = h4 + 2 | 0;
         }
-        n2 = g2 - k2 | 0;
-        return n2 | 0;
+        n6 = g3 - k3 | 0;
+        return n6 | 0;
       }
     }
     return 0;
   }
-  function Ma(d2, e2, f2, g2, h2) {
-    d2 = d2 | 0;
-    e2 = e2 | 0;
-    f2 = f2 | 0;
-    g2 = g2 | 0;
-    h2 = h2 | 0;
-    var i2 = 0, j2 = 0, k2 = 0, l2 = 0, m2 = 0, n2 = 0, o2 = 0, p2 = 0;
-    if (!h2)
+  function Ma(d4, e6, f4, g3, h4) {
+    d4 = d4 | 0;
+    e6 = e6 | 0;
+    f4 = f4 | 0;
+    g3 = g3 | 0;
+    h4 = h4 | 0;
+    var i5 = 0, j3 = 0, k3 = 0, l4 = 0, m3 = 0, n6 = 0, o5 = 0, p4 = 0;
+    if (!h4)
       return;
-    if ((Na(c[h2 >> 2] | 0) | 0) << 24 >> 24)
+    if ((Na(c4[h4 >> 2] | 0) | 0) << 24 >> 24)
       return;
-    if (d2 | 0 ? (c[d2 >> 2] | 0) == (d2 | 0) : 0) {
-      if (!((e2 | 0) > -1 & (f2 | 0) > (e2 | 0))) {
-        c[h2 >> 2] = 1;
+    if (d4 | 0 ? (c4[d4 >> 2] | 0) == (d4 | 0) : 0) {
+      if (!((e6 | 0) > -1 & (f4 | 0) > (e6 | 0))) {
+        c4[h4 >> 2] = 1;
         return;
       }
-      if ((f2 | 0) >= 0 ? (c[d2 + 12 >> 2] | 0) >= (f2 | 0) : 0) {
-        if (!g2) {
-          c[h2 >> 2] = 1;
+      if ((f4 | 0) >= 0 ? (c4[d4 + 12 >> 2] | 0) >= (f4 | 0) : 0) {
+        if (!g3) {
+          c4[h4 >> 2] = 1;
           return;
         }
-        p2 = Ga(d2, e2, h2) | 0;
-        if ((p2 | 0) != (Ga(d2, f2 + -1 | 0, h2) | 0)) {
-          c[h2 >> 2] = 1;
+        p4 = Ga(d4, e6, h4) | 0;
+        if ((p4 | 0) != (Ga(d4, f4 + -1 | 0, h4) | 0)) {
+          c4[h4 >> 2] = 1;
           return;
         }
-        c[g2 >> 2] = 0;
-        l2 = d2 + 4 | 0;
-        c[g2 + 4 >> 2] = (c[l2 >> 2] | 0) + (e2 << 1);
-        o2 = f2 - e2 | 0;
-        c[g2 + 12 >> 2] = o2;
-        c[g2 + 8 >> 2] = o2;
-        m2 = g2 + 16 | 0;
-        c[m2 >> 2] = o2;
-        if ((a[d2 + 94 >> 0] | 0) != 0 ? (i2 = c[d2 + 136 >> 2] | 0, (c[i2 >> 2] | 0) <= (e2 | 0)) : 0) {
-          h2 = d2 + 132 | 0;
-          j2 = h2;
-          h2 = da(c[h2 >> 2] | 0, i2, e2) | 0;
+        c4[g3 >> 2] = 0;
+        l4 = d4 + 4 | 0;
+        c4[g3 + 4 >> 2] = (c4[l4 >> 2] | 0) + (e6 << 1);
+        o5 = f4 - e6 | 0;
+        c4[g3 + 12 >> 2] = o5;
+        c4[g3 + 8 >> 2] = o5;
+        m3 = g3 + 16 | 0;
+        c4[m3 >> 2] = o5;
+        if ((a3[d4 + 94 >> 0] | 0) != 0 ? (i5 = c4[d4 + 136 >> 2] | 0, (c4[i5 >> 2] | 0) <= (e6 | 0)) : 0) {
+          h4 = d4 + 132 | 0;
+          j3 = h4;
+          h4 = da(c4[h4 >> 2] | 0, i5, e6) | 0;
         } else {
-          j2 = d2 + 132 | 0;
-          h2 = a[d2 + 93 >> 0] | 0;
+          j3 = d4 + 132 | 0;
+          h4 = a3[d4 + 93 >> 0] | 0;
         }
-        p2 = g2 + 93 | 0;
-        a[p2 >> 0] = h2;
-        c[g2 + 132 >> 2] = c[j2 >> 2];
-        c[g2 + 224 >> 2] = 0;
-        c[g2 + 120 >> 2] = 0;
-        c[g2 + 84 >> 2] = c[d2 + 84 >> 2];
-        c[g2 + 88 >> 2] = c[d2 + 88 >> 2];
-        k2 = g2 + 348 | 0;
-        c[k2 >> 2] = 0;
-        if ((c[d2 + 348 >> 2] | 0) > 0) {
-          j2 = e2;
-          h2 = 0;
+        p4 = g3 + 93 | 0;
+        a3[p4 >> 0] = h4;
+        c4[g3 + 132 >> 2] = c4[j3 >> 2];
+        c4[g3 + 224 >> 2] = 0;
+        c4[g3 + 120 >> 2] = 0;
+        c4[g3 + 84 >> 2] = c4[d4 + 84 >> 2];
+        c4[g3 + 88 >> 2] = c4[d4 + 88 >> 2];
+        k3 = g3 + 348 | 0;
+        c4[k3 >> 2] = 0;
+        if ((c4[d4 + 348 >> 2] | 0) > 0) {
+          j3 = e6;
+          h4 = 0;
           while (1) {
-            if ((j2 | 0) >= (f2 | 0))
+            if ((j3 | 0) >= (f4 | 0))
               break;
-            i2 = b[(c[l2 >> 2] | 0) + (j2 << 1) >> 1] | 0;
-            if ((i2 & -4) << 16 >> 16 == 8204)
-              n2 = 24;
+            i5 = b3[(c4[l4 >> 2] | 0) + (j3 << 1) >> 1] | 0;
+            if ((i5 & -4) << 16 >> 16 == 8204)
+              n6 = 24;
             else
-              switch (i2 << 16 >> 16) {
+              switch (i5 << 16 >> 16) {
                 case 8234:
                 case 8235:
                 case 8236:
@@ -24697,79 +24818,79 @@ var asm = function(global, env, buffer2) {
                 case 8295:
                 case 8296:
                 case 8297: {
-                  n2 = 24;
+                  n6 = 24;
                   break;
                 }
                 default: {
                 }
               }
-            if ((n2 | 0) == 24) {
-              n2 = 0;
-              h2 = h2 + 1 | 0;
-              c[k2 >> 2] = h2;
+            if ((n6 | 0) == 24) {
+              n6 = 0;
+              h4 = h4 + 1 | 0;
+              c4[k3 >> 2] = h4;
             }
-            j2 = j2 + 1 | 0;
+            j3 = j3 + 1 | 0;
           }
-          c[m2 >> 2] = o2 - h2;
+          c4[m3 >> 2] = o5 - h4;
         }
-        c[g2 + 72 >> 2] = (c[d2 + 72 >> 2] | 0) + e2;
-        l2 = (c[d2 + 76 >> 2] | 0) + e2 | 0;
-        c[g2 + 76 >> 2] = l2;
-        c[g2 + 220 >> 2] = -1;
-        h2 = c[d2 + 116 >> 2] | 0;
+        c4[g3 + 72 >> 2] = (c4[d4 + 72 >> 2] | 0) + e6;
+        l4 = (c4[d4 + 76 >> 2] | 0) + e6 | 0;
+        c4[g3 + 76 >> 2] = l4;
+        c4[g3 + 220 >> 2] = -1;
+        h4 = c4[d4 + 116 >> 2] | 0;
         a:
           do
-            if ((h2 | 0) != 2) {
-              c[g2 + 116 >> 2] = h2;
-              h2 = c[d2 + 128 >> 2] | 0;
-              if ((h2 | 0) <= (e2 | 0)) {
-                c[g2 + 128 >> 2] = 0;
+            if ((h4 | 0) != 2) {
+              c4[g3 + 116 >> 2] = h4;
+              h4 = c4[d4 + 128 >> 2] | 0;
+              if ((h4 | 0) <= (e6 | 0)) {
+                c4[g3 + 128 >> 2] = 0;
                 break;
               }
-              if ((h2 | 0) < (f2 | 0)) {
-                c[g2 + 128 >> 2] = h2 - e2;
+              if ((h4 | 0) < (f4 | 0)) {
+                c4[g3 + 128 >> 2] = h4 - e6;
                 break;
               } else {
-                c[g2 + 128 >> 2] = o2;
+                c4[g3 + 128 >> 2] = o5;
                 break;
               }
             } else {
-              Oa(g2);
-              k2 = g2 + 128 | 0;
-              j2 = c[k2 >> 2] | 0;
+              Oa(g3);
+              k3 = g3 + 128 | 0;
+              j3 = c4[k3 >> 2] | 0;
               b:
                 do
-                  if (!j2)
-                    h2 = a[p2 >> 0] & 1;
+                  if (!j3)
+                    h4 = a3[p4 >> 0] & 1;
                   else {
-                    h2 = a[l2 >> 0] & 1;
-                    if ((j2 | 0) < (o2 | 0) ? (a[p2 >> 0] & 1) != h2 << 24 >> 24 : 0) {
-                      h2 = 2;
+                    h4 = a3[l4 >> 0] & 1;
+                    if ((j3 | 0) < (o5 | 0) ? (a3[p4 >> 0] & 1) != h4 << 24 >> 24 : 0) {
+                      h4 = 2;
                       break;
                     }
-                    i2 = 1;
+                    i5 = 1;
                     while (1) {
-                      if ((i2 | 0) == (j2 | 0))
+                      if ((i5 | 0) == (j3 | 0))
                         break b;
-                      if ((a[l2 + i2 >> 0] & 1) == h2 << 24 >> 24)
-                        i2 = i2 + 1 | 0;
+                      if ((a3[l4 + i5 >> 0] & 1) == h4 << 24 >> 24)
+                        i5 = i5 + 1 | 0;
                       else {
-                        h2 = 2;
+                        h4 = 2;
                         break;
                       }
                     }
                   }
                 while (0);
-              c[g2 + 116 >> 2] = h2 & 255;
-              switch (h2 & 3) {
+              c4[g3 + 116 >> 2] = h4 & 255;
+              switch (h4 & 3) {
                 case 0: {
-                  a[p2 >> 0] = (a[p2 >> 0] | 0) + 1 << 24 >> 24 & -2;
-                  c[k2 >> 2] = 0;
+                  a3[p4 >> 0] = (a3[p4 >> 0] | 0) + 1 << 24 >> 24 & -2;
+                  c4[k3 >> 2] = 0;
                   break a;
                 }
                 case 1: {
-                  a[p2 >> 0] = a[p2 >> 0] | 1;
-                  c[k2 >> 2] = 0;
+                  a3[p4 >> 0] = a3[p4 >> 0] | 1;
+                  c4[k3 >> 2] = 0;
                   break a;
                 }
                 default:
@@ -24777,273 +24898,273 @@ var asm = function(global, env, buffer2) {
               }
             }
           while (0);
-        c[g2 >> 2] = d2;
+        c4[g3 >> 2] = d4;
         return;
       }
-      c[h2 >> 2] = 1;
+      c4[h4 >> 2] = 1;
       return;
     }
-    c[h2 >> 2] = 27;
+    c4[h4 >> 2] = 27;
     return;
   }
-  function Na(a2) {
-    a2 = a2 | 0;
-    return (a2 | 0) > 0 | 0;
+  function Na(a4) {
+    a4 = a4 | 0;
+    return (a4 | 0) > 0 | 0;
   }
-  function Oa(b2) {
-    b2 = b2 | 0;
-    var e2 = 0, f2 = 0, g2 = 0, h2 = 0, i2 = 0;
-    g2 = c[b2 + 72 >> 2] | 0;
-    h2 = c[b2 + 76 >> 2] | 0;
-    e2 = c[b2 + 12 >> 2] | 0;
-    i2 = a[b2 + 93 >> 0] | 0;
-    if ((a[g2 + (e2 + -1) >> 0] | 0) == 7) {
-      i2 = e2;
-      b2 = b2 + 128 | 0;
-      c[b2 >> 2] = i2;
+  function Oa(b4) {
+    b4 = b4 | 0;
+    var e6 = 0, f4 = 0, g3 = 0, h4 = 0, i5 = 0;
+    g3 = c4[b4 + 72 >> 2] | 0;
+    h4 = c4[b4 + 76 >> 2] | 0;
+    e6 = c4[b4 + 12 >> 2] | 0;
+    i5 = a3[b4 + 93 >> 0] | 0;
+    if ((a3[g3 + (e6 + -1) >> 0] | 0) == 7) {
+      i5 = e6;
+      b4 = b4 + 128 | 0;
+      c4[b4 >> 2] = i5;
       return;
     }
     while (1) {
-      if ((e2 | 0) <= 0)
+      if ((e6 | 0) <= 0)
         break;
-      f2 = e2 + -1 | 0;
-      if (!(1 << d[g2 + f2 >> 0] & 8248192))
+      f4 = e6 + -1 | 0;
+      if (!(1 << d3[g3 + f4 >> 0] & 8248192))
         break;
       else
-        e2 = f2;
+        e6 = f4;
     }
     while (1) {
-      if ((e2 | 0) <= 0) {
-        f2 = 8;
+      if ((e6 | 0) <= 0) {
+        f4 = 8;
         break;
       }
-      f2 = e2 + -1 | 0;
-      if ((a[h2 + f2 >> 0] | 0) == i2 << 24 >> 24)
-        e2 = f2;
+      f4 = e6 + -1 | 0;
+      if ((a3[h4 + f4 >> 0] | 0) == i5 << 24 >> 24)
+        e6 = f4;
       else {
-        f2 = 8;
+        f4 = 8;
         break;
       }
     }
-    if ((f2 | 0) == 8) {
-      b2 = b2 + 128 | 0;
-      c[b2 >> 2] = e2;
+    if ((f4 | 0) == 8) {
+      b4 = b4 + 128 | 0;
+      c4[b4 >> 2] = e6;
       return;
     }
   }
-  function Pa(b2, d2) {
-    b2 = b2 | 0;
-    d2 = d2 | 0;
-    var e2 = 0, f2 = 0, g2 = 0, h2 = 0, i2 = 0;
-    if (!d2) {
-      i2 = 0;
-      return i2 | 0;
+  function Pa(b4, d4) {
+    b4 = b4 | 0;
+    d4 = d4 | 0;
+    var e6 = 0, f4 = 0, g3 = 0, h4 = 0, i5 = 0;
+    if (!d4) {
+      i5 = 0;
+      return i5 | 0;
     }
-    if ((Na(c[d2 >> 2] | 0) | 0) << 24 >> 24) {
-      i2 = 0;
-      return i2 | 0;
-    }
-    do
-      if (b2 | 0) {
-        e2 = c[b2 >> 2] | 0;
-        if ((e2 | 0) != (b2 | 0)) {
-          if (!e2)
-            break;
-          if ((c[e2 >> 2] | 0) != (e2 | 0))
-            break;
-        }
-        f2 = c[b2 + 12 >> 2] | 0;
-        if ((f2 | 0) < 1) {
-          c[d2 >> 2] = 1;
-          i2 = 0;
-          return i2 | 0;
-        }
-        g2 = b2 + 128 | 0;
-        h2 = c[g2 >> 2] | 0;
-        if ((f2 | 0) == (h2 | 0)) {
-          i2 = c[b2 + 76 >> 2] | 0;
-          return i2 | 0;
-        }
-        e2 = b2 + 48 | 0;
-        if (!((aa(e2, b2 + 24 | 0, a[b2 + 68 >> 0] | 0, f2) | 0) << 24 >> 24)) {
-          c[d2 >> 2] = 7;
-          i2 = 0;
-          return i2 | 0;
-        }
-        e2 = c[e2 >> 2] | 0;
-        d2 = b2 + 76 | 0;
-        if ((h2 | 0) > 0 ? (i2 = c[d2 >> 2] | 0, (e2 | 0) != (i2 | 0)) : 0)
-          ec(e2 | 0, i2 | 0, h2 | 0) | 0;
-        fc(e2 + h2 | 0, a[b2 + 93 >> 0] | 0, f2 - h2 | 0) | 0;
-        c[g2 >> 2] = f2;
-        c[d2 >> 2] = e2;
-        i2 = e2;
-        return i2 | 0;
-      }
-    while (0);
-    c[d2 >> 2] = 27;
-    i2 = 0;
-    return i2 | 0;
-  }
-  function Qa(a2, b2) {
-    a2 = a2 | 0;
-    b2 = b2 | 0;
-    var d2 = 0;
-    if (!b2) {
-      d2 = -1;
-      return d2 | 0;
-    }
-    if ((Na(c[b2 >> 2] | 0) | 0) << 24 >> 24) {
-      d2 = -1;
-      return d2 | 0;
+    if ((Na(c4[d4 >> 2] | 0) | 0) << 24 >> 24) {
+      i5 = 0;
+      return i5 | 0;
     }
     do
-      if (a2 | 0) {
-        d2 = c[a2 >> 2] | 0;
-        if ((d2 | 0) != (a2 | 0)) {
-          if (!d2)
+      if (b4 | 0) {
+        e6 = c4[b4 >> 2] | 0;
+        if ((e6 | 0) != (b4 | 0)) {
+          if (!e6)
             break;
-          if ((c[d2 >> 2] | 0) != (d2 | 0))
+          if ((c4[e6 >> 2] | 0) != (e6 | 0))
             break;
         }
-        Ra(a2, b2);
-        if ((Na(c[b2 >> 2] | 0) | 0) << 24 >> 24) {
-          d2 = -1;
-          return d2 | 0;
+        f4 = c4[b4 + 12 >> 2] | 0;
+        if ((f4 | 0) < 1) {
+          c4[d4 >> 2] = 1;
+          i5 = 0;
+          return i5 | 0;
         }
-        d2 = c[a2 + 220 >> 2] | 0;
-        return d2 | 0;
+        g3 = b4 + 128 | 0;
+        h4 = c4[g3 >> 2] | 0;
+        if ((f4 | 0) == (h4 | 0)) {
+          i5 = c4[b4 + 76 >> 2] | 0;
+          return i5 | 0;
+        }
+        e6 = b4 + 48 | 0;
+        if (!((aa(e6, b4 + 24 | 0, a3[b4 + 68 >> 0] | 0, f4) | 0) << 24 >> 24)) {
+          c4[d4 >> 2] = 7;
+          i5 = 0;
+          return i5 | 0;
+        }
+        e6 = c4[e6 >> 2] | 0;
+        d4 = b4 + 76 | 0;
+        if ((h4 | 0) > 0 ? (i5 = c4[d4 >> 2] | 0, (e6 | 0) != (i5 | 0)) : 0)
+          ec(e6 | 0, i5 | 0, h4 | 0) | 0;
+        fc(e6 + h4 | 0, a3[b4 + 93 >> 0] | 0, f4 - h4 | 0) | 0;
+        c4[g3 >> 2] = f4;
+        c4[d4 >> 2] = e6;
+        i5 = e6;
+        return i5 | 0;
       }
     while (0);
-    c[b2 >> 2] = 27;
-    d2 = -1;
-    return d2 | 0;
+    c4[d4 >> 2] = 27;
+    i5 = 0;
+    return i5 | 0;
   }
-  function Ra(e2, f2) {
-    e2 = e2 | 0;
-    f2 = f2 | 0;
-    var g2 = 0, h2 = 0, i2 = 0, j2 = 0, k2 = 0, l2 = 0, m2 = 0, n2 = 0, o2 = 0, p2 = 0, q2 = 0, r2 = 0, s2 = 0, t2 = 0;
-    s2 = e2 + 220 | 0;
-    if ((c[s2 >> 2] | 0) > -1)
+  function Qa(a4, b4) {
+    a4 = a4 | 0;
+    b4 = b4 | 0;
+    var d4 = 0;
+    if (!b4) {
+      d4 = -1;
+      return d4 | 0;
+    }
+    if ((Na(c4[b4 >> 2] | 0) | 0) << 24 >> 24) {
+      d4 = -1;
+      return d4 | 0;
+    }
+    do
+      if (a4 | 0) {
+        d4 = c4[a4 >> 2] | 0;
+        if ((d4 | 0) != (a4 | 0)) {
+          if (!d4)
+            break;
+          if ((c4[d4 >> 2] | 0) != (d4 | 0))
+            break;
+        }
+        Ra(a4, b4);
+        if ((Na(c4[b4 >> 2] | 0) | 0) << 24 >> 24) {
+          d4 = -1;
+          return d4 | 0;
+        }
+        d4 = c4[a4 + 220 >> 2] | 0;
+        return d4 | 0;
+      }
+    while (0);
+    c4[b4 >> 2] = 27;
+    d4 = -1;
+    return d4 | 0;
+  }
+  function Ra(e6, f4) {
+    e6 = e6 | 0;
+    f4 = f4 | 0;
+    var g3 = 0, h4 = 0, i5 = 0, j3 = 0, k3 = 0, l4 = 0, m3 = 0, n6 = 0, o5 = 0, p4 = 0, q2 = 0, r6 = 0, s5 = 0, t5 = 0;
+    s5 = e6 + 220 | 0;
+    if ((c4[s5 >> 2] | 0) > -1)
       return;
     do
-      if ((c[e2 + 116 >> 2] | 0) == 2) {
-        o2 = c[e2 + 12 >> 2] | 0;
-        r2 = c[e2 + 76 >> 2] | 0;
-        p2 = c[e2 + 128 >> 2] | 0;
-        g2 = 0;
-        i2 = 0;
-        h2 = -2;
+      if ((c4[e6 + 116 >> 2] | 0) == 2) {
+        o5 = c4[e6 + 12 >> 2] | 0;
+        r6 = c4[e6 + 76 >> 2] | 0;
+        p4 = c4[e6 + 128 >> 2] | 0;
+        g3 = 0;
+        i5 = 0;
+        h4 = -2;
         while (1) {
-          if ((g2 | 0) >= (p2 | 0))
+          if ((g3 | 0) >= (p4 | 0))
             break;
-          q2 = a[r2 + g2 >> 0] | 0;
-          g2 = g2 + 1 | 0;
-          i2 = i2 + (q2 << 24 >> 24 != h2 << 24 >> 24 & 1) | 0;
-          h2 = q2;
+          q2 = a3[r6 + g3 >> 0] | 0;
+          g3 = g3 + 1 | 0;
+          i5 = i5 + (q2 << 24 >> 24 != h4 << 24 >> 24 & 1) | 0;
+          h4 = q2;
         }
-        if ((o2 | 0) == (p2 | 0) & (i2 | 0) == 1) {
-          Sa(e2, a[r2 >> 0] | 0);
+        if ((o5 | 0) == (p4 | 0) & (i5 | 0) == 1) {
+          Sa(e6, a3[r6 >> 0] | 0);
           break;
         }
-        l2 = (o2 | 0) > (p2 | 0);
-        q2 = i2 + (l2 & 1) | 0;
-        g2 = e2 + 60 | 0;
-        if (!((aa(g2, e2 + 36 | 0, a[e2 + 69 >> 0] | 0, q2 * 12 | 0) | 0) << 24 >> 24))
+        l4 = (o5 | 0) > (p4 | 0);
+        q2 = i5 + (l4 & 1) | 0;
+        g3 = e6 + 60 | 0;
+        if (!((aa(g3, e6 + 36 | 0, a3[e6 + 69 >> 0] | 0, q2 * 12 | 0) | 0) << 24 >> 24))
           return;
-        n2 = c[g2 >> 2] | 0;
-        m2 = 0;
-        g2 = 126;
-        k2 = 0;
-        i2 = 0;
+        n6 = c4[g3 >> 2] | 0;
+        m3 = 0;
+        g3 = 126;
+        k3 = 0;
+        i5 = 0;
         while (1) {
-          h2 = a[r2 + i2 >> 0] | 0;
-          g2 = (h2 & 255) < (g2 & 255) ? h2 : g2;
-          k2 = (h2 & 255) > (k2 & 255) ? h2 : k2;
-          j2 = i2;
+          h4 = a3[r6 + i5 >> 0] | 0;
+          g3 = (h4 & 255) < (g3 & 255) ? h4 : g3;
+          k3 = (h4 & 255) > (k3 & 255) ? h4 : k3;
+          j3 = i5;
           while (1) {
-            j2 = j2 + 1 | 0;
-            if ((j2 | 0) >= (p2 | 0)) {
-              h2 = 0;
+            j3 = j3 + 1 | 0;
+            if ((j3 | 0) >= (p4 | 0)) {
+              h4 = 0;
               break;
             }
-            if ((a[r2 + j2 >> 0] | 0) != h2 << 24 >> 24) {
-              h2 = 1;
+            if ((a3[r6 + j3 >> 0] | 0) != h4 << 24 >> 24) {
+              h4 = 1;
               break;
             }
           }
-          c[n2 + (m2 * 12 | 0) >> 2] = i2;
-          c[n2 + (m2 * 12 | 0) + 4 >> 2] = j2 - i2;
-          c[n2 + (m2 * 12 | 0) + 8 >> 2] = 0;
-          m2 = m2 + 1 | 0;
-          if (!h2)
+          c4[n6 + (m3 * 12 | 0) >> 2] = i5;
+          c4[n6 + (m3 * 12 | 0) + 4 >> 2] = j3 - i5;
+          c4[n6 + (m3 * 12 | 0) + 8 >> 2] = 0;
+          m3 = m3 + 1 | 0;
+          if (!h4)
             break;
           else
-            i2 = j2;
+            i5 = j3;
         }
-        if (l2) {
-          c[n2 + (m2 * 12 | 0) >> 2] = p2;
-          c[n2 + (m2 * 12 | 0) + 4 >> 2] = o2 - p2;
-          p2 = a[e2 + 93 >> 0] | 0;
-          g2 = (p2 & 255) < (g2 & 255) ? p2 : g2;
+        if (l4) {
+          c4[n6 + (m3 * 12 | 0) >> 2] = p4;
+          c4[n6 + (m3 * 12 | 0) + 4 >> 2] = o5 - p4;
+          p4 = a3[e6 + 93 >> 0] | 0;
+          g3 = (p4 & 255) < (g3 & 255) ? p4 : g3;
         }
-        c[e2 + 224 >> 2] = n2;
-        c[s2 >> 2] = q2;
-        Ta(e2, g2, k2);
-        g2 = 0;
-        h2 = 0;
+        c4[e6 + 224 >> 2] = n6;
+        c4[s5 >> 2] = q2;
+        Ta(e6, g3, k3);
+        g3 = 0;
+        h4 = 0;
         while (1) {
-          if ((h2 | 0) == (q2 | 0))
+          if ((h4 | 0) == (q2 | 0))
             break;
-          o2 = n2 + (h2 * 12 | 0) | 0;
-          p2 = c[o2 >> 2] | 0;
-          c[o2 >> 2] = d[r2 + p2 >> 0] << 31 | p2;
-          o2 = n2 + (h2 * 12 | 0) + 4 | 0;
-          p2 = (c[o2 >> 2] | 0) + g2 | 0;
-          c[o2 >> 2] = p2;
-          g2 = p2;
-          h2 = h2 + 1 | 0;
+          o5 = n6 + (h4 * 12 | 0) | 0;
+          p4 = c4[o5 >> 2] | 0;
+          c4[o5 >> 2] = d3[r6 + p4 >> 0] << 31 | p4;
+          o5 = n6 + (h4 * 12 | 0) + 4 | 0;
+          p4 = (c4[o5 >> 2] | 0) + g3 | 0;
+          c4[o5 >> 2] = p4;
+          g3 = p4;
+          h4 = h4 + 1 | 0;
         }
-        if (m2 >>> 0 < q2 >>> 0) {
-          q2 = d[e2 + 93 >> 0] | 0;
-          r2 = n2 + (((q2 & 1 | 0) == 0 ? m2 : 0) * 12 | 0) | 0;
-          c[r2 >> 2] = q2 << 31 | c[r2 >> 2];
+        if (m3 >>> 0 < q2 >>> 0) {
+          q2 = d3[e6 + 93 >> 0] | 0;
+          r6 = n6 + (((q2 & 1 | 0) == 0 ? m3 : 0) * 12 | 0) | 0;
+          c4[r6 >> 2] = q2 << 31 | c4[r6 >> 2];
         }
       } else
-        Sa(e2, a[e2 + 93 >> 0] | 0);
+        Sa(e6, a3[e6 + 93 >> 0] | 0);
     while (0);
-    g2 = c[e2 + 332 >> 2] | 0;
+    g3 = c4[e6 + 332 >> 2] | 0;
     a:
       do
-        if ((g2 | 0) > 0) {
-          r2 = c[e2 + 344 >> 2] | 0;
-          h2 = r2 + (g2 << 3) | 0;
-          i2 = e2 + 224 | 0;
-          g2 = r2;
+        if ((g3 | 0) > 0) {
+          r6 = c4[e6 + 344 >> 2] | 0;
+          h4 = r6 + (g3 << 3) | 0;
+          i5 = e6 + 224 | 0;
+          g3 = r6;
           while (1) {
-            if (g2 >>> 0 >= h2 >>> 0)
+            if (g3 >>> 0 >= h4 >>> 0)
               break a;
-            r2 = Ua(c[s2 >> 2] | 0, c[i2 >> 2] | 0, c[g2 >> 2] | 0, f2) | 0;
-            r2 = (c[i2 >> 2] | 0) + (r2 * 12 | 0) + 8 | 0;
-            c[r2 >> 2] = c[r2 >> 2] | c[g2 + 4 >> 2];
-            g2 = g2 + 8 | 0;
+            r6 = Ua(c4[s5 >> 2] | 0, c4[i5 >> 2] | 0, c4[g3 >> 2] | 0, f4) | 0;
+            r6 = (c4[i5 >> 2] | 0) + (r6 * 12 | 0) + 8 | 0;
+            c4[r6 >> 2] = c4[r6 >> 2] | c4[g3 + 4 >> 2];
+            g3 = g3 + 8 | 0;
           }
         }
       while (0);
-    if ((c[e2 + 348 >> 2] | 0) <= 0)
+    if ((c4[e6 + 348 >> 2] | 0) <= 0)
       return;
-    g2 = c[e2 + 4 >> 2] | 0;
-    j2 = g2 + (c[e2 + 12 >> 2] << 1) | 0;
-    k2 = g2;
-    h2 = e2 + 224 | 0;
+    g3 = c4[e6 + 4 >> 2] | 0;
+    j3 = g3 + (c4[e6 + 12 >> 2] << 1) | 0;
+    k3 = g3;
+    h4 = e6 + 224 | 0;
     while (1) {
-      if (g2 >>> 0 >= j2 >>> 0)
+      if (g3 >>> 0 >= j3 >>> 0)
         break;
-      i2 = b[g2 >> 1] | 0;
-      if ((i2 & -4) << 16 >> 16 == 8204)
-        t2 = 31;
+      i5 = b3[g3 >> 1] | 0;
+      if ((i5 & -4) << 16 >> 16 == 8204)
+        t5 = 31;
       else
-        switch (i2 << 16 >> 16) {
+        switch (i5 << 16 >> 16) {
           case 8234:
           case 8235:
           case 8236:
@@ -25053,352 +25174,352 @@ var asm = function(global, env, buffer2) {
           case 8295:
           case 8296:
           case 8297: {
-            t2 = 31;
+            t5 = 31;
             break;
           }
           default: {
           }
         }
-      if ((t2 | 0) == 31) {
-        t2 = 0;
-        e2 = Ua(c[s2 >> 2] | 0, c[h2 >> 2] | 0, g2 - k2 >> 1, f2) | 0;
-        e2 = (c[h2 >> 2] | 0) + (e2 * 12 | 0) + 8 | 0;
-        c[e2 >> 2] = (c[e2 >> 2] | 0) + -1;
+      if ((t5 | 0) == 31) {
+        t5 = 0;
+        e6 = Ua(c4[s5 >> 2] | 0, c4[h4 >> 2] | 0, g3 - k3 >> 1, f4) | 0;
+        e6 = (c4[h4 >> 2] | 0) + (e6 * 12 | 0) + 8 | 0;
+        c4[e6 >> 2] = (c4[e6 >> 2] | 0) + -1;
       }
-      g2 = g2 + 2 | 0;
+      g3 = g3 + 2 | 0;
     }
     return;
   }
-  function Sa(a2, b2) {
-    a2 = a2 | 0;
-    b2 = b2 | 0;
-    var d2 = 0;
-    d2 = a2 + 228 | 0;
-    c[a2 + 224 >> 2] = d2;
-    c[a2 + 220 >> 2] = 1;
-    c[d2 >> 2] = (b2 & 255) << 31;
-    c[a2 + 232 >> 2] = c[a2 + 12 >> 2];
-    c[a2 + 236 >> 2] = 0;
+  function Sa(a4, b4) {
+    a4 = a4 | 0;
+    b4 = b4 | 0;
+    var d4 = 0;
+    d4 = a4 + 228 | 0;
+    c4[a4 + 224 >> 2] = d4;
+    c4[a4 + 220 >> 2] = 1;
+    c4[d4 >> 2] = (b4 & 255) << 31;
+    c4[a4 + 232 >> 2] = c4[a4 + 12 >> 2];
+    c4[a4 + 236 >> 2] = 0;
     return;
   }
-  function Ta(a2, b2, e2) {
-    a2 = a2 | 0;
-    b2 = b2 | 0;
-    e2 = e2 | 0;
-    var f2 = 0, g2 = 0, h2 = 0, i2 = 0, j2 = 0, k2 = 0, l2 = 0, m2 = 0, n2 = 0, o2 = 0, p2 = 0, q2 = 0;
-    o2 = E;
-    E = E + 16 | 0;
-    n2 = o2;
-    if (((b2 | 1) & 255) >= (e2 & 255)) {
-      E = o2;
+  function Ta(a4, b4, e6) {
+    a4 = a4 | 0;
+    b4 = b4 | 0;
+    e6 = e6 | 0;
+    var f4 = 0, g3 = 0, h4 = 0, i5 = 0, j3 = 0, k3 = 0, l4 = 0, m3 = 0, n6 = 0, o5 = 0, p4 = 0, q2 = 0;
+    o5 = E2;
+    E2 = E2 + 16 | 0;
+    n6 = o5;
+    if (((b4 | 1) & 255) >= (e6 & 255)) {
+      E2 = o5;
       return;
     }
-    l2 = b2 + 1 << 24 >> 24;
-    m2 = c[a2 + 224 >> 2] | 0;
-    i2 = c[a2 + 76 >> 2] | 0;
-    j2 = a2 + 128 | 0;
-    k2 = a2 + 12 | 0;
-    h2 = (c[a2 + 220 >> 2] | 0) + (((c[j2 >> 2] | 0) < (c[k2 >> 2] | 0)) << 31 >> 31) | 0;
-    b2 = e2;
+    l4 = b4 + 1 << 24 >> 24;
+    m3 = c4[a4 + 224 >> 2] | 0;
+    i5 = c4[a4 + 76 >> 2] | 0;
+    j3 = a4 + 128 | 0;
+    k3 = a4 + 12 | 0;
+    h4 = (c4[a4 + 220 >> 2] | 0) + (((c4[j3 >> 2] | 0) < (c4[k3 >> 2] | 0)) << 31 >> 31) | 0;
+    b4 = e6;
     while (1) {
-      b2 = b2 + -1 << 24 >> 24;
-      if ((b2 & 255) < (l2 & 255))
+      b4 = b4 + -1 << 24 >> 24;
+      if ((b4 & 255) < (l4 & 255))
         break;
-      a2 = 0;
+      a4 = 0;
       while (1) {
-        if ((a2 | 0) >= (h2 | 0))
+        if ((a4 | 0) >= (h4 | 0))
           break;
-        if ((d[i2 + (c[m2 + (a2 * 12 | 0) >> 2] | 0) >> 0] | 0) >= (b2 & 255)) {
-          e2 = a2;
+        if ((d3[i5 + (c4[m3 + (a4 * 12 | 0) >> 2] | 0) >> 0] | 0) >= (b4 & 255)) {
+          e6 = a4;
           while (1) {
-            g2 = e2 + 1 | 0;
-            if ((g2 | 0) >= (h2 | 0))
+            g3 = e6 + 1 | 0;
+            if ((g3 | 0) >= (h4 | 0))
               break;
-            if ((d[i2 + (c[m2 + (g2 * 12 | 0) >> 2] | 0) >> 0] | 0) < (b2 & 255))
+            if ((d3[i5 + (c4[m3 + (g3 * 12 | 0) >> 2] | 0) >> 0] | 0) < (b4 & 255))
               break;
             else
-              e2 = g2;
+              e6 = g3;
           }
-          f2 = e2;
+          f4 = e6;
           while (1) {
-            if ((a2 | 0) >= (f2 | 0))
+            if ((a4 | 0) >= (f4 | 0))
               break;
-            q2 = m2 + (a2 * 12 | 0) | 0;
-            c[n2 >> 2] = c[q2 >> 2];
-            c[n2 + 4 >> 2] = c[q2 + 4 >> 2];
-            c[n2 + 8 >> 2] = c[q2 + 8 >> 2];
-            p2 = m2 + (f2 * 12 | 0) | 0;
-            c[q2 >> 2] = c[p2 >> 2];
-            c[q2 + 4 >> 2] = c[p2 + 4 >> 2];
-            c[q2 + 8 >> 2] = c[p2 + 8 >> 2];
-            c[p2 >> 2] = c[n2 >> 2];
-            c[p2 + 4 >> 2] = c[n2 + 4 >> 2];
-            c[p2 + 8 >> 2] = c[n2 + 8 >> 2];
-            f2 = f2 + -1 | 0;
-            a2 = a2 + 1 | 0;
+            q2 = m3 + (a4 * 12 | 0) | 0;
+            c4[n6 >> 2] = c4[q2 >> 2];
+            c4[n6 + 4 >> 2] = c4[q2 + 4 >> 2];
+            c4[n6 + 8 >> 2] = c4[q2 + 8 >> 2];
+            p4 = m3 + (f4 * 12 | 0) | 0;
+            c4[q2 >> 2] = c4[p4 >> 2];
+            c4[q2 + 4 >> 2] = c4[p4 + 4 >> 2];
+            c4[q2 + 8 >> 2] = c4[p4 + 8 >> 2];
+            c4[p4 >> 2] = c4[n6 >> 2];
+            c4[p4 + 4 >> 2] = c4[n6 + 4 >> 2];
+            c4[p4 + 8 >> 2] = c4[n6 + 8 >> 2];
+            f4 = f4 + -1 | 0;
+            a4 = a4 + 1 | 0;
           }
-          if ((g2 | 0) == (h2 | 0))
+          if ((g3 | 0) == (h4 | 0))
             break;
           else
-            a2 = e2 + 2 | 0;
+            a4 = e6 + 2 | 0;
         } else
-          a2 = a2 + 1 | 0;
+          a4 = a4 + 1 | 0;
       }
     }
-    if (l2 & 1) {
-      E = o2;
+    if (l4 & 1) {
+      E2 = o5;
       return;
     }
-    b2 = h2 + (((c[j2 >> 2] | 0) == (c[k2 >> 2] | 0)) << 31 >> 31) | 0;
-    a2 = 0;
+    b4 = h4 + (((c4[j3 >> 2] | 0) == (c4[k3 >> 2] | 0)) << 31 >> 31) | 0;
+    a4 = 0;
     while (1) {
-      if ((a2 | 0) >= (b2 | 0))
+      if ((a4 | 0) >= (b4 | 0))
         break;
-      p2 = m2 + (a2 * 12 | 0) | 0;
-      c[n2 >> 2] = c[p2 >> 2];
-      c[n2 + 4 >> 2] = c[p2 + 4 >> 2];
-      c[n2 + 8 >> 2] = c[p2 + 8 >> 2];
-      q2 = m2 + (b2 * 12 | 0) | 0;
-      c[p2 >> 2] = c[q2 >> 2];
-      c[p2 + 4 >> 2] = c[q2 + 4 >> 2];
-      c[p2 + 8 >> 2] = c[q2 + 8 >> 2];
-      c[q2 >> 2] = c[n2 >> 2];
-      c[q2 + 4 >> 2] = c[n2 + 4 >> 2];
-      c[q2 + 8 >> 2] = c[n2 + 8 >> 2];
-      b2 = b2 + -1 | 0;
-      a2 = a2 + 1 | 0;
+      p4 = m3 + (a4 * 12 | 0) | 0;
+      c4[n6 >> 2] = c4[p4 >> 2];
+      c4[n6 + 4 >> 2] = c4[p4 + 4 >> 2];
+      c4[n6 + 8 >> 2] = c4[p4 + 8 >> 2];
+      q2 = m3 + (b4 * 12 | 0) | 0;
+      c4[p4 >> 2] = c4[q2 >> 2];
+      c4[p4 + 4 >> 2] = c4[q2 + 4 >> 2];
+      c4[p4 + 8 >> 2] = c4[q2 + 8 >> 2];
+      c4[q2 >> 2] = c4[n6 >> 2];
+      c4[q2 + 4 >> 2] = c4[n6 + 4 >> 2];
+      c4[q2 + 8 >> 2] = c4[n6 + 8 >> 2];
+      b4 = b4 + -1 | 0;
+      a4 = a4 + 1 | 0;
     }
-    E = o2;
+    E2 = o5;
     return;
   }
-  function Ua(a2, b2, d2, e2) {
-    a2 = a2 | 0;
-    b2 = b2 | 0;
-    d2 = d2 | 0;
-    e2 = e2 | 0;
-    var f2 = 0, g2 = 0, h2 = 0, i2 = 0, j2 = 0;
-    g2 = 0;
-    f2 = 0;
+  function Ua(a4, b4, d4, e6) {
+    a4 = a4 | 0;
+    b4 = b4 | 0;
+    d4 = d4 | 0;
+    e6 = e6 | 0;
+    var f4 = 0, g3 = 0, h4 = 0, i5 = 0, j3 = 0;
+    g3 = 0;
+    f4 = 0;
     while (1) {
-      if ((f2 | 0) >= (a2 | 0))
+      if ((f4 | 0) >= (a4 | 0))
         break;
-      h2 = c[b2 + (f2 * 12 | 0) + 4 >> 2] | 0;
-      j2 = c[b2 + (f2 * 12 | 0) >> 2] & 2147483647;
-      if ((j2 | 0) <= (d2 | 0) ? (h2 - g2 + j2 | 0) > (d2 | 0) : 0) {
-        i2 = 7;
+      h4 = c4[b4 + (f4 * 12 | 0) + 4 >> 2] | 0;
+      j3 = c4[b4 + (f4 * 12 | 0) >> 2] & 2147483647;
+      if ((j3 | 0) <= (d4 | 0) ? (h4 - g3 + j3 | 0) > (d4 | 0) : 0) {
+        i5 = 7;
         break;
       }
-      g2 = h2;
-      f2 = f2 + 1 | 0;
+      g3 = h4;
+      f4 = f4 + 1 | 0;
     }
-    if ((i2 | 0) == 7)
-      return f2 | 0;
-    c[e2 >> 2] = 27;
-    j2 = 0;
-    return j2 | 0;
+    if ((i5 | 0) == 7)
+      return f4 | 0;
+    c4[e6 >> 2] = 27;
+    j3 = 0;
+    return j3 | 0;
   }
-  function Va(a2, b2, d2, e2) {
-    a2 = a2 | 0;
-    b2 = b2 | 0;
-    d2 = d2 | 0;
-    e2 = e2 | 0;
-    var f2 = 0, g2 = 0, h2 = 0;
-    h2 = E;
-    E = E + 16 | 0;
-    f2 = h2;
-    c[f2 >> 2] = 0;
+  function Va(a4, b4, d4, e6) {
+    a4 = a4 | 0;
+    b4 = b4 | 0;
+    d4 = d4 | 0;
+    e6 = e6 | 0;
+    var f4 = 0, g3 = 0, h4 = 0;
+    h4 = E2;
+    E2 = E2 + 16 | 0;
+    f4 = h4;
+    c4[f4 >> 2] = 0;
     do
-      if (a2 | 0) {
-        g2 = c[a2 >> 2] | 0;
-        if ((g2 | 0) != (a2 | 0)) {
-          if (!g2)
+      if (a4 | 0) {
+        g3 = c4[a4 >> 2] | 0;
+        if ((g3 | 0) != (a4 | 0)) {
+          if (!g3)
             break;
-          if ((c[g2 >> 2] | 0) != (g2 | 0))
+          if ((c4[g3 >> 2] | 0) != (g3 | 0))
             break;
         }
-        Ra(a2, f2);
-        if ((Na(c[f2 >> 2] | 0) | 0) << 24 >> 24) {
-          e2 = 0;
-          E = h2;
-          return e2 | 0;
+        Ra(a4, f4);
+        if ((Na(c4[f4 >> 2] | 0) | 0) << 24 >> 24) {
+          e6 = 0;
+          E2 = h4;
+          return e6 | 0;
         }
-        if ((b2 | 0) >= 0 ? (c[a2 + 220 >> 2] | 0) > (b2 | 0) : 0) {
-          a2 = a2 + 224 | 0;
-          f2 = c[(c[a2 >> 2] | 0) + (b2 * 12 | 0) >> 2] | 0;
-          if (d2 | 0)
-            c[d2 >> 2] = f2 & 2147483647;
-          if (e2 | 0) {
-            a2 = c[a2 >> 2] | 0;
-            if ((b2 | 0) > 0)
-              a2 = (c[a2 + (b2 * 12 | 0) + 4 >> 2] | 0) - (c[a2 + ((b2 + -1 | 0) * 12 | 0) + 4 >> 2] | 0) | 0;
+        if ((b4 | 0) >= 0 ? (c4[a4 + 220 >> 2] | 0) > (b4 | 0) : 0) {
+          a4 = a4 + 224 | 0;
+          f4 = c4[(c4[a4 >> 2] | 0) + (b4 * 12 | 0) >> 2] | 0;
+          if (d4 | 0)
+            c4[d4 >> 2] = f4 & 2147483647;
+          if (e6 | 0) {
+            a4 = c4[a4 >> 2] | 0;
+            if ((b4 | 0) > 0)
+              a4 = (c4[a4 + (b4 * 12 | 0) + 4 >> 2] | 0) - (c4[a4 + ((b4 + -1 | 0) * 12 | 0) + 4 >> 2] | 0) | 0;
             else
-              a2 = c[a2 + 4 >> 2] | 0;
-            c[e2 >> 2] = a2;
+              a4 = c4[a4 + 4 >> 2] | 0;
+            c4[e6 >> 2] = a4;
           }
-          e2 = f2 >>> 31;
-          E = h2;
-          return e2 | 0;
+          e6 = f4 >>> 31;
+          E2 = h4;
+          return e6 | 0;
         }
-        c[f2 >> 2] = 1;
-        e2 = 0;
-        E = h2;
-        return e2 | 0;
+        c4[f4 >> 2] = 1;
+        e6 = 0;
+        E2 = h4;
+        return e6 | 0;
       }
     while (0);
-    c[f2 >> 2] = 27;
-    e2 = 0;
-    E = h2;
-    return e2 | 0;
+    c4[f4 >> 2] = 27;
+    e6 = 0;
+    E2 = h4;
+    return e6 | 0;
   }
-  function Wa(a2, d2, e2) {
-    a2 = a2 | 0;
-    d2 = d2 | 0;
-    e2 = e2 | 0;
-    var f2 = 0, g2 = 0, h2 = 0, i2 = 0, j2 = 0, k2 = 0, l2 = 0, m2 = 0, n2 = 0, o2 = 0, p2 = 0;
-    if (!e2)
+  function Wa(a4, d4, e6) {
+    a4 = a4 | 0;
+    d4 = d4 | 0;
+    e6 = e6 | 0;
+    var f4 = 0, g3 = 0, h4 = 0, i5 = 0, j3 = 0, k3 = 0, l4 = 0, m3 = 0, n6 = 0, o5 = 0, p4 = 0;
+    if (!e6)
       return;
-    if ((Na(c[e2 >> 2] | 0) | 0) << 24 >> 24)
+    if ((Na(c4[e6 >> 2] | 0) | 0) << 24 >> 24)
       return;
-    if (!d2) {
-      c[e2 >> 2] = 1;
+    if (!d4) {
+      c4[e6 >> 2] = 1;
       return;
     }
-    Qa(a2, e2) | 0;
-    if (!((Xa(c[e2 >> 2] | 0) | 0) << 24 >> 24))
+    Qa(a4, e6) | 0;
+    if (!((Xa(c4[e6 >> 2] | 0) | 0) << 24 >> 24))
       return;
-    m2 = a2 + 224 | 0;
-    e2 = c[m2 >> 2] | 0;
-    k2 = a2 + 220 | 0;
-    l2 = e2 + ((c[k2 >> 2] | 0) * 12 | 0) | 0;
-    n2 = a2 + 16 | 0;
-    if ((c[n2 >> 2] | 0) < 1)
+    m3 = a4 + 224 | 0;
+    e6 = c4[m3 >> 2] | 0;
+    k3 = a4 + 220 | 0;
+    l4 = e6 + ((c4[k3 >> 2] | 0) * 12 | 0) | 0;
+    n6 = a4 + 16 | 0;
+    if ((c4[n6 >> 2] | 0) < 1)
       return;
-    g2 = 0;
-    f2 = d2;
+    g3 = 0;
+    f4 = d4;
     while (1) {
-      if (e2 >>> 0 >= l2 >>> 0)
+      if (e6 >>> 0 >= l4 >>> 0)
         break;
-      h2 = c[e2 >> 2] | 0;
-      j2 = c[e2 + 4 >> 2] | 0;
-      if ((h2 | 0) > -1)
+      h4 = c4[e6 >> 2] | 0;
+      j3 = c4[e6 + 4 >> 2] | 0;
+      if ((h4 | 0) > -1)
         while (1) {
-          i2 = f2 + 4 | 0;
-          c[f2 >> 2] = h2;
-          g2 = g2 + 1 | 0;
-          if ((g2 | 0) < (j2 | 0)) {
-            h2 = h2 + 1 | 0;
-            f2 = i2;
+          i5 = f4 + 4 | 0;
+          c4[f4 >> 2] = h4;
+          g3 = g3 + 1 | 0;
+          if ((g3 | 0) < (j3 | 0)) {
+            h4 = h4 + 1 | 0;
+            f4 = i5;
           } else {
-            f2 = i2;
+            f4 = i5;
             break;
           }
         }
       else {
-        i2 = j2 - g2 + (h2 & 2147483647) | 0;
+        i5 = j3 - g3 + (h4 & 2147483647) | 0;
         while (1) {
-          i2 = i2 + -1 | 0;
-          h2 = f2 + 4 | 0;
-          c[f2 >> 2] = i2;
-          g2 = g2 + 1 | 0;
-          if ((g2 | 0) >= (j2 | 0)) {
-            f2 = h2;
+          i5 = i5 + -1 | 0;
+          h4 = f4 + 4 | 0;
+          c4[f4 >> 2] = i5;
+          g3 = g3 + 1 | 0;
+          if ((g3 | 0) >= (j3 | 0)) {
+            f4 = h4;
             break;
           } else
-            f2 = h2;
+            f4 = h4;
         }
       }
-      e2 = e2 + 12 | 0;
+      e6 = e6 + 12 | 0;
     }
-    if ((c[a2 + 332 >> 2] | 0) > 0) {
-      g2 = c[k2 >> 2] | 0;
-      m2 = c[m2 >> 2] | 0;
-      f2 = 0;
-      e2 = 0;
+    if ((c4[a4 + 332 >> 2] | 0) > 0) {
+      g3 = c4[k3 >> 2] | 0;
+      m3 = c4[m3 >> 2] | 0;
+      f4 = 0;
+      e6 = 0;
       while (1) {
-        if ((e2 | 0) >= (g2 | 0))
+        if ((e6 | 0) >= (g3 | 0))
           break;
-        p2 = c[m2 + (e2 * 12 | 0) + 8 >> 2] | 0;
-        f2 = f2 + ((p2 & 5 | 0) != 0 & 1) + ((p2 & 10 | 0) != 0 & 1) | 0;
-        e2 = e2 + 1 | 0;
+        p4 = c4[m3 + (e6 * 12 | 0) + 8 >> 2] | 0;
+        f4 = f4 + ((p4 & 5 | 0) != 0 & 1) + ((p4 & 10 | 0) != 0 & 1) | 0;
+        e6 = e6 + 1 | 0;
       }
-      e2 = c[n2 >> 2] | 0;
+      e6 = c4[n6 >> 2] | 0;
       while (1) {
-        l2 = g2 + -1 | 0;
-        if (!((g2 | 0) > 0 & (f2 | 0) > 0))
+        l4 = g3 + -1 | 0;
+        if (!((g3 | 0) > 0 & (f4 | 0) > 0))
           break;
-        k2 = c[m2 + (l2 * 12 | 0) + 8 >> 2] | 0;
-        h2 = e2 + -1 | 0;
-        if (k2 & 10) {
-          c[d2 + (h2 << 2) >> 2] = -1;
-          e2 = h2;
-          f2 = f2 + -1 | 0;
+        k3 = c4[m3 + (l4 * 12 | 0) + 8 >> 2] | 0;
+        h4 = e6 + -1 | 0;
+        if (k3 & 10) {
+          c4[d4 + (h4 << 2) >> 2] = -1;
+          e6 = h4;
+          f4 = f4 + -1 | 0;
         }
-        if ((g2 | 0) > 1)
-          j2 = c[m2 + ((g2 + -2 | 0) * 12 | 0) + 4 >> 2] | 0;
+        if ((g3 | 0) > 1)
+          j3 = c4[m3 + ((g3 + -2 | 0) * 12 | 0) + 4 >> 2] | 0;
         else
-          j2 = 0;
-        i2 = (f2 | 0) > 0;
-        h2 = c[m2 + (l2 * 12 | 0) + 4 >> 2] | 0;
+          j3 = 0;
+        i5 = (f4 | 0) > 0;
+        h4 = c4[m3 + (l4 * 12 | 0) + 4 >> 2] | 0;
         while (1) {
-          g2 = h2 + -1 | 0;
-          if (!(i2 & (h2 | 0) > (j2 | 0)))
+          g3 = h4 + -1 | 0;
+          if (!(i5 & (h4 | 0) > (j3 | 0)))
             break;
-          p2 = e2 + -1 | 0;
-          c[d2 + (p2 << 2) >> 2] = c[d2 + (g2 << 2) >> 2];
-          h2 = g2;
-          e2 = p2;
+          p4 = e6 + -1 | 0;
+          c4[d4 + (p4 << 2) >> 2] = c4[d4 + (g3 << 2) >> 2];
+          h4 = g3;
+          e6 = p4;
         }
-        g2 = e2 + -1 | 0;
-        if (k2 & 5) {
-          c[d2 + (g2 << 2) >> 2] = -1;
-          e2 = g2;
-          f2 = f2 + -1 | 0;
+        g3 = e6 + -1 | 0;
+        if (k3 & 5) {
+          c4[d4 + (g3 << 2) >> 2] = -1;
+          e6 = g3;
+          f4 = f4 + -1 | 0;
         }
-        g2 = l2;
+        g3 = l4;
       }
       return;
     }
-    if ((c[a2 + 348 >> 2] | 0) <= 0)
+    if ((c4[a4 + 348 >> 2] | 0) <= 0)
       return;
-    p2 = c[k2 >> 2] | 0;
-    o2 = c[m2 >> 2] | 0;
-    a2 = a2 + 4 | 0;
-    e2 = 0;
-    m2 = 0;
-    f2 = 0;
+    p4 = c4[k3 >> 2] | 0;
+    o5 = c4[m3 >> 2] | 0;
+    a4 = a4 + 4 | 0;
+    e6 = 0;
+    m3 = 0;
+    f4 = 0;
     while (1) {
-      if ((m2 | 0) >= (p2 | 0))
+      if ((m3 | 0) >= (p4 | 0))
         break;
-      n2 = c[o2 + (m2 * 12 | 0) + 4 >> 2] | 0;
-      l2 = n2 - f2 | 0;
-      g2 = (c[o2 + (m2 * 12 | 0) + 8 >> 2] | 0) == 0;
+      n6 = c4[o5 + (m3 * 12 | 0) + 4 >> 2] | 0;
+      l4 = n6 - f4 | 0;
+      g3 = (c4[o5 + (m3 * 12 | 0) + 8 >> 2] | 0) == 0;
       a:
         do
-          if ((e2 | 0) == (f2 | 0) & g2)
-            e2 = l2 + e2 | 0;
+          if ((e6 | 0) == (f4 | 0) & g3)
+            e6 = l4 + e6 | 0;
           else {
-            if (g2)
+            if (g3)
               while (1) {
-                if ((f2 | 0) >= (n2 | 0))
+                if ((f4 | 0) >= (n6 | 0))
                   break a;
-                c[d2 + (e2 << 2) >> 2] = c[d2 + (f2 << 2) >> 2];
-                f2 = f2 + 1 | 0;
-                e2 = e2 + 1 | 0;
+                c4[d4 + (e6 << 2) >> 2] = c4[d4 + (f4 << 2) >> 2];
+                f4 = f4 + 1 | 0;
+                e6 = e6 + 1 | 0;
               }
-            j2 = c[o2 + (m2 * 12 | 0) >> 2] | 0;
-            i2 = (j2 | 0) > -1;
-            j2 = j2 & 2147483647;
-            k2 = l2 + -1 + j2 | 0;
-            h2 = 0;
+            j3 = c4[o5 + (m3 * 12 | 0) >> 2] | 0;
+            i5 = (j3 | 0) > -1;
+            j3 = j3 & 2147483647;
+            k3 = l4 + -1 + j3 | 0;
+            h4 = 0;
             while (1) {
-              if ((h2 | 0) >= (l2 | 0))
+              if ((h4 | 0) >= (l4 | 0))
                 break a;
-              f2 = i2 ? h2 + j2 | 0 : k2 - h2 | 0;
-              g2 = b[(c[a2 >> 2] | 0) + (f2 << 1) >> 1] | 0;
+              f4 = i5 ? h4 + j3 | 0 : k3 - h4 | 0;
+              g3 = b3[(c4[a4 >> 2] | 0) + (f4 << 1) >> 1] | 0;
               b:
                 do
-                  if ((g2 & -4) << 16 >> 16 != 8204) {
-                    switch (g2 << 16 >> 16) {
+                  if ((g3 & -4) << 16 >> 16 != 8204) {
+                    switch (g3 << 16 >> 16) {
                       case 8234:
                       case 8235:
                       case 8236:
@@ -25412,2965 +25533,2965 @@ var asm = function(global, env, buffer2) {
                       default: {
                       }
                     }
-                    c[d2 + (e2 << 2) >> 2] = f2;
-                    e2 = e2 + 1 | 0;
+                    c4[d4 + (e6 << 2) >> 2] = f4;
+                    e6 = e6 + 1 | 0;
                   }
                 while (0);
-              h2 = h2 + 1 | 0;
+              h4 = h4 + 1 | 0;
             }
           }
         while (0);
-      m2 = m2 + 1 | 0;
-      f2 = n2;
+      m3 = m3 + 1 | 0;
+      f4 = n6;
     }
     return;
   }
-  function Xa(a2) {
-    a2 = a2 | 0;
-    return (a2 | 0) < 1 | 0;
+  function Xa(a4) {
+    a4 = a4 | 0;
+    return (a4 | 0) < 1 | 0;
   }
-  function Ya(a2, d2, e2, f2, g2) {
-    a2 = a2 | 0;
-    d2 = d2 | 0;
-    e2 = e2 | 0;
-    f2 = f2 | 0;
-    g2 = g2 | 0;
-    var h2 = 0, i2 = 0, j2 = 0, k2 = 0, l2 = 0, m2 = 0, n2 = 0, o2 = 0;
-    o2 = E;
-    E = E + 656 | 0;
-    j2 = o2 + 632 | 0;
-    l2 = o2;
-    m2 = o2 + 628 | 0;
-    n2 = o2 + 624 | 0;
-    k2 = o2 + 600 | 0;
-    if (!g2) {
-      n2 = 0;
-      E = o2;
-      return n2 | 0;
+  function Ya(a4, d4, e6, f4, g3) {
+    a4 = a4 | 0;
+    d4 = d4 | 0;
+    e6 = e6 | 0;
+    f4 = f4 | 0;
+    g3 = g3 | 0;
+    var h4 = 0, i5 = 0, j3 = 0, k3 = 0, l4 = 0, m3 = 0, n6 = 0, o5 = 0;
+    o5 = E2;
+    E2 = E2 + 656 | 0;
+    j3 = o5 + 632 | 0;
+    l4 = o5;
+    m3 = o5 + 628 | 0;
+    n6 = o5 + 624 | 0;
+    k3 = o5 + 600 | 0;
+    if (!g3) {
+      n6 = 0;
+      E2 = o5;
+      return n6 | 0;
     }
-    if ((Za(c[g2 >> 2] | 0) | 0) << 24 >> 24) {
-      n2 = 0;
-      E = o2;
-      return n2 | 0;
+    if ((Za(c4[g3 >> 2] | 0) | 0) << 24 >> 24) {
+      n6 = 0;
+      E2 = o5;
+      return n6 | 0;
     }
-    if (!((a2 | 0) == 0 | (d2 | 0) < -1) ? (h2 = (e2 | 0) == 0, !((f2 | 0) < 0 | h2 & (f2 | 0) != 0)) : 0) {
-      if ((d2 | 0) == -1)
-        d2 = ob(a2) | 0;
-      if ((d2 | 0) < 1) {
-        qb(e2, f2, 0, g2) | 0;
-        n2 = 0;
-        E = o2;
-        return n2 | 0;
+    if (!((a4 | 0) == 0 | (d4 | 0) < -1) ? (h4 = (e6 | 0) == 0, !((f4 | 0) < 0 | h4 & (f4 | 0) != 0)) : 0) {
+      if ((d4 | 0) == -1)
+        d4 = ob(a4) | 0;
+      if ((d4 | 0) < 1) {
+        qb(e6, f4, 0, g3) | 0;
+        n6 = 0;
+        E2 = o5;
+        return n6 | 0;
       }
       do
-        if (!h2) {
-          if (!(a2 >>> 0 <= e2 >>> 0 & (a2 + (d2 << 1) | 0) >>> 0 > e2 >>> 0) ? !(e2 >>> 0 <= a2 >>> 0 & (e2 + (f2 << 1) | 0) >>> 0 > a2 >>> 0) : 0)
+        if (!h4) {
+          if (!(a4 >>> 0 <= e6 >>> 0 & (a4 + (d4 << 1) | 0) >>> 0 > e6 >>> 0) ? !(e6 >>> 0 <= a4 >>> 0 & (e6 + (f4 << 1) | 0) >>> 0 > a4 >>> 0) : 0)
             break;
-          c[g2 >> 2] = 1;
-          n2 = 0;
-          E = o2;
-          return n2 | 0;
+          c4[g3 >> 2] = 1;
+          n6 = 0;
+          E2 = o5;
+          return n6 | 0;
         }
       while (0);
-      c[m2 >> 2] = 0;
-      c[n2 >> 2] = 0;
-      h2 = $a(a2, d2) | 0;
-      if ((h2 | 0) > (f2 | 0)) {
-        c[g2 >> 2] = 15;
-        n2 = h2;
-        E = o2;
-        return n2 | 0;
+      c4[m3 >> 2] = 0;
+      c4[n6 >> 2] = 0;
+      h4 = $a(a4, d4) | 0;
+      if ((h4 | 0) > (f4 | 0)) {
+        c4[g3 >> 2] = 15;
+        n6 = h4;
+        E2 = o5;
+        return n6 | 0;
       }
-      h2 = (d2 | 0) > (h2 | 0) ? d2 : h2;
-      if ((h2 | 0) >= 301) {
-        i2 = lb(h2 << 1) | 0;
-        if (!i2) {
-          c[g2 >> 2] = 7;
-          n2 = 0;
-          E = o2;
-          return n2 | 0;
+      h4 = (d4 | 0) > (h4 | 0) ? d4 : h4;
+      if ((h4 | 0) >= 301) {
+        i5 = lb(h4 << 1) | 0;
+        if (!i5) {
+          c4[g3 >> 2] = 7;
+          n6 = 0;
+          E2 = o5;
+          return n6 | 0;
         }
       } else {
-        i2 = l2;
-        h2 = 300;
+        i5 = l4;
+        h4 = 300;
       }
-      pb(i2, a2, d2) | 0;
-      if ((h2 | 0) > (d2 | 0))
-        fc(i2 + (d2 << 1) | 0, 0, h2 - d2 << 1 | 0) | 0;
-      ab(i2, d2, m2, n2);
-      bb(i2, d2, c[m2 >> 2] | 0, c[n2 >> 2] | 0);
-      b[k2 >> 1] = 8203;
-      b[k2 + 2 >> 1] = 0;
-      c[k2 + 4 >> 2] = 3;
-      c[k2 + 8 >> 2] = 2;
-      c[k2 + 12 >> 2] = 262144;
-      c[k2 + 16 >> 2] = 393216;
-      c[k2 + 20 >> 2] = 0;
-      c[j2 >> 2] = c[k2 >> 2];
-      c[j2 + 4 >> 2] = c[k2 + 4 >> 2];
-      c[j2 + 8 >> 2] = c[k2 + 8 >> 2];
-      c[j2 + 12 >> 2] = c[k2 + 12 >> 2];
-      c[j2 + 16 >> 2] = c[k2 + 16 >> 2];
-      c[j2 + 20 >> 2] = c[k2 + 20 >> 2];
-      d2 = cb(i2, d2, g2, j2) | 0;
-      ab(i2, d2, m2, n2);
-      bb(i2, d2, c[m2 >> 2] | 0, c[n2 >> 2] | 0);
-      pb(e2, i2, kb(d2, f2) | 0) | 0;
-      if ((i2 | 0) != (l2 | 0))
-        nb(i2);
-      if ((d2 | 0) > (f2 | 0)) {
-        c[g2 >> 2] = 15;
-        n2 = d2;
-        E = o2;
-        return n2 | 0;
+      pb(i5, a4, d4) | 0;
+      if ((h4 | 0) > (d4 | 0))
+        fc(i5 + (d4 << 1) | 0, 0, h4 - d4 << 1 | 0) | 0;
+      ab(i5, d4, m3, n6);
+      bb(i5, d4, c4[m3 >> 2] | 0, c4[n6 >> 2] | 0);
+      b3[k3 >> 1] = 8203;
+      b3[k3 + 2 >> 1] = 0;
+      c4[k3 + 4 >> 2] = 3;
+      c4[k3 + 8 >> 2] = 2;
+      c4[k3 + 12 >> 2] = 262144;
+      c4[k3 + 16 >> 2] = 393216;
+      c4[k3 + 20 >> 2] = 0;
+      c4[j3 >> 2] = c4[k3 >> 2];
+      c4[j3 + 4 >> 2] = c4[k3 + 4 >> 2];
+      c4[j3 + 8 >> 2] = c4[k3 + 8 >> 2];
+      c4[j3 + 12 >> 2] = c4[k3 + 12 >> 2];
+      c4[j3 + 16 >> 2] = c4[k3 + 16 >> 2];
+      c4[j3 + 20 >> 2] = c4[k3 + 20 >> 2];
+      d4 = cb(i5, d4, g3, j3) | 0;
+      ab(i5, d4, m3, n6);
+      bb(i5, d4, c4[m3 >> 2] | 0, c4[n6 >> 2] | 0);
+      pb(e6, i5, kb(d4, f4) | 0) | 0;
+      if ((i5 | 0) != (l4 | 0))
+        nb(i5);
+      if ((d4 | 0) > (f4 | 0)) {
+        c4[g3 >> 2] = 15;
+        n6 = d4;
+        E2 = o5;
+        return n6 | 0;
       } else {
-        n2 = qb(e2, f2, d2, g2) | 0;
-        E = o2;
-        return n2 | 0;
+        n6 = qb(e6, f4, d4, g3) | 0;
+        E2 = o5;
+        return n6 | 0;
       }
     }
-    c[g2 >> 2] = 1;
-    n2 = 0;
-    E = o2;
-    return n2 | 0;
+    c4[g3 >> 2] = 1;
+    n6 = 0;
+    E2 = o5;
+    return n6 | 0;
   }
-  function Za(a2) {
-    a2 = a2 | 0;
-    return (a2 | 0) > 0 | 0;
+  function Za(a4) {
+    a4 = a4 | 0;
+    return (a4 | 0) > 0 | 0;
   }
-  function _a2(a2) {
-    a2 = a2 | 0;
-    var c2 = 0;
-    c2 = a2 & 65535;
-    if ((a2 + -1570 & 65535) < 178) {
-      c2 = b[1712 + (c2 + -1570 << 1) >> 1] | 0;
-      return c2 | 0;
+  function _a6(a4) {
+    a4 = a4 | 0;
+    var c5 = 0;
+    c5 = a4 & 65535;
+    if ((a4 + -1570 & 65535) < 178) {
+      c5 = b3[1712 + (c5 + -1570 << 1) >> 1] | 0;
+      return c5 | 0;
     }
-    if (a2 << 16 >> 16 == 8205) {
-      c2 = 3;
-      return c2 | 0;
+    if (a4 << 16 >> 16 == 8205) {
+      c5 = 3;
+      return c5 | 0;
     }
-    if ((a2 + -8301 & 65535) < 3) {
-      c2 = 4;
-      return c2 | 0;
+    if ((a4 + -8301 & 65535) < 3) {
+      c5 = 4;
+      return c5 | 0;
     }
-    if ((a2 + 1200 & 65535) < 275) {
-      c2 = d[2080 + (c2 + -64336) >> 0] | 0;
-      return c2 | 0;
+    if ((a4 + 1200 & 65535) < 275) {
+      c5 = d3[2080 + (c5 + -64336) >> 0] | 0;
+      return c5 | 0;
     }
-    if ((a2 + 400 & 65535) >= 141) {
-      c2 = 0;
-      return c2 | 0;
+    if ((a4 + 400 & 65535) >= 141) {
+      c5 = 0;
+      return c5 | 0;
     }
-    c2 = d[2368 + (c2 + -65136) >> 0] | 0;
-    return c2 | 0;
+    c5 = d3[2368 + (c5 + -65136) >> 0] | 0;
+    return c5 | 0;
   }
-  function $a(a2, c2) {
-    a2 = a2 | 0;
-    c2 = c2 | 0;
-    var d2 = 0, e2 = 0, f2 = 0, g2 = 0, h2 = 0;
-    g2 = c2 + -1 | 0;
-    f2 = 0;
-    d2 = c2;
+  function $a(a4, c5) {
+    a4 = a4 | 0;
+    c5 = c5 | 0;
+    var d4 = 0, e6 = 0, f4 = 0, g3 = 0, h4 = 0;
+    g3 = c5 + -1 | 0;
+    f4 = 0;
+    d4 = c5;
     while (1) {
-      if ((f2 | 0) >= (c2 | 0))
+      if ((f4 | 0) >= (c5 | 0))
         break;
-      e2 = b[a2 + (f2 << 1) >> 1] | 0;
-      if ((f2 | 0) < (g2 | 0) & e2 << 16 >> 16 == 1604 ? (ib(b[a2 + (f2 + 1 << 1) >> 1] | 0) | 0) != 0 : 0)
-        h2 = 6;
-      else if (jb(e2) | 0)
-        h2 = 6;
-      if ((h2 | 0) == 6) {
-        h2 = 0;
-        d2 = d2 + -1 | 0;
+      e6 = b3[a4 + (f4 << 1) >> 1] | 0;
+      if ((f4 | 0) < (g3 | 0) & e6 << 16 >> 16 == 1604 ? (ib(b3[a4 + (f4 + 1 << 1) >> 1] | 0) | 0) != 0 : 0)
+        h4 = 6;
+      else if (jb(e6) | 0)
+        h4 = 6;
+      if ((h4 | 0) == 6) {
+        h4 = 0;
+        d4 = d4 + -1 | 0;
       }
-      f2 = f2 + 1 | 0;
+      f4 = f4 + 1 | 0;
     }
-    return d2 | 0;
+    return d4 | 0;
   }
-  function ab(a2, d2, e2, f2) {
-    a2 = a2 | 0;
-    d2 = d2 | 0;
-    e2 = e2 | 0;
-    f2 = f2 | 0;
-    var g2 = 0, h2 = 0;
-    h2 = 0;
+  function ab(a4, d4, e6, f4) {
+    a4 = a4 | 0;
+    d4 = d4 | 0;
+    e6 = e6 | 0;
+    f4 = f4 | 0;
+    var g3 = 0, h4 = 0;
+    h4 = 0;
     while (1) {
-      g2 = (h2 | 0) < (d2 | 0);
-      if (g2 & (b[a2 + (h2 << 1) >> 1] | 0) == 32)
-        h2 = h2 + 1 | 0;
+      g3 = (h4 | 0) < (d4 | 0);
+      if (g3 & (b3[a4 + (h4 << 1) >> 1] | 0) == 32)
+        h4 = h4 + 1 | 0;
       else
         break;
     }
-    if (!g2) {
-      a2 = 0;
-      c[e2 >> 2] = h2;
-      c[f2 >> 2] = a2;
+    if (!g3) {
+      a4 = 0;
+      c4[e6 >> 2] = h4;
+      c4[f4 >> 2] = a4;
       return;
     }
-    g2 = 0;
+    g3 = 0;
     while (1) {
-      d2 = d2 + -1 | 0;
-      if ((b[a2 + (d2 << 1) >> 1] | 0) != 32)
+      d4 = d4 + -1 | 0;
+      if ((b3[a4 + (d4 << 1) >> 1] | 0) != 32)
         break;
       else
-        g2 = g2 + 1 | 0;
+        g3 = g3 + 1 | 0;
     }
-    c[e2 >> 2] = h2;
-    c[f2 >> 2] = g2;
+    c4[e6 >> 2] = h4;
+    c4[f4 >> 2] = g3;
     return;
   }
-  function bb(a2, c2, d2, e2) {
-    a2 = a2 | 0;
-    c2 = c2 | 0;
-    d2 = d2 | 0;
-    e2 = e2 | 0;
-    var f2 = 0, g2 = 0;
-    c2 = c2 - e2 | 0;
+  function bb(a4, c5, d4, e6) {
+    a4 = a4 | 0;
+    c5 = c5 | 0;
+    d4 = d4 | 0;
+    e6 = e6 | 0;
+    var f4 = 0, g3 = 0;
+    c5 = c5 - e6 | 0;
     while (1) {
-      c2 = c2 + -1 | 0;
-      if ((d2 | 0) >= (c2 | 0))
+      c5 = c5 + -1 | 0;
+      if ((d4 | 0) >= (c5 | 0))
         break;
-      g2 = a2 + (d2 << 1) | 0;
-      f2 = b[g2 >> 1] | 0;
-      e2 = a2 + (c2 << 1) | 0;
-      b[g2 >> 1] = b[e2 >> 1] | 0;
-      b[e2 >> 1] = f2;
-      d2 = d2 + 1 | 0;
+      g3 = a4 + (d4 << 1) | 0;
+      f4 = b3[g3 >> 1] | 0;
+      e6 = a4 + (c5 << 1) | 0;
+      b3[g3 >> 1] = b3[e6 >> 1] | 0;
+      b3[e6 >> 1] = f4;
+      d4 = d4 + 1 | 0;
     }
     return;
   }
-  function cb(a2, e2, f2, g2) {
-    a2 = a2 | 0;
-    e2 = e2 | 0;
-    f2 = f2 | 0;
-    g2 = g2 | 0;
-    var h2 = 0, i2 = 0, j2 = 0, k2 = 0, l2 = 0, m2 = 0, n2 = 0, o2 = 0, p2 = 0, q2 = 0, r2 = 0, s2 = 0, t2 = 0, u2 = 0, v2 = 0, w2 = 0, x2 = 0, y2 = 0, z2 = 0;
-    z2 = E;
-    E = E + 32 | 0;
-    x2 = z2;
-    j2 = 0;
+  function cb(a4, e6, f4, g3) {
+    a4 = a4 | 0;
+    e6 = e6 | 0;
+    f4 = f4 | 0;
+    g3 = g3 | 0;
+    var h4 = 0, i5 = 0, j3 = 0, k3 = 0, l4 = 0, m3 = 0, n6 = 0, o5 = 0, p4 = 0, q2 = 0, r6 = 0, s5 = 0, t5 = 0, u4 = 0, v3 = 0, w3 = 0, x3 = 0, y4 = 0, z2 = 0;
+    z2 = E2;
+    E2 = E2 + 32 | 0;
+    x3 = z2;
+    j3 = 0;
     while (1) {
-      if ((j2 | 0) >= (e2 | 0))
+      if ((j3 | 0) >= (e6 | 0))
         break;
-      k2 = a2 + (j2 << 1) | 0;
-      h2 = b[k2 >> 1] | 0;
-      i2 = h2 & 65535;
-      if ((h2 + 1200 & 65535) < 176) {
-        h2 = b[1008 + (i2 + -64336 << 1) >> 1] | 0;
-        if (h2 << 16 >> 16)
-          b[k2 >> 1] = h2;
-      } else if ((h2 + 400 & 65535) < 141)
-        b[k2 >> 1] = b[1360 + (i2 + -65136 << 1) >> 1] | 0;
-      j2 = j2 + 1 | 0;
+      k3 = a4 + (j3 << 1) | 0;
+      h4 = b3[k3 >> 1] | 0;
+      i5 = h4 & 65535;
+      if ((h4 + 1200 & 65535) < 176) {
+        h4 = b3[1008 + (i5 + -64336 << 1) >> 1] | 0;
+        if (h4 << 16 >> 16)
+          b3[k3 >> 1] = h4;
+      } else if ((h4 + 400 & 65535) < 141)
+        b3[k3 >> 1] = b3[1360 + (i5 + -65136 << 1) >> 1] | 0;
+      j3 = j3 + 1 | 0;
     }
-    l2 = e2 + -1 | 0;
-    w2 = l2;
-    j2 = 0;
-    h2 = _a2(b[a2 + (l2 << 1) >> 1] | 0) | 0;
-    m2 = 0;
-    v2 = 0;
-    r2 = 0;
-    s2 = 0;
-    p2 = 0;
-    k2 = -2;
+    l4 = e6 + -1 | 0;
+    w3 = l4;
+    j3 = 0;
+    h4 = _a6(b3[a4 + (l4 << 1) >> 1] | 0) | 0;
+    m3 = 0;
+    v3 = 0;
+    r6 = 0;
+    s5 = 0;
+    p4 = 0;
+    k3 = -2;
     while (1) {
-      if ((l2 | 0) == -1)
+      if ((l4 | 0) == -1)
         break;
-      o2 = h2 & 65535;
-      if (!((o2 & 65280 | 0) == 0 ? ((_a2(b[a2 + (l2 << 1) >> 1] | 0) | 0) & 4) == 0 : 0))
-        y2 = 13;
+      o5 = h4 & 65535;
+      if (!((o5 & 65280 | 0) == 0 ? ((_a6(b3[a4 + (l4 << 1) >> 1] | 0) | 0) & 4) == 0 : 0))
+        y4 = 13;
       do
-        if ((y2 | 0) == 13) {
-          y2 = 0;
-          n2 = l2 + -1 | 0;
+        if ((y4 | 0) == 13) {
+          y4 = 0;
+          n6 = l4 + -1 | 0;
           while (1) {
-            if ((k2 | 0) >= 0)
+            if ((k3 | 0) >= 0)
               break;
-            if ((n2 | 0) == -1) {
-              i2 = -1;
-              j2 = 0;
-              k2 = 3e3;
+            if ((n6 | 0) == -1) {
+              i5 = -1;
+              j3 = 0;
+              k3 = 3e3;
             } else {
-              j2 = _a2(b[a2 + (n2 << 1) >> 1] | 0) | 0;
-              u2 = (j2 & 4) == 0;
-              i2 = n2 + ((u2 ^ 1) << 31 >> 31) | 0;
-              k2 = u2 ? n2 : k2;
+              j3 = _a6(b3[a4 + (n6 << 1) >> 1] | 0) | 0;
+              u4 = (j3 & 4) == 0;
+              i5 = n6 + ((u4 ^ 1) << 31 >> 31) | 0;
+              k3 = u4 ? n6 : k3;
             }
-            n2 = i2;
+            n6 = i5;
           }
           do
-            if (!((m2 & 16) == 0 | (o2 & 32 | 0) == 0)) {
-              h2 = a2 + (l2 << 1) | 0;
-              i2 = eb(b[h2 >> 1] | 0) | 0;
-              if (!(i2 << 16 >> 16)) {
-                h2 = _a2(0) | 0;
-                t2 = v2;
-                u2 = 1;
+            if (!((m3 & 16) == 0 | (o5 & 32 | 0) == 0)) {
+              h4 = a4 + (l4 << 1) | 0;
+              i5 = eb(b3[h4 >> 1] | 0) | 0;
+              if (!(i5 << 16 >> 16)) {
+                h4 = _a6(0) | 0;
+                t5 = v3;
+                u4 = 1;
                 break;
               } else {
-                b[h2 >> 1] = -1;
-                b[a2 + (w2 << 1) >> 1] = i2;
-                h2 = _a2(i2) | 0;
-                t2 = v2;
-                u2 = 1;
-                l2 = w2;
+                b3[h4 >> 1] = -1;
+                b3[a4 + (w3 << 1) >> 1] = i5;
+                h4 = _a6(i5) | 0;
+                t5 = v3;
+                u4 = 1;
+                l4 = w3;
                 break;
               }
             } else {
-              t2 = m2;
-              u2 = p2;
+              t5 = m3;
+              u4 = p4;
             }
           while (0);
-          if ((l2 | 0) > 0) {
-            if ((b[a2 + (l2 + -1 << 1) >> 1] | 0) == 32) {
-              p2 = b[a2 + (l2 << 1) >> 1] | 0;
-              q2 = (fb(p2) | 0) == 0;
-              r2 = p2 << 16 >> 16 == 1574 & q2 ? 1 : r2;
-              s2 = q2 ? s2 : 1;
+          if ((l4 | 0) > 0) {
+            if ((b3[a4 + (l4 + -1 << 1) >> 1] | 0) == 32) {
+              p4 = b3[a4 + (l4 << 1) >> 1] | 0;
+              q2 = (fb(p4) | 0) == 0;
+              r6 = p4 << 16 >> 16 == 1574 & q2 ? 1 : r6;
+              s5 = q2 ? s5 : 1;
             }
-          } else if (!l2) {
-            p2 = b[a2 >> 1] | 0;
-            q2 = (fb(p2) | 0) == 0;
-            r2 = p2 << 16 >> 16 == 1574 & q2 ? 1 : r2;
-            s2 = q2 ? s2 : 1;
+          } else if (!l4) {
+            p4 = b3[a4 >> 1] | 0;
+            q2 = (fb(p4) | 0) == 0;
+            r6 = p4 << 16 >> 16 == 1574 & q2 ? 1 : r6;
+            s5 = q2 ? s5 : 1;
           }
-          n2 = j2 & 65535;
-          o2 = t2 & 65535;
-          q2 = h2 & 65535;
-          m2 = q2 & 3;
-          p2 = d[1648 + ((n2 & 3) << 4) + ((o2 & 3) << 2) + m2 >> 0] | 0;
-          if ((m2 | 0) != 1) {
-            m2 = a2 + (l2 << 1) | 0;
-            i2 = b[m2 >> 1] | 0;
-            if (gb(i2) | 0)
-              if ((o2 & 2 | 0) == 0 | (n2 & 1 | 0) == 0 | (i2 & -2) << 16 >> 16 == 1612)
-                p2 = 0;
+          n6 = j3 & 65535;
+          o5 = t5 & 65535;
+          q2 = h4 & 65535;
+          m3 = q2 & 3;
+          p4 = d3[1648 + ((n6 & 3) << 4) + ((o5 & 3) << 2) + m3 >> 0] | 0;
+          if ((m3 | 0) != 1) {
+            m3 = a4 + (l4 << 1) | 0;
+            i5 = b3[m3 >> 1] | 0;
+            if (gb(i5) | 0)
+              if ((o5 & 2 | 0) == 0 | (n6 & 1 | 0) == 0 | (i5 & -2) << 16 >> 16 == 1612)
+                p4 = 0;
               else
-                p2 = o2 >>> 4 & 1 ^ 1 | n2 >>> 5 & 1 ^ 1;
+                p4 = o5 >>> 4 & 1 ^ 1 | n6 >>> 5 & 1 ^ 1;
           } else {
-            i2 = a2 + (l2 << 1) | 0;
-            p2 = p2 & 1;
-            m2 = i2;
-            i2 = b[i2 >> 1] | 0;
+            i5 = a4 + (l4 << 1) | 0;
+            p4 = p4 & 1;
+            m3 = i5;
+            i5 = b3[i5 >> 1] | 0;
           }
-          if (((i2 ^ 1536) & 65535) < 256) {
-            if (gb(i2) | 0) {
-              b[m2 >> 1] = p2 + 65136 + (d[70134 + ((i2 & 65535) + -1611) >> 0] | 0);
-              m2 = t2;
-              p2 = u2;
+          if (((i5 ^ 1536) & 65535) < 256) {
+            if (gb(i5) | 0) {
+              b3[m3 >> 1] = p4 + 65136 + (d3[70134 + ((i5 & 65535) + -1611) >> 0] | 0);
+              m3 = t5;
+              p4 = u4;
               break;
             }
-            i2 = q2 >>> 8;
+            i5 = q2 >>> 8;
             if (q2 & 8 | 0) {
-              b[m2 >> 1] = p2 + i2 + 64336;
-              m2 = t2;
-              p2 = u2;
+              b3[m3 >> 1] = p4 + i5 + 64336;
+              m3 = t5;
+              p4 = u4;
               break;
             }
-            if ((i2 | 0) != 0 & (q2 & 4 | 0) == 0) {
-              b[m2 >> 1] = p2 + i2 + 65136;
-              m2 = t2;
-              p2 = u2;
+            if ((i5 | 0) != 0 & (q2 & 4 | 0) == 0) {
+              b3[m3 >> 1] = p4 + i5 + 65136;
+              m3 = t5;
+              p4 = u4;
             } else {
-              m2 = t2;
-              p2 = u2;
+              m3 = t5;
+              p4 = u4;
             }
           } else {
-            m2 = t2;
-            p2 = u2;
+            m3 = t5;
+            p4 = u4;
           }
         }
       while (0);
-      i2 = (h2 & 4) == 0;
-      n2 = i2 ? m2 : v2;
-      m2 = i2 ? h2 : m2;
-      i2 = i2 ? l2 : w2;
-      o2 = l2 + -1 | 0;
-      if ((o2 | 0) != (k2 | 0)) {
-        if (l2)
-          h2 = _a2(b[a2 + (o2 << 1) >> 1] | 0) | 0;
+      i5 = (h4 & 4) == 0;
+      n6 = i5 ? m3 : v3;
+      m3 = i5 ? h4 : m3;
+      i5 = i5 ? l4 : w3;
+      o5 = l4 + -1 | 0;
+      if ((o5 | 0) != (k3 | 0)) {
+        if (l4)
+          h4 = _a6(b3[a4 + (o5 << 1) >> 1] | 0) | 0;
       } else {
-        h2 = j2;
-        k2 = -2;
+        h4 = j3;
+        k3 = -2;
       }
-      w2 = i2;
-      v2 = n2;
-      l2 = o2;
+      w3 = i5;
+      v3 = n6;
+      l4 = o5;
     }
-    if (p2) {
-      c[x2 >> 2] = c[g2 >> 2];
-      c[x2 + 4 >> 2] = c[g2 + 4 >> 2];
-      c[x2 + 8 >> 2] = c[g2 + 8 >> 2];
-      c[x2 + 12 >> 2] = c[g2 + 12 >> 2];
-      c[x2 + 16 >> 2] = c[g2 + 16 >> 2];
-      c[x2 + 20 >> 2] = c[g2 + 20 >> 2];
-      e2 = hb(a2, e2, f2, x2) | 0;
+    if (p4) {
+      c4[x3 >> 2] = c4[g3 >> 2];
+      c4[x3 + 4 >> 2] = c4[g3 + 4 >> 2];
+      c4[x3 + 8 >> 2] = c4[g3 + 8 >> 2];
+      c4[x3 + 12 >> 2] = c4[g3 + 12 >> 2];
+      c4[x3 + 16 >> 2] = c4[g3 + 16 >> 2];
+      c4[x3 + 20 >> 2] = c4[g3 + 20 >> 2];
+      e6 = hb(a4, e6, f4, x3) | 0;
     }
-    if (!(r2 | s2)) {
-      y2 = e2;
-      E = z2;
-      return y2 | 0;
+    if (!(r6 | s5)) {
+      y4 = e6;
+      E2 = z2;
+      return y4 | 0;
     }
-    y2 = db(e2) | 0;
-    E = z2;
-    return y2 | 0;
+    y4 = db(e6) | 0;
+    E2 = z2;
+    return y4 | 0;
   }
-  function db(a2) {
-    a2 = a2 | 0;
-    return a2 | 0;
+  function db(a4) {
+    a4 = a4 | 0;
+    return a4 | 0;
   }
-  function eb(a2) {
-    a2 = a2 | 0;
-    switch (a2 << 16 >> 16) {
+  function eb(a4) {
+    a4 = a4 | 0;
+    switch (a4 << 16 >> 16) {
       case 1570: {
-        a2 = 1628;
+        a4 = 1628;
         break;
       }
       case 1571: {
-        a2 = 1629;
+        a4 = 1629;
         break;
       }
       case 1573: {
-        a2 = 1630;
+        a4 = 1630;
         break;
       }
       case 1575: {
-        a2 = 1631;
+        a4 = 1631;
         break;
       }
       default:
-        a2 = 0;
+        a4 = 0;
     }
-    return a2 | 0;
+    return a4 | 0;
   }
-  function fb(a2) {
-    a2 = a2 | 0;
-    return (a2 + -1587 & 65535) < 4 | 0;
+  function fb(a4) {
+    a4 = a4 | 0;
+    return (a4 + -1587 & 65535) < 4 | 0;
   }
-  function gb(a2) {
-    a2 = a2 | 0;
-    return (a2 + -1611 & 65535) < 8 | 0;
+  function gb(a4) {
+    a4 = a4 | 0;
+    return (a4 + -1611 & 65535) < 8 | 0;
   }
-  function hb(a2, d2, e2, f2) {
-    a2 = a2 | 0;
-    d2 = d2 | 0;
-    e2 = e2 | 0;
-    f2 = f2 | 0;
-    var g2 = 0, h2 = 0, i2 = 0, j2 = 0, k2 = 0, l2 = 0, m2 = 0, n2 = 0;
-    m2 = (d2 << 1) + 2 | 0;
-    n2 = lb(m2) | 0;
-    if (!n2) {
-      c[e2 >> 2] = 7;
-      n2 = 0;
-      return n2 | 0;
+  function hb(a4, d4, e6, f4) {
+    a4 = a4 | 0;
+    d4 = d4 | 0;
+    e6 = e6 | 0;
+    f4 = f4 | 0;
+    var g3 = 0, h4 = 0, i5 = 0, j3 = 0, k3 = 0, l4 = 0, m3 = 0, n6 = 0;
+    m3 = (d4 << 1) + 2 | 0;
+    n6 = lb(m3) | 0;
+    if (!n6) {
+      c4[e6 >> 2] = 7;
+      n6 = 0;
+      return n6 | 0;
     }
-    fc(n2 | 0, 0, m2 | 0) | 0;
-    e2 = 0;
-    h2 = 0;
-    g2 = 0;
+    fc(n6 | 0, 0, m3 | 0) | 0;
+    e6 = 0;
+    h4 = 0;
+    g3 = 0;
     while (1) {
-      if ((g2 | 0) >= (d2 | 0))
+      if ((g3 | 0) >= (d4 | 0))
         break;
-      i2 = b[a2 + (g2 << 1) >> 1] | 0;
-      if (i2 << 16 >> 16 == -1) {
-        e2 = e2 + 1 | 0;
-        h2 = h2 + -1 | 0;
+      i5 = b3[a4 + (g3 << 1) >> 1] | 0;
+      if (i5 << 16 >> 16 == -1) {
+        e6 = e6 + 1 | 0;
+        h4 = h4 + -1 | 0;
       } else
-        b[n2 + (h2 << 1) >> 1] = i2;
-      h2 = h2 + 1 | 0;
-      g2 = g2 + 1 | 0;
+        b3[n6 + (h4 << 1) >> 1] = i5;
+      h4 = h4 + 1 | 0;
+      g3 = g3 + 1 | 0;
     }
     while (1) {
-      if ((e2 | 0) <= -1)
+      if ((e6 | 0) <= -1)
         break;
-      b[n2 + (g2 << 1) >> 1] = 0;
-      g2 = g2 + -1 | 0;
-      e2 = e2 + -1 | 0;
+      b3[n6 + (g3 << 1) >> 1] = 0;
+      g3 = g3 + -1 | 0;
+      e6 = e6 + -1 | 0;
     }
-    pb(a2, n2, d2) | 0;
-    if (c[f2 + 4 >> 2] | 0) {
-      e2 = ob(a2) | 0;
-      if (!(c[f2 + 12 >> 2] | 0)) {
-        j2 = 0;
-        k2 = 1;
-        l2 = 15;
+    pb(a4, n6, d4) | 0;
+    if (c4[f4 + 4 >> 2] | 0) {
+      e6 = ob(a4) | 0;
+      if (!(c4[f4 + 12 >> 2] | 0)) {
+        j3 = 0;
+        k3 = 1;
+        l4 = 15;
       }
     } else {
-      j2 = 1;
-      k2 = (c[f2 + 12 >> 2] | 0) == 0;
-      l2 = 15;
+      j3 = 1;
+      k3 = (c4[f4 + 12 >> 2] | 0) == 0;
+      l4 = 15;
     }
-    if ((l2 | 0) == 15) {
-      fc(n2 | 0, 0, m2 | 0) | 0;
-      e2 = d2;
-      g2 = 0;
-      i2 = d2;
+    if ((l4 | 0) == 15) {
+      fc(n6 | 0, 0, m3 | 0) | 0;
+      e6 = d4;
+      g3 = 0;
+      i5 = d4;
       while (1) {
-        if ((i2 | 0) <= -1)
+        if ((i5 | 0) <= -1)
           break;
-        h2 = b[a2 + (i2 << 1) >> 1] | 0;
-        if (j2 & h2 << 16 >> 16 == -1 | k2 & h2 << 16 >> 16 == -2) {
-          e2 = e2 + 1 | 0;
-          g2 = g2 + 1 | 0;
+        h4 = b3[a4 + (i5 << 1) >> 1] | 0;
+        if (j3 & h4 << 16 >> 16 == -1 | k3 & h4 << 16 >> 16 == -2) {
+          e6 = e6 + 1 | 0;
+          g3 = g3 + 1 | 0;
         } else
-          b[n2 + (e2 << 1) >> 1] = h2;
-        e2 = e2 + -1 | 0;
-        i2 = i2 + -1 | 0;
+          b3[n6 + (e6 << 1) >> 1] = h4;
+        e6 = e6 + -1 | 0;
+        i5 = i5 + -1 | 0;
       }
-      e2 = 0;
+      e6 = 0;
       while (1) {
-        if ((e2 | 0) >= (g2 | 0))
+        if ((e6 | 0) >= (g3 | 0))
           break;
-        b[n2 + (e2 << 1) >> 1] = 32;
-        e2 = e2 + 1 | 0;
+        b3[n6 + (e6 << 1) >> 1] = 32;
+        e6 = e6 + 1 | 0;
       }
-      pb(a2, n2, d2) | 0;
-      e2 = d2;
+      pb(a4, n6, d4) | 0;
+      e6 = d4;
     }
-    k2 = (c[f2 + 8 >> 2] | 0) == 0;
-    f2 = (c[f2 + 16 >> 2] | 0) == 0;
-    j2 = f2 | k2 ^ 1;
-    if (k2 | f2) {
-      fc(n2 | 0, 0, m2 | 0) | 0;
-      h2 = 0;
-      e2 = 0;
-      g2 = 0;
+    k3 = (c4[f4 + 8 >> 2] | 0) == 0;
+    f4 = (c4[f4 + 16 >> 2] | 0) == 0;
+    j3 = f4 | k3 ^ 1;
+    if (k3 | f4) {
+      fc(n6 | 0, 0, m3 | 0) | 0;
+      h4 = 0;
+      e6 = 0;
+      g3 = 0;
       while (1) {
-        if ((g2 | 0) >= (d2 | 0))
+        if ((g3 | 0) >= (d4 | 0))
           break;
-        i2 = b[a2 + (g2 << 1) >> 1] | 0;
-        if (k2 & i2 << 16 >> 16 == -1 | j2 & i2 << 16 >> 16 == -2) {
-          h2 = h2 + -1 | 0;
-          e2 = e2 + 1 | 0;
+        i5 = b3[a4 + (g3 << 1) >> 1] | 0;
+        if (k3 & i5 << 16 >> 16 == -1 | j3 & i5 << 16 >> 16 == -2) {
+          h4 = h4 + -1 | 0;
+          e6 = e6 + 1 | 0;
         } else
-          b[n2 + (h2 << 1) >> 1] = i2;
-        h2 = h2 + 1 | 0;
-        g2 = g2 + 1 | 0;
+          b3[n6 + (h4 << 1) >> 1] = i5;
+        h4 = h4 + 1 | 0;
+        g3 = g3 + 1 | 0;
       }
       while (1) {
-        if ((e2 | 0) <= -1)
+        if ((e6 | 0) <= -1)
           break;
-        b[n2 + (g2 << 1) >> 1] = 32;
-        g2 = g2 + -1 | 0;
-        e2 = e2 + -1 | 0;
+        b3[n6 + (g3 << 1) >> 1] = 32;
+        g3 = g3 + -1 | 0;
+        e6 = e6 + -1 | 0;
       }
-      pb(a2, n2, d2) | 0;
-      e2 = d2;
+      pb(a4, n6, d4) | 0;
+      e6 = d4;
     }
-    nb(n2);
-    n2 = e2;
-    return n2 | 0;
+    nb(n6);
+    n6 = e6;
+    return n6 | 0;
   }
-  function ib(a2) {
-    a2 = a2 | 0;
-    switch (a2 << 16 >> 16) {
+  function ib(a4) {
+    a4 = a4 | 0;
+    switch (a4 << 16 >> 16) {
       case 1573:
       case 1571:
       case 1570: {
-        a2 = 1;
+        a4 = 1;
         break;
       }
       default:
-        a2 = a2 << 16 >> 16 == 1575 & 1;
+        a4 = a4 << 16 >> 16 == 1575 & 1;
     }
-    return a2 | 0;
+    return a4 | 0;
   }
-  function jb(a2) {
-    a2 = a2 | 0;
-    return (a2 & -16) << 16 >> 16 == -400 | 0;
+  function jb(a4) {
+    a4 = a4 | 0;
+    return (a4 & -16) << 16 >> 16 == -400 | 0;
   }
-  function kb(a2, b2) {
-    a2 = a2 | 0;
-    b2 = b2 | 0;
-    return ((a2 | 0) > (b2 | 0) ? b2 : a2) | 0;
+  function kb(a4, b4) {
+    a4 = a4 | 0;
+    b4 = b4 | 0;
+    return ((a4 | 0) > (b4 | 0) ? b4 : a4) | 0;
   }
-  function lb(a2) {
-    a2 = a2 | 0;
-    if (!a2)
-      a2 = 70336;
+  function lb(a4) {
+    a4 = a4 | 0;
+    if (!a4)
+      a4 = 70336;
     else
-      a2 = Ab(a2) | 0;
-    return a2 | 0;
+      a4 = Ab(a4) | 0;
+    return a4 | 0;
   }
-  function mb(a2, b2) {
-    a2 = a2 | 0;
-    b2 = b2 | 0;
+  function mb(a4, b4) {
+    a4 = a4 | 0;
+    b4 = b4 | 0;
     do
-      if ((a2 | 0) != 70336)
-        if (!b2) {
-          Bb(a2);
-          a2 = 70336;
+      if ((a4 | 0) != 70336)
+        if (!b4) {
+          Bb(a4);
+          a4 = 70336;
           break;
         } else {
-          a2 = Cb(a2, b2) | 0;
+          a4 = Cb(a4, b4) | 0;
           break;
         }
       else
-        a2 = lb(b2) | 0;
+        a4 = lb(b4) | 0;
     while (0);
-    return a2 | 0;
+    return a4 | 0;
   }
-  function nb(a2) {
-    a2 = a2 | 0;
-    if ((a2 | 0) == 70336)
+  function nb(a4) {
+    a4 = a4 | 0;
+    if ((a4 | 0) == 70336)
       return;
-    Bb(a2);
+    Bb(a4);
     return;
   }
-  function ob(a2) {
-    a2 = a2 | 0;
-    var c2 = 0;
-    c2 = a2;
+  function ob(a4) {
+    a4 = a4 | 0;
+    var c5 = 0;
+    c5 = a4;
     while (1)
-      if (!(b[c2 >> 1] | 0))
+      if (!(b3[c5 >> 1] | 0))
         break;
       else
-        c2 = c2 + 2 | 0;
-    return c2 - a2 >> 1 | 0;
+        c5 = c5 + 2 | 0;
+    return c5 - a4 >> 1 | 0;
   }
-  function pb(a2, b2, c2) {
-    a2 = a2 | 0;
-    b2 = b2 | 0;
-    c2 = c2 | 0;
-    if ((c2 | 0) <= 0)
-      return a2 | 0;
-    ec(a2 | 0, b2 | 0, c2 << 1 | 0) | 0;
-    return a2 | 0;
+  function pb(a4, b4, c5) {
+    a4 = a4 | 0;
+    b4 = b4 | 0;
+    c5 = c5 | 0;
+    if ((c5 | 0) <= 0)
+      return a4 | 0;
+    ec(a4 | 0, b4 | 0, c5 << 1 | 0) | 0;
+    return a4 | 0;
   }
-  function qb(a2, d2, e2, f2) {
-    a2 = a2 | 0;
-    d2 = d2 | 0;
-    e2 = e2 | 0;
-    f2 = f2 | 0;
+  function qb(a4, d4, e6, f4) {
+    a4 = a4 | 0;
+    d4 = d4 | 0;
+    e6 = e6 | 0;
+    f4 = f4 | 0;
     do
-      if (f2 | 0 ? !((e2 | 0) < 0 | (rb(c[f2 >> 2] | 0) | 0) << 24 >> 24 == 0) : 0) {
-        if ((e2 | 0) < (d2 | 0)) {
-          b[a2 + (e2 << 1) >> 1] = 0;
-          if ((c[f2 >> 2] | 0) != -124)
+      if (f4 | 0 ? !((e6 | 0) < 0 | (rb(c4[f4 >> 2] | 0) | 0) << 24 >> 24 == 0) : 0) {
+        if ((e6 | 0) < (d4 | 0)) {
+          b3[a4 + (e6 << 1) >> 1] = 0;
+          if ((c4[f4 >> 2] | 0) != -124)
             break;
-          c[f2 >> 2] = 0;
+          c4[f4 >> 2] = 0;
           break;
         }
-        if ((e2 | 0) == (d2 | 0)) {
-          c[f2 >> 2] = -124;
+        if ((e6 | 0) == (d4 | 0)) {
+          c4[f4 >> 2] = -124;
           break;
         } else {
-          c[f2 >> 2] = 15;
+          c4[f4 >> 2] = 15;
           break;
         }
       }
     while (0);
-    return e2 | 0;
+    return e6 | 0;
   }
-  function rb(a2) {
-    a2 = a2 | 0;
-    return (a2 | 0) < 1 | 0;
+  function rb(a4) {
+    a4 = a4 | 0;
+    return (a4 | 0) < 1 | 0;
   }
-  function sb(a2) {
-    a2 = a2 | 0;
-    var c2 = 0;
+  function sb(a4) {
+    a4 = a4 | 0;
+    var c5 = 0;
     do
-      if (a2 >>> 0 >= 55296) {
-        if (a2 >>> 0 < 65536) {
-          c2 = ((a2 | 0) < 56320 ? 320 : 0) + (a2 >>> 5) | 0;
+      if (a4 >>> 0 >= 55296) {
+        if (a4 >>> 0 < 65536) {
+          c5 = ((a4 | 0) < 56320 ? 320 : 0) + (a4 >>> 5) | 0;
           break;
         }
-        if (a2 >>> 0 > 1114111) {
-          a2 = 4596;
-          a2 = 2512 + (a2 << 1) | 0;
-          a2 = b[a2 >> 1] | 0;
-          a2 = a2 & 255;
-          a2 = a2 & 31;
-          return a2 | 0;
+        if (a4 >>> 0 > 1114111) {
+          a4 = 4596;
+          a4 = 2512 + (a4 << 1) | 0;
+          a4 = b3[a4 >> 1] | 0;
+          a4 = a4 & 255;
+          a4 = a4 & 31;
+          return a4 | 0;
         } else {
-          c2 = (a2 >>> 5 & 63) + (e[2512 + ((a2 >>> 11) + 2080 << 1) >> 1] | 0) | 0;
+          c5 = (a4 >>> 5 & 63) + (e5[2512 + ((a4 >>> 11) + 2080 << 1) >> 1] | 0) | 0;
           break;
         }
       } else
-        c2 = a2 >>> 5;
+        c5 = a4 >>> 5;
     while (0);
-    a2 = ((e[2512 + (c2 << 1) >> 1] | 0) << 2) + (a2 & 31) | 0;
-    a2 = 2512 + (a2 << 1) | 0;
-    a2 = b[a2 >> 1] | 0;
-    a2 = a2 & 255;
-    a2 = a2 & 31;
-    return a2 | 0;
+    a4 = ((e5[2512 + (c5 << 1) >> 1] | 0) << 2) + (a4 & 31) | 0;
+    a4 = 2512 + (a4 << 1) | 0;
+    a4 = b3[a4 >> 1] | 0;
+    a4 = a4 & 255;
+    a4 = a4 & 31;
+    return a4 | 0;
   }
-  function tb(a2) {
-    a2 = a2 | 0;
-    var c2 = 0;
+  function tb(a4) {
+    a4 = a4 | 0;
+    var c5 = 0;
     do
-      if (a2 >>> 0 >= 55296) {
-        if (a2 >>> 0 < 65536) {
-          c2 = ((a2 | 0) < 56320 ? 320 : 0) + (a2 >>> 5) | 0;
+      if (a4 >>> 0 >= 55296) {
+        if (a4 >>> 0 < 65536) {
+          c5 = ((a4 | 0) < 56320 ? 320 : 0) + (a4 >>> 5) | 0;
           break;
         }
-        if (a2 >>> 0 > 1114111) {
-          a2 = 3644;
-          a2 = 45584 + (a2 << 1) | 0;
-          a2 = b[a2 >> 1] | 0;
-          a2 = a2 & 31;
-          a2 = a2 & 65535;
-          return a2 | 0;
+        if (a4 >>> 0 > 1114111) {
+          a4 = 3644;
+          a4 = 45584 + (a4 << 1) | 0;
+          a4 = b3[a4 >> 1] | 0;
+          a4 = a4 & 31;
+          a4 = a4 & 65535;
+          return a4 | 0;
         } else {
-          c2 = (a2 >>> 5 & 63) + (e[45584 + ((a2 >>> 11) + 2080 << 1) >> 1] | 0) | 0;
+          c5 = (a4 >>> 5 & 63) + (e5[45584 + ((a4 >>> 11) + 2080 << 1) >> 1] | 0) | 0;
           break;
         }
       } else
-        c2 = a2 >>> 5;
+        c5 = a4 >>> 5;
     while (0);
-    a2 = ((e[45584 + (c2 << 1) >> 1] | 0) << 2) + (a2 & 31) | 0;
-    a2 = 45584 + (a2 << 1) | 0;
-    a2 = b[a2 >> 1] | 0;
-    a2 = a2 & 31;
-    a2 = a2 & 65535;
-    return a2 | 0;
+    a4 = ((e5[45584 + (c5 << 1) >> 1] | 0) << 2) + (a4 & 31) | 0;
+    a4 = 45584 + (a4 << 1) | 0;
+    a4 = b3[a4 >> 1] | 0;
+    a4 = a4 & 31;
+    a4 = a4 & 65535;
+    return a4 | 0;
   }
-  function ub(a2) {
-    a2 = a2 | 0;
-    var c2 = 0;
+  function ub(a4) {
+    a4 = a4 | 0;
+    var c5 = 0;
     do
-      if (a2 >>> 0 >= 55296) {
-        if (a2 >>> 0 < 65536) {
-          c2 = ((a2 | 0) < 56320 ? 320 : 0) + (a2 >>> 5) | 0;
+      if (a4 >>> 0 >= 55296) {
+        if (a4 >>> 0 < 65536) {
+          c5 = ((a4 | 0) < 56320 ? 320 : 0) + (a4 >>> 5) | 0;
           break;
         }
-        if (a2 >>> 0 > 1114111) {
-          c2 = 3644;
-          c2 = 45584 + (c2 << 1) | 0;
-          c2 = b[c2 >> 1] | 0;
-          a2 = vb(a2, c2) | 0;
-          return a2 | 0;
+        if (a4 >>> 0 > 1114111) {
+          c5 = 3644;
+          c5 = 45584 + (c5 << 1) | 0;
+          c5 = b3[c5 >> 1] | 0;
+          a4 = vb(a4, c5) | 0;
+          return a4 | 0;
         } else {
-          c2 = (a2 >>> 5 & 63) + (e[45584 + ((a2 >>> 11) + 2080 << 1) >> 1] | 0) | 0;
+          c5 = (a4 >>> 5 & 63) + (e5[45584 + ((a4 >>> 11) + 2080 << 1) >> 1] | 0) | 0;
           break;
         }
       } else
-        c2 = a2 >>> 5;
+        c5 = a4 >>> 5;
     while (0);
-    c2 = ((e[45584 + (c2 << 1) >> 1] | 0) << 2) + (a2 & 31) | 0;
-    c2 = 45584 + (c2 << 1) | 0;
-    c2 = b[c2 >> 1] | 0;
-    a2 = vb(a2, c2) | 0;
-    return a2 | 0;
+    c5 = ((e5[45584 + (c5 << 1) >> 1] | 0) << 2) + (a4 & 31) | 0;
+    c5 = 45584 + (c5 << 1) | 0;
+    c5 = b3[c5 >> 1] | 0;
+    a4 = vb(a4, c5) | 0;
+    return a4 | 0;
   }
-  function vb(a2, b2) {
-    a2 = a2 | 0;
-    b2 = b2 | 0;
-    var d2 = 0, e2 = 0;
-    b2 = b2 << 16 >> 16 >> 13;
-    if ((b2 | 0) != -4) {
-      e2 = b2 + a2 | 0;
-      return e2 | 0;
+  function vb(a4, b4) {
+    a4 = a4 | 0;
+    b4 = b4 | 0;
+    var d4 = 0, e6 = 0;
+    b4 = b4 << 16 >> 16 >> 13;
+    if ((b4 | 0) != -4) {
+      e6 = b4 + a4 | 0;
+      return e6 | 0;
     }
-    b2 = 0;
+    b4 = 0;
     while (1) {
-      if (b2 >>> 0 >= 40) {
-        b2 = 8;
+      if (b4 >>> 0 >= 40) {
+        b4 = 8;
         break;
       }
-      e2 = c[45424 + (b2 << 2) >> 2] | 0;
-      d2 = e2 & 2097151;
-      if ((d2 | 0) == (a2 | 0)) {
-        b2 = 6;
+      e6 = c4[45424 + (b4 << 2) >> 2] | 0;
+      d4 = e6 & 2097151;
+      if ((d4 | 0) == (a4 | 0)) {
+        b4 = 6;
         break;
       }
-      if ((d2 | 0) > (a2 | 0)) {
-        b2 = 8;
+      if ((d4 | 0) > (a4 | 0)) {
+        b4 = 8;
         break;
       } else
-        b2 = b2 + 1 | 0;
+        b4 = b4 + 1 | 0;
     }
-    if ((b2 | 0) == 6) {
-      e2 = c[45424 + (e2 >>> 21 << 2) >> 2] & 2097151;
-      return e2 | 0;
-    } else if ((b2 | 0) == 8)
-      return a2 | 0;
+    if ((b4 | 0) == 6) {
+      e6 = c4[45424 + (e6 >>> 21 << 2) >> 2] & 2097151;
+      return e6 | 0;
+    } else if ((b4 | 0) == 8)
+      return a4 | 0;
     return 0;
   }
-  function wb(a2) {
-    a2 = a2 | 0;
-    var c2 = 0, d2 = 0;
+  function wb(a4) {
+    a4 = a4 | 0;
+    var c5 = 0, d4 = 0;
     do
-      if (a2 >>> 0 >= 55296) {
-        if (a2 >>> 0 < 65536) {
-          c2 = ((a2 | 0) < 56320 ? 320 : 0) + (a2 >>> 5) | 0;
-          d2 = 7;
+      if (a4 >>> 0 >= 55296) {
+        if (a4 >>> 0 < 65536) {
+          c5 = ((a4 | 0) < 56320 ? 320 : 0) + (a4 >>> 5) | 0;
+          d4 = 7;
           break;
         }
-        if (a2 >>> 0 > 1114111)
-          c2 = 3644;
+        if (a4 >>> 0 > 1114111)
+          c5 = 3644;
         else {
-          c2 = (a2 >>> 5 & 63) + (e[45584 + ((a2 >>> 11) + 2080 << 1) >> 1] | 0) | 0;
-          d2 = 7;
+          c5 = (a4 >>> 5 & 63) + (e5[45584 + ((a4 >>> 11) + 2080 << 1) >> 1] | 0) | 0;
+          d4 = 7;
         }
       } else {
-        c2 = a2 >>> 5;
-        d2 = 7;
+        c5 = a4 >>> 5;
+        d4 = 7;
       }
     while (0);
-    if ((d2 | 0) == 7)
-      c2 = ((e[45584 + (c2 << 1) >> 1] | 0) << 2) + (a2 & 31) | 0;
-    return (b[45584 + (c2 << 1) >> 1] & 768) >>> 8 | 0;
+    if ((d4 | 0) == 7)
+      c5 = ((e5[45584 + (c5 << 1) >> 1] | 0) << 2) + (a4 & 31) | 0;
+    return (b3[45584 + (c5 << 1) >> 1] & 768) >>> 8 | 0;
   }
-  function xb(a2) {
-    a2 = a2 | 0;
-    var c2 = 0, d2 = 0;
+  function xb(a4) {
+    a4 = a4 | 0;
+    var c5 = 0, d4 = 0;
     do
-      if (a2 >>> 0 >= 55296) {
-        if (a2 >>> 0 < 65536) {
-          c2 = ((a2 | 0) < 56320 ? 320 : 0) + (a2 >>> 5) | 0;
-          d2 = 7;
+      if (a4 >>> 0 >= 55296) {
+        if (a4 >>> 0 < 65536) {
+          c5 = ((a4 | 0) < 56320 ? 320 : 0) + (a4 >>> 5) | 0;
+          d4 = 7;
           break;
         }
-        if (a2 >>> 0 > 1114111)
-          c2 = 3644;
+        if (a4 >>> 0 > 1114111)
+          c5 = 3644;
         else {
-          c2 = (a2 >>> 5 & 63) + (e[45584 + ((a2 >>> 11) + 2080 << 1) >> 1] | 0) | 0;
-          d2 = 7;
+          c5 = (a4 >>> 5 & 63) + (e5[45584 + ((a4 >>> 11) + 2080 << 1) >> 1] | 0) | 0;
+          d4 = 7;
         }
       } else {
-        c2 = a2 >>> 5;
-        d2 = 7;
+        c5 = a4 >>> 5;
+        d4 = 7;
       }
     while (0);
-    if ((d2 | 0) == 7)
-      c2 = ((e[45584 + (c2 << 1) >> 1] | 0) << 2) + (a2 & 31) | 0;
-    c2 = b[45584 + (c2 << 1) >> 1] | 0;
-    if (!(c2 & 768))
-      return a2 | 0;
-    a2 = vb(a2, c2) | 0;
-    return a2 | 0;
+    if ((d4 | 0) == 7)
+      c5 = ((e5[45584 + (c5 << 1) >> 1] | 0) << 2) + (a4 & 31) | 0;
+    c5 = b3[45584 + (c5 << 1) >> 1] | 0;
+    if (!(c5 & 768))
+      return a4 | 0;
+    a4 = vb(a4, c5) | 0;
+    return a4 | 0;
   }
-  function yb(a2) {
-    a2 = a2 | 0;
-    return ub(a2) | 0;
+  function yb(a4) {
+    a4 = a4 | 0;
+    return ub(a4) | 0;
   }
-  function zb(a2) {
-    a2 = a2 | 0;
-    return xb(a2) | 0;
+  function zb(a4) {
+    a4 = a4 | 0;
+    return xb(a4) | 0;
   }
-  function Ab(a2) {
-    a2 = a2 | 0;
-    var b2 = 0, d2 = 0, e2 = 0, f2 = 0, g2 = 0, h2 = 0, i2 = 0, j2 = 0, k2 = 0, l2 = 0, m2 = 0, n2 = 0, o2 = 0, p2 = 0, q2 = 0, r2 = 0, s2 = 0, t2 = 0;
-    t2 = E;
-    E = E + 16 | 0;
-    n2 = t2;
+  function Ab(a4) {
+    a4 = a4 | 0;
+    var b4 = 0, d4 = 0, e6 = 0, f4 = 0, g3 = 0, h4 = 0, i5 = 0, j3 = 0, k3 = 0, l4 = 0, m3 = 0, n6 = 0, o5 = 0, p4 = 0, q2 = 0, r6 = 0, s5 = 0, t5 = 0;
+    t5 = E2;
+    E2 = E2 + 16 | 0;
+    n6 = t5;
     do
-      if (a2 >>> 0 < 245) {
-        k2 = a2 >>> 0 < 11 ? 16 : a2 + 11 & -8;
-        a2 = k2 >>> 3;
-        m2 = c[17594] | 0;
-        d2 = m2 >>> a2;
-        if (d2 & 3 | 0) {
-          b2 = (d2 & 1 ^ 1) + a2 | 0;
-          a2 = 70416 + (b2 << 1 << 2) | 0;
-          d2 = a2 + 8 | 0;
-          e2 = c[d2 >> 2] | 0;
-          f2 = e2 + 8 | 0;
-          g2 = c[f2 >> 2] | 0;
-          if ((g2 | 0) == (a2 | 0))
-            c[17594] = m2 & ~(1 << b2);
+      if (a4 >>> 0 < 245) {
+        k3 = a4 >>> 0 < 11 ? 16 : a4 + 11 & -8;
+        a4 = k3 >>> 3;
+        m3 = c4[17594] | 0;
+        d4 = m3 >>> a4;
+        if (d4 & 3 | 0) {
+          b4 = (d4 & 1 ^ 1) + a4 | 0;
+          a4 = 70416 + (b4 << 1 << 2) | 0;
+          d4 = a4 + 8 | 0;
+          e6 = c4[d4 >> 2] | 0;
+          f4 = e6 + 8 | 0;
+          g3 = c4[f4 >> 2] | 0;
+          if ((g3 | 0) == (a4 | 0))
+            c4[17594] = m3 & ~(1 << b4);
           else {
-            c[g2 + 12 >> 2] = a2;
-            c[d2 >> 2] = g2;
+            c4[g3 + 12 >> 2] = a4;
+            c4[d4 >> 2] = g3;
           }
-          s2 = b2 << 3;
-          c[e2 + 4 >> 2] = s2 | 3;
-          s2 = e2 + s2 + 4 | 0;
-          c[s2 >> 2] = c[s2 >> 2] | 1;
-          s2 = f2;
-          E = t2;
-          return s2 | 0;
+          s5 = b4 << 3;
+          c4[e6 + 4 >> 2] = s5 | 3;
+          s5 = e6 + s5 + 4 | 0;
+          c4[s5 >> 2] = c4[s5 >> 2] | 1;
+          s5 = f4;
+          E2 = t5;
+          return s5 | 0;
         }
-        l2 = c[17596] | 0;
-        if (k2 >>> 0 > l2 >>> 0) {
-          if (d2 | 0) {
-            b2 = 2 << a2;
-            b2 = d2 << a2 & (b2 | 0 - b2);
-            b2 = (b2 & 0 - b2) + -1 | 0;
-            i2 = b2 >>> 12 & 16;
-            b2 = b2 >>> i2;
-            d2 = b2 >>> 5 & 8;
-            b2 = b2 >>> d2;
-            g2 = b2 >>> 2 & 4;
-            b2 = b2 >>> g2;
-            a2 = b2 >>> 1 & 2;
-            b2 = b2 >>> a2;
-            e2 = b2 >>> 1 & 1;
-            e2 = (d2 | i2 | g2 | a2 | e2) + (b2 >>> e2) | 0;
-            b2 = 70416 + (e2 << 1 << 2) | 0;
-            a2 = b2 + 8 | 0;
-            g2 = c[a2 >> 2] | 0;
-            i2 = g2 + 8 | 0;
-            d2 = c[i2 >> 2] | 0;
-            if ((d2 | 0) == (b2 | 0)) {
-              a2 = m2 & ~(1 << e2);
-              c[17594] = a2;
+        l4 = c4[17596] | 0;
+        if (k3 >>> 0 > l4 >>> 0) {
+          if (d4 | 0) {
+            b4 = 2 << a4;
+            b4 = d4 << a4 & (b4 | 0 - b4);
+            b4 = (b4 & 0 - b4) + -1 | 0;
+            i5 = b4 >>> 12 & 16;
+            b4 = b4 >>> i5;
+            d4 = b4 >>> 5 & 8;
+            b4 = b4 >>> d4;
+            g3 = b4 >>> 2 & 4;
+            b4 = b4 >>> g3;
+            a4 = b4 >>> 1 & 2;
+            b4 = b4 >>> a4;
+            e6 = b4 >>> 1 & 1;
+            e6 = (d4 | i5 | g3 | a4 | e6) + (b4 >>> e6) | 0;
+            b4 = 70416 + (e6 << 1 << 2) | 0;
+            a4 = b4 + 8 | 0;
+            g3 = c4[a4 >> 2] | 0;
+            i5 = g3 + 8 | 0;
+            d4 = c4[i5 >> 2] | 0;
+            if ((d4 | 0) == (b4 | 0)) {
+              a4 = m3 & ~(1 << e6);
+              c4[17594] = a4;
             } else {
-              c[d2 + 12 >> 2] = b2;
-              c[a2 >> 2] = d2;
-              a2 = m2;
+              c4[d4 + 12 >> 2] = b4;
+              c4[a4 >> 2] = d4;
+              a4 = m3;
             }
-            s2 = e2 << 3;
-            h2 = s2 - k2 | 0;
-            c[g2 + 4 >> 2] = k2 | 3;
-            f2 = g2 + k2 | 0;
-            c[f2 + 4 >> 2] = h2 | 1;
-            c[g2 + s2 >> 2] = h2;
-            if (l2 | 0) {
-              e2 = c[17599] | 0;
-              b2 = l2 >>> 3;
-              d2 = 70416 + (b2 << 1 << 2) | 0;
-              b2 = 1 << b2;
-              if (!(a2 & b2)) {
-                c[17594] = a2 | b2;
-                b2 = d2;
-                a2 = d2 + 8 | 0;
+            s5 = e6 << 3;
+            h4 = s5 - k3 | 0;
+            c4[g3 + 4 >> 2] = k3 | 3;
+            f4 = g3 + k3 | 0;
+            c4[f4 + 4 >> 2] = h4 | 1;
+            c4[g3 + s5 >> 2] = h4;
+            if (l4 | 0) {
+              e6 = c4[17599] | 0;
+              b4 = l4 >>> 3;
+              d4 = 70416 + (b4 << 1 << 2) | 0;
+              b4 = 1 << b4;
+              if (!(a4 & b4)) {
+                c4[17594] = a4 | b4;
+                b4 = d4;
+                a4 = d4 + 8 | 0;
               } else {
-                a2 = d2 + 8 | 0;
-                b2 = c[a2 >> 2] | 0;
+                a4 = d4 + 8 | 0;
+                b4 = c4[a4 >> 2] | 0;
               }
-              c[a2 >> 2] = e2;
-              c[b2 + 12 >> 2] = e2;
-              c[e2 + 8 >> 2] = b2;
-              c[e2 + 12 >> 2] = d2;
+              c4[a4 >> 2] = e6;
+              c4[b4 + 12 >> 2] = e6;
+              c4[e6 + 8 >> 2] = b4;
+              c4[e6 + 12 >> 2] = d4;
             }
-            c[17596] = h2;
-            c[17599] = f2;
-            s2 = i2;
-            E = t2;
-            return s2 | 0;
+            c4[17596] = h4;
+            c4[17599] = f4;
+            s5 = i5;
+            E2 = t5;
+            return s5 | 0;
           }
-          g2 = c[17595] | 0;
-          if (g2) {
-            d2 = (g2 & 0 - g2) + -1 | 0;
-            f2 = d2 >>> 12 & 16;
-            d2 = d2 >>> f2;
-            e2 = d2 >>> 5 & 8;
-            d2 = d2 >>> e2;
-            h2 = d2 >>> 2 & 4;
-            d2 = d2 >>> h2;
-            i2 = d2 >>> 1 & 2;
-            d2 = d2 >>> i2;
-            j2 = d2 >>> 1 & 1;
-            j2 = c[70680 + ((e2 | f2 | h2 | i2 | j2) + (d2 >>> j2) << 2) >> 2] | 0;
-            d2 = j2;
-            i2 = j2;
-            j2 = (c[j2 + 4 >> 2] & -8) - k2 | 0;
+          g3 = c4[17595] | 0;
+          if (g3) {
+            d4 = (g3 & 0 - g3) + -1 | 0;
+            f4 = d4 >>> 12 & 16;
+            d4 = d4 >>> f4;
+            e6 = d4 >>> 5 & 8;
+            d4 = d4 >>> e6;
+            h4 = d4 >>> 2 & 4;
+            d4 = d4 >>> h4;
+            i5 = d4 >>> 1 & 2;
+            d4 = d4 >>> i5;
+            j3 = d4 >>> 1 & 1;
+            j3 = c4[70680 + ((e6 | f4 | h4 | i5 | j3) + (d4 >>> j3) << 2) >> 2] | 0;
+            d4 = j3;
+            i5 = j3;
+            j3 = (c4[j3 + 4 >> 2] & -8) - k3 | 0;
             while (1) {
-              a2 = c[d2 + 16 >> 2] | 0;
-              if (!a2) {
-                a2 = c[d2 + 20 >> 2] | 0;
-                if (!a2)
+              a4 = c4[d4 + 16 >> 2] | 0;
+              if (!a4) {
+                a4 = c4[d4 + 20 >> 2] | 0;
+                if (!a4)
                   break;
               }
-              h2 = (c[a2 + 4 >> 2] & -8) - k2 | 0;
-              f2 = h2 >>> 0 < j2 >>> 0;
-              d2 = a2;
-              i2 = f2 ? a2 : i2;
-              j2 = f2 ? h2 : j2;
+              h4 = (c4[a4 + 4 >> 2] & -8) - k3 | 0;
+              f4 = h4 >>> 0 < j3 >>> 0;
+              d4 = a4;
+              i5 = f4 ? a4 : i5;
+              j3 = f4 ? h4 : j3;
             }
-            h2 = i2 + k2 | 0;
-            if (h2 >>> 0 > i2 >>> 0) {
-              f2 = c[i2 + 24 >> 2] | 0;
-              b2 = c[i2 + 12 >> 2] | 0;
+            h4 = i5 + k3 | 0;
+            if (h4 >>> 0 > i5 >>> 0) {
+              f4 = c4[i5 + 24 >> 2] | 0;
+              b4 = c4[i5 + 12 >> 2] | 0;
               do
-                if ((b2 | 0) == (i2 | 0)) {
-                  a2 = i2 + 20 | 0;
-                  b2 = c[a2 >> 2] | 0;
-                  if (!b2) {
-                    a2 = i2 + 16 | 0;
-                    b2 = c[a2 >> 2] | 0;
-                    if (!b2) {
-                      d2 = 0;
+                if ((b4 | 0) == (i5 | 0)) {
+                  a4 = i5 + 20 | 0;
+                  b4 = c4[a4 >> 2] | 0;
+                  if (!b4) {
+                    a4 = i5 + 16 | 0;
+                    b4 = c4[a4 >> 2] | 0;
+                    if (!b4) {
+                      d4 = 0;
                       break;
                     }
                   }
                   while (1) {
-                    e2 = b2 + 20 | 0;
-                    d2 = c[e2 >> 2] | 0;
-                    if (!d2) {
-                      e2 = b2 + 16 | 0;
-                      d2 = c[e2 >> 2] | 0;
-                      if (!d2)
+                    e6 = b4 + 20 | 0;
+                    d4 = c4[e6 >> 2] | 0;
+                    if (!d4) {
+                      e6 = b4 + 16 | 0;
+                      d4 = c4[e6 >> 2] | 0;
+                      if (!d4)
                         break;
                       else {
-                        b2 = d2;
-                        a2 = e2;
+                        b4 = d4;
+                        a4 = e6;
                       }
                     } else {
-                      b2 = d2;
-                      a2 = e2;
+                      b4 = d4;
+                      a4 = e6;
                     }
                   }
-                  c[a2 >> 2] = 0;
-                  d2 = b2;
+                  c4[a4 >> 2] = 0;
+                  d4 = b4;
                 } else {
-                  d2 = c[i2 + 8 >> 2] | 0;
-                  c[d2 + 12 >> 2] = b2;
-                  c[b2 + 8 >> 2] = d2;
-                  d2 = b2;
+                  d4 = c4[i5 + 8 >> 2] | 0;
+                  c4[d4 + 12 >> 2] = b4;
+                  c4[b4 + 8 >> 2] = d4;
+                  d4 = b4;
                 }
               while (0);
               do
-                if (f2 | 0) {
-                  b2 = c[i2 + 28 >> 2] | 0;
-                  a2 = 70680 + (b2 << 2) | 0;
-                  if ((i2 | 0) == (c[a2 >> 2] | 0)) {
-                    c[a2 >> 2] = d2;
-                    if (!d2) {
-                      c[17595] = g2 & ~(1 << b2);
+                if (f4 | 0) {
+                  b4 = c4[i5 + 28 >> 2] | 0;
+                  a4 = 70680 + (b4 << 2) | 0;
+                  if ((i5 | 0) == (c4[a4 >> 2] | 0)) {
+                    c4[a4 >> 2] = d4;
+                    if (!d4) {
+                      c4[17595] = g3 & ~(1 << b4);
                       break;
                     }
                   } else {
-                    s2 = f2 + 16 | 0;
-                    c[((c[s2 >> 2] | 0) == (i2 | 0) ? s2 : f2 + 20 | 0) >> 2] = d2;
-                    if (!d2)
+                    s5 = f4 + 16 | 0;
+                    c4[((c4[s5 >> 2] | 0) == (i5 | 0) ? s5 : f4 + 20 | 0) >> 2] = d4;
+                    if (!d4)
                       break;
                   }
-                  c[d2 + 24 >> 2] = f2;
-                  b2 = c[i2 + 16 >> 2] | 0;
-                  if (b2 | 0) {
-                    c[d2 + 16 >> 2] = b2;
-                    c[b2 + 24 >> 2] = d2;
+                  c4[d4 + 24 >> 2] = f4;
+                  b4 = c4[i5 + 16 >> 2] | 0;
+                  if (b4 | 0) {
+                    c4[d4 + 16 >> 2] = b4;
+                    c4[b4 + 24 >> 2] = d4;
                   }
-                  b2 = c[i2 + 20 >> 2] | 0;
-                  if (b2 | 0) {
-                    c[d2 + 20 >> 2] = b2;
-                    c[b2 + 24 >> 2] = d2;
+                  b4 = c4[i5 + 20 >> 2] | 0;
+                  if (b4 | 0) {
+                    c4[d4 + 20 >> 2] = b4;
+                    c4[b4 + 24 >> 2] = d4;
                   }
                 }
               while (0);
-              if (j2 >>> 0 < 16) {
-                s2 = j2 + k2 | 0;
-                c[i2 + 4 >> 2] = s2 | 3;
-                s2 = i2 + s2 + 4 | 0;
-                c[s2 >> 2] = c[s2 >> 2] | 1;
+              if (j3 >>> 0 < 16) {
+                s5 = j3 + k3 | 0;
+                c4[i5 + 4 >> 2] = s5 | 3;
+                s5 = i5 + s5 + 4 | 0;
+                c4[s5 >> 2] = c4[s5 >> 2] | 1;
               } else {
-                c[i2 + 4 >> 2] = k2 | 3;
-                c[h2 + 4 >> 2] = j2 | 1;
-                c[h2 + j2 >> 2] = j2;
-                if (l2 | 0) {
-                  e2 = c[17599] | 0;
-                  b2 = l2 >>> 3;
-                  d2 = 70416 + (b2 << 1 << 2) | 0;
-                  b2 = 1 << b2;
-                  if (!(b2 & m2)) {
-                    c[17594] = b2 | m2;
-                    b2 = d2;
-                    a2 = d2 + 8 | 0;
+                c4[i5 + 4 >> 2] = k3 | 3;
+                c4[h4 + 4 >> 2] = j3 | 1;
+                c4[h4 + j3 >> 2] = j3;
+                if (l4 | 0) {
+                  e6 = c4[17599] | 0;
+                  b4 = l4 >>> 3;
+                  d4 = 70416 + (b4 << 1 << 2) | 0;
+                  b4 = 1 << b4;
+                  if (!(b4 & m3)) {
+                    c4[17594] = b4 | m3;
+                    b4 = d4;
+                    a4 = d4 + 8 | 0;
                   } else {
-                    a2 = d2 + 8 | 0;
-                    b2 = c[a2 >> 2] | 0;
+                    a4 = d4 + 8 | 0;
+                    b4 = c4[a4 >> 2] | 0;
                   }
-                  c[a2 >> 2] = e2;
-                  c[b2 + 12 >> 2] = e2;
-                  c[e2 + 8 >> 2] = b2;
-                  c[e2 + 12 >> 2] = d2;
+                  c4[a4 >> 2] = e6;
+                  c4[b4 + 12 >> 2] = e6;
+                  c4[e6 + 8 >> 2] = b4;
+                  c4[e6 + 12 >> 2] = d4;
                 }
-                c[17596] = j2;
-                c[17599] = h2;
+                c4[17596] = j3;
+                c4[17599] = h4;
               }
-              s2 = i2 + 8 | 0;
-              E = t2;
-              return s2 | 0;
+              s5 = i5 + 8 | 0;
+              E2 = t5;
+              return s5 | 0;
             } else
-              m2 = k2;
+              m3 = k3;
           } else
-            m2 = k2;
+            m3 = k3;
         } else
-          m2 = k2;
-      } else if (a2 >>> 0 <= 4294967231) {
-        a2 = a2 + 11 | 0;
-        k2 = a2 & -8;
-        e2 = c[17595] | 0;
-        if (e2) {
-          f2 = 0 - k2 | 0;
-          a2 = a2 >>> 8;
-          if (a2)
-            if (k2 >>> 0 > 16777215)
-              j2 = 31;
+          m3 = k3;
+      } else if (a4 >>> 0 <= 4294967231) {
+        a4 = a4 + 11 | 0;
+        k3 = a4 & -8;
+        e6 = c4[17595] | 0;
+        if (e6) {
+          f4 = 0 - k3 | 0;
+          a4 = a4 >>> 8;
+          if (a4)
+            if (k3 >>> 0 > 16777215)
+              j3 = 31;
             else {
-              m2 = (a2 + 1048320 | 0) >>> 16 & 8;
-              r2 = a2 << m2;
-              i2 = (r2 + 520192 | 0) >>> 16 & 4;
-              r2 = r2 << i2;
-              j2 = (r2 + 245760 | 0) >>> 16 & 2;
-              j2 = 14 - (i2 | m2 | j2) + (r2 << j2 >>> 15) | 0;
-              j2 = k2 >>> (j2 + 7 | 0) & 1 | j2 << 1;
+              m3 = (a4 + 1048320 | 0) >>> 16 & 8;
+              r6 = a4 << m3;
+              i5 = (r6 + 520192 | 0) >>> 16 & 4;
+              r6 = r6 << i5;
+              j3 = (r6 + 245760 | 0) >>> 16 & 2;
+              j3 = 14 - (i5 | m3 | j3) + (r6 << j3 >>> 15) | 0;
+              j3 = k3 >>> (j3 + 7 | 0) & 1 | j3 << 1;
             }
           else
-            j2 = 0;
-          d2 = c[70680 + (j2 << 2) >> 2] | 0;
+            j3 = 0;
+          d4 = c4[70680 + (j3 << 2) >> 2] | 0;
           a:
             do
-              if (!d2) {
-                d2 = 0;
-                a2 = 0;
-                r2 = 61;
+              if (!d4) {
+                d4 = 0;
+                a4 = 0;
+                r6 = 61;
               } else {
-                a2 = 0;
-                i2 = k2 << ((j2 | 0) == 31 ? 0 : 25 - (j2 >>> 1) | 0);
-                g2 = 0;
+                a4 = 0;
+                i5 = k3 << ((j3 | 0) == 31 ? 0 : 25 - (j3 >>> 1) | 0);
+                g3 = 0;
                 while (1) {
-                  h2 = (c[d2 + 4 >> 2] & -8) - k2 | 0;
-                  if (h2 >>> 0 < f2 >>> 0)
-                    if (!h2) {
-                      a2 = d2;
-                      f2 = 0;
-                      r2 = 65;
+                  h4 = (c4[d4 + 4 >> 2] & -8) - k3 | 0;
+                  if (h4 >>> 0 < f4 >>> 0)
+                    if (!h4) {
+                      a4 = d4;
+                      f4 = 0;
+                      r6 = 65;
                       break a;
                     } else {
-                      a2 = d2;
-                      f2 = h2;
+                      a4 = d4;
+                      f4 = h4;
                     }
-                  r2 = c[d2 + 20 >> 2] | 0;
-                  d2 = c[d2 + 16 + (i2 >>> 31 << 2) >> 2] | 0;
-                  g2 = (r2 | 0) == 0 | (r2 | 0) == (d2 | 0) ? g2 : r2;
-                  if (!d2) {
-                    d2 = g2;
-                    r2 = 61;
+                  r6 = c4[d4 + 20 >> 2] | 0;
+                  d4 = c4[d4 + 16 + (i5 >>> 31 << 2) >> 2] | 0;
+                  g3 = (r6 | 0) == 0 | (r6 | 0) == (d4 | 0) ? g3 : r6;
+                  if (!d4) {
+                    d4 = g3;
+                    r6 = 61;
                     break;
                   } else
-                    i2 = i2 << 1;
+                    i5 = i5 << 1;
                 }
               }
             while (0);
-          if ((r2 | 0) == 61) {
-            if ((d2 | 0) == 0 & (a2 | 0) == 0) {
-              a2 = 2 << j2;
-              a2 = (a2 | 0 - a2) & e2;
-              if (!a2) {
-                m2 = k2;
+          if ((r6 | 0) == 61) {
+            if ((d4 | 0) == 0 & (a4 | 0) == 0) {
+              a4 = 2 << j3;
+              a4 = (a4 | 0 - a4) & e6;
+              if (!a4) {
+                m3 = k3;
                 break;
               }
-              m2 = (a2 & 0 - a2) + -1 | 0;
-              h2 = m2 >>> 12 & 16;
-              m2 = m2 >>> h2;
-              g2 = m2 >>> 5 & 8;
-              m2 = m2 >>> g2;
-              i2 = m2 >>> 2 & 4;
-              m2 = m2 >>> i2;
-              j2 = m2 >>> 1 & 2;
-              m2 = m2 >>> j2;
-              d2 = m2 >>> 1 & 1;
-              a2 = 0;
-              d2 = c[70680 + ((g2 | h2 | i2 | j2 | d2) + (m2 >>> d2) << 2) >> 2] | 0;
+              m3 = (a4 & 0 - a4) + -1 | 0;
+              h4 = m3 >>> 12 & 16;
+              m3 = m3 >>> h4;
+              g3 = m3 >>> 5 & 8;
+              m3 = m3 >>> g3;
+              i5 = m3 >>> 2 & 4;
+              m3 = m3 >>> i5;
+              j3 = m3 >>> 1 & 2;
+              m3 = m3 >>> j3;
+              d4 = m3 >>> 1 & 1;
+              a4 = 0;
+              d4 = c4[70680 + ((g3 | h4 | i5 | j3 | d4) + (m3 >>> d4) << 2) >> 2] | 0;
             }
-            if (!d2) {
-              i2 = a2;
-              h2 = f2;
+            if (!d4) {
+              i5 = a4;
+              h4 = f4;
             } else
-              r2 = 65;
+              r6 = 65;
           }
-          if ((r2 | 0) == 65) {
-            g2 = d2;
+          if ((r6 | 0) == 65) {
+            g3 = d4;
             while (1) {
-              m2 = (c[g2 + 4 >> 2] & -8) - k2 | 0;
-              d2 = m2 >>> 0 < f2 >>> 0;
-              f2 = d2 ? m2 : f2;
-              a2 = d2 ? g2 : a2;
-              d2 = c[g2 + 16 >> 2] | 0;
-              if (!d2)
-                d2 = c[g2 + 20 >> 2] | 0;
-              if (!d2) {
-                i2 = a2;
-                h2 = f2;
+              m3 = (c4[g3 + 4 >> 2] & -8) - k3 | 0;
+              d4 = m3 >>> 0 < f4 >>> 0;
+              f4 = d4 ? m3 : f4;
+              a4 = d4 ? g3 : a4;
+              d4 = c4[g3 + 16 >> 2] | 0;
+              if (!d4)
+                d4 = c4[g3 + 20 >> 2] | 0;
+              if (!d4) {
+                i5 = a4;
+                h4 = f4;
                 break;
               } else
-                g2 = d2;
+                g3 = d4;
             }
           }
-          if (((i2 | 0) != 0 ? h2 >>> 0 < ((c[17596] | 0) - k2 | 0) >>> 0 : 0) ? (l2 = i2 + k2 | 0, l2 >>> 0 > i2 >>> 0) : 0) {
-            g2 = c[i2 + 24 >> 2] | 0;
-            b2 = c[i2 + 12 >> 2] | 0;
+          if (((i5 | 0) != 0 ? h4 >>> 0 < ((c4[17596] | 0) - k3 | 0) >>> 0 : 0) ? (l4 = i5 + k3 | 0, l4 >>> 0 > i5 >>> 0) : 0) {
+            g3 = c4[i5 + 24 >> 2] | 0;
+            b4 = c4[i5 + 12 >> 2] | 0;
             do
-              if ((b2 | 0) == (i2 | 0)) {
-                a2 = i2 + 20 | 0;
-                b2 = c[a2 >> 2] | 0;
-                if (!b2) {
-                  a2 = i2 + 16 | 0;
-                  b2 = c[a2 >> 2] | 0;
-                  if (!b2) {
-                    b2 = 0;
+              if ((b4 | 0) == (i5 | 0)) {
+                a4 = i5 + 20 | 0;
+                b4 = c4[a4 >> 2] | 0;
+                if (!b4) {
+                  a4 = i5 + 16 | 0;
+                  b4 = c4[a4 >> 2] | 0;
+                  if (!b4) {
+                    b4 = 0;
                     break;
                   }
                 }
                 while (1) {
-                  f2 = b2 + 20 | 0;
-                  d2 = c[f2 >> 2] | 0;
-                  if (!d2) {
-                    f2 = b2 + 16 | 0;
-                    d2 = c[f2 >> 2] | 0;
-                    if (!d2)
+                  f4 = b4 + 20 | 0;
+                  d4 = c4[f4 >> 2] | 0;
+                  if (!d4) {
+                    f4 = b4 + 16 | 0;
+                    d4 = c4[f4 >> 2] | 0;
+                    if (!d4)
                       break;
                     else {
-                      b2 = d2;
-                      a2 = f2;
+                      b4 = d4;
+                      a4 = f4;
                     }
                   } else {
-                    b2 = d2;
-                    a2 = f2;
+                    b4 = d4;
+                    a4 = f4;
                   }
                 }
-                c[a2 >> 2] = 0;
+                c4[a4 >> 2] = 0;
               } else {
-                s2 = c[i2 + 8 >> 2] | 0;
-                c[s2 + 12 >> 2] = b2;
-                c[b2 + 8 >> 2] = s2;
+                s5 = c4[i5 + 8 >> 2] | 0;
+                c4[s5 + 12 >> 2] = b4;
+                c4[b4 + 8 >> 2] = s5;
               }
             while (0);
             do
-              if (g2) {
-                a2 = c[i2 + 28 >> 2] | 0;
-                d2 = 70680 + (a2 << 2) | 0;
-                if ((i2 | 0) == (c[d2 >> 2] | 0)) {
-                  c[d2 >> 2] = b2;
-                  if (!b2) {
-                    e2 = e2 & ~(1 << a2);
-                    c[17595] = e2;
+              if (g3) {
+                a4 = c4[i5 + 28 >> 2] | 0;
+                d4 = 70680 + (a4 << 2) | 0;
+                if ((i5 | 0) == (c4[d4 >> 2] | 0)) {
+                  c4[d4 >> 2] = b4;
+                  if (!b4) {
+                    e6 = e6 & ~(1 << a4);
+                    c4[17595] = e6;
                     break;
                   }
                 } else {
-                  s2 = g2 + 16 | 0;
-                  c[((c[s2 >> 2] | 0) == (i2 | 0) ? s2 : g2 + 20 | 0) >> 2] = b2;
-                  if (!b2)
+                  s5 = g3 + 16 | 0;
+                  c4[((c4[s5 >> 2] | 0) == (i5 | 0) ? s5 : g3 + 20 | 0) >> 2] = b4;
+                  if (!b4)
                     break;
                 }
-                c[b2 + 24 >> 2] = g2;
-                a2 = c[i2 + 16 >> 2] | 0;
-                if (a2 | 0) {
-                  c[b2 + 16 >> 2] = a2;
-                  c[a2 + 24 >> 2] = b2;
+                c4[b4 + 24 >> 2] = g3;
+                a4 = c4[i5 + 16 >> 2] | 0;
+                if (a4 | 0) {
+                  c4[b4 + 16 >> 2] = a4;
+                  c4[a4 + 24 >> 2] = b4;
                 }
-                a2 = c[i2 + 20 >> 2] | 0;
-                if (a2) {
-                  c[b2 + 20 >> 2] = a2;
-                  c[a2 + 24 >> 2] = b2;
+                a4 = c4[i5 + 20 >> 2] | 0;
+                if (a4) {
+                  c4[b4 + 20 >> 2] = a4;
+                  c4[a4 + 24 >> 2] = b4;
                 }
               }
             while (0);
             b:
               do
-                if (h2 >>> 0 < 16) {
-                  s2 = h2 + k2 | 0;
-                  c[i2 + 4 >> 2] = s2 | 3;
-                  s2 = i2 + s2 + 4 | 0;
-                  c[s2 >> 2] = c[s2 >> 2] | 1;
+                if (h4 >>> 0 < 16) {
+                  s5 = h4 + k3 | 0;
+                  c4[i5 + 4 >> 2] = s5 | 3;
+                  s5 = i5 + s5 + 4 | 0;
+                  c4[s5 >> 2] = c4[s5 >> 2] | 1;
                 } else {
-                  c[i2 + 4 >> 2] = k2 | 3;
-                  c[l2 + 4 >> 2] = h2 | 1;
-                  c[l2 + h2 >> 2] = h2;
-                  b2 = h2 >>> 3;
-                  if (h2 >>> 0 < 256) {
-                    d2 = 70416 + (b2 << 1 << 2) | 0;
-                    a2 = c[17594] | 0;
-                    b2 = 1 << b2;
-                    if (!(a2 & b2)) {
-                      c[17594] = a2 | b2;
-                      b2 = d2;
-                      a2 = d2 + 8 | 0;
+                  c4[i5 + 4 >> 2] = k3 | 3;
+                  c4[l4 + 4 >> 2] = h4 | 1;
+                  c4[l4 + h4 >> 2] = h4;
+                  b4 = h4 >>> 3;
+                  if (h4 >>> 0 < 256) {
+                    d4 = 70416 + (b4 << 1 << 2) | 0;
+                    a4 = c4[17594] | 0;
+                    b4 = 1 << b4;
+                    if (!(a4 & b4)) {
+                      c4[17594] = a4 | b4;
+                      b4 = d4;
+                      a4 = d4 + 8 | 0;
                     } else {
-                      a2 = d2 + 8 | 0;
-                      b2 = c[a2 >> 2] | 0;
+                      a4 = d4 + 8 | 0;
+                      b4 = c4[a4 >> 2] | 0;
                     }
-                    c[a2 >> 2] = l2;
-                    c[b2 + 12 >> 2] = l2;
-                    c[l2 + 8 >> 2] = b2;
-                    c[l2 + 12 >> 2] = d2;
+                    c4[a4 >> 2] = l4;
+                    c4[b4 + 12 >> 2] = l4;
+                    c4[l4 + 8 >> 2] = b4;
+                    c4[l4 + 12 >> 2] = d4;
                     break;
                   }
-                  b2 = h2 >>> 8;
-                  if (b2)
-                    if (h2 >>> 0 > 16777215)
-                      d2 = 31;
+                  b4 = h4 >>> 8;
+                  if (b4)
+                    if (h4 >>> 0 > 16777215)
+                      d4 = 31;
                     else {
-                      r2 = (b2 + 1048320 | 0) >>> 16 & 8;
-                      s2 = b2 << r2;
-                      q2 = (s2 + 520192 | 0) >>> 16 & 4;
-                      s2 = s2 << q2;
-                      d2 = (s2 + 245760 | 0) >>> 16 & 2;
-                      d2 = 14 - (q2 | r2 | d2) + (s2 << d2 >>> 15) | 0;
-                      d2 = h2 >>> (d2 + 7 | 0) & 1 | d2 << 1;
+                      r6 = (b4 + 1048320 | 0) >>> 16 & 8;
+                      s5 = b4 << r6;
+                      q2 = (s5 + 520192 | 0) >>> 16 & 4;
+                      s5 = s5 << q2;
+                      d4 = (s5 + 245760 | 0) >>> 16 & 2;
+                      d4 = 14 - (q2 | r6 | d4) + (s5 << d4 >>> 15) | 0;
+                      d4 = h4 >>> (d4 + 7 | 0) & 1 | d4 << 1;
                     }
                   else
-                    d2 = 0;
-                  b2 = 70680 + (d2 << 2) | 0;
-                  c[l2 + 28 >> 2] = d2;
-                  a2 = l2 + 16 | 0;
-                  c[a2 + 4 >> 2] = 0;
-                  c[a2 >> 2] = 0;
-                  a2 = 1 << d2;
-                  if (!(a2 & e2)) {
-                    c[17595] = a2 | e2;
-                    c[b2 >> 2] = l2;
-                    c[l2 + 24 >> 2] = b2;
-                    c[l2 + 12 >> 2] = l2;
-                    c[l2 + 8 >> 2] = l2;
+                    d4 = 0;
+                  b4 = 70680 + (d4 << 2) | 0;
+                  c4[l4 + 28 >> 2] = d4;
+                  a4 = l4 + 16 | 0;
+                  c4[a4 + 4 >> 2] = 0;
+                  c4[a4 >> 2] = 0;
+                  a4 = 1 << d4;
+                  if (!(a4 & e6)) {
+                    c4[17595] = a4 | e6;
+                    c4[b4 >> 2] = l4;
+                    c4[l4 + 24 >> 2] = b4;
+                    c4[l4 + 12 >> 2] = l4;
+                    c4[l4 + 8 >> 2] = l4;
                     break;
                   }
-                  b2 = c[b2 >> 2] | 0;
+                  b4 = c4[b4 >> 2] | 0;
                   c:
                     do
-                      if ((c[b2 + 4 >> 2] & -8 | 0) != (h2 | 0)) {
-                        e2 = h2 << ((d2 | 0) == 31 ? 0 : 25 - (d2 >>> 1) | 0);
+                      if ((c4[b4 + 4 >> 2] & -8 | 0) != (h4 | 0)) {
+                        e6 = h4 << ((d4 | 0) == 31 ? 0 : 25 - (d4 >>> 1) | 0);
                         while (1) {
-                          d2 = b2 + 16 + (e2 >>> 31 << 2) | 0;
-                          a2 = c[d2 >> 2] | 0;
-                          if (!a2)
+                          d4 = b4 + 16 + (e6 >>> 31 << 2) | 0;
+                          a4 = c4[d4 >> 2] | 0;
+                          if (!a4)
                             break;
-                          if ((c[a2 + 4 >> 2] & -8 | 0) == (h2 | 0)) {
-                            b2 = a2;
+                          if ((c4[a4 + 4 >> 2] & -8 | 0) == (h4 | 0)) {
+                            b4 = a4;
                             break c;
                           } else {
-                            e2 = e2 << 1;
-                            b2 = a2;
+                            e6 = e6 << 1;
+                            b4 = a4;
                           }
                         }
-                        c[d2 >> 2] = l2;
-                        c[l2 + 24 >> 2] = b2;
-                        c[l2 + 12 >> 2] = l2;
-                        c[l2 + 8 >> 2] = l2;
+                        c4[d4 >> 2] = l4;
+                        c4[l4 + 24 >> 2] = b4;
+                        c4[l4 + 12 >> 2] = l4;
+                        c4[l4 + 8 >> 2] = l4;
                         break b;
                       }
                     while (0);
-                  r2 = b2 + 8 | 0;
-                  s2 = c[r2 >> 2] | 0;
-                  c[s2 + 12 >> 2] = l2;
-                  c[r2 >> 2] = l2;
-                  c[l2 + 8 >> 2] = s2;
-                  c[l2 + 12 >> 2] = b2;
-                  c[l2 + 24 >> 2] = 0;
+                  r6 = b4 + 8 | 0;
+                  s5 = c4[r6 >> 2] | 0;
+                  c4[s5 + 12 >> 2] = l4;
+                  c4[r6 >> 2] = l4;
+                  c4[l4 + 8 >> 2] = s5;
+                  c4[l4 + 12 >> 2] = b4;
+                  c4[l4 + 24 >> 2] = 0;
                 }
               while (0);
-            s2 = i2 + 8 | 0;
-            E = t2;
-            return s2 | 0;
+            s5 = i5 + 8 | 0;
+            E2 = t5;
+            return s5 | 0;
           } else
-            m2 = k2;
+            m3 = k3;
         } else
-          m2 = k2;
+          m3 = k3;
       } else
-        m2 = -1;
+        m3 = -1;
     while (0);
-    d2 = c[17596] | 0;
-    if (d2 >>> 0 >= m2 >>> 0) {
-      b2 = d2 - m2 | 0;
-      a2 = c[17599] | 0;
-      if (b2 >>> 0 > 15) {
-        s2 = a2 + m2 | 0;
-        c[17599] = s2;
-        c[17596] = b2;
-        c[s2 + 4 >> 2] = b2 | 1;
-        c[a2 + d2 >> 2] = b2;
-        c[a2 + 4 >> 2] = m2 | 3;
+    d4 = c4[17596] | 0;
+    if (d4 >>> 0 >= m3 >>> 0) {
+      b4 = d4 - m3 | 0;
+      a4 = c4[17599] | 0;
+      if (b4 >>> 0 > 15) {
+        s5 = a4 + m3 | 0;
+        c4[17599] = s5;
+        c4[17596] = b4;
+        c4[s5 + 4 >> 2] = b4 | 1;
+        c4[a4 + d4 >> 2] = b4;
+        c4[a4 + 4 >> 2] = m3 | 3;
       } else {
-        c[17596] = 0;
-        c[17599] = 0;
-        c[a2 + 4 >> 2] = d2 | 3;
-        s2 = a2 + d2 + 4 | 0;
-        c[s2 >> 2] = c[s2 >> 2] | 1;
+        c4[17596] = 0;
+        c4[17599] = 0;
+        c4[a4 + 4 >> 2] = d4 | 3;
+        s5 = a4 + d4 + 4 | 0;
+        c4[s5 >> 2] = c4[s5 >> 2] | 1;
       }
-      s2 = a2 + 8 | 0;
-      E = t2;
-      return s2 | 0;
+      s5 = a4 + 8 | 0;
+      E2 = t5;
+      return s5 | 0;
     }
-    h2 = c[17597] | 0;
-    if (h2 >>> 0 > m2 >>> 0) {
-      q2 = h2 - m2 | 0;
-      c[17597] = q2;
-      s2 = c[17600] | 0;
-      r2 = s2 + m2 | 0;
-      c[17600] = r2;
-      c[r2 + 4 >> 2] = q2 | 1;
-      c[s2 + 4 >> 2] = m2 | 3;
-      s2 = s2 + 8 | 0;
-      E = t2;
-      return s2 | 0;
+    h4 = c4[17597] | 0;
+    if (h4 >>> 0 > m3 >>> 0) {
+      q2 = h4 - m3 | 0;
+      c4[17597] = q2;
+      s5 = c4[17600] | 0;
+      r6 = s5 + m3 | 0;
+      c4[17600] = r6;
+      c4[r6 + 4 >> 2] = q2 | 1;
+      c4[s5 + 4 >> 2] = m3 | 3;
+      s5 = s5 + 8 | 0;
+      E2 = t5;
+      return s5 | 0;
     }
-    if (!(c[17712] | 0)) {
-      c[17714] = 4096;
-      c[17713] = 4096;
-      c[17715] = -1;
-      c[17716] = -1;
-      c[17717] = 0;
-      c[17705] = 0;
-      c[17712] = n2 & -16 ^ 1431655768;
-      a2 = 4096;
+    if (!(c4[17712] | 0)) {
+      c4[17714] = 4096;
+      c4[17713] = 4096;
+      c4[17715] = -1;
+      c4[17716] = -1;
+      c4[17717] = 0;
+      c4[17705] = 0;
+      c4[17712] = n6 & -16 ^ 1431655768;
+      a4 = 4096;
     } else
-      a2 = c[17714] | 0;
-    i2 = m2 + 48 | 0;
-    j2 = m2 + 47 | 0;
-    g2 = a2 + j2 | 0;
-    f2 = 0 - a2 | 0;
-    k2 = g2 & f2;
-    if (k2 >>> 0 <= m2 >>> 0) {
-      s2 = 0;
-      E = t2;
-      return s2 | 0;
+      a4 = c4[17714] | 0;
+    i5 = m3 + 48 | 0;
+    j3 = m3 + 47 | 0;
+    g3 = a4 + j3 | 0;
+    f4 = 0 - a4 | 0;
+    k3 = g3 & f4;
+    if (k3 >>> 0 <= m3 >>> 0) {
+      s5 = 0;
+      E2 = t5;
+      return s5 | 0;
     }
-    a2 = c[17704] | 0;
-    if (a2 | 0 ? (l2 = c[17702] | 0, n2 = l2 + k2 | 0, n2 >>> 0 <= l2 >>> 0 | n2 >>> 0 > a2 >>> 0) : 0) {
-      s2 = 0;
-      E = t2;
-      return s2 | 0;
+    a4 = c4[17704] | 0;
+    if (a4 | 0 ? (l4 = c4[17702] | 0, n6 = l4 + k3 | 0, n6 >>> 0 <= l4 >>> 0 | n6 >>> 0 > a4 >>> 0) : 0) {
+      s5 = 0;
+      E2 = t5;
+      return s5 | 0;
     }
     d:
       do
-        if (!(c[17705] & 4)) {
-          e2 = c[17600] | 0;
+        if (!(c4[17705] & 4)) {
+          e6 = c4[17600] | 0;
           e:
             do
-              if (e2) {
-                a2 = 70824;
+              if (e6) {
+                a4 = 70824;
                 while (1) {
-                  d2 = c[a2 >> 2] | 0;
-                  if (d2 >>> 0 <= e2 >>> 0 ? (q2 = a2 + 4 | 0, (d2 + (c[q2 >> 2] | 0) | 0) >>> 0 > e2 >>> 0) : 0)
+                  d4 = c4[a4 >> 2] | 0;
+                  if (d4 >>> 0 <= e6 >>> 0 ? (q2 = a4 + 4 | 0, (d4 + (c4[q2 >> 2] | 0) | 0) >>> 0 > e6 >>> 0) : 0)
                     break;
-                  a2 = c[a2 + 8 >> 2] | 0;
-                  if (!a2) {
-                    r2 = 128;
+                  a4 = c4[a4 + 8 >> 2] | 0;
+                  if (!a4) {
+                    r6 = 128;
                     break e;
                   }
                 }
-                b2 = g2 - h2 & f2;
-                if (b2 >>> 0 < 2147483647) {
-                  e2 = gc(b2 | 0) | 0;
-                  if ((e2 | 0) == ((c[a2 >> 2] | 0) + (c[q2 >> 2] | 0) | 0)) {
-                    if ((e2 | 0) != (-1 | 0))
+                b4 = g3 - h4 & f4;
+                if (b4 >>> 0 < 2147483647) {
+                  e6 = gc(b4 | 0) | 0;
+                  if ((e6 | 0) == ((c4[a4 >> 2] | 0) + (c4[q2 >> 2] | 0) | 0)) {
+                    if ((e6 | 0) != (-1 | 0))
                       break d;
                   } else
-                    r2 = 136;
+                    r6 = 136;
                 } else
-                  b2 = 0;
+                  b4 = 0;
               } else
-                r2 = 128;
+                r6 = 128;
             while (0);
           do
-            if ((r2 | 0) == 128) {
-              a2 = gc(0) | 0;
-              if ((a2 | 0) != (-1 | 0) ? (b2 = a2, o2 = c[17713] | 0, p2 = o2 + -1 | 0, b2 = ((p2 & b2 | 0) == 0 ? 0 : (p2 + b2 & 0 - o2) - b2 | 0) + k2 | 0, o2 = c[17702] | 0, p2 = b2 + o2 | 0, b2 >>> 0 > m2 >>> 0 & b2 >>> 0 < 2147483647) : 0) {
-                q2 = c[17704] | 0;
-                if (q2 | 0 ? p2 >>> 0 <= o2 >>> 0 | p2 >>> 0 > q2 >>> 0 : 0) {
-                  b2 = 0;
+            if ((r6 | 0) == 128) {
+              a4 = gc(0) | 0;
+              if ((a4 | 0) != (-1 | 0) ? (b4 = a4, o5 = c4[17713] | 0, p4 = o5 + -1 | 0, b4 = ((p4 & b4 | 0) == 0 ? 0 : (p4 + b4 & 0 - o5) - b4 | 0) + k3 | 0, o5 = c4[17702] | 0, p4 = b4 + o5 | 0, b4 >>> 0 > m3 >>> 0 & b4 >>> 0 < 2147483647) : 0) {
+                q2 = c4[17704] | 0;
+                if (q2 | 0 ? p4 >>> 0 <= o5 >>> 0 | p4 >>> 0 > q2 >>> 0 : 0) {
+                  b4 = 0;
                   break;
                 }
-                e2 = gc(b2 | 0) | 0;
-                if ((e2 | 0) == (a2 | 0)) {
-                  e2 = a2;
+                e6 = gc(b4 | 0) | 0;
+                if ((e6 | 0) == (a4 | 0)) {
+                  e6 = a4;
                   break d;
                 } else
-                  r2 = 136;
+                  r6 = 136;
               } else
-                b2 = 0;
+                b4 = 0;
             }
           while (0);
           do
-            if ((r2 | 0) == 136) {
-              d2 = 0 - b2 | 0;
-              if (!(i2 >>> 0 > b2 >>> 0 & (b2 >>> 0 < 2147483647 & (e2 | 0) != (-1 | 0))))
-                if ((e2 | 0) == (-1 | 0)) {
-                  b2 = 0;
+            if ((r6 | 0) == 136) {
+              d4 = 0 - b4 | 0;
+              if (!(i5 >>> 0 > b4 >>> 0 & (b4 >>> 0 < 2147483647 & (e6 | 0) != (-1 | 0))))
+                if ((e6 | 0) == (-1 | 0)) {
+                  b4 = 0;
                   break;
                 } else
                   break d;
-              a2 = c[17714] | 0;
-              a2 = j2 - b2 + a2 & 0 - a2;
-              if (a2 >>> 0 >= 2147483647)
+              a4 = c4[17714] | 0;
+              a4 = j3 - b4 + a4 & 0 - a4;
+              if (a4 >>> 0 >= 2147483647)
                 break d;
-              if ((gc(a2 | 0) | 0) == (-1 | 0)) {
-                gc(d2 | 0) | 0;
-                b2 = 0;
+              if ((gc(a4 | 0) | 0) == (-1 | 0)) {
+                gc(d4 | 0) | 0;
+                b4 = 0;
                 break;
               } else {
-                b2 = a2 + b2 | 0;
+                b4 = a4 + b4 | 0;
                 break d;
               }
             }
           while (0);
-          c[17705] = c[17705] | 4;
-          r2 = 143;
+          c4[17705] = c4[17705] | 4;
+          r6 = 143;
         } else {
-          b2 = 0;
-          r2 = 143;
+          b4 = 0;
+          r6 = 143;
         }
       while (0);
-    if ((r2 | 0) == 143) {
-      if (k2 >>> 0 >= 2147483647) {
-        s2 = 0;
-        E = t2;
-        return s2 | 0;
+    if ((r6 | 0) == 143) {
+      if (k3 >>> 0 >= 2147483647) {
+        s5 = 0;
+        E2 = t5;
+        return s5 | 0;
       }
-      e2 = gc(k2 | 0) | 0;
+      e6 = gc(k3 | 0) | 0;
       q2 = gc(0) | 0;
-      a2 = q2 - e2 | 0;
-      d2 = a2 >>> 0 > (m2 + 40 | 0) >>> 0;
-      if ((e2 | 0) == (-1 | 0) | d2 ^ 1 | e2 >>> 0 < q2 >>> 0 & ((e2 | 0) != (-1 | 0) & (q2 | 0) != (-1 | 0)) ^ 1) {
-        s2 = 0;
-        E = t2;
-        return s2 | 0;
+      a4 = q2 - e6 | 0;
+      d4 = a4 >>> 0 > (m3 + 40 | 0) >>> 0;
+      if ((e6 | 0) == (-1 | 0) | d4 ^ 1 | e6 >>> 0 < q2 >>> 0 & ((e6 | 0) != (-1 | 0) & (q2 | 0) != (-1 | 0)) ^ 1) {
+        s5 = 0;
+        E2 = t5;
+        return s5 | 0;
       } else
-        b2 = d2 ? a2 : b2;
+        b4 = d4 ? a4 : b4;
     }
-    a2 = (c[17702] | 0) + b2 | 0;
-    c[17702] = a2;
-    if (a2 >>> 0 > (c[17703] | 0) >>> 0)
-      c[17703] = a2;
-    j2 = c[17600] | 0;
+    a4 = (c4[17702] | 0) + b4 | 0;
+    c4[17702] = a4;
+    if (a4 >>> 0 > (c4[17703] | 0) >>> 0)
+      c4[17703] = a4;
+    j3 = c4[17600] | 0;
     f:
       do
-        if (j2) {
-          a2 = 70824;
+        if (j3) {
+          a4 = 70824;
           while (1) {
-            d2 = c[a2 >> 2] | 0;
-            f2 = a2 + 4 | 0;
-            g2 = c[f2 >> 2] | 0;
-            if ((e2 | 0) == (d2 + g2 | 0)) {
-              r2 = 154;
+            d4 = c4[a4 >> 2] | 0;
+            f4 = a4 + 4 | 0;
+            g3 = c4[f4 >> 2] | 0;
+            if ((e6 | 0) == (d4 + g3 | 0)) {
+              r6 = 154;
               break;
             }
-            h2 = c[a2 + 8 >> 2] | 0;
-            if (!h2)
+            h4 = c4[a4 + 8 >> 2] | 0;
+            if (!h4)
               break;
             else
-              a2 = h2;
+              a4 = h4;
           }
-          if (((r2 | 0) == 154 ? (c[a2 + 12 >> 2] & 8 | 0) == 0 : 0) ? e2 >>> 0 > j2 >>> 0 & d2 >>> 0 <= j2 >>> 0 : 0) {
-            c[f2 >> 2] = g2 + b2;
-            s2 = (c[17597] | 0) + b2 | 0;
-            q2 = j2 + 8 | 0;
+          if (((r6 | 0) == 154 ? (c4[a4 + 12 >> 2] & 8 | 0) == 0 : 0) ? e6 >>> 0 > j3 >>> 0 & d4 >>> 0 <= j3 >>> 0 : 0) {
+            c4[f4 >> 2] = g3 + b4;
+            s5 = (c4[17597] | 0) + b4 | 0;
+            q2 = j3 + 8 | 0;
             q2 = (q2 & 7 | 0) == 0 ? 0 : 0 - q2 & 7;
-            r2 = j2 + q2 | 0;
-            q2 = s2 - q2 | 0;
-            c[17600] = r2;
-            c[17597] = q2;
-            c[r2 + 4 >> 2] = q2 | 1;
-            c[j2 + s2 + 4 >> 2] = 40;
-            c[17601] = c[17716];
+            r6 = j3 + q2 | 0;
+            q2 = s5 - q2 | 0;
+            c4[17600] = r6;
+            c4[17597] = q2;
+            c4[r6 + 4 >> 2] = q2 | 1;
+            c4[j3 + s5 + 4 >> 2] = 40;
+            c4[17601] = c4[17716];
             break;
           }
-          if (e2 >>> 0 < (c[17598] | 0) >>> 0)
-            c[17598] = e2;
-          f2 = e2 + b2 | 0;
-          a2 = 70824;
+          if (e6 >>> 0 < (c4[17598] | 0) >>> 0)
+            c4[17598] = e6;
+          f4 = e6 + b4 | 0;
+          a4 = 70824;
           while (1) {
-            if ((c[a2 >> 2] | 0) == (f2 | 0)) {
-              r2 = 162;
+            if ((c4[a4 >> 2] | 0) == (f4 | 0)) {
+              r6 = 162;
               break;
             }
-            d2 = c[a2 + 8 >> 2] | 0;
-            if (!d2)
+            d4 = c4[a4 + 8 >> 2] | 0;
+            if (!d4)
               break;
             else
-              a2 = d2;
+              a4 = d4;
           }
-          if ((r2 | 0) == 162 ? (c[a2 + 12 >> 2] & 8 | 0) == 0 : 0) {
-            c[a2 >> 2] = e2;
-            l2 = a2 + 4 | 0;
-            c[l2 >> 2] = (c[l2 >> 2] | 0) + b2;
-            l2 = e2 + 8 | 0;
-            l2 = e2 + ((l2 & 7 | 0) == 0 ? 0 : 0 - l2 & 7) | 0;
-            b2 = f2 + 8 | 0;
-            b2 = f2 + ((b2 & 7 | 0) == 0 ? 0 : 0 - b2 & 7) | 0;
-            k2 = l2 + m2 | 0;
-            i2 = b2 - l2 - m2 | 0;
-            c[l2 + 4 >> 2] = m2 | 3;
+          if ((r6 | 0) == 162 ? (c4[a4 + 12 >> 2] & 8 | 0) == 0 : 0) {
+            c4[a4 >> 2] = e6;
+            l4 = a4 + 4 | 0;
+            c4[l4 >> 2] = (c4[l4 >> 2] | 0) + b4;
+            l4 = e6 + 8 | 0;
+            l4 = e6 + ((l4 & 7 | 0) == 0 ? 0 : 0 - l4 & 7) | 0;
+            b4 = f4 + 8 | 0;
+            b4 = f4 + ((b4 & 7 | 0) == 0 ? 0 : 0 - b4 & 7) | 0;
+            k3 = l4 + m3 | 0;
+            i5 = b4 - l4 - m3 | 0;
+            c4[l4 + 4 >> 2] = m3 | 3;
             g:
               do
-                if ((j2 | 0) == (b2 | 0)) {
-                  s2 = (c[17597] | 0) + i2 | 0;
-                  c[17597] = s2;
-                  c[17600] = k2;
-                  c[k2 + 4 >> 2] = s2 | 1;
+                if ((j3 | 0) == (b4 | 0)) {
+                  s5 = (c4[17597] | 0) + i5 | 0;
+                  c4[17597] = s5;
+                  c4[17600] = k3;
+                  c4[k3 + 4 >> 2] = s5 | 1;
                 } else {
-                  if ((c[17599] | 0) == (b2 | 0)) {
-                    s2 = (c[17596] | 0) + i2 | 0;
-                    c[17596] = s2;
-                    c[17599] = k2;
-                    c[k2 + 4 >> 2] = s2 | 1;
-                    c[k2 + s2 >> 2] = s2;
+                  if ((c4[17599] | 0) == (b4 | 0)) {
+                    s5 = (c4[17596] | 0) + i5 | 0;
+                    c4[17596] = s5;
+                    c4[17599] = k3;
+                    c4[k3 + 4 >> 2] = s5 | 1;
+                    c4[k3 + s5 >> 2] = s5;
                     break;
                   }
-                  a2 = c[b2 + 4 >> 2] | 0;
-                  if ((a2 & 3 | 0) == 1) {
-                    h2 = a2 & -8;
-                    e2 = a2 >>> 3;
+                  a4 = c4[b4 + 4 >> 2] | 0;
+                  if ((a4 & 3 | 0) == 1) {
+                    h4 = a4 & -8;
+                    e6 = a4 >>> 3;
                     h:
                       do
-                        if (a2 >>> 0 < 256) {
-                          a2 = c[b2 + 8 >> 2] | 0;
-                          d2 = c[b2 + 12 >> 2] | 0;
-                          if ((d2 | 0) == (a2 | 0)) {
-                            c[17594] = c[17594] & ~(1 << e2);
+                        if (a4 >>> 0 < 256) {
+                          a4 = c4[b4 + 8 >> 2] | 0;
+                          d4 = c4[b4 + 12 >> 2] | 0;
+                          if ((d4 | 0) == (a4 | 0)) {
+                            c4[17594] = c4[17594] & ~(1 << e6);
                             break;
                           } else {
-                            c[a2 + 12 >> 2] = d2;
-                            c[d2 + 8 >> 2] = a2;
+                            c4[a4 + 12 >> 2] = d4;
+                            c4[d4 + 8 >> 2] = a4;
                             break;
                           }
                         } else {
-                          g2 = c[b2 + 24 >> 2] | 0;
-                          a2 = c[b2 + 12 >> 2] | 0;
+                          g3 = c4[b4 + 24 >> 2] | 0;
+                          a4 = c4[b4 + 12 >> 2] | 0;
                           do
-                            if ((a2 | 0) == (b2 | 0)) {
-                              d2 = b2 + 16 | 0;
-                              e2 = d2 + 4 | 0;
-                              a2 = c[e2 >> 2] | 0;
-                              if (!a2) {
-                                a2 = c[d2 >> 2] | 0;
-                                if (!a2) {
-                                  a2 = 0;
+                            if ((a4 | 0) == (b4 | 0)) {
+                              d4 = b4 + 16 | 0;
+                              e6 = d4 + 4 | 0;
+                              a4 = c4[e6 >> 2] | 0;
+                              if (!a4) {
+                                a4 = c4[d4 >> 2] | 0;
+                                if (!a4) {
+                                  a4 = 0;
                                   break;
                                 }
                               } else
-                                d2 = e2;
+                                d4 = e6;
                               while (1) {
-                                f2 = a2 + 20 | 0;
-                                e2 = c[f2 >> 2] | 0;
-                                if (!e2) {
-                                  f2 = a2 + 16 | 0;
-                                  e2 = c[f2 >> 2] | 0;
-                                  if (!e2)
+                                f4 = a4 + 20 | 0;
+                                e6 = c4[f4 >> 2] | 0;
+                                if (!e6) {
+                                  f4 = a4 + 16 | 0;
+                                  e6 = c4[f4 >> 2] | 0;
+                                  if (!e6)
                                     break;
                                   else {
-                                    a2 = e2;
-                                    d2 = f2;
+                                    a4 = e6;
+                                    d4 = f4;
                                   }
                                 } else {
-                                  a2 = e2;
-                                  d2 = f2;
+                                  a4 = e6;
+                                  d4 = f4;
                                 }
                               }
-                              c[d2 >> 2] = 0;
+                              c4[d4 >> 2] = 0;
                             } else {
-                              s2 = c[b2 + 8 >> 2] | 0;
-                              c[s2 + 12 >> 2] = a2;
-                              c[a2 + 8 >> 2] = s2;
+                              s5 = c4[b4 + 8 >> 2] | 0;
+                              c4[s5 + 12 >> 2] = a4;
+                              c4[a4 + 8 >> 2] = s5;
                             }
                           while (0);
-                          if (!g2)
+                          if (!g3)
                             break;
-                          d2 = c[b2 + 28 >> 2] | 0;
-                          e2 = 70680 + (d2 << 2) | 0;
+                          d4 = c4[b4 + 28 >> 2] | 0;
+                          e6 = 70680 + (d4 << 2) | 0;
                           do
-                            if ((c[e2 >> 2] | 0) != (b2 | 0)) {
-                              s2 = g2 + 16 | 0;
-                              c[((c[s2 >> 2] | 0) == (b2 | 0) ? s2 : g2 + 20 | 0) >> 2] = a2;
-                              if (!a2)
+                            if ((c4[e6 >> 2] | 0) != (b4 | 0)) {
+                              s5 = g3 + 16 | 0;
+                              c4[((c4[s5 >> 2] | 0) == (b4 | 0) ? s5 : g3 + 20 | 0) >> 2] = a4;
+                              if (!a4)
                                 break h;
                             } else {
-                              c[e2 >> 2] = a2;
-                              if (a2 | 0)
+                              c4[e6 >> 2] = a4;
+                              if (a4 | 0)
                                 break;
-                              c[17595] = c[17595] & ~(1 << d2);
+                              c4[17595] = c4[17595] & ~(1 << d4);
                               break h;
                             }
                           while (0);
-                          c[a2 + 24 >> 2] = g2;
-                          d2 = b2 + 16 | 0;
-                          e2 = c[d2 >> 2] | 0;
-                          if (e2 | 0) {
-                            c[a2 + 16 >> 2] = e2;
-                            c[e2 + 24 >> 2] = a2;
+                          c4[a4 + 24 >> 2] = g3;
+                          d4 = b4 + 16 | 0;
+                          e6 = c4[d4 >> 2] | 0;
+                          if (e6 | 0) {
+                            c4[a4 + 16 >> 2] = e6;
+                            c4[e6 + 24 >> 2] = a4;
                           }
-                          d2 = c[d2 + 4 >> 2] | 0;
-                          if (!d2)
+                          d4 = c4[d4 + 4 >> 2] | 0;
+                          if (!d4)
                             break;
-                          c[a2 + 20 >> 2] = d2;
-                          c[d2 + 24 >> 2] = a2;
+                          c4[a4 + 20 >> 2] = d4;
+                          c4[d4 + 24 >> 2] = a4;
                         }
                       while (0);
-                    b2 = b2 + h2 | 0;
-                    f2 = h2 + i2 | 0;
+                    b4 = b4 + h4 | 0;
+                    f4 = h4 + i5 | 0;
                   } else
-                    f2 = i2;
-                  b2 = b2 + 4 | 0;
-                  c[b2 >> 2] = c[b2 >> 2] & -2;
-                  c[k2 + 4 >> 2] = f2 | 1;
-                  c[k2 + f2 >> 2] = f2;
-                  b2 = f2 >>> 3;
-                  if (f2 >>> 0 < 256) {
-                    d2 = 70416 + (b2 << 1 << 2) | 0;
-                    a2 = c[17594] | 0;
-                    b2 = 1 << b2;
-                    if (!(a2 & b2)) {
-                      c[17594] = a2 | b2;
-                      b2 = d2;
-                      a2 = d2 + 8 | 0;
+                    f4 = i5;
+                  b4 = b4 + 4 | 0;
+                  c4[b4 >> 2] = c4[b4 >> 2] & -2;
+                  c4[k3 + 4 >> 2] = f4 | 1;
+                  c4[k3 + f4 >> 2] = f4;
+                  b4 = f4 >>> 3;
+                  if (f4 >>> 0 < 256) {
+                    d4 = 70416 + (b4 << 1 << 2) | 0;
+                    a4 = c4[17594] | 0;
+                    b4 = 1 << b4;
+                    if (!(a4 & b4)) {
+                      c4[17594] = a4 | b4;
+                      b4 = d4;
+                      a4 = d4 + 8 | 0;
                     } else {
-                      a2 = d2 + 8 | 0;
-                      b2 = c[a2 >> 2] | 0;
+                      a4 = d4 + 8 | 0;
+                      b4 = c4[a4 >> 2] | 0;
                     }
-                    c[a2 >> 2] = k2;
-                    c[b2 + 12 >> 2] = k2;
-                    c[k2 + 8 >> 2] = b2;
-                    c[k2 + 12 >> 2] = d2;
+                    c4[a4 >> 2] = k3;
+                    c4[b4 + 12 >> 2] = k3;
+                    c4[k3 + 8 >> 2] = b4;
+                    c4[k3 + 12 >> 2] = d4;
                     break;
                   }
-                  b2 = f2 >>> 8;
+                  b4 = f4 >>> 8;
                   do
-                    if (!b2)
-                      e2 = 0;
+                    if (!b4)
+                      e6 = 0;
                     else {
-                      if (f2 >>> 0 > 16777215) {
-                        e2 = 31;
+                      if (f4 >>> 0 > 16777215) {
+                        e6 = 31;
                         break;
                       }
-                      r2 = (b2 + 1048320 | 0) >>> 16 & 8;
-                      s2 = b2 << r2;
-                      q2 = (s2 + 520192 | 0) >>> 16 & 4;
-                      s2 = s2 << q2;
-                      e2 = (s2 + 245760 | 0) >>> 16 & 2;
-                      e2 = 14 - (q2 | r2 | e2) + (s2 << e2 >>> 15) | 0;
-                      e2 = f2 >>> (e2 + 7 | 0) & 1 | e2 << 1;
+                      r6 = (b4 + 1048320 | 0) >>> 16 & 8;
+                      s5 = b4 << r6;
+                      q2 = (s5 + 520192 | 0) >>> 16 & 4;
+                      s5 = s5 << q2;
+                      e6 = (s5 + 245760 | 0) >>> 16 & 2;
+                      e6 = 14 - (q2 | r6 | e6) + (s5 << e6 >>> 15) | 0;
+                      e6 = f4 >>> (e6 + 7 | 0) & 1 | e6 << 1;
                     }
                   while (0);
-                  b2 = 70680 + (e2 << 2) | 0;
-                  c[k2 + 28 >> 2] = e2;
-                  a2 = k2 + 16 | 0;
-                  c[a2 + 4 >> 2] = 0;
-                  c[a2 >> 2] = 0;
-                  a2 = c[17595] | 0;
-                  d2 = 1 << e2;
-                  if (!(a2 & d2)) {
-                    c[17595] = a2 | d2;
-                    c[b2 >> 2] = k2;
-                    c[k2 + 24 >> 2] = b2;
-                    c[k2 + 12 >> 2] = k2;
-                    c[k2 + 8 >> 2] = k2;
+                  b4 = 70680 + (e6 << 2) | 0;
+                  c4[k3 + 28 >> 2] = e6;
+                  a4 = k3 + 16 | 0;
+                  c4[a4 + 4 >> 2] = 0;
+                  c4[a4 >> 2] = 0;
+                  a4 = c4[17595] | 0;
+                  d4 = 1 << e6;
+                  if (!(a4 & d4)) {
+                    c4[17595] = a4 | d4;
+                    c4[b4 >> 2] = k3;
+                    c4[k3 + 24 >> 2] = b4;
+                    c4[k3 + 12 >> 2] = k3;
+                    c4[k3 + 8 >> 2] = k3;
                     break;
                   }
-                  b2 = c[b2 >> 2] | 0;
+                  b4 = c4[b4 >> 2] | 0;
                   i:
                     do
-                      if ((c[b2 + 4 >> 2] & -8 | 0) != (f2 | 0)) {
-                        e2 = f2 << ((e2 | 0) == 31 ? 0 : 25 - (e2 >>> 1) | 0);
+                      if ((c4[b4 + 4 >> 2] & -8 | 0) != (f4 | 0)) {
+                        e6 = f4 << ((e6 | 0) == 31 ? 0 : 25 - (e6 >>> 1) | 0);
                         while (1) {
-                          d2 = b2 + 16 + (e2 >>> 31 << 2) | 0;
-                          a2 = c[d2 >> 2] | 0;
-                          if (!a2)
+                          d4 = b4 + 16 + (e6 >>> 31 << 2) | 0;
+                          a4 = c4[d4 >> 2] | 0;
+                          if (!a4)
                             break;
-                          if ((c[a2 + 4 >> 2] & -8 | 0) == (f2 | 0)) {
-                            b2 = a2;
+                          if ((c4[a4 + 4 >> 2] & -8 | 0) == (f4 | 0)) {
+                            b4 = a4;
                             break i;
                           } else {
-                            e2 = e2 << 1;
-                            b2 = a2;
+                            e6 = e6 << 1;
+                            b4 = a4;
                           }
                         }
-                        c[d2 >> 2] = k2;
-                        c[k2 + 24 >> 2] = b2;
-                        c[k2 + 12 >> 2] = k2;
-                        c[k2 + 8 >> 2] = k2;
+                        c4[d4 >> 2] = k3;
+                        c4[k3 + 24 >> 2] = b4;
+                        c4[k3 + 12 >> 2] = k3;
+                        c4[k3 + 8 >> 2] = k3;
                         break g;
                       }
                     while (0);
-                  r2 = b2 + 8 | 0;
-                  s2 = c[r2 >> 2] | 0;
-                  c[s2 + 12 >> 2] = k2;
-                  c[r2 >> 2] = k2;
-                  c[k2 + 8 >> 2] = s2;
-                  c[k2 + 12 >> 2] = b2;
-                  c[k2 + 24 >> 2] = 0;
+                  r6 = b4 + 8 | 0;
+                  s5 = c4[r6 >> 2] | 0;
+                  c4[s5 + 12 >> 2] = k3;
+                  c4[r6 >> 2] = k3;
+                  c4[k3 + 8 >> 2] = s5;
+                  c4[k3 + 12 >> 2] = b4;
+                  c4[k3 + 24 >> 2] = 0;
                 }
               while (0);
-            s2 = l2 + 8 | 0;
-            E = t2;
-            return s2 | 0;
+            s5 = l4 + 8 | 0;
+            E2 = t5;
+            return s5 | 0;
           }
-          a2 = 70824;
+          a4 = 70824;
           while (1) {
-            d2 = c[a2 >> 2] | 0;
-            if (d2 >>> 0 <= j2 >>> 0 ? (s2 = d2 + (c[a2 + 4 >> 2] | 0) | 0, s2 >>> 0 > j2 >>> 0) : 0)
+            d4 = c4[a4 >> 2] | 0;
+            if (d4 >>> 0 <= j3 >>> 0 ? (s5 = d4 + (c4[a4 + 4 >> 2] | 0) | 0, s5 >>> 0 > j3 >>> 0) : 0)
               break;
-            a2 = c[a2 + 8 >> 2] | 0;
+            a4 = c4[a4 + 8 >> 2] | 0;
           }
-          f2 = s2 + -47 | 0;
-          a2 = f2 + 8 | 0;
-          a2 = f2 + ((a2 & 7 | 0) == 0 ? 0 : 0 - a2 & 7) | 0;
-          f2 = j2 + 16 | 0;
-          a2 = a2 >>> 0 < f2 >>> 0 ? j2 : a2;
-          r2 = a2 + 8 | 0;
-          d2 = b2 + -40 | 0;
-          p2 = e2 + 8 | 0;
-          p2 = (p2 & 7 | 0) == 0 ? 0 : 0 - p2 & 7;
-          q2 = e2 + p2 | 0;
-          p2 = d2 - p2 | 0;
-          c[17600] = q2;
-          c[17597] = p2;
-          c[q2 + 4 >> 2] = p2 | 1;
-          c[e2 + d2 + 4 >> 2] = 40;
-          c[17601] = c[17716];
-          d2 = a2 + 4 | 0;
-          c[d2 >> 2] = 27;
-          c[r2 >> 2] = c[17706];
-          c[r2 + 4 >> 2] = c[17707];
-          c[r2 + 8 >> 2] = c[17708];
-          c[r2 + 12 >> 2] = c[17709];
-          c[17706] = e2;
-          c[17707] = b2;
-          c[17709] = 0;
-          c[17708] = r2;
-          b2 = a2 + 24 | 0;
+          f4 = s5 + -47 | 0;
+          a4 = f4 + 8 | 0;
+          a4 = f4 + ((a4 & 7 | 0) == 0 ? 0 : 0 - a4 & 7) | 0;
+          f4 = j3 + 16 | 0;
+          a4 = a4 >>> 0 < f4 >>> 0 ? j3 : a4;
+          r6 = a4 + 8 | 0;
+          d4 = b4 + -40 | 0;
+          p4 = e6 + 8 | 0;
+          p4 = (p4 & 7 | 0) == 0 ? 0 : 0 - p4 & 7;
+          q2 = e6 + p4 | 0;
+          p4 = d4 - p4 | 0;
+          c4[17600] = q2;
+          c4[17597] = p4;
+          c4[q2 + 4 >> 2] = p4 | 1;
+          c4[e6 + d4 + 4 >> 2] = 40;
+          c4[17601] = c4[17716];
+          d4 = a4 + 4 | 0;
+          c4[d4 >> 2] = 27;
+          c4[r6 >> 2] = c4[17706];
+          c4[r6 + 4 >> 2] = c4[17707];
+          c4[r6 + 8 >> 2] = c4[17708];
+          c4[r6 + 12 >> 2] = c4[17709];
+          c4[17706] = e6;
+          c4[17707] = b4;
+          c4[17709] = 0;
+          c4[17708] = r6;
+          b4 = a4 + 24 | 0;
           do {
-            r2 = b2;
-            b2 = b2 + 4 | 0;
-            c[b2 >> 2] = 7;
-          } while ((r2 + 8 | 0) >>> 0 < s2 >>> 0);
-          if ((a2 | 0) != (j2 | 0)) {
-            g2 = a2 - j2 | 0;
-            c[d2 >> 2] = c[d2 >> 2] & -2;
-            c[j2 + 4 >> 2] = g2 | 1;
-            c[a2 >> 2] = g2;
-            b2 = g2 >>> 3;
-            if (g2 >>> 0 < 256) {
-              d2 = 70416 + (b2 << 1 << 2) | 0;
-              a2 = c[17594] | 0;
-              b2 = 1 << b2;
-              if (!(a2 & b2)) {
-                c[17594] = a2 | b2;
-                b2 = d2;
-                a2 = d2 + 8 | 0;
+            r6 = b4;
+            b4 = b4 + 4 | 0;
+            c4[b4 >> 2] = 7;
+          } while ((r6 + 8 | 0) >>> 0 < s5 >>> 0);
+          if ((a4 | 0) != (j3 | 0)) {
+            g3 = a4 - j3 | 0;
+            c4[d4 >> 2] = c4[d4 >> 2] & -2;
+            c4[j3 + 4 >> 2] = g3 | 1;
+            c4[a4 >> 2] = g3;
+            b4 = g3 >>> 3;
+            if (g3 >>> 0 < 256) {
+              d4 = 70416 + (b4 << 1 << 2) | 0;
+              a4 = c4[17594] | 0;
+              b4 = 1 << b4;
+              if (!(a4 & b4)) {
+                c4[17594] = a4 | b4;
+                b4 = d4;
+                a4 = d4 + 8 | 0;
               } else {
-                a2 = d2 + 8 | 0;
-                b2 = c[a2 >> 2] | 0;
+                a4 = d4 + 8 | 0;
+                b4 = c4[a4 >> 2] | 0;
               }
-              c[a2 >> 2] = j2;
-              c[b2 + 12 >> 2] = j2;
-              c[j2 + 8 >> 2] = b2;
-              c[j2 + 12 >> 2] = d2;
+              c4[a4 >> 2] = j3;
+              c4[b4 + 12 >> 2] = j3;
+              c4[j3 + 8 >> 2] = b4;
+              c4[j3 + 12 >> 2] = d4;
               break;
             }
-            b2 = g2 >>> 8;
-            if (b2)
-              if (g2 >>> 0 > 16777215)
-                e2 = 31;
+            b4 = g3 >>> 8;
+            if (b4)
+              if (g3 >>> 0 > 16777215)
+                e6 = 31;
               else {
-                r2 = (b2 + 1048320 | 0) >>> 16 & 8;
-                s2 = b2 << r2;
-                q2 = (s2 + 520192 | 0) >>> 16 & 4;
-                s2 = s2 << q2;
-                e2 = (s2 + 245760 | 0) >>> 16 & 2;
-                e2 = 14 - (q2 | r2 | e2) + (s2 << e2 >>> 15) | 0;
-                e2 = g2 >>> (e2 + 7 | 0) & 1 | e2 << 1;
+                r6 = (b4 + 1048320 | 0) >>> 16 & 8;
+                s5 = b4 << r6;
+                q2 = (s5 + 520192 | 0) >>> 16 & 4;
+                s5 = s5 << q2;
+                e6 = (s5 + 245760 | 0) >>> 16 & 2;
+                e6 = 14 - (q2 | r6 | e6) + (s5 << e6 >>> 15) | 0;
+                e6 = g3 >>> (e6 + 7 | 0) & 1 | e6 << 1;
               }
             else
-              e2 = 0;
-            d2 = 70680 + (e2 << 2) | 0;
-            c[j2 + 28 >> 2] = e2;
-            c[j2 + 20 >> 2] = 0;
-            c[f2 >> 2] = 0;
-            b2 = c[17595] | 0;
-            a2 = 1 << e2;
-            if (!(b2 & a2)) {
-              c[17595] = b2 | a2;
-              c[d2 >> 2] = j2;
-              c[j2 + 24 >> 2] = d2;
-              c[j2 + 12 >> 2] = j2;
-              c[j2 + 8 >> 2] = j2;
+              e6 = 0;
+            d4 = 70680 + (e6 << 2) | 0;
+            c4[j3 + 28 >> 2] = e6;
+            c4[j3 + 20 >> 2] = 0;
+            c4[f4 >> 2] = 0;
+            b4 = c4[17595] | 0;
+            a4 = 1 << e6;
+            if (!(b4 & a4)) {
+              c4[17595] = b4 | a4;
+              c4[d4 >> 2] = j3;
+              c4[j3 + 24 >> 2] = d4;
+              c4[j3 + 12 >> 2] = j3;
+              c4[j3 + 8 >> 2] = j3;
               break;
             }
-            b2 = c[d2 >> 2] | 0;
+            b4 = c4[d4 >> 2] | 0;
             j:
               do
-                if ((c[b2 + 4 >> 2] & -8 | 0) != (g2 | 0)) {
-                  e2 = g2 << ((e2 | 0) == 31 ? 0 : 25 - (e2 >>> 1) | 0);
+                if ((c4[b4 + 4 >> 2] & -8 | 0) != (g3 | 0)) {
+                  e6 = g3 << ((e6 | 0) == 31 ? 0 : 25 - (e6 >>> 1) | 0);
                   while (1) {
-                    d2 = b2 + 16 + (e2 >>> 31 << 2) | 0;
-                    a2 = c[d2 >> 2] | 0;
-                    if (!a2)
+                    d4 = b4 + 16 + (e6 >>> 31 << 2) | 0;
+                    a4 = c4[d4 >> 2] | 0;
+                    if (!a4)
                       break;
-                    if ((c[a2 + 4 >> 2] & -8 | 0) == (g2 | 0)) {
-                      b2 = a2;
+                    if ((c4[a4 + 4 >> 2] & -8 | 0) == (g3 | 0)) {
+                      b4 = a4;
                       break j;
                     } else {
-                      e2 = e2 << 1;
-                      b2 = a2;
+                      e6 = e6 << 1;
+                      b4 = a4;
                     }
                   }
-                  c[d2 >> 2] = j2;
-                  c[j2 + 24 >> 2] = b2;
-                  c[j2 + 12 >> 2] = j2;
-                  c[j2 + 8 >> 2] = j2;
+                  c4[d4 >> 2] = j3;
+                  c4[j3 + 24 >> 2] = b4;
+                  c4[j3 + 12 >> 2] = j3;
+                  c4[j3 + 8 >> 2] = j3;
                   break f;
                 }
               while (0);
-            r2 = b2 + 8 | 0;
-            s2 = c[r2 >> 2] | 0;
-            c[s2 + 12 >> 2] = j2;
-            c[r2 >> 2] = j2;
-            c[j2 + 8 >> 2] = s2;
-            c[j2 + 12 >> 2] = b2;
-            c[j2 + 24 >> 2] = 0;
+            r6 = b4 + 8 | 0;
+            s5 = c4[r6 >> 2] | 0;
+            c4[s5 + 12 >> 2] = j3;
+            c4[r6 >> 2] = j3;
+            c4[j3 + 8 >> 2] = s5;
+            c4[j3 + 12 >> 2] = b4;
+            c4[j3 + 24 >> 2] = 0;
           }
         } else {
-          s2 = c[17598] | 0;
-          if ((s2 | 0) == 0 | e2 >>> 0 < s2 >>> 0)
-            c[17598] = e2;
-          c[17706] = e2;
-          c[17707] = b2;
-          c[17709] = 0;
-          c[17603] = c[17712];
-          c[17602] = -1;
-          c[17607] = 70416;
-          c[17606] = 70416;
-          c[17609] = 70424;
-          c[17608] = 70424;
-          c[17611] = 70432;
-          c[17610] = 70432;
-          c[17613] = 70440;
-          c[17612] = 70440;
-          c[17615] = 70448;
-          c[17614] = 70448;
-          c[17617] = 70456;
-          c[17616] = 70456;
-          c[17619] = 70464;
-          c[17618] = 70464;
-          c[17621] = 70472;
-          c[17620] = 70472;
-          c[17623] = 70480;
-          c[17622] = 70480;
-          c[17625] = 70488;
-          c[17624] = 70488;
-          c[17627] = 70496;
-          c[17626] = 70496;
-          c[17629] = 70504;
-          c[17628] = 70504;
-          c[17631] = 70512;
-          c[17630] = 70512;
-          c[17633] = 70520;
-          c[17632] = 70520;
-          c[17635] = 70528;
-          c[17634] = 70528;
-          c[17637] = 70536;
-          c[17636] = 70536;
-          c[17639] = 70544;
-          c[17638] = 70544;
-          c[17641] = 70552;
-          c[17640] = 70552;
-          c[17643] = 70560;
-          c[17642] = 70560;
-          c[17645] = 70568;
-          c[17644] = 70568;
-          c[17647] = 70576;
-          c[17646] = 70576;
-          c[17649] = 70584;
-          c[17648] = 70584;
-          c[17651] = 70592;
-          c[17650] = 70592;
-          c[17653] = 70600;
-          c[17652] = 70600;
-          c[17655] = 70608;
-          c[17654] = 70608;
-          c[17657] = 70616;
-          c[17656] = 70616;
-          c[17659] = 70624;
-          c[17658] = 70624;
-          c[17661] = 70632;
-          c[17660] = 70632;
-          c[17663] = 70640;
-          c[17662] = 70640;
-          c[17665] = 70648;
-          c[17664] = 70648;
-          c[17667] = 70656;
-          c[17666] = 70656;
-          c[17669] = 70664;
-          c[17668] = 70664;
-          s2 = b2 + -40 | 0;
-          q2 = e2 + 8 | 0;
+          s5 = c4[17598] | 0;
+          if ((s5 | 0) == 0 | e6 >>> 0 < s5 >>> 0)
+            c4[17598] = e6;
+          c4[17706] = e6;
+          c4[17707] = b4;
+          c4[17709] = 0;
+          c4[17603] = c4[17712];
+          c4[17602] = -1;
+          c4[17607] = 70416;
+          c4[17606] = 70416;
+          c4[17609] = 70424;
+          c4[17608] = 70424;
+          c4[17611] = 70432;
+          c4[17610] = 70432;
+          c4[17613] = 70440;
+          c4[17612] = 70440;
+          c4[17615] = 70448;
+          c4[17614] = 70448;
+          c4[17617] = 70456;
+          c4[17616] = 70456;
+          c4[17619] = 70464;
+          c4[17618] = 70464;
+          c4[17621] = 70472;
+          c4[17620] = 70472;
+          c4[17623] = 70480;
+          c4[17622] = 70480;
+          c4[17625] = 70488;
+          c4[17624] = 70488;
+          c4[17627] = 70496;
+          c4[17626] = 70496;
+          c4[17629] = 70504;
+          c4[17628] = 70504;
+          c4[17631] = 70512;
+          c4[17630] = 70512;
+          c4[17633] = 70520;
+          c4[17632] = 70520;
+          c4[17635] = 70528;
+          c4[17634] = 70528;
+          c4[17637] = 70536;
+          c4[17636] = 70536;
+          c4[17639] = 70544;
+          c4[17638] = 70544;
+          c4[17641] = 70552;
+          c4[17640] = 70552;
+          c4[17643] = 70560;
+          c4[17642] = 70560;
+          c4[17645] = 70568;
+          c4[17644] = 70568;
+          c4[17647] = 70576;
+          c4[17646] = 70576;
+          c4[17649] = 70584;
+          c4[17648] = 70584;
+          c4[17651] = 70592;
+          c4[17650] = 70592;
+          c4[17653] = 70600;
+          c4[17652] = 70600;
+          c4[17655] = 70608;
+          c4[17654] = 70608;
+          c4[17657] = 70616;
+          c4[17656] = 70616;
+          c4[17659] = 70624;
+          c4[17658] = 70624;
+          c4[17661] = 70632;
+          c4[17660] = 70632;
+          c4[17663] = 70640;
+          c4[17662] = 70640;
+          c4[17665] = 70648;
+          c4[17664] = 70648;
+          c4[17667] = 70656;
+          c4[17666] = 70656;
+          c4[17669] = 70664;
+          c4[17668] = 70664;
+          s5 = b4 + -40 | 0;
+          q2 = e6 + 8 | 0;
           q2 = (q2 & 7 | 0) == 0 ? 0 : 0 - q2 & 7;
-          r2 = e2 + q2 | 0;
-          q2 = s2 - q2 | 0;
-          c[17600] = r2;
-          c[17597] = q2;
-          c[r2 + 4 >> 2] = q2 | 1;
-          c[e2 + s2 + 4 >> 2] = 40;
-          c[17601] = c[17716];
+          r6 = e6 + q2 | 0;
+          q2 = s5 - q2 | 0;
+          c4[17600] = r6;
+          c4[17597] = q2;
+          c4[r6 + 4 >> 2] = q2 | 1;
+          c4[e6 + s5 + 4 >> 2] = 40;
+          c4[17601] = c4[17716];
         }
       while (0);
-    b2 = c[17597] | 0;
-    if (b2 >>> 0 <= m2 >>> 0) {
-      s2 = 0;
-      E = t2;
-      return s2 | 0;
+    b4 = c4[17597] | 0;
+    if (b4 >>> 0 <= m3 >>> 0) {
+      s5 = 0;
+      E2 = t5;
+      return s5 | 0;
     }
-    q2 = b2 - m2 | 0;
-    c[17597] = q2;
-    s2 = c[17600] | 0;
-    r2 = s2 + m2 | 0;
-    c[17600] = r2;
-    c[r2 + 4 >> 2] = q2 | 1;
-    c[s2 + 4 >> 2] = m2 | 3;
-    s2 = s2 + 8 | 0;
-    E = t2;
-    return s2 | 0;
+    q2 = b4 - m3 | 0;
+    c4[17597] = q2;
+    s5 = c4[17600] | 0;
+    r6 = s5 + m3 | 0;
+    c4[17600] = r6;
+    c4[r6 + 4 >> 2] = q2 | 1;
+    c4[s5 + 4 >> 2] = m3 | 3;
+    s5 = s5 + 8 | 0;
+    E2 = t5;
+    return s5 | 0;
   }
-  function Bb(a2) {
-    a2 = a2 | 0;
-    var b2 = 0, d2 = 0, e2 = 0, f2 = 0, g2 = 0, h2 = 0, i2 = 0, j2 = 0;
-    if (!a2)
+  function Bb(a4) {
+    a4 = a4 | 0;
+    var b4 = 0, d4 = 0, e6 = 0, f4 = 0, g3 = 0, h4 = 0, i5 = 0, j3 = 0;
+    if (!a4)
       return;
-    d2 = a2 + -8 | 0;
-    f2 = c[17598] | 0;
-    a2 = c[a2 + -4 >> 2] | 0;
-    b2 = a2 & -8;
-    j2 = d2 + b2 | 0;
+    d4 = a4 + -8 | 0;
+    f4 = c4[17598] | 0;
+    a4 = c4[a4 + -4 >> 2] | 0;
+    b4 = a4 & -8;
+    j3 = d4 + b4 | 0;
     do
-      if (!(a2 & 1)) {
-        e2 = c[d2 >> 2] | 0;
-        if (!(a2 & 3))
+      if (!(a4 & 1)) {
+        e6 = c4[d4 >> 2] | 0;
+        if (!(a4 & 3))
           return;
-        h2 = d2 + (0 - e2) | 0;
-        g2 = e2 + b2 | 0;
-        if (h2 >>> 0 < f2 >>> 0)
+        h4 = d4 + (0 - e6) | 0;
+        g3 = e6 + b4 | 0;
+        if (h4 >>> 0 < f4 >>> 0)
           return;
-        if ((c[17599] | 0) == (h2 | 0)) {
-          a2 = j2 + 4 | 0;
-          b2 = c[a2 >> 2] | 0;
-          if ((b2 & 3 | 0) != 3) {
-            i2 = h2;
-            b2 = g2;
+        if ((c4[17599] | 0) == (h4 | 0)) {
+          a4 = j3 + 4 | 0;
+          b4 = c4[a4 >> 2] | 0;
+          if ((b4 & 3 | 0) != 3) {
+            i5 = h4;
+            b4 = g3;
             break;
           }
-          c[17596] = g2;
-          c[a2 >> 2] = b2 & -2;
-          c[h2 + 4 >> 2] = g2 | 1;
-          c[h2 + g2 >> 2] = g2;
+          c4[17596] = g3;
+          c4[a4 >> 2] = b4 & -2;
+          c4[h4 + 4 >> 2] = g3 | 1;
+          c4[h4 + g3 >> 2] = g3;
           return;
         }
-        d2 = e2 >>> 3;
-        if (e2 >>> 0 < 256) {
-          a2 = c[h2 + 8 >> 2] | 0;
-          b2 = c[h2 + 12 >> 2] | 0;
-          if ((b2 | 0) == (a2 | 0)) {
-            c[17594] = c[17594] & ~(1 << d2);
-            i2 = h2;
-            b2 = g2;
+        d4 = e6 >>> 3;
+        if (e6 >>> 0 < 256) {
+          a4 = c4[h4 + 8 >> 2] | 0;
+          b4 = c4[h4 + 12 >> 2] | 0;
+          if ((b4 | 0) == (a4 | 0)) {
+            c4[17594] = c4[17594] & ~(1 << d4);
+            i5 = h4;
+            b4 = g3;
             break;
           } else {
-            c[a2 + 12 >> 2] = b2;
-            c[b2 + 8 >> 2] = a2;
-            i2 = h2;
-            b2 = g2;
+            c4[a4 + 12 >> 2] = b4;
+            c4[b4 + 8 >> 2] = a4;
+            i5 = h4;
+            b4 = g3;
             break;
           }
         }
-        f2 = c[h2 + 24 >> 2] | 0;
-        a2 = c[h2 + 12 >> 2] | 0;
+        f4 = c4[h4 + 24 >> 2] | 0;
+        a4 = c4[h4 + 12 >> 2] | 0;
         do
-          if ((a2 | 0) == (h2 | 0)) {
-            b2 = h2 + 16 | 0;
-            d2 = b2 + 4 | 0;
-            a2 = c[d2 >> 2] | 0;
-            if (!a2) {
-              a2 = c[b2 >> 2] | 0;
-              if (!a2) {
-                a2 = 0;
+          if ((a4 | 0) == (h4 | 0)) {
+            b4 = h4 + 16 | 0;
+            d4 = b4 + 4 | 0;
+            a4 = c4[d4 >> 2] | 0;
+            if (!a4) {
+              a4 = c4[b4 >> 2] | 0;
+              if (!a4) {
+                a4 = 0;
                 break;
               }
             } else
-              b2 = d2;
+              b4 = d4;
             while (1) {
-              e2 = a2 + 20 | 0;
-              d2 = c[e2 >> 2] | 0;
-              if (!d2) {
-                e2 = a2 + 16 | 0;
-                d2 = c[e2 >> 2] | 0;
-                if (!d2)
+              e6 = a4 + 20 | 0;
+              d4 = c4[e6 >> 2] | 0;
+              if (!d4) {
+                e6 = a4 + 16 | 0;
+                d4 = c4[e6 >> 2] | 0;
+                if (!d4)
                   break;
                 else {
-                  a2 = d2;
-                  b2 = e2;
+                  a4 = d4;
+                  b4 = e6;
                 }
               } else {
-                a2 = d2;
-                b2 = e2;
+                a4 = d4;
+                b4 = e6;
               }
             }
-            c[b2 >> 2] = 0;
+            c4[b4 >> 2] = 0;
           } else {
-            i2 = c[h2 + 8 >> 2] | 0;
-            c[i2 + 12 >> 2] = a2;
-            c[a2 + 8 >> 2] = i2;
+            i5 = c4[h4 + 8 >> 2] | 0;
+            c4[i5 + 12 >> 2] = a4;
+            c4[a4 + 8 >> 2] = i5;
           }
         while (0);
-        if (f2) {
-          b2 = c[h2 + 28 >> 2] | 0;
-          d2 = 70680 + (b2 << 2) | 0;
-          if ((c[d2 >> 2] | 0) == (h2 | 0)) {
-            c[d2 >> 2] = a2;
-            if (!a2) {
-              c[17595] = c[17595] & ~(1 << b2);
-              i2 = h2;
-              b2 = g2;
+        if (f4) {
+          b4 = c4[h4 + 28 >> 2] | 0;
+          d4 = 70680 + (b4 << 2) | 0;
+          if ((c4[d4 >> 2] | 0) == (h4 | 0)) {
+            c4[d4 >> 2] = a4;
+            if (!a4) {
+              c4[17595] = c4[17595] & ~(1 << b4);
+              i5 = h4;
+              b4 = g3;
               break;
             }
           } else {
-            i2 = f2 + 16 | 0;
-            c[((c[i2 >> 2] | 0) == (h2 | 0) ? i2 : f2 + 20 | 0) >> 2] = a2;
-            if (!a2) {
-              i2 = h2;
-              b2 = g2;
+            i5 = f4 + 16 | 0;
+            c4[((c4[i5 >> 2] | 0) == (h4 | 0) ? i5 : f4 + 20 | 0) >> 2] = a4;
+            if (!a4) {
+              i5 = h4;
+              b4 = g3;
               break;
             }
           }
-          c[a2 + 24 >> 2] = f2;
-          b2 = h2 + 16 | 0;
-          d2 = c[b2 >> 2] | 0;
-          if (d2 | 0) {
-            c[a2 + 16 >> 2] = d2;
-            c[d2 + 24 >> 2] = a2;
+          c4[a4 + 24 >> 2] = f4;
+          b4 = h4 + 16 | 0;
+          d4 = c4[b4 >> 2] | 0;
+          if (d4 | 0) {
+            c4[a4 + 16 >> 2] = d4;
+            c4[d4 + 24 >> 2] = a4;
           }
-          b2 = c[b2 + 4 >> 2] | 0;
-          if (b2) {
-            c[a2 + 20 >> 2] = b2;
-            c[b2 + 24 >> 2] = a2;
-            i2 = h2;
-            b2 = g2;
+          b4 = c4[b4 + 4 >> 2] | 0;
+          if (b4) {
+            c4[a4 + 20 >> 2] = b4;
+            c4[b4 + 24 >> 2] = a4;
+            i5 = h4;
+            b4 = g3;
           } else {
-            i2 = h2;
-            b2 = g2;
+            i5 = h4;
+            b4 = g3;
           }
         } else {
-          i2 = h2;
-          b2 = g2;
+          i5 = h4;
+          b4 = g3;
         }
       } else {
-        i2 = d2;
-        h2 = d2;
+        i5 = d4;
+        h4 = d4;
       }
     while (0);
-    if (h2 >>> 0 >= j2 >>> 0)
+    if (h4 >>> 0 >= j3 >>> 0)
       return;
-    a2 = j2 + 4 | 0;
-    e2 = c[a2 >> 2] | 0;
-    if (!(e2 & 1))
+    a4 = j3 + 4 | 0;
+    e6 = c4[a4 >> 2] | 0;
+    if (!(e6 & 1))
       return;
-    if (!(e2 & 2)) {
-      if ((c[17600] | 0) == (j2 | 0)) {
-        j2 = (c[17597] | 0) + b2 | 0;
-        c[17597] = j2;
-        c[17600] = i2;
-        c[i2 + 4 >> 2] = j2 | 1;
-        if ((i2 | 0) != (c[17599] | 0))
+    if (!(e6 & 2)) {
+      if ((c4[17600] | 0) == (j3 | 0)) {
+        j3 = (c4[17597] | 0) + b4 | 0;
+        c4[17597] = j3;
+        c4[17600] = i5;
+        c4[i5 + 4 >> 2] = j3 | 1;
+        if ((i5 | 0) != (c4[17599] | 0))
           return;
-        c[17599] = 0;
-        c[17596] = 0;
+        c4[17599] = 0;
+        c4[17596] = 0;
         return;
       }
-      if ((c[17599] | 0) == (j2 | 0)) {
-        j2 = (c[17596] | 0) + b2 | 0;
-        c[17596] = j2;
-        c[17599] = h2;
-        c[i2 + 4 >> 2] = j2 | 1;
-        c[h2 + j2 >> 2] = j2;
+      if ((c4[17599] | 0) == (j3 | 0)) {
+        j3 = (c4[17596] | 0) + b4 | 0;
+        c4[17596] = j3;
+        c4[17599] = h4;
+        c4[i5 + 4 >> 2] = j3 | 1;
+        c4[h4 + j3 >> 2] = j3;
         return;
       }
-      f2 = (e2 & -8) + b2 | 0;
-      d2 = e2 >>> 3;
+      f4 = (e6 & -8) + b4 | 0;
+      d4 = e6 >>> 3;
       do
-        if (e2 >>> 0 < 256) {
-          b2 = c[j2 + 8 >> 2] | 0;
-          a2 = c[j2 + 12 >> 2] | 0;
-          if ((a2 | 0) == (b2 | 0)) {
-            c[17594] = c[17594] & ~(1 << d2);
+        if (e6 >>> 0 < 256) {
+          b4 = c4[j3 + 8 >> 2] | 0;
+          a4 = c4[j3 + 12 >> 2] | 0;
+          if ((a4 | 0) == (b4 | 0)) {
+            c4[17594] = c4[17594] & ~(1 << d4);
             break;
           } else {
-            c[b2 + 12 >> 2] = a2;
-            c[a2 + 8 >> 2] = b2;
+            c4[b4 + 12 >> 2] = a4;
+            c4[a4 + 8 >> 2] = b4;
             break;
           }
         } else {
-          g2 = c[j2 + 24 >> 2] | 0;
-          a2 = c[j2 + 12 >> 2] | 0;
+          g3 = c4[j3 + 24 >> 2] | 0;
+          a4 = c4[j3 + 12 >> 2] | 0;
           do
-            if ((a2 | 0) == (j2 | 0)) {
-              b2 = j2 + 16 | 0;
-              d2 = b2 + 4 | 0;
-              a2 = c[d2 >> 2] | 0;
-              if (!a2) {
-                a2 = c[b2 >> 2] | 0;
-                if (!a2) {
-                  d2 = 0;
+            if ((a4 | 0) == (j3 | 0)) {
+              b4 = j3 + 16 | 0;
+              d4 = b4 + 4 | 0;
+              a4 = c4[d4 >> 2] | 0;
+              if (!a4) {
+                a4 = c4[b4 >> 2] | 0;
+                if (!a4) {
+                  d4 = 0;
                   break;
                 }
               } else
-                b2 = d2;
+                b4 = d4;
               while (1) {
-                e2 = a2 + 20 | 0;
-                d2 = c[e2 >> 2] | 0;
-                if (!d2) {
-                  e2 = a2 + 16 | 0;
-                  d2 = c[e2 >> 2] | 0;
-                  if (!d2)
+                e6 = a4 + 20 | 0;
+                d4 = c4[e6 >> 2] | 0;
+                if (!d4) {
+                  e6 = a4 + 16 | 0;
+                  d4 = c4[e6 >> 2] | 0;
+                  if (!d4)
                     break;
                   else {
-                    a2 = d2;
-                    b2 = e2;
+                    a4 = d4;
+                    b4 = e6;
                   }
                 } else {
-                  a2 = d2;
-                  b2 = e2;
+                  a4 = d4;
+                  b4 = e6;
                 }
               }
-              c[b2 >> 2] = 0;
-              d2 = a2;
+              c4[b4 >> 2] = 0;
+              d4 = a4;
             } else {
-              d2 = c[j2 + 8 >> 2] | 0;
-              c[d2 + 12 >> 2] = a2;
-              c[a2 + 8 >> 2] = d2;
-              d2 = a2;
+              d4 = c4[j3 + 8 >> 2] | 0;
+              c4[d4 + 12 >> 2] = a4;
+              c4[a4 + 8 >> 2] = d4;
+              d4 = a4;
             }
           while (0);
-          if (g2 | 0) {
-            a2 = c[j2 + 28 >> 2] | 0;
-            b2 = 70680 + (a2 << 2) | 0;
-            if ((c[b2 >> 2] | 0) == (j2 | 0)) {
-              c[b2 >> 2] = d2;
-              if (!d2) {
-                c[17595] = c[17595] & ~(1 << a2);
+          if (g3 | 0) {
+            a4 = c4[j3 + 28 >> 2] | 0;
+            b4 = 70680 + (a4 << 2) | 0;
+            if ((c4[b4 >> 2] | 0) == (j3 | 0)) {
+              c4[b4 >> 2] = d4;
+              if (!d4) {
+                c4[17595] = c4[17595] & ~(1 << a4);
                 break;
               }
             } else {
-              e2 = g2 + 16 | 0;
-              c[((c[e2 >> 2] | 0) == (j2 | 0) ? e2 : g2 + 20 | 0) >> 2] = d2;
-              if (!d2)
+              e6 = g3 + 16 | 0;
+              c4[((c4[e6 >> 2] | 0) == (j3 | 0) ? e6 : g3 + 20 | 0) >> 2] = d4;
+              if (!d4)
                 break;
             }
-            c[d2 + 24 >> 2] = g2;
-            a2 = j2 + 16 | 0;
-            b2 = c[a2 >> 2] | 0;
-            if (b2 | 0) {
-              c[d2 + 16 >> 2] = b2;
-              c[b2 + 24 >> 2] = d2;
+            c4[d4 + 24 >> 2] = g3;
+            a4 = j3 + 16 | 0;
+            b4 = c4[a4 >> 2] | 0;
+            if (b4 | 0) {
+              c4[d4 + 16 >> 2] = b4;
+              c4[b4 + 24 >> 2] = d4;
             }
-            a2 = c[a2 + 4 >> 2] | 0;
-            if (a2 | 0) {
-              c[d2 + 20 >> 2] = a2;
-              c[a2 + 24 >> 2] = d2;
+            a4 = c4[a4 + 4 >> 2] | 0;
+            if (a4 | 0) {
+              c4[d4 + 20 >> 2] = a4;
+              c4[a4 + 24 >> 2] = d4;
             }
           }
         }
       while (0);
-      c[i2 + 4 >> 2] = f2 | 1;
-      c[h2 + f2 >> 2] = f2;
-      if ((i2 | 0) == (c[17599] | 0)) {
-        c[17596] = f2;
+      c4[i5 + 4 >> 2] = f4 | 1;
+      c4[h4 + f4 >> 2] = f4;
+      if ((i5 | 0) == (c4[17599] | 0)) {
+        c4[17596] = f4;
         return;
       }
     } else {
-      c[a2 >> 2] = e2 & -2;
-      c[i2 + 4 >> 2] = b2 | 1;
-      c[h2 + b2 >> 2] = b2;
-      f2 = b2;
+      c4[a4 >> 2] = e6 & -2;
+      c4[i5 + 4 >> 2] = b4 | 1;
+      c4[h4 + b4 >> 2] = b4;
+      f4 = b4;
     }
-    a2 = f2 >>> 3;
-    if (f2 >>> 0 < 256) {
-      d2 = 70416 + (a2 << 1 << 2) | 0;
-      b2 = c[17594] | 0;
-      a2 = 1 << a2;
-      if (!(b2 & a2)) {
-        c[17594] = b2 | a2;
-        a2 = d2;
-        b2 = d2 + 8 | 0;
+    a4 = f4 >>> 3;
+    if (f4 >>> 0 < 256) {
+      d4 = 70416 + (a4 << 1 << 2) | 0;
+      b4 = c4[17594] | 0;
+      a4 = 1 << a4;
+      if (!(b4 & a4)) {
+        c4[17594] = b4 | a4;
+        a4 = d4;
+        b4 = d4 + 8 | 0;
       } else {
-        b2 = d2 + 8 | 0;
-        a2 = c[b2 >> 2] | 0;
+        b4 = d4 + 8 | 0;
+        a4 = c4[b4 >> 2] | 0;
       }
-      c[b2 >> 2] = i2;
-      c[a2 + 12 >> 2] = i2;
-      c[i2 + 8 >> 2] = a2;
-      c[i2 + 12 >> 2] = d2;
+      c4[b4 >> 2] = i5;
+      c4[a4 + 12 >> 2] = i5;
+      c4[i5 + 8 >> 2] = a4;
+      c4[i5 + 12 >> 2] = d4;
       return;
     }
-    a2 = f2 >>> 8;
-    if (a2)
-      if (f2 >>> 0 > 16777215)
-        e2 = 31;
+    a4 = f4 >>> 8;
+    if (a4)
+      if (f4 >>> 0 > 16777215)
+        e6 = 31;
       else {
-        h2 = (a2 + 1048320 | 0) >>> 16 & 8;
-        j2 = a2 << h2;
-        g2 = (j2 + 520192 | 0) >>> 16 & 4;
-        j2 = j2 << g2;
-        e2 = (j2 + 245760 | 0) >>> 16 & 2;
-        e2 = 14 - (g2 | h2 | e2) + (j2 << e2 >>> 15) | 0;
-        e2 = f2 >>> (e2 + 7 | 0) & 1 | e2 << 1;
+        h4 = (a4 + 1048320 | 0) >>> 16 & 8;
+        j3 = a4 << h4;
+        g3 = (j3 + 520192 | 0) >>> 16 & 4;
+        j3 = j3 << g3;
+        e6 = (j3 + 245760 | 0) >>> 16 & 2;
+        e6 = 14 - (g3 | h4 | e6) + (j3 << e6 >>> 15) | 0;
+        e6 = f4 >>> (e6 + 7 | 0) & 1 | e6 << 1;
       }
     else
-      e2 = 0;
-    a2 = 70680 + (e2 << 2) | 0;
-    c[i2 + 28 >> 2] = e2;
-    c[i2 + 20 >> 2] = 0;
-    c[i2 + 16 >> 2] = 0;
-    b2 = c[17595] | 0;
-    d2 = 1 << e2;
+      e6 = 0;
+    a4 = 70680 + (e6 << 2) | 0;
+    c4[i5 + 28 >> 2] = e6;
+    c4[i5 + 20 >> 2] = 0;
+    c4[i5 + 16 >> 2] = 0;
+    b4 = c4[17595] | 0;
+    d4 = 1 << e6;
     a:
       do
-        if (!(b2 & d2)) {
-          c[17595] = b2 | d2;
-          c[a2 >> 2] = i2;
-          c[i2 + 24 >> 2] = a2;
-          c[i2 + 12 >> 2] = i2;
-          c[i2 + 8 >> 2] = i2;
+        if (!(b4 & d4)) {
+          c4[17595] = b4 | d4;
+          c4[a4 >> 2] = i5;
+          c4[i5 + 24 >> 2] = a4;
+          c4[i5 + 12 >> 2] = i5;
+          c4[i5 + 8 >> 2] = i5;
         } else {
-          a2 = c[a2 >> 2] | 0;
+          a4 = c4[a4 >> 2] | 0;
           b:
             do
-              if ((c[a2 + 4 >> 2] & -8 | 0) != (f2 | 0)) {
-                e2 = f2 << ((e2 | 0) == 31 ? 0 : 25 - (e2 >>> 1) | 0);
+              if ((c4[a4 + 4 >> 2] & -8 | 0) != (f4 | 0)) {
+                e6 = f4 << ((e6 | 0) == 31 ? 0 : 25 - (e6 >>> 1) | 0);
                 while (1) {
-                  d2 = a2 + 16 + (e2 >>> 31 << 2) | 0;
-                  b2 = c[d2 >> 2] | 0;
-                  if (!b2)
+                  d4 = a4 + 16 + (e6 >>> 31 << 2) | 0;
+                  b4 = c4[d4 >> 2] | 0;
+                  if (!b4)
                     break;
-                  if ((c[b2 + 4 >> 2] & -8 | 0) == (f2 | 0)) {
-                    a2 = b2;
+                  if ((c4[b4 + 4 >> 2] & -8 | 0) == (f4 | 0)) {
+                    a4 = b4;
                     break b;
                   } else {
-                    e2 = e2 << 1;
-                    a2 = b2;
+                    e6 = e6 << 1;
+                    a4 = b4;
                   }
                 }
-                c[d2 >> 2] = i2;
-                c[i2 + 24 >> 2] = a2;
-                c[i2 + 12 >> 2] = i2;
-                c[i2 + 8 >> 2] = i2;
+                c4[d4 >> 2] = i5;
+                c4[i5 + 24 >> 2] = a4;
+                c4[i5 + 12 >> 2] = i5;
+                c4[i5 + 8 >> 2] = i5;
                 break a;
               }
             while (0);
-          h2 = a2 + 8 | 0;
-          j2 = c[h2 >> 2] | 0;
-          c[j2 + 12 >> 2] = i2;
-          c[h2 >> 2] = i2;
-          c[i2 + 8 >> 2] = j2;
-          c[i2 + 12 >> 2] = a2;
-          c[i2 + 24 >> 2] = 0;
+          h4 = a4 + 8 | 0;
+          j3 = c4[h4 >> 2] | 0;
+          c4[j3 + 12 >> 2] = i5;
+          c4[h4 >> 2] = i5;
+          c4[i5 + 8 >> 2] = j3;
+          c4[i5 + 12 >> 2] = a4;
+          c4[i5 + 24 >> 2] = 0;
         }
       while (0);
-    j2 = (c[17602] | 0) + -1 | 0;
-    c[17602] = j2;
-    if (j2 | 0)
+    j3 = (c4[17602] | 0) + -1 | 0;
+    c4[17602] = j3;
+    if (j3 | 0)
       return;
-    a2 = 70832;
+    a4 = 70832;
     while (1) {
-      a2 = c[a2 >> 2] | 0;
-      if (!a2)
+      a4 = c4[a4 >> 2] | 0;
+      if (!a4)
         break;
       else
-        a2 = a2 + 8 | 0;
+        a4 = a4 + 8 | 0;
     }
-    c[17602] = -1;
+    c4[17602] = -1;
     return;
   }
-  function Cb(a2, b2) {
-    a2 = a2 | 0;
-    b2 = b2 | 0;
-    var d2 = 0, e2 = 0;
-    if (!a2) {
-      b2 = Ab(b2) | 0;
-      return b2 | 0;
+  function Cb(a4, b4) {
+    a4 = a4 | 0;
+    b4 = b4 | 0;
+    var d4 = 0, e6 = 0;
+    if (!a4) {
+      b4 = Ab(b4) | 0;
+      return b4 | 0;
     }
-    if (b2 >>> 0 > 4294967231) {
-      b2 = 0;
-      return b2 | 0;
+    if (b4 >>> 0 > 4294967231) {
+      b4 = 0;
+      return b4 | 0;
     }
-    d2 = Db(a2 + -8 | 0, b2 >>> 0 < 11 ? 16 : b2 + 11 & -8) | 0;
-    if (d2 | 0) {
-      b2 = d2 + 8 | 0;
-      return b2 | 0;
+    d4 = Db(a4 + -8 | 0, b4 >>> 0 < 11 ? 16 : b4 + 11 & -8) | 0;
+    if (d4 | 0) {
+      b4 = d4 + 8 | 0;
+      return b4 | 0;
     }
-    d2 = Ab(b2) | 0;
-    if (!d2) {
-      b2 = 0;
-      return b2 | 0;
+    d4 = Ab(b4) | 0;
+    if (!d4) {
+      b4 = 0;
+      return b4 | 0;
     }
-    e2 = c[a2 + -4 >> 2] | 0;
-    e2 = (e2 & -8) - ((e2 & 3 | 0) == 0 ? 8 : 4) | 0;
-    ec(d2 | 0, a2 | 0, (e2 >>> 0 < b2 >>> 0 ? e2 : b2) | 0) | 0;
-    Bb(a2);
-    b2 = d2;
-    return b2 | 0;
+    e6 = c4[a4 + -4 >> 2] | 0;
+    e6 = (e6 & -8) - ((e6 & 3 | 0) == 0 ? 8 : 4) | 0;
+    ec(d4 | 0, a4 | 0, (e6 >>> 0 < b4 >>> 0 ? e6 : b4) | 0) | 0;
+    Bb(a4);
+    b4 = d4;
+    return b4 | 0;
   }
-  function Db(a2, b2) {
-    a2 = a2 | 0;
-    b2 = b2 | 0;
-    var d2 = 0, e2 = 0, f2 = 0, g2 = 0, h2 = 0, i2 = 0, j2 = 0, k2 = 0, l2 = 0, m2 = 0;
-    l2 = a2 + 4 | 0;
-    m2 = c[l2 >> 2] | 0;
-    d2 = m2 & -8;
-    i2 = a2 + d2 | 0;
-    if (!(m2 & 3)) {
-      if (b2 >>> 0 < 256) {
-        a2 = 0;
-        return a2 | 0;
+  function Db(a4, b4) {
+    a4 = a4 | 0;
+    b4 = b4 | 0;
+    var d4 = 0, e6 = 0, f4 = 0, g3 = 0, h4 = 0, i5 = 0, j3 = 0, k3 = 0, l4 = 0, m3 = 0;
+    l4 = a4 + 4 | 0;
+    m3 = c4[l4 >> 2] | 0;
+    d4 = m3 & -8;
+    i5 = a4 + d4 | 0;
+    if (!(m3 & 3)) {
+      if (b4 >>> 0 < 256) {
+        a4 = 0;
+        return a4 | 0;
       }
-      if (d2 >>> 0 >= (b2 + 4 | 0) >>> 0 ? (d2 - b2 | 0) >>> 0 <= c[17714] << 1 >>> 0 : 0)
-        return a2 | 0;
-      a2 = 0;
-      return a2 | 0;
+      if (d4 >>> 0 >= (b4 + 4 | 0) >>> 0 ? (d4 - b4 | 0) >>> 0 <= c4[17714] << 1 >>> 0 : 0)
+        return a4 | 0;
+      a4 = 0;
+      return a4 | 0;
     }
-    if (d2 >>> 0 >= b2 >>> 0) {
-      d2 = d2 - b2 | 0;
-      if (d2 >>> 0 <= 15)
-        return a2 | 0;
-      k2 = a2 + b2 | 0;
-      c[l2 >> 2] = m2 & 1 | b2 | 2;
-      c[k2 + 4 >> 2] = d2 | 3;
-      m2 = i2 + 4 | 0;
-      c[m2 >> 2] = c[m2 >> 2] | 1;
-      Eb(k2, d2);
-      return a2 | 0;
+    if (d4 >>> 0 >= b4 >>> 0) {
+      d4 = d4 - b4 | 0;
+      if (d4 >>> 0 <= 15)
+        return a4 | 0;
+      k3 = a4 + b4 | 0;
+      c4[l4 >> 2] = m3 & 1 | b4 | 2;
+      c4[k3 + 4 >> 2] = d4 | 3;
+      m3 = i5 + 4 | 0;
+      c4[m3 >> 2] = c4[m3 >> 2] | 1;
+      Eb(k3, d4);
+      return a4 | 0;
     }
-    if ((c[17600] | 0) == (i2 | 0)) {
-      k2 = (c[17597] | 0) + d2 | 0;
-      d2 = k2 - b2 | 0;
-      e2 = a2 + b2 | 0;
-      if (k2 >>> 0 <= b2 >>> 0) {
-        a2 = 0;
-        return a2 | 0;
+    if ((c4[17600] | 0) == (i5 | 0)) {
+      k3 = (c4[17597] | 0) + d4 | 0;
+      d4 = k3 - b4 | 0;
+      e6 = a4 + b4 | 0;
+      if (k3 >>> 0 <= b4 >>> 0) {
+        a4 = 0;
+        return a4 | 0;
       }
-      c[l2 >> 2] = m2 & 1 | b2 | 2;
-      c[e2 + 4 >> 2] = d2 | 1;
-      c[17600] = e2;
-      c[17597] = d2;
-      return a2 | 0;
+      c4[l4 >> 2] = m3 & 1 | b4 | 2;
+      c4[e6 + 4 >> 2] = d4 | 1;
+      c4[17600] = e6;
+      c4[17597] = d4;
+      return a4 | 0;
     }
-    if ((c[17599] | 0) == (i2 | 0)) {
-      e2 = (c[17596] | 0) + d2 | 0;
-      if (e2 >>> 0 < b2 >>> 0) {
-        a2 = 0;
-        return a2 | 0;
+    if ((c4[17599] | 0) == (i5 | 0)) {
+      e6 = (c4[17596] | 0) + d4 | 0;
+      if (e6 >>> 0 < b4 >>> 0) {
+        a4 = 0;
+        return a4 | 0;
       }
-      d2 = e2 - b2 | 0;
-      if (d2 >>> 0 > 15) {
-        k2 = a2 + b2 | 0;
-        e2 = a2 + e2 | 0;
-        c[l2 >> 2] = m2 & 1 | b2 | 2;
-        c[k2 + 4 >> 2] = d2 | 1;
-        c[e2 >> 2] = d2;
-        e2 = e2 + 4 | 0;
-        c[e2 >> 2] = c[e2 >> 2] & -2;
-        e2 = k2;
+      d4 = e6 - b4 | 0;
+      if (d4 >>> 0 > 15) {
+        k3 = a4 + b4 | 0;
+        e6 = a4 + e6 | 0;
+        c4[l4 >> 2] = m3 & 1 | b4 | 2;
+        c4[k3 + 4 >> 2] = d4 | 1;
+        c4[e6 >> 2] = d4;
+        e6 = e6 + 4 | 0;
+        c4[e6 >> 2] = c4[e6 >> 2] & -2;
+        e6 = k3;
       } else {
-        c[l2 >> 2] = m2 & 1 | e2 | 2;
-        e2 = a2 + e2 + 4 | 0;
-        c[e2 >> 2] = c[e2 >> 2] | 1;
-        e2 = 0;
-        d2 = 0;
+        c4[l4 >> 2] = m3 & 1 | e6 | 2;
+        e6 = a4 + e6 + 4 | 0;
+        c4[e6 >> 2] = c4[e6 >> 2] | 1;
+        e6 = 0;
+        d4 = 0;
       }
-      c[17596] = d2;
-      c[17599] = e2;
-      return a2 | 0;
+      c4[17596] = d4;
+      c4[17599] = e6;
+      return a4 | 0;
     }
-    e2 = c[i2 + 4 >> 2] | 0;
-    if (e2 & 2 | 0) {
-      a2 = 0;
-      return a2 | 0;
+    e6 = c4[i5 + 4 >> 2] | 0;
+    if (e6 & 2 | 0) {
+      a4 = 0;
+      return a4 | 0;
     }
-    j2 = (e2 & -8) + d2 | 0;
-    if (j2 >>> 0 < b2 >>> 0) {
-      a2 = 0;
-      return a2 | 0;
+    j3 = (e6 & -8) + d4 | 0;
+    if (j3 >>> 0 < b4 >>> 0) {
+      a4 = 0;
+      return a4 | 0;
     }
-    k2 = j2 - b2 | 0;
-    f2 = e2 >>> 3;
+    k3 = j3 - b4 | 0;
+    f4 = e6 >>> 3;
     do
-      if (e2 >>> 0 < 256) {
-        e2 = c[i2 + 8 >> 2] | 0;
-        d2 = c[i2 + 12 >> 2] | 0;
-        if ((d2 | 0) == (e2 | 0)) {
-          c[17594] = c[17594] & ~(1 << f2);
+      if (e6 >>> 0 < 256) {
+        e6 = c4[i5 + 8 >> 2] | 0;
+        d4 = c4[i5 + 12 >> 2] | 0;
+        if ((d4 | 0) == (e6 | 0)) {
+          c4[17594] = c4[17594] & ~(1 << f4);
           break;
         } else {
-          c[e2 + 12 >> 2] = d2;
-          c[d2 + 8 >> 2] = e2;
+          c4[e6 + 12 >> 2] = d4;
+          c4[d4 + 8 >> 2] = e6;
           break;
         }
       } else {
-        h2 = c[i2 + 24 >> 2] | 0;
-        d2 = c[i2 + 12 >> 2] | 0;
+        h4 = c4[i5 + 24 >> 2] | 0;
+        d4 = c4[i5 + 12 >> 2] | 0;
         do
-          if ((d2 | 0) == (i2 | 0)) {
-            e2 = i2 + 16 | 0;
-            f2 = e2 + 4 | 0;
-            d2 = c[f2 >> 2] | 0;
-            if (!d2) {
-              d2 = c[e2 >> 2] | 0;
-              if (!d2) {
-                f2 = 0;
+          if ((d4 | 0) == (i5 | 0)) {
+            e6 = i5 + 16 | 0;
+            f4 = e6 + 4 | 0;
+            d4 = c4[f4 >> 2] | 0;
+            if (!d4) {
+              d4 = c4[e6 >> 2] | 0;
+              if (!d4) {
+                f4 = 0;
                 break;
               }
             } else
-              e2 = f2;
+              e6 = f4;
             while (1) {
-              g2 = d2 + 20 | 0;
-              f2 = c[g2 >> 2] | 0;
-              if (!f2) {
-                g2 = d2 + 16 | 0;
-                f2 = c[g2 >> 2] | 0;
-                if (!f2)
+              g3 = d4 + 20 | 0;
+              f4 = c4[g3 >> 2] | 0;
+              if (!f4) {
+                g3 = d4 + 16 | 0;
+                f4 = c4[g3 >> 2] | 0;
+                if (!f4)
                   break;
                 else {
-                  d2 = f2;
-                  e2 = g2;
+                  d4 = f4;
+                  e6 = g3;
                 }
               } else {
-                d2 = f2;
-                e2 = g2;
+                d4 = f4;
+                e6 = g3;
               }
             }
-            c[e2 >> 2] = 0;
-            f2 = d2;
+            c4[e6 >> 2] = 0;
+            f4 = d4;
           } else {
-            f2 = c[i2 + 8 >> 2] | 0;
-            c[f2 + 12 >> 2] = d2;
-            c[d2 + 8 >> 2] = f2;
-            f2 = d2;
+            f4 = c4[i5 + 8 >> 2] | 0;
+            c4[f4 + 12 >> 2] = d4;
+            c4[d4 + 8 >> 2] = f4;
+            f4 = d4;
           }
         while (0);
-        if (h2 | 0) {
-          d2 = c[i2 + 28 >> 2] | 0;
-          e2 = 70680 + (d2 << 2) | 0;
-          if ((c[e2 >> 2] | 0) == (i2 | 0)) {
-            c[e2 >> 2] = f2;
-            if (!f2) {
-              c[17595] = c[17595] & ~(1 << d2);
+        if (h4 | 0) {
+          d4 = c4[i5 + 28 >> 2] | 0;
+          e6 = 70680 + (d4 << 2) | 0;
+          if ((c4[e6 >> 2] | 0) == (i5 | 0)) {
+            c4[e6 >> 2] = f4;
+            if (!f4) {
+              c4[17595] = c4[17595] & ~(1 << d4);
               break;
             }
           } else {
-            g2 = h2 + 16 | 0;
-            c[((c[g2 >> 2] | 0) == (i2 | 0) ? g2 : h2 + 20 | 0) >> 2] = f2;
-            if (!f2)
+            g3 = h4 + 16 | 0;
+            c4[((c4[g3 >> 2] | 0) == (i5 | 0) ? g3 : h4 + 20 | 0) >> 2] = f4;
+            if (!f4)
               break;
           }
-          c[f2 + 24 >> 2] = h2;
-          d2 = i2 + 16 | 0;
-          e2 = c[d2 >> 2] | 0;
-          if (e2 | 0) {
-            c[f2 + 16 >> 2] = e2;
-            c[e2 + 24 >> 2] = f2;
+          c4[f4 + 24 >> 2] = h4;
+          d4 = i5 + 16 | 0;
+          e6 = c4[d4 >> 2] | 0;
+          if (e6 | 0) {
+            c4[f4 + 16 >> 2] = e6;
+            c4[e6 + 24 >> 2] = f4;
           }
-          d2 = c[d2 + 4 >> 2] | 0;
-          if (d2 | 0) {
-            c[f2 + 20 >> 2] = d2;
-            c[d2 + 24 >> 2] = f2;
+          d4 = c4[d4 + 4 >> 2] | 0;
+          if (d4 | 0) {
+            c4[f4 + 20 >> 2] = d4;
+            c4[d4 + 24 >> 2] = f4;
           }
         }
       }
     while (0);
-    if (k2 >>> 0 < 16) {
-      c[l2 >> 2] = m2 & 1 | j2 | 2;
-      m2 = a2 + j2 + 4 | 0;
-      c[m2 >> 2] = c[m2 >> 2] | 1;
-      return a2 | 0;
+    if (k3 >>> 0 < 16) {
+      c4[l4 >> 2] = m3 & 1 | j3 | 2;
+      m3 = a4 + j3 + 4 | 0;
+      c4[m3 >> 2] = c4[m3 >> 2] | 1;
+      return a4 | 0;
     } else {
-      i2 = a2 + b2 | 0;
-      c[l2 >> 2] = m2 & 1 | b2 | 2;
-      c[i2 + 4 >> 2] = k2 | 3;
-      m2 = a2 + j2 + 4 | 0;
-      c[m2 >> 2] = c[m2 >> 2] | 1;
-      Eb(i2, k2);
-      return a2 | 0;
+      i5 = a4 + b4 | 0;
+      c4[l4 >> 2] = m3 & 1 | b4 | 2;
+      c4[i5 + 4 >> 2] = k3 | 3;
+      m3 = a4 + j3 + 4 | 0;
+      c4[m3 >> 2] = c4[m3 >> 2] | 1;
+      Eb(i5, k3);
+      return a4 | 0;
     }
     return 0;
   }
-  function Eb(a2, b2) {
-    a2 = a2 | 0;
-    b2 = b2 | 0;
-    var d2 = 0, e2 = 0, f2 = 0, g2 = 0, h2 = 0, i2 = 0;
-    i2 = a2 + b2 | 0;
-    d2 = c[a2 + 4 >> 2] | 0;
+  function Eb(a4, b4) {
+    a4 = a4 | 0;
+    b4 = b4 | 0;
+    var d4 = 0, e6 = 0, f4 = 0, g3 = 0, h4 = 0, i5 = 0;
+    i5 = a4 + b4 | 0;
+    d4 = c4[a4 + 4 >> 2] | 0;
     do
-      if (!(d2 & 1)) {
-        f2 = c[a2 >> 2] | 0;
-        if (!(d2 & 3))
+      if (!(d4 & 1)) {
+        f4 = c4[a4 >> 2] | 0;
+        if (!(d4 & 3))
           return;
-        h2 = a2 + (0 - f2) | 0;
-        b2 = f2 + b2 | 0;
-        if ((c[17599] | 0) == (h2 | 0)) {
-          a2 = i2 + 4 | 0;
-          d2 = c[a2 >> 2] | 0;
-          if ((d2 & 3 | 0) != 3)
+        h4 = a4 + (0 - f4) | 0;
+        b4 = f4 + b4 | 0;
+        if ((c4[17599] | 0) == (h4 | 0)) {
+          a4 = i5 + 4 | 0;
+          d4 = c4[a4 >> 2] | 0;
+          if ((d4 & 3 | 0) != 3)
             break;
-          c[17596] = b2;
-          c[a2 >> 2] = d2 & -2;
-          c[h2 + 4 >> 2] = b2 | 1;
-          c[i2 >> 2] = b2;
+          c4[17596] = b4;
+          c4[a4 >> 2] = d4 & -2;
+          c4[h4 + 4 >> 2] = b4 | 1;
+          c4[i5 >> 2] = b4;
           return;
         }
-        e2 = f2 >>> 3;
-        if (f2 >>> 0 < 256) {
-          a2 = c[h2 + 8 >> 2] | 0;
-          d2 = c[h2 + 12 >> 2] | 0;
-          if ((d2 | 0) == (a2 | 0)) {
-            c[17594] = c[17594] & ~(1 << e2);
+        e6 = f4 >>> 3;
+        if (f4 >>> 0 < 256) {
+          a4 = c4[h4 + 8 >> 2] | 0;
+          d4 = c4[h4 + 12 >> 2] | 0;
+          if ((d4 | 0) == (a4 | 0)) {
+            c4[17594] = c4[17594] & ~(1 << e6);
             break;
           } else {
-            c[a2 + 12 >> 2] = d2;
-            c[d2 + 8 >> 2] = a2;
+            c4[a4 + 12 >> 2] = d4;
+            c4[d4 + 8 >> 2] = a4;
             break;
           }
         }
-        g2 = c[h2 + 24 >> 2] | 0;
-        a2 = c[h2 + 12 >> 2] | 0;
+        g3 = c4[h4 + 24 >> 2] | 0;
+        a4 = c4[h4 + 12 >> 2] | 0;
         do
-          if ((a2 | 0) == (h2 | 0)) {
-            d2 = h2 + 16 | 0;
-            e2 = d2 + 4 | 0;
-            a2 = c[e2 >> 2] | 0;
-            if (!a2) {
-              a2 = c[d2 >> 2] | 0;
-              if (!a2) {
-                a2 = 0;
+          if ((a4 | 0) == (h4 | 0)) {
+            d4 = h4 + 16 | 0;
+            e6 = d4 + 4 | 0;
+            a4 = c4[e6 >> 2] | 0;
+            if (!a4) {
+              a4 = c4[d4 >> 2] | 0;
+              if (!a4) {
+                a4 = 0;
                 break;
               }
             } else
-              d2 = e2;
+              d4 = e6;
             while (1) {
-              f2 = a2 + 20 | 0;
-              e2 = c[f2 >> 2] | 0;
-              if (!e2) {
-                f2 = a2 + 16 | 0;
-                e2 = c[f2 >> 2] | 0;
-                if (!e2)
+              f4 = a4 + 20 | 0;
+              e6 = c4[f4 >> 2] | 0;
+              if (!e6) {
+                f4 = a4 + 16 | 0;
+                e6 = c4[f4 >> 2] | 0;
+                if (!e6)
                   break;
                 else {
-                  a2 = e2;
-                  d2 = f2;
+                  a4 = e6;
+                  d4 = f4;
                 }
               } else {
-                a2 = e2;
-                d2 = f2;
+                a4 = e6;
+                d4 = f4;
               }
             }
-            c[d2 >> 2] = 0;
+            c4[d4 >> 2] = 0;
           } else {
-            f2 = c[h2 + 8 >> 2] | 0;
-            c[f2 + 12 >> 2] = a2;
-            c[a2 + 8 >> 2] = f2;
+            f4 = c4[h4 + 8 >> 2] | 0;
+            c4[f4 + 12 >> 2] = a4;
+            c4[a4 + 8 >> 2] = f4;
           }
         while (0);
-        if (g2) {
-          d2 = c[h2 + 28 >> 2] | 0;
-          e2 = 70680 + (d2 << 2) | 0;
-          if ((c[e2 >> 2] | 0) == (h2 | 0)) {
-            c[e2 >> 2] = a2;
-            if (!a2) {
-              c[17595] = c[17595] & ~(1 << d2);
+        if (g3) {
+          d4 = c4[h4 + 28 >> 2] | 0;
+          e6 = 70680 + (d4 << 2) | 0;
+          if ((c4[e6 >> 2] | 0) == (h4 | 0)) {
+            c4[e6 >> 2] = a4;
+            if (!a4) {
+              c4[17595] = c4[17595] & ~(1 << d4);
               break;
             }
           } else {
-            f2 = g2 + 16 | 0;
-            c[((c[f2 >> 2] | 0) == (h2 | 0) ? f2 : g2 + 20 | 0) >> 2] = a2;
-            if (!a2)
+            f4 = g3 + 16 | 0;
+            c4[((c4[f4 >> 2] | 0) == (h4 | 0) ? f4 : g3 + 20 | 0) >> 2] = a4;
+            if (!a4)
               break;
           }
-          c[a2 + 24 >> 2] = g2;
-          d2 = h2 + 16 | 0;
-          e2 = c[d2 >> 2] | 0;
-          if (e2 | 0) {
-            c[a2 + 16 >> 2] = e2;
-            c[e2 + 24 >> 2] = a2;
+          c4[a4 + 24 >> 2] = g3;
+          d4 = h4 + 16 | 0;
+          e6 = c4[d4 >> 2] | 0;
+          if (e6 | 0) {
+            c4[a4 + 16 >> 2] = e6;
+            c4[e6 + 24 >> 2] = a4;
           }
-          d2 = c[d2 + 4 >> 2] | 0;
-          if (d2) {
-            c[a2 + 20 >> 2] = d2;
-            c[d2 + 24 >> 2] = a2;
+          d4 = c4[d4 + 4 >> 2] | 0;
+          if (d4) {
+            c4[a4 + 20 >> 2] = d4;
+            c4[d4 + 24 >> 2] = a4;
           }
         }
       } else
-        h2 = a2;
+        h4 = a4;
     while (0);
-    a2 = i2 + 4 | 0;
-    e2 = c[a2 >> 2] | 0;
-    if (!(e2 & 2)) {
-      if ((c[17600] | 0) == (i2 | 0)) {
-        i2 = (c[17597] | 0) + b2 | 0;
-        c[17597] = i2;
-        c[17600] = h2;
-        c[h2 + 4 >> 2] = i2 | 1;
-        if ((h2 | 0) != (c[17599] | 0))
+    a4 = i5 + 4 | 0;
+    e6 = c4[a4 >> 2] | 0;
+    if (!(e6 & 2)) {
+      if ((c4[17600] | 0) == (i5 | 0)) {
+        i5 = (c4[17597] | 0) + b4 | 0;
+        c4[17597] = i5;
+        c4[17600] = h4;
+        c4[h4 + 4 >> 2] = i5 | 1;
+        if ((h4 | 0) != (c4[17599] | 0))
           return;
-        c[17599] = 0;
-        c[17596] = 0;
+        c4[17599] = 0;
+        c4[17596] = 0;
         return;
       }
-      if ((c[17599] | 0) == (i2 | 0)) {
-        i2 = (c[17596] | 0) + b2 | 0;
-        c[17596] = i2;
-        c[17599] = h2;
-        c[h2 + 4 >> 2] = i2 | 1;
-        c[h2 + i2 >> 2] = i2;
+      if ((c4[17599] | 0) == (i5 | 0)) {
+        i5 = (c4[17596] | 0) + b4 | 0;
+        c4[17596] = i5;
+        c4[17599] = h4;
+        c4[h4 + 4 >> 2] = i5 | 1;
+        c4[h4 + i5 >> 2] = i5;
         return;
       }
-      f2 = (e2 & -8) + b2 | 0;
-      d2 = e2 >>> 3;
+      f4 = (e6 & -8) + b4 | 0;
+      d4 = e6 >>> 3;
       do
-        if (e2 >>> 0 < 256) {
-          a2 = c[i2 + 8 >> 2] | 0;
-          b2 = c[i2 + 12 >> 2] | 0;
-          if ((b2 | 0) == (a2 | 0)) {
-            c[17594] = c[17594] & ~(1 << d2);
+        if (e6 >>> 0 < 256) {
+          a4 = c4[i5 + 8 >> 2] | 0;
+          b4 = c4[i5 + 12 >> 2] | 0;
+          if ((b4 | 0) == (a4 | 0)) {
+            c4[17594] = c4[17594] & ~(1 << d4);
             break;
           } else {
-            c[a2 + 12 >> 2] = b2;
-            c[b2 + 8 >> 2] = a2;
+            c4[a4 + 12 >> 2] = b4;
+            c4[b4 + 8 >> 2] = a4;
             break;
           }
         } else {
-          g2 = c[i2 + 24 >> 2] | 0;
-          b2 = c[i2 + 12 >> 2] | 0;
+          g3 = c4[i5 + 24 >> 2] | 0;
+          b4 = c4[i5 + 12 >> 2] | 0;
           do
-            if ((b2 | 0) == (i2 | 0)) {
-              a2 = i2 + 16 | 0;
-              d2 = a2 + 4 | 0;
-              b2 = c[d2 >> 2] | 0;
-              if (!b2) {
-                b2 = c[a2 >> 2] | 0;
-                if (!b2) {
-                  d2 = 0;
+            if ((b4 | 0) == (i5 | 0)) {
+              a4 = i5 + 16 | 0;
+              d4 = a4 + 4 | 0;
+              b4 = c4[d4 >> 2] | 0;
+              if (!b4) {
+                b4 = c4[a4 >> 2] | 0;
+                if (!b4) {
+                  d4 = 0;
                   break;
                 }
               } else
-                a2 = d2;
+                a4 = d4;
               while (1) {
-                e2 = b2 + 20 | 0;
-                d2 = c[e2 >> 2] | 0;
-                if (!d2) {
-                  e2 = b2 + 16 | 0;
-                  d2 = c[e2 >> 2] | 0;
-                  if (!d2)
+                e6 = b4 + 20 | 0;
+                d4 = c4[e6 >> 2] | 0;
+                if (!d4) {
+                  e6 = b4 + 16 | 0;
+                  d4 = c4[e6 >> 2] | 0;
+                  if (!d4)
                     break;
                   else {
-                    b2 = d2;
-                    a2 = e2;
+                    b4 = d4;
+                    a4 = e6;
                   }
                 } else {
-                  b2 = d2;
-                  a2 = e2;
+                  b4 = d4;
+                  a4 = e6;
                 }
               }
-              c[a2 >> 2] = 0;
-              d2 = b2;
+              c4[a4 >> 2] = 0;
+              d4 = b4;
             } else {
-              d2 = c[i2 + 8 >> 2] | 0;
-              c[d2 + 12 >> 2] = b2;
-              c[b2 + 8 >> 2] = d2;
-              d2 = b2;
+              d4 = c4[i5 + 8 >> 2] | 0;
+              c4[d4 + 12 >> 2] = b4;
+              c4[b4 + 8 >> 2] = d4;
+              d4 = b4;
             }
           while (0);
-          if (g2 | 0) {
-            b2 = c[i2 + 28 >> 2] | 0;
-            a2 = 70680 + (b2 << 2) | 0;
-            if ((c[a2 >> 2] | 0) == (i2 | 0)) {
-              c[a2 >> 2] = d2;
-              if (!d2) {
-                c[17595] = c[17595] & ~(1 << b2);
+          if (g3 | 0) {
+            b4 = c4[i5 + 28 >> 2] | 0;
+            a4 = 70680 + (b4 << 2) | 0;
+            if ((c4[a4 >> 2] | 0) == (i5 | 0)) {
+              c4[a4 >> 2] = d4;
+              if (!d4) {
+                c4[17595] = c4[17595] & ~(1 << b4);
                 break;
               }
             } else {
-              e2 = g2 + 16 | 0;
-              c[((c[e2 >> 2] | 0) == (i2 | 0) ? e2 : g2 + 20 | 0) >> 2] = d2;
-              if (!d2)
+              e6 = g3 + 16 | 0;
+              c4[((c4[e6 >> 2] | 0) == (i5 | 0) ? e6 : g3 + 20 | 0) >> 2] = d4;
+              if (!d4)
                 break;
             }
-            c[d2 + 24 >> 2] = g2;
-            b2 = i2 + 16 | 0;
-            a2 = c[b2 >> 2] | 0;
-            if (a2 | 0) {
-              c[d2 + 16 >> 2] = a2;
-              c[a2 + 24 >> 2] = d2;
+            c4[d4 + 24 >> 2] = g3;
+            b4 = i5 + 16 | 0;
+            a4 = c4[b4 >> 2] | 0;
+            if (a4 | 0) {
+              c4[d4 + 16 >> 2] = a4;
+              c4[a4 + 24 >> 2] = d4;
             }
-            b2 = c[b2 + 4 >> 2] | 0;
-            if (b2 | 0) {
-              c[d2 + 20 >> 2] = b2;
-              c[b2 + 24 >> 2] = d2;
+            b4 = c4[b4 + 4 >> 2] | 0;
+            if (b4 | 0) {
+              c4[d4 + 20 >> 2] = b4;
+              c4[b4 + 24 >> 2] = d4;
             }
           }
         }
       while (0);
-      c[h2 + 4 >> 2] = f2 | 1;
-      c[h2 + f2 >> 2] = f2;
-      if ((h2 | 0) == (c[17599] | 0)) {
-        c[17596] = f2;
+      c4[h4 + 4 >> 2] = f4 | 1;
+      c4[h4 + f4 >> 2] = f4;
+      if ((h4 | 0) == (c4[17599] | 0)) {
+        c4[17596] = f4;
         return;
       }
     } else {
-      c[a2 >> 2] = e2 & -2;
-      c[h2 + 4 >> 2] = b2 | 1;
-      c[h2 + b2 >> 2] = b2;
-      f2 = b2;
+      c4[a4 >> 2] = e6 & -2;
+      c4[h4 + 4 >> 2] = b4 | 1;
+      c4[h4 + b4 >> 2] = b4;
+      f4 = b4;
     }
-    b2 = f2 >>> 3;
-    if (f2 >>> 0 < 256) {
-      d2 = 70416 + (b2 << 1 << 2) | 0;
-      a2 = c[17594] | 0;
-      b2 = 1 << b2;
-      if (!(a2 & b2)) {
-        c[17594] = a2 | b2;
-        b2 = d2;
-        a2 = d2 + 8 | 0;
+    b4 = f4 >>> 3;
+    if (f4 >>> 0 < 256) {
+      d4 = 70416 + (b4 << 1 << 2) | 0;
+      a4 = c4[17594] | 0;
+      b4 = 1 << b4;
+      if (!(a4 & b4)) {
+        c4[17594] = a4 | b4;
+        b4 = d4;
+        a4 = d4 + 8 | 0;
       } else {
-        a2 = d2 + 8 | 0;
-        b2 = c[a2 >> 2] | 0;
+        a4 = d4 + 8 | 0;
+        b4 = c4[a4 >> 2] | 0;
       }
-      c[a2 >> 2] = h2;
-      c[b2 + 12 >> 2] = h2;
-      c[h2 + 8 >> 2] = b2;
-      c[h2 + 12 >> 2] = d2;
+      c4[a4 >> 2] = h4;
+      c4[b4 + 12 >> 2] = h4;
+      c4[h4 + 8 >> 2] = b4;
+      c4[h4 + 12 >> 2] = d4;
       return;
     }
-    b2 = f2 >>> 8;
-    if (b2)
-      if (f2 >>> 0 > 16777215)
-        e2 = 31;
+    b4 = f4 >>> 8;
+    if (b4)
+      if (f4 >>> 0 > 16777215)
+        e6 = 31;
       else {
-        g2 = (b2 + 1048320 | 0) >>> 16 & 8;
-        i2 = b2 << g2;
-        d2 = (i2 + 520192 | 0) >>> 16 & 4;
-        i2 = i2 << d2;
-        e2 = (i2 + 245760 | 0) >>> 16 & 2;
-        e2 = 14 - (d2 | g2 | e2) + (i2 << e2 >>> 15) | 0;
-        e2 = f2 >>> (e2 + 7 | 0) & 1 | e2 << 1;
+        g3 = (b4 + 1048320 | 0) >>> 16 & 8;
+        i5 = b4 << g3;
+        d4 = (i5 + 520192 | 0) >>> 16 & 4;
+        i5 = i5 << d4;
+        e6 = (i5 + 245760 | 0) >>> 16 & 2;
+        e6 = 14 - (d4 | g3 | e6) + (i5 << e6 >>> 15) | 0;
+        e6 = f4 >>> (e6 + 7 | 0) & 1 | e6 << 1;
       }
     else
-      e2 = 0;
-    b2 = 70680 + (e2 << 2) | 0;
-    c[h2 + 28 >> 2] = e2;
-    c[h2 + 20 >> 2] = 0;
-    c[h2 + 16 >> 2] = 0;
-    a2 = c[17595] | 0;
-    d2 = 1 << e2;
-    if (!(a2 & d2)) {
-      c[17595] = a2 | d2;
-      c[b2 >> 2] = h2;
-      c[h2 + 24 >> 2] = b2;
-      c[h2 + 12 >> 2] = h2;
-      c[h2 + 8 >> 2] = h2;
+      e6 = 0;
+    b4 = 70680 + (e6 << 2) | 0;
+    c4[h4 + 28 >> 2] = e6;
+    c4[h4 + 20 >> 2] = 0;
+    c4[h4 + 16 >> 2] = 0;
+    a4 = c4[17595] | 0;
+    d4 = 1 << e6;
+    if (!(a4 & d4)) {
+      c4[17595] = a4 | d4;
+      c4[b4 >> 2] = h4;
+      c4[h4 + 24 >> 2] = b4;
+      c4[h4 + 12 >> 2] = h4;
+      c4[h4 + 8 >> 2] = h4;
       return;
     }
-    b2 = c[b2 >> 2] | 0;
+    b4 = c4[b4 >> 2] | 0;
     a:
       do
-        if ((c[b2 + 4 >> 2] & -8 | 0) != (f2 | 0)) {
-          e2 = f2 << ((e2 | 0) == 31 ? 0 : 25 - (e2 >>> 1) | 0);
+        if ((c4[b4 + 4 >> 2] & -8 | 0) != (f4 | 0)) {
+          e6 = f4 << ((e6 | 0) == 31 ? 0 : 25 - (e6 >>> 1) | 0);
           while (1) {
-            d2 = b2 + 16 + (e2 >>> 31 << 2) | 0;
-            a2 = c[d2 >> 2] | 0;
-            if (!a2)
+            d4 = b4 + 16 + (e6 >>> 31 << 2) | 0;
+            a4 = c4[d4 >> 2] | 0;
+            if (!a4)
               break;
-            if ((c[a2 + 4 >> 2] & -8 | 0) == (f2 | 0)) {
-              b2 = a2;
+            if ((c4[a4 + 4 >> 2] & -8 | 0) == (f4 | 0)) {
+              b4 = a4;
               break a;
             } else {
-              e2 = e2 << 1;
-              b2 = a2;
+              e6 = e6 << 1;
+              b4 = a4;
             }
           }
-          c[d2 >> 2] = h2;
-          c[h2 + 24 >> 2] = b2;
-          c[h2 + 12 >> 2] = h2;
-          c[h2 + 8 >> 2] = h2;
+          c4[d4 >> 2] = h4;
+          c4[h4 + 24 >> 2] = b4;
+          c4[h4 + 12 >> 2] = h4;
+          c4[h4 + 8 >> 2] = h4;
           return;
         }
       while (0);
-    g2 = b2 + 8 | 0;
-    i2 = c[g2 >> 2] | 0;
-    c[i2 + 12 >> 2] = h2;
-    c[g2 >> 2] = h2;
-    c[h2 + 8 >> 2] = i2;
-    c[h2 + 12 >> 2] = b2;
-    c[h2 + 24 >> 2] = 0;
+    g3 = b4 + 8 | 0;
+    i5 = c4[g3 >> 2] | 0;
+    c4[i5 + 12 >> 2] = h4;
+    c4[g3 >> 2] = h4;
+    c4[h4 + 8 >> 2] = i5;
+    c4[h4 + 12 >> 2] = b4;
+    c4[h4 + 24 >> 2] = 0;
     return;
   }
-  function Fb(a2, b2) {
-    a2 = a2 | 0;
-    b2 = b2 | 0;
-    if (a2 >>> 0 < 9) {
-      b2 = Ab(b2) | 0;
-      return b2 | 0;
+  function Fb(a4, b4) {
+    a4 = a4 | 0;
+    b4 = b4 | 0;
+    if (a4 >>> 0 < 9) {
+      b4 = Ab(b4) | 0;
+      return b4 | 0;
     } else {
-      b2 = Gb(a2, b2) | 0;
-      return b2 | 0;
+      b4 = Gb(a4, b4) | 0;
+      return b4 | 0;
     }
     return 0;
   }
-  function Gb(a2, b2) {
-    a2 = a2 | 0;
-    b2 = b2 | 0;
-    var d2 = 0, e2 = 0, f2 = 0, g2 = 0, h2 = 0, i2 = 0;
-    d2 = a2 >>> 0 > 16 ? a2 : 16;
-    if (!(d2 + -1 & d2))
-      a2 = d2;
+  function Gb(a4, b4) {
+    a4 = a4 | 0;
+    b4 = b4 | 0;
+    var d4 = 0, e6 = 0, f4 = 0, g3 = 0, h4 = 0, i5 = 0;
+    d4 = a4 >>> 0 > 16 ? a4 : 16;
+    if (!(d4 + -1 & d4))
+      a4 = d4;
     else {
-      a2 = 16;
+      a4 = 16;
       while (1)
-        if (a2 >>> 0 < d2 >>> 0)
-          a2 = a2 << 1;
+        if (a4 >>> 0 < d4 >>> 0)
+          a4 = a4 << 1;
         else
           break;
     }
-    if ((-64 - a2 | 0) >>> 0 <= b2 >>> 0) {
-      h2 = 0;
-      return h2 | 0;
+    if ((-64 - a4 | 0) >>> 0 <= b4 >>> 0) {
+      h4 = 0;
+      return h4 | 0;
     }
-    g2 = b2 >>> 0 < 11 ? 16 : b2 + 11 & -8;
-    d2 = Ab(g2 + 12 + a2 | 0) | 0;
-    if (!d2) {
-      h2 = 0;
-      return h2 | 0;
+    g3 = b4 >>> 0 < 11 ? 16 : b4 + 11 & -8;
+    d4 = Ab(g3 + 12 + a4 | 0) | 0;
+    if (!d4) {
+      h4 = 0;
+      return h4 | 0;
     }
-    f2 = d2 + -8 | 0;
+    f4 = d4 + -8 | 0;
     do
-      if (a2 + -1 & d2) {
-        e2 = (d2 + a2 + -1 & 0 - a2) + -8 | 0;
-        b2 = f2;
-        e2 = (e2 - b2 | 0) >>> 0 > 15 ? e2 : e2 + a2 | 0;
-        b2 = e2 - b2 | 0;
-        a2 = d2 + -4 | 0;
-        i2 = c[a2 >> 2] | 0;
-        d2 = (i2 & -8) - b2 | 0;
-        if (!(i2 & 3)) {
-          c[e2 >> 2] = (c[f2 >> 2] | 0) + b2;
-          c[e2 + 4 >> 2] = d2;
-          a2 = e2;
-          b2 = e2;
+      if (a4 + -1 & d4) {
+        e6 = (d4 + a4 + -1 & 0 - a4) + -8 | 0;
+        b4 = f4;
+        e6 = (e6 - b4 | 0) >>> 0 > 15 ? e6 : e6 + a4 | 0;
+        b4 = e6 - b4 | 0;
+        a4 = d4 + -4 | 0;
+        i5 = c4[a4 >> 2] | 0;
+        d4 = (i5 & -8) - b4 | 0;
+        if (!(i5 & 3)) {
+          c4[e6 >> 2] = (c4[f4 >> 2] | 0) + b4;
+          c4[e6 + 4 >> 2] = d4;
+          a4 = e6;
+          b4 = e6;
           break;
         } else {
-          i2 = e2 + 4 | 0;
-          c[i2 >> 2] = d2 | c[i2 >> 2] & 1 | 2;
-          d2 = e2 + d2 + 4 | 0;
-          c[d2 >> 2] = c[d2 >> 2] | 1;
-          c[a2 >> 2] = b2 | c[a2 >> 2] & 1 | 2;
-          c[i2 >> 2] = c[i2 >> 2] | 1;
-          Eb(f2, b2);
-          a2 = e2;
-          b2 = e2;
+          i5 = e6 + 4 | 0;
+          c4[i5 >> 2] = d4 | c4[i5 >> 2] & 1 | 2;
+          d4 = e6 + d4 + 4 | 0;
+          c4[d4 >> 2] = c4[d4 >> 2] | 1;
+          c4[a4 >> 2] = b4 | c4[a4 >> 2] & 1 | 2;
+          c4[i5 >> 2] = c4[i5 >> 2] | 1;
+          Eb(f4, b4);
+          a4 = e6;
+          b4 = e6;
           break;
         }
       } else {
-        a2 = f2;
-        b2 = f2;
+        a4 = f4;
+        b4 = f4;
       }
     while (0);
-    a2 = a2 + 4 | 0;
-    d2 = c[a2 >> 2] | 0;
-    if (d2 & 3 | 0 ? (h2 = d2 & -8, h2 >>> 0 > (g2 + 16 | 0) >>> 0) : 0) {
-      i2 = h2 - g2 | 0;
-      f2 = b2 + g2 | 0;
-      c[a2 >> 2] = g2 | d2 & 1 | 2;
-      c[f2 + 4 >> 2] = i2 | 3;
-      h2 = b2 + h2 + 4 | 0;
-      c[h2 >> 2] = c[h2 >> 2] | 1;
-      Eb(f2, i2);
+    a4 = a4 + 4 | 0;
+    d4 = c4[a4 >> 2] | 0;
+    if (d4 & 3 | 0 ? (h4 = d4 & -8, h4 >>> 0 > (g3 + 16 | 0) >>> 0) : 0) {
+      i5 = h4 - g3 | 0;
+      f4 = b4 + g3 | 0;
+      c4[a4 >> 2] = g3 | d4 & 1 | 2;
+      c4[f4 + 4 >> 2] = i5 | 3;
+      h4 = b4 + h4 + 4 | 0;
+      c4[h4 >> 2] = c4[h4 >> 2] | 1;
+      Eb(f4, i5);
     }
-    i2 = b2 + 8 | 0;
-    return i2 | 0;
+    i5 = b4 + 8 | 0;
+    return i5 | 0;
   }
   function Hb() {
-    t(70888);
+    t4(70888);
     return;
   }
   function Ib() {
@@ -28385,589 +28506,589 @@ var asm = function(global, env, buffer2) {
   function Lb() {
     return 70888;
   }
-  function Mb(a2) {
-    a2 = a2 | 0;
+  function Mb(a4) {
+    a4 = a4 | 0;
     return;
   }
-  function Nb(a2) {
-    a2 = a2 | 0;
-    bc(a2);
+  function Nb(a4) {
+    a4 = a4 | 0;
+    bc(a4);
     return;
   }
-  function Ob(a2) {
-    a2 = a2 | 0;
+  function Ob(a4) {
+    a4 = a4 | 0;
     return;
   }
-  function Pb(a2) {
-    a2 = a2 | 0;
+  function Pb(a4) {
+    a4 = a4 | 0;
     return;
   }
-  function Qb(a2, b2, d2) {
-    a2 = a2 | 0;
-    b2 = b2 | 0;
-    d2 = d2 | 0;
-    var e2 = 0, f2 = 0, g2 = 0, h2 = 0;
-    h2 = E;
-    E = E + 64 | 0;
-    f2 = h2;
-    if (!(Ub(a2, b2) | 0))
-      if ((b2 | 0) != 0 ? (g2 = Yb(b2, 69792) | 0, (g2 | 0) != 0) : 0) {
-        b2 = f2 + 4 | 0;
-        e2 = b2 + 52 | 0;
+  function Qb(a4, b4, d4) {
+    a4 = a4 | 0;
+    b4 = b4 | 0;
+    d4 = d4 | 0;
+    var e6 = 0, f4 = 0, g3 = 0, h4 = 0;
+    h4 = E2;
+    E2 = E2 + 64 | 0;
+    f4 = h4;
+    if (!(Ub(a4, b4) | 0))
+      if ((b4 | 0) != 0 ? (g3 = Yb(b4, 69792) | 0, (g3 | 0) != 0) : 0) {
+        b4 = f4 + 4 | 0;
+        e6 = b4 + 52 | 0;
         do {
-          c[b2 >> 2] = 0;
-          b2 = b2 + 4 | 0;
-        } while ((b2 | 0) < (e2 | 0));
-        c[f2 >> 2] = g2;
-        c[f2 + 8 >> 2] = a2;
-        c[f2 + 12 >> 2] = -1;
-        c[f2 + 48 >> 2] = 1;
-        L[c[(c[g2 >> 2] | 0) + 28 >> 2] & 3](g2, f2, c[d2 >> 2] | 0, 1);
-        if ((c[f2 + 24 >> 2] | 0) == 1) {
-          c[d2 >> 2] = c[f2 + 16 >> 2];
-          b2 = 1;
+          c4[b4 >> 2] = 0;
+          b4 = b4 + 4 | 0;
+        } while ((b4 | 0) < (e6 | 0));
+        c4[f4 >> 2] = g3;
+        c4[f4 + 8 >> 2] = a4;
+        c4[f4 + 12 >> 2] = -1;
+        c4[f4 + 48 >> 2] = 1;
+        L2[c4[(c4[g3 >> 2] | 0) + 28 >> 2] & 3](g3, f4, c4[d4 >> 2] | 0, 1);
+        if ((c4[f4 + 24 >> 2] | 0) == 1) {
+          c4[d4 >> 2] = c4[f4 + 16 >> 2];
+          b4 = 1;
         } else
-          b2 = 0;
+          b4 = 0;
       } else
-        b2 = 0;
+        b4 = 0;
     else
-      b2 = 1;
-    E = h2;
-    return b2 | 0;
+      b4 = 1;
+    E2 = h4;
+    return b4 | 0;
   }
-  function Rb(a2, b2, d2, e2, f2, g2) {
-    a2 = a2 | 0;
-    b2 = b2 | 0;
-    d2 = d2 | 0;
-    e2 = e2 | 0;
-    f2 = f2 | 0;
-    g2 = g2 | 0;
-    if (Ub(a2, c[b2 + 8 >> 2] | 0) | 0)
-      Xb(b2, d2, e2, f2);
+  function Rb(a4, b4, d4, e6, f4, g3) {
+    a4 = a4 | 0;
+    b4 = b4 | 0;
+    d4 = d4 | 0;
+    e6 = e6 | 0;
+    f4 = f4 | 0;
+    g3 = g3 | 0;
+    if (Ub(a4, c4[b4 + 8 >> 2] | 0) | 0)
+      Xb(b4, d4, e6, f4);
     return;
   }
-  function Sb(b2, d2, e2, f2, g2) {
-    b2 = b2 | 0;
-    d2 = d2 | 0;
-    e2 = e2 | 0;
-    f2 = f2 | 0;
-    g2 = g2 | 0;
-    var h2 = 0;
+  function Sb(b4, d4, e6, f4, g3) {
+    b4 = b4 | 0;
+    d4 = d4 | 0;
+    e6 = e6 | 0;
+    f4 = f4 | 0;
+    g3 = g3 | 0;
+    var h4 = 0;
     do
-      if (!(Ub(b2, c[d2 + 8 >> 2] | 0) | 0)) {
-        if (Ub(b2, c[d2 >> 2] | 0) | 0) {
-          if ((c[d2 + 16 >> 2] | 0) != (e2 | 0) ? (h2 = d2 + 20 | 0, (c[h2 >> 2] | 0) != (e2 | 0)) : 0) {
-            c[d2 + 32 >> 2] = f2;
-            c[h2 >> 2] = e2;
-            g2 = d2 + 40 | 0;
-            c[g2 >> 2] = (c[g2 >> 2] | 0) + 1;
-            if ((c[d2 + 36 >> 2] | 0) == 1 ? (c[d2 + 24 >> 2] | 0) == 2 : 0)
-              a[d2 + 54 >> 0] = 1;
-            c[d2 + 44 >> 2] = 4;
+      if (!(Ub(b4, c4[d4 + 8 >> 2] | 0) | 0)) {
+        if (Ub(b4, c4[d4 >> 2] | 0) | 0) {
+          if ((c4[d4 + 16 >> 2] | 0) != (e6 | 0) ? (h4 = d4 + 20 | 0, (c4[h4 >> 2] | 0) != (e6 | 0)) : 0) {
+            c4[d4 + 32 >> 2] = f4;
+            c4[h4 >> 2] = e6;
+            g3 = d4 + 40 | 0;
+            c4[g3 >> 2] = (c4[g3 >> 2] | 0) + 1;
+            if ((c4[d4 + 36 >> 2] | 0) == 1 ? (c4[d4 + 24 >> 2] | 0) == 2 : 0)
+              a3[d4 + 54 >> 0] = 1;
+            c4[d4 + 44 >> 2] = 4;
             break;
           }
-          if ((f2 | 0) == 1)
-            c[d2 + 32 >> 2] = 1;
+          if ((f4 | 0) == 1)
+            c4[d4 + 32 >> 2] = 1;
         }
       } else
-        Wb(d2, e2, f2);
+        Wb(d4, e6, f4);
     while (0);
     return;
   }
-  function Tb(a2, b2, d2, e2) {
-    a2 = a2 | 0;
-    b2 = b2 | 0;
-    d2 = d2 | 0;
-    e2 = e2 | 0;
-    if (Ub(a2, c[b2 + 8 >> 2] | 0) | 0)
-      Vb(b2, d2, e2);
+  function Tb(a4, b4, d4, e6) {
+    a4 = a4 | 0;
+    b4 = b4 | 0;
+    d4 = d4 | 0;
+    e6 = e6 | 0;
+    if (Ub(a4, c4[b4 + 8 >> 2] | 0) | 0)
+      Vb(b4, d4, e6);
     return;
   }
-  function Ub(a2, b2) {
-    a2 = a2 | 0;
-    b2 = b2 | 0;
-    return (a2 | 0) == (b2 | 0) | 0;
+  function Ub(a4, b4) {
+    a4 = a4 | 0;
+    b4 = b4 | 0;
+    return (a4 | 0) == (b4 | 0) | 0;
   }
-  function Vb(b2, d2, e2) {
-    b2 = b2 | 0;
-    d2 = d2 | 0;
-    e2 = e2 | 0;
-    var f2 = 0, g2 = 0;
-    f2 = b2 + 16 | 0;
-    g2 = c[f2 >> 2] | 0;
+  function Vb(b4, d4, e6) {
+    b4 = b4 | 0;
+    d4 = d4 | 0;
+    e6 = e6 | 0;
+    var f4 = 0, g3 = 0;
+    f4 = b4 + 16 | 0;
+    g3 = c4[f4 >> 2] | 0;
     do
-      if (g2) {
-        if ((g2 | 0) != (d2 | 0)) {
-          e2 = b2 + 36 | 0;
-          c[e2 >> 2] = (c[e2 >> 2] | 0) + 1;
-          c[b2 + 24 >> 2] = 2;
-          a[b2 + 54 >> 0] = 1;
+      if (g3) {
+        if ((g3 | 0) != (d4 | 0)) {
+          e6 = b4 + 36 | 0;
+          c4[e6 >> 2] = (c4[e6 >> 2] | 0) + 1;
+          c4[b4 + 24 >> 2] = 2;
+          a3[b4 + 54 >> 0] = 1;
           break;
         }
-        b2 = b2 + 24 | 0;
-        if ((c[b2 >> 2] | 0) == 2)
-          c[b2 >> 2] = e2;
+        b4 = b4 + 24 | 0;
+        if ((c4[b4 >> 2] | 0) == 2)
+          c4[b4 >> 2] = e6;
       } else {
-        c[f2 >> 2] = d2;
-        c[b2 + 24 >> 2] = e2;
-        c[b2 + 36 >> 2] = 1;
+        c4[f4 >> 2] = d4;
+        c4[b4 + 24 >> 2] = e6;
+        c4[b4 + 36 >> 2] = 1;
       }
     while (0);
     return;
   }
-  function Wb(a2, b2, d2) {
-    a2 = a2 | 0;
-    b2 = b2 | 0;
-    d2 = d2 | 0;
-    var e2 = 0;
-    if ((c[a2 + 4 >> 2] | 0) == (b2 | 0) ? (e2 = a2 + 28 | 0, (c[e2 >> 2] | 0) != 1) : 0)
-      c[e2 >> 2] = d2;
+  function Wb(a4, b4, d4) {
+    a4 = a4 | 0;
+    b4 = b4 | 0;
+    d4 = d4 | 0;
+    var e6 = 0;
+    if ((c4[a4 + 4 >> 2] | 0) == (b4 | 0) ? (e6 = a4 + 28 | 0, (c4[e6 >> 2] | 0) != 1) : 0)
+      c4[e6 >> 2] = d4;
     return;
   }
-  function Xb(b2, d2, e2, f2) {
-    b2 = b2 | 0;
-    d2 = d2 | 0;
-    e2 = e2 | 0;
-    f2 = f2 | 0;
-    var g2 = 0;
-    a[b2 + 53 >> 0] = 1;
+  function Xb(b4, d4, e6, f4) {
+    b4 = b4 | 0;
+    d4 = d4 | 0;
+    e6 = e6 | 0;
+    f4 = f4 | 0;
+    var g3 = 0;
+    a3[b4 + 53 >> 0] = 1;
     do
-      if ((c[b2 + 4 >> 2] | 0) == (e2 | 0)) {
-        a[b2 + 52 >> 0] = 1;
-        g2 = b2 + 16 | 0;
-        e2 = c[g2 >> 2] | 0;
-        if (!e2) {
-          c[g2 >> 2] = d2;
-          c[b2 + 24 >> 2] = f2;
-          c[b2 + 36 >> 2] = 1;
-          if (!((f2 | 0) == 1 ? (c[b2 + 48 >> 2] | 0) == 1 : 0))
+      if ((c4[b4 + 4 >> 2] | 0) == (e6 | 0)) {
+        a3[b4 + 52 >> 0] = 1;
+        g3 = b4 + 16 | 0;
+        e6 = c4[g3 >> 2] | 0;
+        if (!e6) {
+          c4[g3 >> 2] = d4;
+          c4[b4 + 24 >> 2] = f4;
+          c4[b4 + 36 >> 2] = 1;
+          if (!((f4 | 0) == 1 ? (c4[b4 + 48 >> 2] | 0) == 1 : 0))
             break;
-          a[b2 + 54 >> 0] = 1;
+          a3[b4 + 54 >> 0] = 1;
           break;
         }
-        if ((e2 | 0) != (d2 | 0)) {
-          f2 = b2 + 36 | 0;
-          c[f2 >> 2] = (c[f2 >> 2] | 0) + 1;
-          a[b2 + 54 >> 0] = 1;
+        if ((e6 | 0) != (d4 | 0)) {
+          f4 = b4 + 36 | 0;
+          c4[f4 >> 2] = (c4[f4 >> 2] | 0) + 1;
+          a3[b4 + 54 >> 0] = 1;
           break;
         }
-        g2 = b2 + 24 | 0;
-        e2 = c[g2 >> 2] | 0;
-        if ((e2 | 0) == 2) {
-          c[g2 >> 2] = f2;
-          e2 = f2;
+        g3 = b4 + 24 | 0;
+        e6 = c4[g3 >> 2] | 0;
+        if ((e6 | 0) == 2) {
+          c4[g3 >> 2] = f4;
+          e6 = f4;
         }
-        if ((e2 | 0) == 1 ? (c[b2 + 48 >> 2] | 0) == 1 : 0)
-          a[b2 + 54 >> 0] = 1;
+        if ((e6 | 0) == 1 ? (c4[b4 + 48 >> 2] | 0) == 1 : 0)
+          a3[b4 + 54 >> 0] = 1;
       }
     while (0);
     return;
   }
-  function Yb(d2, e2) {
-    d2 = d2 | 0;
-    e2 = e2 | 0;
-    var f2 = 0, g2 = 0, h2 = 0, i2 = 0, j2 = 0, k2 = 0, l2 = 0, m2 = 0, n2 = 0, o2 = 0, p2 = 0, q2 = 0;
-    q2 = E;
-    E = E + 64 | 0;
-    n2 = q2;
-    p2 = c[d2 >> 2] | 0;
-    o2 = d2 + (c[p2 + -8 >> 2] | 0) | 0;
-    p2 = c[p2 + -4 >> 2] | 0;
-    c[n2 >> 2] = e2;
-    c[n2 + 4 >> 2] = d2;
-    c[n2 + 8 >> 2] = 69808;
-    g2 = n2 + 12 | 0;
-    h2 = n2 + 16 | 0;
-    i2 = n2 + 20 | 0;
-    j2 = n2 + 24 | 0;
-    k2 = n2 + 28 | 0;
-    l2 = n2 + 32 | 0;
-    m2 = n2 + 40 | 0;
-    d2 = Ub(p2, e2) | 0;
-    e2 = g2;
-    f2 = e2 + 40 | 0;
+  function Yb(d4, e6) {
+    d4 = d4 | 0;
+    e6 = e6 | 0;
+    var f4 = 0, g3 = 0, h4 = 0, i5 = 0, j3 = 0, k3 = 0, l4 = 0, m3 = 0, n6 = 0, o5 = 0, p4 = 0, q2 = 0;
+    q2 = E2;
+    E2 = E2 + 64 | 0;
+    n6 = q2;
+    p4 = c4[d4 >> 2] | 0;
+    o5 = d4 + (c4[p4 + -8 >> 2] | 0) | 0;
+    p4 = c4[p4 + -4 >> 2] | 0;
+    c4[n6 >> 2] = e6;
+    c4[n6 + 4 >> 2] = d4;
+    c4[n6 + 8 >> 2] = 69808;
+    g3 = n6 + 12 | 0;
+    h4 = n6 + 16 | 0;
+    i5 = n6 + 20 | 0;
+    j3 = n6 + 24 | 0;
+    k3 = n6 + 28 | 0;
+    l4 = n6 + 32 | 0;
+    m3 = n6 + 40 | 0;
+    d4 = Ub(p4, e6) | 0;
+    e6 = g3;
+    f4 = e6 + 40 | 0;
     do {
-      c[e2 >> 2] = 0;
-      e2 = e2 + 4 | 0;
-    } while ((e2 | 0) < (f2 | 0));
-    b[g2 + 40 >> 1] = 0;
-    a[g2 + 42 >> 0] = 0;
+      c4[e6 >> 2] = 0;
+      e6 = e6 + 4 | 0;
+    } while ((e6 | 0) < (f4 | 0));
+    b3[g3 + 40 >> 1] = 0;
+    a3[g3 + 42 >> 0] = 0;
     a:
       do
-        if (d2) {
-          c[n2 + 48 >> 2] = 1;
-          N[c[(c[p2 >> 2] | 0) + 20 >> 2] & 3](p2, n2, o2, o2, 1, 0);
-          d2 = (c[j2 >> 2] | 0) == 1 ? o2 : 0;
+        if (d4) {
+          c4[n6 + 48 >> 2] = 1;
+          N2[c4[(c4[p4 >> 2] | 0) + 20 >> 2] & 3](p4, n6, o5, o5, 1, 0);
+          d4 = (c4[j3 >> 2] | 0) == 1 ? o5 : 0;
         } else {
-          M[c[(c[p2 >> 2] | 0) + 24 >> 2] & 3](p2, n2, o2, 1, 0);
-          switch (c[n2 + 36 >> 2] | 0) {
+          M2[c4[(c4[p4 >> 2] | 0) + 24 >> 2] & 3](p4, n6, o5, 1, 0);
+          switch (c4[n6 + 36 >> 2] | 0) {
             case 0: {
-              d2 = (c[m2 >> 2] | 0) == 1 & (c[k2 >> 2] | 0) == 1 & (c[l2 >> 2] | 0) == 1 ? c[i2 >> 2] | 0 : 0;
+              d4 = (c4[m3 >> 2] | 0) == 1 & (c4[k3 >> 2] | 0) == 1 & (c4[l4 >> 2] | 0) == 1 ? c4[i5 >> 2] | 0 : 0;
               break a;
             }
             case 1:
               break;
             default: {
-              d2 = 0;
+              d4 = 0;
               break a;
             }
           }
-          if ((c[j2 >> 2] | 0) != 1 ? !((c[m2 >> 2] | 0) == 0 & (c[k2 >> 2] | 0) == 1 & (c[l2 >> 2] | 0) == 1) : 0) {
-            d2 = 0;
+          if ((c4[j3 >> 2] | 0) != 1 ? !((c4[m3 >> 2] | 0) == 0 & (c4[k3 >> 2] | 0) == 1 & (c4[l4 >> 2] | 0) == 1) : 0) {
+            d4 = 0;
             break;
           }
-          d2 = c[h2 >> 2] | 0;
+          d4 = c4[h4 >> 2] | 0;
         }
       while (0);
-    E = q2;
-    return d2 | 0;
+    E2 = q2;
+    return d4 | 0;
   }
-  function Zb(a2) {
-    a2 = a2 | 0;
-    bc(a2);
+  function Zb(a4) {
+    a4 = a4 | 0;
+    bc(a4);
     return;
   }
-  function _b(a2, b2, d2, e2, f2, g2) {
-    a2 = a2 | 0;
-    b2 = b2 | 0;
-    d2 = d2 | 0;
-    e2 = e2 | 0;
-    f2 = f2 | 0;
-    g2 = g2 | 0;
-    if (Ub(a2, c[b2 + 8 >> 2] | 0) | 0)
-      Xb(b2, d2, e2, f2);
+  function _b2(a4, b4, d4, e6, f4, g3) {
+    a4 = a4 | 0;
+    b4 = b4 | 0;
+    d4 = d4 | 0;
+    e6 = e6 | 0;
+    f4 = f4 | 0;
+    g3 = g3 | 0;
+    if (Ub(a4, c4[b4 + 8 >> 2] | 0) | 0)
+      Xb(b4, d4, e6, f4);
     else {
-      a2 = c[a2 + 8 >> 2] | 0;
-      N[c[(c[a2 >> 2] | 0) + 20 >> 2] & 3](a2, b2, d2, e2, f2, g2);
+      a4 = c4[a4 + 8 >> 2] | 0;
+      N2[c4[(c4[a4 >> 2] | 0) + 20 >> 2] & 3](a4, b4, d4, e6, f4, g3);
     }
     return;
   }
-  function $b(b2, d2, e2, f2, g2) {
-    b2 = b2 | 0;
-    d2 = d2 | 0;
-    e2 = e2 | 0;
-    f2 = f2 | 0;
-    g2 = g2 | 0;
-    var h2 = 0, i2 = 0, j2 = 0;
+  function $b(b4, d4, e6, f4, g3) {
+    b4 = b4 | 0;
+    d4 = d4 | 0;
+    e6 = e6 | 0;
+    f4 = f4 | 0;
+    g3 = g3 | 0;
+    var h4 = 0, i5 = 0, j3 = 0;
     do
-      if (!(Ub(b2, c[d2 + 8 >> 2] | 0) | 0)) {
-        if (!(Ub(b2, c[d2 >> 2] | 0) | 0)) {
-          i2 = c[b2 + 8 >> 2] | 0;
-          M[c[(c[i2 >> 2] | 0) + 24 >> 2] & 3](i2, d2, e2, f2, g2);
+      if (!(Ub(b4, c4[d4 + 8 >> 2] | 0) | 0)) {
+        if (!(Ub(b4, c4[d4 >> 2] | 0) | 0)) {
+          i5 = c4[b4 + 8 >> 2] | 0;
+          M2[c4[(c4[i5 >> 2] | 0) + 24 >> 2] & 3](i5, d4, e6, f4, g3);
           break;
         }
-        if ((c[d2 + 16 >> 2] | 0) != (e2 | 0) ? (h2 = d2 + 20 | 0, (c[h2 >> 2] | 0) != (e2 | 0)) : 0) {
-          c[d2 + 32 >> 2] = f2;
-          i2 = d2 + 44 | 0;
-          if ((c[i2 >> 2] | 0) == 4)
+        if ((c4[d4 + 16 >> 2] | 0) != (e6 | 0) ? (h4 = d4 + 20 | 0, (c4[h4 >> 2] | 0) != (e6 | 0)) : 0) {
+          c4[d4 + 32 >> 2] = f4;
+          i5 = d4 + 44 | 0;
+          if ((c4[i5 >> 2] | 0) == 4)
             break;
-          f2 = d2 + 52 | 0;
-          a[f2 >> 0] = 0;
-          j2 = d2 + 53 | 0;
-          a[j2 >> 0] = 0;
-          b2 = c[b2 + 8 >> 2] | 0;
-          N[c[(c[b2 >> 2] | 0) + 20 >> 2] & 3](b2, d2, e2, e2, 1, g2);
-          if (a[j2 >> 0] | 0)
-            if (!(a[f2 >> 0] | 0)) {
-              f2 = 1;
-              b2 = 11;
+          f4 = d4 + 52 | 0;
+          a3[f4 >> 0] = 0;
+          j3 = d4 + 53 | 0;
+          a3[j3 >> 0] = 0;
+          b4 = c4[b4 + 8 >> 2] | 0;
+          N2[c4[(c4[b4 >> 2] | 0) + 20 >> 2] & 3](b4, d4, e6, e6, 1, g3);
+          if (a3[j3 >> 0] | 0)
+            if (!(a3[f4 >> 0] | 0)) {
+              f4 = 1;
+              b4 = 11;
             } else
-              b2 = 15;
+              b4 = 15;
           else {
-            f2 = 0;
-            b2 = 11;
+            f4 = 0;
+            b4 = 11;
           }
           do
-            if ((b2 | 0) == 11) {
-              c[h2 >> 2] = e2;
-              j2 = d2 + 40 | 0;
-              c[j2 >> 2] = (c[j2 >> 2] | 0) + 1;
-              if ((c[d2 + 36 >> 2] | 0) == 1 ? (c[d2 + 24 >> 2] | 0) == 2 : 0) {
-                a[d2 + 54 >> 0] = 1;
-                if (f2) {
-                  b2 = 15;
+            if ((b4 | 0) == 11) {
+              c4[h4 >> 2] = e6;
+              j3 = d4 + 40 | 0;
+              c4[j3 >> 2] = (c4[j3 >> 2] | 0) + 1;
+              if ((c4[d4 + 36 >> 2] | 0) == 1 ? (c4[d4 + 24 >> 2] | 0) == 2 : 0) {
+                a3[d4 + 54 >> 0] = 1;
+                if (f4) {
+                  b4 = 15;
                   break;
                 } else {
-                  f2 = 4;
+                  f4 = 4;
                   break;
                 }
               }
-              if (f2)
-                b2 = 15;
+              if (f4)
+                b4 = 15;
               else
-                f2 = 4;
+                f4 = 4;
             }
           while (0);
-          if ((b2 | 0) == 15)
-            f2 = 3;
-          c[i2 >> 2] = f2;
+          if ((b4 | 0) == 15)
+            f4 = 3;
+          c4[i5 >> 2] = f4;
           break;
         }
-        if ((f2 | 0) == 1)
-          c[d2 + 32 >> 2] = 1;
+        if ((f4 | 0) == 1)
+          c4[d4 + 32 >> 2] = 1;
       } else
-        Wb(d2, e2, f2);
+        Wb(d4, e6, f4);
     while (0);
     return;
   }
-  function ac(a2, b2, d2, e2) {
-    a2 = a2 | 0;
-    b2 = b2 | 0;
-    d2 = d2 | 0;
-    e2 = e2 | 0;
-    if (Ub(a2, c[b2 + 8 >> 2] | 0) | 0)
-      Vb(b2, d2, e2);
+  function ac(a4, b4, d4, e6) {
+    a4 = a4 | 0;
+    b4 = b4 | 0;
+    d4 = d4 | 0;
+    e6 = e6 | 0;
+    if (Ub(a4, c4[b4 + 8 >> 2] | 0) | 0)
+      Vb(b4, d4, e6);
     else {
-      a2 = c[a2 + 8 >> 2] | 0;
-      L[c[(c[a2 >> 2] | 0) + 28 >> 2] & 3](a2, b2, d2, e2);
+      a4 = c4[a4 + 8 >> 2] | 0;
+      L2[c4[(c4[a4 >> 2] | 0) + 28 >> 2] & 3](a4, b4, d4, e6);
     }
     return;
   }
-  function bc(a2) {
-    a2 = a2 | 0;
-    Bb(a2);
+  function bc(a4) {
+    a4 = a4 | 0;
+    Bb(a4);
     return;
   }
-  function cc(a2, b2, d2) {
-    a2 = a2 | 0;
-    b2 = b2 | 0;
-    d2 = d2 | 0;
-    var e2 = 0, f2 = 0;
-    f2 = E;
-    E = E + 16 | 0;
-    e2 = f2;
-    c[e2 >> 2] = c[d2 >> 2];
-    a2 = J[c[(c[a2 >> 2] | 0) + 16 >> 2] & 1](a2, b2, e2) | 0;
-    if (a2)
-      c[d2 >> 2] = c[e2 >> 2];
-    E = f2;
-    return a2 & 1 | 0;
+  function cc(a4, b4, d4) {
+    a4 = a4 | 0;
+    b4 = b4 | 0;
+    d4 = d4 | 0;
+    var e6 = 0, f4 = 0;
+    f4 = E2;
+    E2 = E2 + 16 | 0;
+    e6 = f4;
+    c4[e6 >> 2] = c4[d4 >> 2];
+    a4 = J[c4[(c4[a4 >> 2] | 0) + 16 >> 2] & 1](a4, b4, e6) | 0;
+    if (a4)
+      c4[d4 >> 2] = c4[e6 >> 2];
+    E2 = f4;
+    return a4 & 1 | 0;
   }
-  function dc(a2) {
-    a2 = a2 | 0;
-    if (!a2)
-      a2 = 0;
+  function dc(a4) {
+    a4 = a4 | 0;
+    if (!a4)
+      a4 = 0;
     else
-      a2 = (Yb(a2, 69864) | 0) != 0 & 1;
-    return a2 | 0;
+      a4 = (Yb(a4, 69864) | 0) != 0 & 1;
+    return a4 | 0;
   }
-  function ec(b2, d2, e2) {
-    b2 = b2 | 0;
-    d2 = d2 | 0;
-    e2 = e2 | 0;
-    var f2 = 0, g2 = 0, h2 = 0;
-    if ((e2 | 0) >= 8192) {
-      A(b2 | 0, d2 | 0, e2 | 0) | 0;
-      return b2 | 0;
+  function ec(b4, d4, e6) {
+    b4 = b4 | 0;
+    d4 = d4 | 0;
+    e6 = e6 | 0;
+    var f4 = 0, g3 = 0, h4 = 0;
+    if ((e6 | 0) >= 8192) {
+      A2(b4 | 0, d4 | 0, e6 | 0) | 0;
+      return b4 | 0;
     }
-    h2 = b2 | 0;
-    g2 = b2 + e2 | 0;
-    if ((b2 & 3) == (d2 & 3)) {
-      while (b2 & 3) {
-        if (!e2)
-          return h2 | 0;
-        a[b2 >> 0] = a[d2 >> 0] | 0;
-        b2 = b2 + 1 | 0;
-        d2 = d2 + 1 | 0;
-        e2 = e2 - 1 | 0;
+    h4 = b4 | 0;
+    g3 = b4 + e6 | 0;
+    if ((b4 & 3) == (d4 & 3)) {
+      while (b4 & 3) {
+        if (!e6)
+          return h4 | 0;
+        a3[b4 >> 0] = a3[d4 >> 0] | 0;
+        b4 = b4 + 1 | 0;
+        d4 = d4 + 1 | 0;
+        e6 = e6 - 1 | 0;
       }
-      e2 = g2 & -4 | 0;
-      f2 = e2 - 64 | 0;
-      while ((b2 | 0) <= (f2 | 0)) {
-        c[b2 >> 2] = c[d2 >> 2];
-        c[b2 + 4 >> 2] = c[d2 + 4 >> 2];
-        c[b2 + 8 >> 2] = c[d2 + 8 >> 2];
-        c[b2 + 12 >> 2] = c[d2 + 12 >> 2];
-        c[b2 + 16 >> 2] = c[d2 + 16 >> 2];
-        c[b2 + 20 >> 2] = c[d2 + 20 >> 2];
-        c[b2 + 24 >> 2] = c[d2 + 24 >> 2];
-        c[b2 + 28 >> 2] = c[d2 + 28 >> 2];
-        c[b2 + 32 >> 2] = c[d2 + 32 >> 2];
-        c[b2 + 36 >> 2] = c[d2 + 36 >> 2];
-        c[b2 + 40 >> 2] = c[d2 + 40 >> 2];
-        c[b2 + 44 >> 2] = c[d2 + 44 >> 2];
-        c[b2 + 48 >> 2] = c[d2 + 48 >> 2];
-        c[b2 + 52 >> 2] = c[d2 + 52 >> 2];
-        c[b2 + 56 >> 2] = c[d2 + 56 >> 2];
-        c[b2 + 60 >> 2] = c[d2 + 60 >> 2];
-        b2 = b2 + 64 | 0;
-        d2 = d2 + 64 | 0;
+      e6 = g3 & -4 | 0;
+      f4 = e6 - 64 | 0;
+      while ((b4 | 0) <= (f4 | 0)) {
+        c4[b4 >> 2] = c4[d4 >> 2];
+        c4[b4 + 4 >> 2] = c4[d4 + 4 >> 2];
+        c4[b4 + 8 >> 2] = c4[d4 + 8 >> 2];
+        c4[b4 + 12 >> 2] = c4[d4 + 12 >> 2];
+        c4[b4 + 16 >> 2] = c4[d4 + 16 >> 2];
+        c4[b4 + 20 >> 2] = c4[d4 + 20 >> 2];
+        c4[b4 + 24 >> 2] = c4[d4 + 24 >> 2];
+        c4[b4 + 28 >> 2] = c4[d4 + 28 >> 2];
+        c4[b4 + 32 >> 2] = c4[d4 + 32 >> 2];
+        c4[b4 + 36 >> 2] = c4[d4 + 36 >> 2];
+        c4[b4 + 40 >> 2] = c4[d4 + 40 >> 2];
+        c4[b4 + 44 >> 2] = c4[d4 + 44 >> 2];
+        c4[b4 + 48 >> 2] = c4[d4 + 48 >> 2];
+        c4[b4 + 52 >> 2] = c4[d4 + 52 >> 2];
+        c4[b4 + 56 >> 2] = c4[d4 + 56 >> 2];
+        c4[b4 + 60 >> 2] = c4[d4 + 60 >> 2];
+        b4 = b4 + 64 | 0;
+        d4 = d4 + 64 | 0;
       }
-      while ((b2 | 0) < (e2 | 0)) {
-        c[b2 >> 2] = c[d2 >> 2];
-        b2 = b2 + 4 | 0;
-        d2 = d2 + 4 | 0;
+      while ((b4 | 0) < (e6 | 0)) {
+        c4[b4 >> 2] = c4[d4 >> 2];
+        b4 = b4 + 4 | 0;
+        d4 = d4 + 4 | 0;
       }
     } else {
-      e2 = g2 - 4 | 0;
-      while ((b2 | 0) < (e2 | 0)) {
-        a[b2 >> 0] = a[d2 >> 0] | 0;
-        a[b2 + 1 >> 0] = a[d2 + 1 >> 0] | 0;
-        a[b2 + 2 >> 0] = a[d2 + 2 >> 0] | 0;
-        a[b2 + 3 >> 0] = a[d2 + 3 >> 0] | 0;
-        b2 = b2 + 4 | 0;
-        d2 = d2 + 4 | 0;
+      e6 = g3 - 4 | 0;
+      while ((b4 | 0) < (e6 | 0)) {
+        a3[b4 >> 0] = a3[d4 >> 0] | 0;
+        a3[b4 + 1 >> 0] = a3[d4 + 1 >> 0] | 0;
+        a3[b4 + 2 >> 0] = a3[d4 + 2 >> 0] | 0;
+        a3[b4 + 3 >> 0] = a3[d4 + 3 >> 0] | 0;
+        b4 = b4 + 4 | 0;
+        d4 = d4 + 4 | 0;
       }
     }
-    while ((b2 | 0) < (g2 | 0)) {
-      a[b2 >> 0] = a[d2 >> 0] | 0;
-      b2 = b2 + 1 | 0;
-      d2 = d2 + 1 | 0;
+    while ((b4 | 0) < (g3 | 0)) {
+      a3[b4 >> 0] = a3[d4 >> 0] | 0;
+      b4 = b4 + 1 | 0;
+      d4 = d4 + 1 | 0;
     }
-    return h2 | 0;
+    return h4 | 0;
   }
-  function fc(b2, d2, e2) {
-    b2 = b2 | 0;
-    d2 = d2 | 0;
-    e2 = e2 | 0;
-    var f2 = 0, g2 = 0, h2 = 0, i2 = 0;
-    h2 = b2 + e2 | 0;
-    d2 = d2 & 255;
-    if ((e2 | 0) >= 67) {
-      while (b2 & 3) {
-        a[b2 >> 0] = d2;
-        b2 = b2 + 1 | 0;
+  function fc(b4, d4, e6) {
+    b4 = b4 | 0;
+    d4 = d4 | 0;
+    e6 = e6 | 0;
+    var f4 = 0, g3 = 0, h4 = 0, i5 = 0;
+    h4 = b4 + e6 | 0;
+    d4 = d4 & 255;
+    if ((e6 | 0) >= 67) {
+      while (b4 & 3) {
+        a3[b4 >> 0] = d4;
+        b4 = b4 + 1 | 0;
       }
-      f2 = h2 & -4 | 0;
-      i2 = d2 | d2 << 8 | d2 << 16 | d2 << 24;
-      g2 = f2 - 64 | 0;
-      while ((b2 | 0) <= (g2 | 0)) {
-        c[b2 >> 2] = i2;
-        c[b2 + 4 >> 2] = i2;
-        c[b2 + 8 >> 2] = i2;
-        c[b2 + 12 >> 2] = i2;
-        c[b2 + 16 >> 2] = i2;
-        c[b2 + 20 >> 2] = i2;
-        c[b2 + 24 >> 2] = i2;
-        c[b2 + 28 >> 2] = i2;
-        c[b2 + 32 >> 2] = i2;
-        c[b2 + 36 >> 2] = i2;
-        c[b2 + 40 >> 2] = i2;
-        c[b2 + 44 >> 2] = i2;
-        c[b2 + 48 >> 2] = i2;
-        c[b2 + 52 >> 2] = i2;
-        c[b2 + 56 >> 2] = i2;
-        c[b2 + 60 >> 2] = i2;
-        b2 = b2 + 64 | 0;
+      f4 = h4 & -4 | 0;
+      i5 = d4 | d4 << 8 | d4 << 16 | d4 << 24;
+      g3 = f4 - 64 | 0;
+      while ((b4 | 0) <= (g3 | 0)) {
+        c4[b4 >> 2] = i5;
+        c4[b4 + 4 >> 2] = i5;
+        c4[b4 + 8 >> 2] = i5;
+        c4[b4 + 12 >> 2] = i5;
+        c4[b4 + 16 >> 2] = i5;
+        c4[b4 + 20 >> 2] = i5;
+        c4[b4 + 24 >> 2] = i5;
+        c4[b4 + 28 >> 2] = i5;
+        c4[b4 + 32 >> 2] = i5;
+        c4[b4 + 36 >> 2] = i5;
+        c4[b4 + 40 >> 2] = i5;
+        c4[b4 + 44 >> 2] = i5;
+        c4[b4 + 48 >> 2] = i5;
+        c4[b4 + 52 >> 2] = i5;
+        c4[b4 + 56 >> 2] = i5;
+        c4[b4 + 60 >> 2] = i5;
+        b4 = b4 + 64 | 0;
       }
-      while ((b2 | 0) < (f2 | 0)) {
-        c[b2 >> 2] = i2;
-        b2 = b2 + 4 | 0;
+      while ((b4 | 0) < (f4 | 0)) {
+        c4[b4 >> 2] = i5;
+        b4 = b4 + 4 | 0;
       }
     }
-    while ((b2 | 0) < (h2 | 0)) {
-      a[b2 >> 0] = d2;
-      b2 = b2 + 1 | 0;
+    while ((b4 | 0) < (h4 | 0)) {
+      a3[b4 >> 0] = d4;
+      b4 = b4 + 1 | 0;
     }
-    return h2 - e2 | 0;
+    return h4 - e6 | 0;
   }
-  function gc(a2) {
-    a2 = a2 | 0;
-    var b2 = 0, d2 = 0, e2 = 0;
-    e2 = z() | 0;
-    d2 = c[g >> 2] | 0;
-    b2 = d2 + a2 | 0;
-    if ((a2 | 0) > 0 & (b2 | 0) < (d2 | 0) | (b2 | 0) < 0) {
-      C(b2 | 0) | 0;
-      y(12);
+  function gc(a4) {
+    a4 = a4 | 0;
+    var b4 = 0, d4 = 0, e6 = 0;
+    e6 = z() | 0;
+    d4 = c4[g2 >> 2] | 0;
+    b4 = d4 + a4 | 0;
+    if ((a4 | 0) > 0 & (b4 | 0) < (d4 | 0) | (b4 | 0) < 0) {
+      C2(b4 | 0) | 0;
+      y3(12);
       return -1;
     }
-    if ((b2 | 0) > (e2 | 0)) {
-      if (!(B(b2 | 0) | 0)) {
-        y(12);
+    if ((b4 | 0) > (e6 | 0)) {
+      if (!(B(b4 | 0) | 0)) {
+        y3(12);
         return -1;
       }
     }
-    c[g >> 2] = b2;
-    return d2 | 0;
+    c4[g2 >> 2] = b4;
+    return d4 | 0;
   }
-  function hc(a2, b2, c2) {
-    a2 = a2 | 0;
-    b2 = b2 | 0;
-    c2 = c2 | 0;
-    return I[a2 & 0](b2 | 0, c2 | 0) | 0;
+  function hc(a4, b4, c5) {
+    a4 = a4 | 0;
+    b4 = b4 | 0;
+    c5 = c5 | 0;
+    return I2[a4 & 0](b4 | 0, c5 | 0) | 0;
   }
-  function ic(a2, b2, c2, d2) {
-    a2 = a2 | 0;
-    b2 = b2 | 0;
-    c2 = c2 | 0;
-    d2 = d2 | 0;
-    return J[a2 & 1](b2 | 0, c2 | 0, d2 | 0) | 0;
+  function ic(a4, b4, c5, d4) {
+    a4 = a4 | 0;
+    b4 = b4 | 0;
+    c5 = c5 | 0;
+    d4 = d4 | 0;
+    return J[a4 & 1](b4 | 0, c5 | 0, d4 | 0) | 0;
   }
-  function jc(a2, b2) {
-    a2 = a2 | 0;
-    b2 = b2 | 0;
-    K[a2 & 7](b2 | 0);
+  function jc(a4, b4) {
+    a4 = a4 | 0;
+    b4 = b4 | 0;
+    K[a4 & 7](b4 | 0);
   }
-  function kc(a2, b2, c2, d2, e2) {
-    a2 = a2 | 0;
-    b2 = b2 | 0;
-    c2 = c2 | 0;
-    d2 = d2 | 0;
-    e2 = e2 | 0;
-    L[a2 & 3](b2 | 0, c2 | 0, d2 | 0, e2 | 0);
+  function kc(a4, b4, c5, d4, e6) {
+    a4 = a4 | 0;
+    b4 = b4 | 0;
+    c5 = c5 | 0;
+    d4 = d4 | 0;
+    e6 = e6 | 0;
+    L2[a4 & 3](b4 | 0, c5 | 0, d4 | 0, e6 | 0);
   }
-  function lc(a2, b2, c2, d2, e2, f2) {
-    a2 = a2 | 0;
-    b2 = b2 | 0;
-    c2 = c2 | 0;
-    d2 = d2 | 0;
-    e2 = e2 | 0;
-    f2 = f2 | 0;
-    M[a2 & 3](b2 | 0, c2 | 0, d2 | 0, e2 | 0, f2 | 0);
+  function lc(a4, b4, c5, d4, e6, f4) {
+    a4 = a4 | 0;
+    b4 = b4 | 0;
+    c5 = c5 | 0;
+    d4 = d4 | 0;
+    e6 = e6 | 0;
+    f4 = f4 | 0;
+    M2[a4 & 3](b4 | 0, c5 | 0, d4 | 0, e6 | 0, f4 | 0);
   }
-  function mc(a2, b2, c2, d2, e2, f2, g2) {
-    a2 = a2 | 0;
-    b2 = b2 | 0;
-    c2 = c2 | 0;
-    d2 = d2 | 0;
-    e2 = e2 | 0;
-    f2 = f2 | 0;
-    g2 = g2 | 0;
-    N[a2 & 3](b2 | 0, c2 | 0, d2 | 0, e2 | 0, f2 | 0, g2 | 0);
+  function mc(a4, b4, c5, d4, e6, f4, g3) {
+    a4 = a4 | 0;
+    b4 = b4 | 0;
+    c5 = c5 | 0;
+    d4 = d4 | 0;
+    e6 = e6 | 0;
+    f4 = f4 | 0;
+    g3 = g3 | 0;
+    N2[a4 & 3](b4 | 0, c5 | 0, d4 | 0, e6 | 0, f4 | 0, g3 | 0);
   }
-  function nc(a2, b2) {
-    a2 = a2 | 0;
-    b2 = b2 | 0;
-    p(0);
+  function nc(a4, b4) {
+    a4 = a4 | 0;
+    b4 = b4 | 0;
+    p3(0);
     return 0;
   }
-  function oc(a2, b2, c2) {
-    a2 = a2 | 0;
-    b2 = b2 | 0;
-    c2 = c2 | 0;
-    p(1);
+  function oc(a4, b4, c5) {
+    a4 = a4 | 0;
+    b4 = b4 | 0;
+    c5 = c5 | 0;
+    p3(1);
     return 0;
   }
-  function pc(a2) {
-    a2 = a2 | 0;
-    p(2);
+  function pc(a4) {
+    a4 = a4 | 0;
+    p3(2);
   }
-  function qc(a2, b2, c2, d2) {
-    a2 = a2 | 0;
-    b2 = b2 | 0;
-    c2 = c2 | 0;
-    d2 = d2 | 0;
-    p(3);
+  function qc(a4, b4, c5, d4) {
+    a4 = a4 | 0;
+    b4 = b4 | 0;
+    c5 = c5 | 0;
+    d4 = d4 | 0;
+    p3(3);
   }
-  function rc(a2, b2, c2, d2, e2) {
-    a2 = a2 | 0;
-    b2 = b2 | 0;
-    c2 = c2 | 0;
-    d2 = d2 | 0;
-    e2 = e2 | 0;
-    p(4);
+  function rc(a4, b4, c5, d4, e6) {
+    a4 = a4 | 0;
+    b4 = b4 | 0;
+    c5 = c5 | 0;
+    d4 = d4 | 0;
+    e6 = e6 | 0;
+    p3(4);
   }
-  function sc(a2, b2, c2, d2, e2, f2) {
-    a2 = a2 | 0;
-    b2 = b2 | 0;
-    c2 = c2 | 0;
-    d2 = d2 | 0;
-    e2 = e2 | 0;
-    f2 = f2 | 0;
-    p(5);
+  function sc(a4, b4, c5, d4, e6, f4) {
+    a4 = a4 | 0;
+    b4 = b4 | 0;
+    c5 = c5 | 0;
+    d4 = d4 | 0;
+    e6 = e6 | 0;
+    f4 = f4 | 0;
+    p3(5);
   }
-  var I = [nc];
+  var I2 = [nc];
   var J = [
     oc,
     Qb
@@ -28982,22 +29103,22 @@ var asm = function(global, env, buffer2) {
     pc,
     pc
   ];
-  var L = [
+  var L2 = [
     qc,
     Tb,
     ac,
     qc
   ];
-  var M = [
+  var M2 = [
     rc,
     Sb,
     $b,
     rc
   ];
-  var N = [
+  var N2 = [
     sc,
     Rb,
-    _b,
+    _b2,
     sc
   ];
   return {
@@ -29010,28 +29131,28 @@ var asm = function(global, env, buffer2) {
     __get_tzname: Ib,
     _bidi_getLine: Y,
     _bidi_getParagraphEndIndex: U,
-    _bidi_getVisualRun: V,
-    _bidi_processText: T,
+    _bidi_getVisualRun: V2,
+    _bidi_processText: T2,
     _bidi_setLine: W,
     _bidi_writeReverse: X,
-    _emscripten_replace_memory: H,
+    _emscripten_replace_memory: H2,
     _free: Bb,
     _malloc: Ab,
     _memalign: Fb,
     _memcpy: ec,
     _memset: fc,
     _sbrk: gc,
-    _ushape_arabic: S,
+    _ushape_arabic: S3,
     dynCall_iii: hc,
     dynCall_iiii: ic,
     dynCall_vi: jc,
     dynCall_viiii: kc,
     dynCall_viiiii: lc,
     dynCall_viiiiii: mc,
-    establishStackSpace: R,
+    establishStackSpace: R2,
     stackAlloc: O,
     stackRestore: Q,
-    stackSave: P
+    stackSave: P2
   };
 }(asmGlobalArg, asmLibraryArg, buffer);
 var ___cxa_can_catch = Module["___cxa_can_catch"] = asm["___cxa_can_catch"];
@@ -29216,8 +29337,8 @@ function applyArabicShaping(input) {
 }
 function mergeParagraphLineBreakPoints(lineBreakPoints, paragraphCount) {
   var mergedParagraphLineBreakPoints = [];
-  for (var i = 0; i < paragraphCount; i++) {
-    var paragraphEndIndex = Module.ccall("bidi_getParagraphEndIndex", "number", ["number"], [i]);
+  for (var i4 = 0; i4 < paragraphCount; i4++) {
+    var paragraphEndIndex = Module.ccall("bidi_getParagraphEndIndex", "number", ["number"], [i4]);
     for (var i$1 = 0, list = lineBreakPoints; i$1 < list.length; i$1 += 1) {
       var lineBreakPoint = list[i$1];
       if (lineBreakPoint < paragraphEndIndex && (!mergedParagraphLineBreakPoints[mergedParagraphLineBreakPoints.length - 1] || lineBreakPoint > mergedParagraphLineBreakPoints[mergedParagraphLineBreakPoints.length - 1])) {
@@ -29256,8 +29377,8 @@ function processBidirectionalText(input, lineBreakPoints) {
   var mergedParagraphLineBreakPoints = mergeParagraphLineBreakPoints(lineBreakPoints, paragraphCount);
   var lineStartIndex = 0;
   var lines = [];
-  for (var i = 0, list = mergedParagraphLineBreakPoints; i < list.length; i += 1) {
-    var lineBreakPoint = list[i];
+  for (var i4 = 0, list = mergedParagraphLineBreakPoints; i4 < list.length; i4 += 1) {
+    var lineBreakPoint = list[i4];
     var returnStringPtr = Module.ccall("bidi_getLine", "number", ["number", "number"], [lineStartIndex, lineBreakPoint]);
     if (returnStringPtr === 0) {
       Module._free(stringInputPtr);
@@ -29273,8 +29394,8 @@ function processBidirectionalText(input, lineBreakPoints) {
 
 // src/graph/labels/LabelAtlas.ts
 var kLabelMappings = {
-  id: (entry, i) => "id" in entry ? entry.id : i,
-  label: (entry, i) => "label" in entry ? entry.label : `${i}`,
+  id: (entry, i4) => "id" in entry ? entry.id : i4,
+  label: (entry, i4) => "label" in entry ? entry.label : `${i4}`,
   fontSize: (entry) => "fontSize" in entry ? entry.fontSize : 18,
   padding: (entry) => "padding" in entry ? entry.padding : [8, 5]
 };
@@ -29287,8 +29408,8 @@ var LabelAtlas = class extends TextureAtlas {
     this.labelPixelRatio = window.devicePixelRatio;
     this.letterSpacing = 2;
     this.fontSizeStep = 25;
-    this.spaceSizeMap = new Map();
-    this.labelMap = new Map();
+    this.spaceSizeMap = /* @__PURE__ */ new Map();
+    this.labelMap = /* @__PURE__ */ new Map();
     if (data.length) {
       this.processData(context, data, Object.assign({}, kLabelMappings, mappings2), font, bold, charSpacing);
     }
@@ -29297,13 +29418,16 @@ var LabelAtlas = class extends TextureAtlas {
     return this._offsetsTexture;
   }
   processRtlText(str6) {
-    return processBidirectionalText(applyArabicShaping(str6), []).join(" ");
+    return processBidirectionalText(
+      applyArabicShaping(str6),
+      []
+    ).join(" ");
   }
   async processData(context, data, mappings2, font, bold, charSpacing) {
     const canvas = document.createElement("canvas");
     canvas.setAttribute("style", "font-smooth: never;-webkit-font-smoothing : none;");
     const ctx = canvas.getContext("2d", { willReadFrequently: true });
-    const boxMap = new Map();
+    const boxMap = /* @__PURE__ */ new Map();
     const labels = [];
     const offsets = [];
     const charNegMargin = (1 - charSpacing * this.labelPixelRatio) * this.letterSpacing;
@@ -29320,23 +29444,26 @@ var LabelAtlas = class extends TextureAtlas {
         this.labelMap.set(entry.id, labelInfo);
         let rtlProcessed = false;
         let labelString = entry.label;
-        for (let i = 0, n = labelString.length; i < n; ++i) {
+        for (let i4 = 0, n5 = labelString.length; i4 < n5; ++i4) {
           let char;
-          const charCode = labelString.charCodeAt(i);
+          const charCode = labelString.charCodeAt(i4);
           if (charCode >= 1425 && !rtlProcessed) {
             labelString = this.processRtlText(entry.label);
             rtlProcessed = true;
           }
           if (charCode >= 55296 && charCode <= 56319) {
-            char = labelString.charAt(i++) + labelString.charAt(i);
+            char = labelString.charAt(i4++) + labelString.charAt(i4);
           } else if (charCode >= 65136 && charCode <= 65151) {
             continue;
           } else {
-            char = labelString.charAt(i);
+            char = labelString.charAt(i4);
           }
           const charKey = `${char}-${renderSize}`;
           if (!this.textureKeyMap.has(charKey)) {
-            const image = TextureAtlas.computeDistanceField(this.renderCharTexture(char, renderSize, ctx, canvas, font, bold), renderSize * this.labelPixelRatio);
+            const image = TextureAtlas.computeDistanceField(
+              this.renderCharTexture(char, renderSize, ctx, canvas, font, bold),
+              renderSize * this.labelPixelRatio
+            );
             const box3 = { id: charKey, w: image.width, h: image.height, image };
             boxMap.set(charKey, box3);
             this.addTexture(charKey, box3);
@@ -29387,7 +29514,7 @@ var LabelAtlas = class extends TextureAtlas {
 
 // src/graph/labels/point/PointLabel.ts
 var kLabelNodeMappings = Object.assign({}, kLabelMappings, {
-  point: (entry, i) => "point" in entry ? entry.point : i,
+  point: (entry, i4) => "point" in entry ? entry.point : i4,
   color: (entry) => "color" in entry ? entry.color : 0
 });
 var kLabelNodeDataTypes = {
@@ -29400,18 +29527,18 @@ var kGLLabelNodeTypes = {
   color: picogl_default.UNSIGNED_INT,
   label: [picogl_default.UNSIGNED_INT, picogl_default.UNSIGNED_INT, picogl_default.UNSIGNED_INT, picogl_default.UNSIGNED_INT]
 };
-var PointLabelPlacement;
-(function(PointLabelPlacement2) {
+var PointLabelPlacement = /* @__PURE__ */ ((PointLabelPlacement2) => {
   PointLabelPlacement2[PointLabelPlacement2["CENTER"] = 0] = "CENTER";
   PointLabelPlacement2[PointLabelPlacement2["TOP"] = 1] = "TOP";
   PointLabelPlacement2[PointLabelPlacement2["BOTTOM"] = 2] = "BOTTOM";
   PointLabelPlacement2[PointLabelPlacement2["LEFT"] = 3] = "LEFT";
   PointLabelPlacement2[PointLabelPlacement2["RIGHT"] = 4] = "RIGHT";
-})(PointLabelPlacement || (PointLabelPlacement = {}));
+  return PointLabelPlacement2;
+})(PointLabelPlacement || {});
 var PointLabel = class extends Nodes {
   constructor(...args) {
     super(...args);
-    this._labelPlacement = 0;
+    this._labelPlacement = 0 /* CENTER */;
   }
   get labelPlacement() {
     return this._labelPlacement;
@@ -29419,19 +29546,19 @@ var PointLabel = class extends Nodes {
   set labelPlacement(value) {
     this._labelPlacement = value;
     switch (this._labelPlacement) {
-      case 0:
+      case 0 /* CENTER */:
         this.localUniforms.uLabelPlacement = [0, 0];
         break;
-      case 2:
+      case 2 /* BOTTOM */:
         this.localUniforms.uLabelPlacement = [0, -1];
         break;
-      case 1:
+      case 1 /* TOP */:
         this.localUniforms.uLabelPlacement = [0, 1];
         break;
-      case 3:
+      case 3 /* LEFT */:
         this.localUniforms.uLabelPlacement = [-1, 0];
         break;
-      case 4:
+      case 4 /* RIGHT */:
         this.localUniforms.uLabelPlacement = [1, 0];
         break;
     }
@@ -29523,7 +29650,7 @@ var PointLabel = class extends Nodes {
   render(context, mode, uniforms) {
     this.configureRenderContext(context, mode);
     switch (mode) {
-      case RenderMode.PICKING:
+      case 5 /* PICKING */:
         if (this.picking) {
           setDrawCallUniforms(this.pickingDrawCall, uniforms);
           setDrawCallUniforms(this.pickingDrawCall, this.localUniforms);
@@ -29531,15 +29658,15 @@ var PointLabel = class extends Nodes {
           this.pickingDrawCall.draw();
         }
         break;
-      case RenderMode.DRAFT:
-      case RenderMode.MEDIUM:
-      case RenderMode.HIGH_PASS_1:
+      case 0 /* DRAFT */:
+      case 1 /* MEDIUM */:
+      case 3 /* HIGH_PASS_1 */:
         setDrawCallUniforms(this.drawCall, uniforms);
         setDrawCallUniforms(this.drawCall, this.localUniforms);
         this.drawCall.uniform("uPicking", false);
         this.drawCall.draw();
         break;
-      case RenderMode.HIGH_PASS_2:
+      case 4 /* HIGH_PASS_2 */:
         setDrawCallUniforms(this.drawCall, uniforms);
         setDrawCallUniforms(this.drawCall, this.localUniforms);
         this.drawCall.uniform("uPicking", false);
@@ -29576,8 +29703,8 @@ var PointLabel = class extends Nodes {
   computeMappings(mappings2) {
     const dataMappings = Object.assign({}, kLabelNodeMappings, super.computeMappings(mappings2));
     const idMapping = dataMappings.id;
-    dataMappings.label = (entry, i) => {
-      const labelInfo = this.labelAtlas.labelMap.get(idMapping(entry, i));
+    dataMappings.label = (entry, i4) => {
+      const labelInfo = this.labelAtlas.labelMap.get(idMapping(entry, i4));
       return [
         labelInfo.index,
         labelInfo.length,
@@ -29825,11 +29952,11 @@ var CircularLabel_fs_default = "#version 300 es\nprecision highp float;\nprecisi
 var CircularLabel_picking_fs_default = "#version 300 es\nprecision highp float;\n#define GLSLIFY 1\n\n// most of these come from this excellent post:\n// https://iquilezles.org/www/articles/distfunctions2d/distfunctions2d.htm\n\nfloat opRound(in float d, in float r) {\n    return d - r;\n}\n\nfloat opOnion(in float d, in float r) {\n    return abs(d) - r;\n}\n\nfloat sdCircle(in vec2 p, in float r ) {\n    return length(p) - r;\n}\n\nfloat sdEquilateralTriangle(in vec2 p, in float r) {\n    const float k = sqrt(3.0);\n    p.x = abs(p.x) - r;\n    p.y = p.y + (r) / k;\n    if (p.x + k * p.y > 0.0) {\n        p = vec2(p.x-k*p.y,-k*p.x-p.y) / 2.0;\n    }\n    p.x -= clamp(p.x, -2.0 * r, 0.0);\n    return -length(p) * sign(p.y);\n}\n\nfloat sdPentagon(in vec2 p, in float r) {\n    const vec3 k = vec3(0.809016994, 0.587785252, 0.726542528);\n    p.y = -(p.y) * 1.25;\n    p.x = abs(p.x) * 1.25;\n    p -= 2.0 * min(dot(vec2(-k.x, k.y), p), 0.0) * vec2(-k.x, k.y);\n    p -= 2.0 * min(dot(vec2(k.x, k.y), p), 0.0) * vec2(k.x, k.y);\n    p -= vec2(clamp(p.x, -r*k.z, r*k.z), r);\n    return length(p) * sign(p.y);\n}\n\nfloat sdOctagon(in vec2 p, in float r) {\n    // pi/8: cos, sin, tan.\n    const vec3 k = vec3(\n        -0.9238795325,   // sqrt(2+sqrt(2))/2\n        0.3826834323,   // sqrt(2-sqrt(2))/2\n        0.4142135623\n    ); // sqrt(2)-1\n    // reflections\n    p = abs(p) * 1.1;\n    p -= 2.0 * min(dot(vec2(k.x,k.y), p), 0.0) * vec2(k.x,k.y);\n    p -= 2.0 * min(dot(vec2(-k.x,k.y), p), 0.0) * vec2(-k.x,k.y);\n    // Polygon side.\n    p -= vec2(clamp(p.x, -k.z*r, k.z*r), r);\n    return length(p) * sign(p.y);\n}\n\nfloat sdStar(in vec2 p, in float r, in uint n, in float m) { // m=[2,n]\n    // these 4 lines can be precomputed for a given shape\n    float an = 3.141593 / float(n);\n    float en = 3.141593 / m;\n    vec2  acs = vec2(cos(an), sin(an));\n    vec2  ecs = vec2(cos(en), sin(en)); // ecs=vec2(0,1) and simplify, for regular polygon,\n\n    // reduce to first sector\n    float bn = mod(atan(p.x, p.y), 2.0 * an) - an;\n    p = length(p) * vec2(cos(bn), abs(sin(bn)));\n\n    // line sdf\n    p -= r * acs;\n    p += ecs * clamp(-dot(p, ecs), 0.0, r * acs.y / ecs.y);\n    return length(p) * sign(p.x);\n}\n\nfloat sdCross(in vec2 p, in float w, in float r) {\n    p = abs(p);\n    return length(p - min(p.x + p.y, w) * 0.5) - r;\n}\n\n// TODO: Precompute this, we always pass the same parameters tot his function (v, vec2(1.0, 0.3), 0.0)\nfloat sdPlus( in vec2 p, in vec2 b, float r ) {\n    p = abs(p);\n    p = (p.y > p.x) ? p.yx : p.xy;\n\n    vec2  q = p - b;\n    float k = max(q.y, q.x);\n    vec2  w = (k > 0.0) ? q : vec2(b.y - p.x, -k);\n\n    return sign(k)*length(max(w, 0.0)) + r;\n}\n\nfloat sdBox( in vec2 p, in vec2 b ) {\n    vec2 d = abs(p) - b;\n    return length(max(d,0.0)) + min(max(d.x,d.y),0.0);\n}\n\nuniform float uPixelRatio;\nuniform vec2 uLabelDirection;\nuniform float uPadding;\nuniform bool uBackground;\n\nflat in vec4 fPickingColor;\nflat in float fPixelRadius;\nflat in float fLabelStep;\nflat in vec4 fLabelInfo;\nin vec2 vFromCenter;\n\nout vec4 fragColor;\n\nfloat cross_ish(vec2 a, vec2 b)\n{\n    return a.x * b.y - a.y * b.x;\n}\n\nvoid main() {\n    float padding = uPadding * uPixelRatio;\n    float fromCenter = length(vFromCenter);\n    float halfLabelWidth = fLabelInfo[2] * 0.5;\n    float halfLabelHeight = fLabelInfo[3] * 0.5;\n    float normalizedHeight = (halfLabelHeight + padding) / fPixelRadius;\n    float circle = fromCenter - (1.0 - normalizedHeight);\n    float ring = opOnion(circle, normalizedHeight);\n\n    vec2 positionVector = uLabelDirection;\n    float angle = atan(cross_ish(vFromCenter, positionVector), dot(vFromCenter, positionVector));\n    float angleDistance = angle * fPixelRadius;\n    float paddedLabelWidth = fLabelInfo[2] + padding * 2.0;\n    float offsetAngleDistance = angleDistance + halfLabelWidth + padding;\n\n    if (ring > 0.0 || fract(offsetAngleDistance / fLabelStep) >= paddedLabelWidth / fLabelStep) {\n        discard;\n    }\n\n    float width = fract(offsetAngleDistance / fLabelStep) * fLabelStep;\n    float height = (1.0 - fromCenter) * fPixelRadius - padding;\n\n    if (!uBackground && (height < 0.0 || height > fLabelInfo[3] || width < padding || width > fLabelInfo[2] + padding)) {\n            discard;\n    } else {\n        fragColor = fPickingColor;\n    }\n}\n";
 
 // src/graph/labels/circular/CircularLabel.ts
-var CircularLabelPlacement;
-(function(CircularLabelPlacement2) {
+var CircularLabelPlacement = /* @__PURE__ */ ((CircularLabelPlacement2) => {
   CircularLabelPlacement2[CircularLabelPlacement2["INSIDE"] = 0] = "INSIDE";
   CircularLabelPlacement2[CircularLabelPlacement2["OUTSIDE"] = 1] = "OUTSIDE";
-})(CircularLabelPlacement || (CircularLabelPlacement = {}));
+  return CircularLabelPlacement2;
+})(CircularLabelPlacement || {});
 var CircularLabel = class extends PointLabel {
   get repeatLabel() {
     return this.localUniforms.uRepeatLabel;
@@ -29874,7 +30001,7 @@ var CircularLabel = class extends PointLabel {
     this.localUniforms.uRepeatGap = 5;
     this.localUniforms.uPlacementMargin = 0;
     this.localUniforms.uMirror = false;
-    this.localUniforms.uLabelPlacement = 1;
+    this.localUniforms.uLabelPlacement = 1 /* OUTSIDE */;
     this.labelDirection = 90;
   }
   getDrawShaders() {
@@ -29986,8 +30113,8 @@ var DragPan = class extends DragModule {
       const aov = this.viewport.camera.aov;
       const rotationX = -aov * (delta[1] / this.viewport.rect.height);
       const rotationY = -aov * (delta[0] / this.viewport.rect.width) * aspect;
-      const r = quat_exports.fromEuler(quat_exports.create(), rotationX, rotationY, 0);
-      this.viewport.camera.rotate(r);
+      const r5 = quat_exports.fromEuler(quat_exports.create(), rotationX, rotationY, 0);
+      this.viewport.camera.rotate(r5);
       this.viewport.render();
     }
   }
@@ -30053,8 +30180,14 @@ var ScrollDolly = class extends ScrollModule {
   handleMouse(event, state, delta) {
     const invProjection = mat4_exports.invert(mat4_exports.create(), this.viewport.camera.projectionMatrix);
     const invView = mat4_exports.invert(mat4_exports.create(), this.viewport.camera.viewMatrix);
-    const viewportCoords = vec2_exports.fromValues(state.canvasCoords[0] * this.viewport.pixelRatio, state.canvasCoords[1] * this.viewport.pixelRatio);
-    const worldCoords = vec2_exports.fromValues(2 * viewportCoords[0] / this.viewport.size[0] - 1, 1 - 2 * viewportCoords[1] / this.viewport.size[1]);
+    const viewportCoords = vec2_exports.fromValues(
+      state.canvasCoords[0] * this.viewport.pixelRatio,
+      state.canvasCoords[1] * this.viewport.pixelRatio
+    );
+    const worldCoords = vec2_exports.fromValues(
+      2 * viewportCoords[0] / this.viewport.size[0] - 1,
+      1 - 2 * viewportCoords[1] / this.viewport.size[1]
+    );
     const rayClip = vec4_exports.fromValues(worldCoords[0], worldCoords[1], -1, 1);
     const rayEye = vec4_exports.transformMat4(vec4_exports.create(), rayClip, invProjection);
     rayEye[2] = -1;
@@ -30126,8 +30259,8 @@ var PropertyInterpolator = class {
     this.propertyPath = property.split(".");
     this.property = this.propertyPath[this.propertyPath.length - 1];
     this.propertyOwner = target;
-    for (let i = 0, n = this.propertyPath.length - 1; i < n; ++i) {
-      this.propertyOwner = this.propertyOwner[this.propertyPath[i]];
+    for (let i4 = 0, n5 = this.propertyPath.length - 1; i4 < n5; ++i4) {
+      this.propertyOwner = this.propertyOwner[this.propertyPath[i4]];
     }
     if (Array.isArray(start) || ArrayBuffer.isView(start)) {
       this.interpolator = this.interpolateArrayProperty;
@@ -30149,143 +30282,143 @@ var PropertyInterpolator = class {
   }
   interpolateArray(start, end, amount) {
     const result = [];
-    for (let i = 0, n = start.length; i < n; ++i) {
-      result.push(this.interpolate(start[i], end[i], amount));
+    for (let i4 = 0, n5 = start.length; i4 < n5; ++i4) {
+      result.push(this.interpolate(start[i4], end[i4], amount));
     }
     return result;
   }
 };
 
 // src/UX/animation/Easing.ts
-function LinearEasing(x) {
-  return x;
+function LinearEasing(x2) {
+  return x2;
 }
 var sin = Math.sin;
 var cos = Math.cos;
 var pow2 = Math.pow;
 var sqrt = Math.sqrt;
 var PI = Math.PI;
-function EaseInSine(x) {
-  return 1 - cos(x * PI / 2);
+function EaseInSine(x2) {
+  return 1 - cos(x2 * PI / 2);
 }
-function EaseOutSine(x) {
-  return sin(x * PI / 2);
+function EaseOutSine(x2) {
+  return sin(x2 * PI / 2);
 }
-function EaseInOutSine(x) {
-  return -(cos(PI * x) - 1) / 2;
+function EaseInOutSine(x2) {
+  return -(cos(PI * x2) - 1) / 2;
 }
-function EaseInQuad(x) {
-  return x * x;
+function EaseInQuad(x2) {
+  return x2 * x2;
 }
-function EaseOutQuad(x) {
-  return 1 - (1 - x) * (1 - x);
+function EaseOutQuad(x2) {
+  return 1 - (1 - x2) * (1 - x2);
 }
-function EaseInOutQuad(x) {
-  return x < 0.5 ? 2 * x * x : 1 - pow2(-2 * x + 2, 2) / 2;
+function EaseInOutQuad(x2) {
+  return x2 < 0.5 ? 2 * x2 * x2 : 1 - pow2(-2 * x2 + 2, 2) / 2;
 }
-function EaseInCubic(x) {
-  return x * x * x;
+function EaseInCubic(x2) {
+  return x2 * x2 * x2;
 }
-function EaseOutCubic(x) {
-  return 1 - pow2(1 - x, 3);
+function EaseOutCubic(x2) {
+  return 1 - pow2(1 - x2, 3);
 }
-function EaseInOutCubic(x) {
-  return x < 0.5 ? 4 * x * x * x : 1 - pow2(-2 * x + 2, 3) / 2;
+function EaseInOutCubic(x2) {
+  return x2 < 0.5 ? 4 * x2 * x2 * x2 : 1 - pow2(-2 * x2 + 2, 3) / 2;
 }
-function EaseInQuart(x) {
-  return x * x * x * x;
+function EaseInQuart(x2) {
+  return x2 * x2 * x2 * x2;
 }
-function EaseOutQuart(x) {
-  return 1 - pow2(1 - x, 4);
+function EaseOutQuart(x2) {
+  return 1 - pow2(1 - x2, 4);
 }
-function EaseInOutQuart(x) {
-  return x < 0.5 ? 8 * x * x * x * x : 1 - pow2(-2 * x + 2, 4) / 2;
+function EaseInOutQuart(x2) {
+  return x2 < 0.5 ? 8 * x2 * x2 * x2 * x2 : 1 - pow2(-2 * x2 + 2, 4) / 2;
 }
-function EaseInQuint(x) {
-  return x * x * x * x * x;
+function EaseInQuint(x2) {
+  return x2 * x2 * x2 * x2 * x2;
 }
-function EaseOutQuint(x) {
-  return 1 - pow2(1 - x, 5);
+function EaseOutQuint(x2) {
+  return 1 - pow2(1 - x2, 5);
 }
-function EaseInOutQuint(x) {
-  return x < 0.5 ? 16 * x * x * x * x * x : 1 - pow2(-2 * x + 2, 5) / 2;
+function EaseInOutQuint(x2) {
+  return x2 < 0.5 ? 16 * x2 * x2 * x2 * x2 * x2 : 1 - pow2(-2 * x2 + 2, 5) / 2;
 }
-function EaseInExpo(x) {
-  return x === 0 ? 0 : pow2(2, 10 * x - 10);
+function EaseInExpo(x2) {
+  return x2 === 0 ? 0 : pow2(2, 10 * x2 - 10);
 }
-function EaseOutExpo(x) {
-  return x === 1 ? 1 : 1 - pow2(2, -10 * x);
+function EaseOutExpo(x2) {
+  return x2 === 1 ? 1 : 1 - pow2(2, -10 * x2);
 }
-function EaseInOutExpo(x) {
-  return x === 0 ? 0 : x === 1 ? 1 : x < 0.5 ? pow2(2, 20 * x - 10) / 2 : (2 - pow2(2, -20 * x + 10)) / 2;
+function EaseInOutExpo(x2) {
+  return x2 === 0 ? 0 : x2 === 1 ? 1 : x2 < 0.5 ? pow2(2, 20 * x2 - 10) / 2 : (2 - pow2(2, -20 * x2 + 10)) / 2;
 }
-function EaseInCirc(x) {
-  return 1 - sqrt(1 - pow2(x, 2));
+function EaseInCirc(x2) {
+  return 1 - sqrt(1 - pow2(x2, 2));
 }
-function EaseOutCirc(x) {
-  return sqrt(1 - pow2(x - 1, 2));
+function EaseOutCirc(x2) {
+  return sqrt(1 - pow2(x2 - 1, 2));
 }
-function EaseInOutCirc(x) {
-  return x < 0.5 ? (1 - sqrt(1 - pow2(2 * x, 2))) / 2 : (sqrt(1 - pow2(-2 * x + 2, 2)) + 1) / 2;
+function EaseInOutCirc(x2) {
+  return x2 < 0.5 ? (1 - sqrt(1 - pow2(2 * x2, 2))) / 2 : (sqrt(1 - pow2(-2 * x2 + 2, 2)) + 1) / 2;
 }
-function EaseInBack(x) {
+function EaseInBack(x2) {
   const c1 = 1.70158;
-  const c3 = c1 + 1;
-  return c3 * x * x * x - c1 * x * x;
+  const c32 = c1 + 1;
+  return c32 * x2 * x2 * x2 - c1 * x2 * x2;
 }
-function EaseOutBack(x) {
+function EaseOutBack(x2) {
   const c1 = 1.70158;
-  const c3 = c1 + 1;
-  return 1 + c3 * pow2(x - 1, 3) + c1 * pow2(x - 1, 2);
+  const c32 = c1 + 1;
+  return 1 + c32 * pow2(x2 - 1, 3) + c1 * pow2(x2 - 1, 2);
 }
-function EaseInOutBack(x) {
+function EaseInOutBack(x2) {
   const c1 = 1.70158;
-  const c2 = c1 * 1.525;
-  return x < 0.5 ? pow2(2 * x, 2) * ((c2 + 1) * 2 * x - c2) / 2 : (pow2(2 * x - 2, 2) * ((c2 + 1) * (x * 2 - 2) + c2) + 2) / 2;
+  const c22 = c1 * 1.525;
+  return x2 < 0.5 ? pow2(2 * x2, 2) * ((c22 + 1) * 2 * x2 - c22) / 2 : (pow2(2 * x2 - 2, 2) * ((c22 + 1) * (x2 * 2 - 2) + c22) + 2) / 2;
 }
-function EaseInElastic(x) {
+function EaseInElastic(x2) {
   const c4 = 2 * Math.PI / 3;
-  return x === 0 ? 0 : x === 1 ? 1 : -pow2(2, 10 * x - 10) * sin((x * 10 - 10.75) * c4);
+  return x2 === 0 ? 0 : x2 === 1 ? 1 : -pow2(2, 10 * x2 - 10) * sin((x2 * 10 - 10.75) * c4);
 }
-function EaseOutElastic(x) {
+function EaseOutElastic(x2) {
   const c4 = 2 * Math.PI / 3;
-  return x === 0 ? 0 : x === 1 ? 1 : pow2(2, -10 * x) * sin((x * 10 - 0.75) * c4) + 1;
+  return x2 === 0 ? 0 : x2 === 1 ? 1 : pow2(2, -10 * x2) * sin((x2 * 10 - 0.75) * c4) + 1;
 }
-function EaseInOutElastic(x) {
+function EaseInOutElastic(x2) {
   const c5 = 2 * Math.PI / 4.5;
-  return x === 0 ? 0 : x === 1 ? 1 : x < 0.5 ? -(pow2(2, 20 * x - 10) * sin((20 * x - 11.125) * c5)) / 2 : pow2(2, -20 * x + 10) * sin((20 * x - 11.125) * c5) / 2 + 1;
+  return x2 === 0 ? 0 : x2 === 1 ? 1 : x2 < 0.5 ? -(pow2(2, 20 * x2 - 10) * sin((20 * x2 - 11.125) * c5)) / 2 : pow2(2, -20 * x2 + 10) * sin((20 * x2 - 11.125) * c5) / 2 + 1;
 }
-function EaseOutBounce(x) {
+function EaseOutBounce(x2) {
   const n1 = 7.5625;
   const d1 = 2.75;
-  if (x < 1 / d1) {
-    return n1 * x * x;
-  } else if (x < 2 / d1) {
-    return n1 * (x -= 1.5 / d1) * x + 0.75;
-  } else if (x < 2.5 / d1) {
-    return n1 * (x -= 2.25 / d1) * x + 0.9375;
+  if (x2 < 1 / d1) {
+    return n1 * x2 * x2;
+  } else if (x2 < 2 / d1) {
+    return n1 * (x2 -= 1.5 / d1) * x2 + 0.75;
+  } else if (x2 < 2.5 / d1) {
+    return n1 * (x2 -= 2.25 / d1) * x2 + 0.9375;
   } else {
-    return n1 * (x -= 2.625 / d1) * x + 0.984375;
+    return n1 * (x2 -= 2.625 / d1) * x2 + 0.984375;
   }
 }
-function EaseInBounce(x) {
-  return 1 - EaseOutBounce(1 - x);
+function EaseInBounce(x2) {
+  return 1 - EaseOutBounce(1 - x2);
 }
-function EaseInOutBounce(x) {
-  return x < 0.5 ? (1 - EaseOutBounce(1 - 2 * x)) / 2 : (1 + EaseOutBounce(2 * x - 1)) / 2;
+function EaseInOutBounce(x2) {
+  return x2 < 0.5 ? (1 - EaseOutBounce(1 - 2 * x2)) / 2 : (1 + EaseOutBounce(2 * x2 - 1)) / 2;
 }
 
 // src/UX/animation/AnimationManager.ts
 var AnimationManager = class {
   constructor() {
-    this.targets = new Map();
+    this.targets = /* @__PURE__ */ new Map();
   }
   animate(target, property, duration, start, end, cb = null, easing = LinearEasing) {
     const needsAnimationFrame = this.targets.size === 0;
     const interpolator = new PropertyInterpolator(target, property, start, end);
     let targetAnimations = this.targets.get(target);
     if (!targetAnimations) {
-      targetAnimations = new Map();
+      targetAnimations = /* @__PURE__ */ new Map();
       this.targets.set(target, targetAnimations);
     }
     targetAnimations.set(property, {
@@ -30338,21 +30471,21 @@ __export(mod_exports12, {
 });
 
 // src/UX/coordinate/Coordinate.ts
-var PixelCoordXPosition;
-(function(PixelCoordXPosition2) {
+var PixelCoordXPosition = /* @__PURE__ */ ((PixelCoordXPosition2) => {
   PixelCoordXPosition2[PixelCoordXPosition2["CENTER"] = 0] = "CENTER";
   PixelCoordXPosition2[PixelCoordXPosition2["LEFT"] = -1] = "LEFT";
   PixelCoordXPosition2[PixelCoordXPosition2["RIGHT"] = 1] = "RIGHT";
-})(PixelCoordXPosition || (PixelCoordXPosition = {}));
-var PixelCoordYPosition;
-(function(PixelCoordYPosition2) {
+  return PixelCoordXPosition2;
+})(PixelCoordXPosition || {});
+var PixelCoordYPosition = /* @__PURE__ */ ((PixelCoordYPosition2) => {
   PixelCoordYPosition2[PixelCoordYPosition2["CENTER"] = 0] = "CENTER";
   PixelCoordYPosition2[PixelCoordYPosition2["TOP"] = 1] = "TOP";
   PixelCoordYPosition2[PixelCoordYPosition2["BOTTOM"] = -1] = "BOTTOM";
-})(PixelCoordYPosition || (PixelCoordYPosition = {}));
+  return PixelCoordYPosition2;
+})(PixelCoordYPosition || {});
 var kDefaultPixelCoordPosition = {
-  x: 0,
-  y: 0
+  x: 0 /* CENTER */,
+  y: 0 /* CENTER */
 };
 var Coordinate = class {
   static worldPointToRelativePixelCoordinate(controller, point, position) {
@@ -30360,12 +30493,18 @@ var Coordinate = class {
     const camera = controller.viewport.camera;
     const renderMatrix = mat4_exports.mul(mat4_exports.create(), camera.projectionMatrix, camera.viewMatrix);
     mat4_exports.mul(renderMatrix, renderMatrix, controller.viewport.graph.matrix);
-    const projected = vec4_exports.set(vec4_exports.create(), point[0] + position.x * point[3], point[1] + position.y * point[3], point[2], 1);
+    const projected = vec4_exports.set(
+      vec4_exports.create(),
+      point[0] + position.x * point[3],
+      point[1] + position.y * point[3],
+      point[2],
+      1
+    );
     vec4_exports.transformMat4(projected, projected, renderMatrix);
     const size = controller.viewport.size;
-    const x = projected[0] / projected[3] * size[0] * 0.5 + size[0] * 0.5;
-    const y = projected[1] / projected[3] * size[1] * 0.5 + size[1] * 0.5;
-    return vec2_exports.set(vec2_exports.create(), x, y);
+    const x2 = projected[0] / projected[3] * size[0] * 0.5 + size[0] * 0.5;
+    const y3 = projected[1] / projected[3] * size[1] * 0.5 + size[1] * 0.5;
+    return vec2_exports.set(vec2_exports.create(), x2, y3);
   }
   static relativePixelCoordinateToWorldPoint(controller, point) {
     const camera = controller.viewport.camera;
@@ -30373,9 +30512,15 @@ var Coordinate = class {
     const viewMatrixInverse = mat4_exports.invert(mat4_exports.create(), camera.viewMatrix);
     const graphMatrixInverse = mat4_exports.invert(mat4_exports.create(), controller.viewport.graph.matrix);
     const size = controller.viewport.size;
-    const x = point[0];
-    const y = point[1];
-    const deviceSpaceCoord = vec4_exports.set(vec4_exports.create(), (x / (size[0] * 0.5) - 1) * 1, (y / (size[1] * 0.5) - 1) * 1, 0, 1);
+    const x2 = point[0];
+    const y3 = point[1];
+    const deviceSpaceCoord = vec4_exports.set(
+      vec4_exports.create(),
+      (x2 / (size[0] * 0.5) - 1) * 1,
+      (y3 / (size[1] * 0.5) - 1) * 1,
+      0,
+      1
+    );
     const worldSpaceCoord = vec4_exports.create();
     vec4_exports.transformMat4(worldSpaceCoord, deviceSpaceCoord, projectionMatrixInverse);
     vec4_exports.transformMat4(worldSpaceCoord, worldSpaceCoord, viewMatrixInverse);
@@ -30385,7 +30530,7 @@ var Coordinate = class {
 };
 
 // src/UX/debug/DebugMenu.ts
-var import_tweakpane = __toModule(require_tweakpane());
+var import_tweakpane = __toESM(require_tweakpane(), 1);
 var DebugMenu = class {
   constructor(viewport) {
     this.viewport = viewport;
@@ -30393,8 +30538,8 @@ var DebugMenu = class {
     this.pane = new import_tweakpane.default({ title: "Debug Menu", expanded: false });
     this.pane.element.style.maxHeight = "calc(100vh - 8px)";
     this.pane.element.style.overflowY = "auto";
-    for (let i = 0, n = layers.length; i < n; ++i) {
-      const layer = layers[i];
+    for (let i4 = 0, n5 = layers.length; i4 < n5; ++i4) {
+      const layer = layers[i4];
       const layerFolder = this.pane.addFolder({ title: layer.name, expanded: false });
       this.addLayerOptions(layerFolder, layer);
     }
@@ -30412,8 +30557,8 @@ var DebugMenu = class {
     if ("button" in ux) {
       const keys = Object.keys(kButton2Index);
       const options = {};
-      for (let i = 0, n = keys.length; i < n; ++i) {
-        options[keys[i]] = keys[i];
+      for (let i4 = 0, n5 = keys.length; i4 < n5; ++i4) {
+        options[keys[i4]] = keys[i4];
       }
       folder.addInput(ux, "button", { options });
     }
@@ -30444,9 +30589,9 @@ var DebugMenu = class {
       enabled: [element, {}],
       blendMode: [element, {
         options: {
-          normal: LayerRenderableBlendMode.NORMAL,
-          additive: LayerRenderableBlendMode.ADDITIVE,
-          none: LayerRenderableBlendMode.NONE
+          normal: 1 /* NORMAL */,
+          additive: 2 /* ADDITIVE */,
+          none: 0 /* NONE */
         }
       }],
       pixelSizing: [element, { label: "pixel sizing " }],
@@ -30460,9 +30605,9 @@ var DebugMenu = class {
       [`${key2}FarDepth`]: [layer, { min: 0, max: 1, label: "far" }]
     };
     const keys = Object.keys(options);
-    for (let i = 0, n = keys.length; i < n; ++i) {
-      if (keys[i] in options[keys[i]][0]) {
-        folder.addInput(options[keys[i]][0], keys[i], options[keys[i]][1]);
+    for (let i4 = 0, n5 = keys.length; i4 < n5; ++i4) {
+      if (keys[i4] in options[keys[i4]][0]) {
+        folder.addInput(options[keys[i4]][0], keys[i4], options[keys[i4]][1]);
       }
     }
   }
@@ -30500,9 +30645,9 @@ var ColorManager = class {
 function generateGradient(colorList, samples) {
   const hexRgbList = [];
   const samplesPerPair = Math.ceil((samples - colorList.length) / (colorList.length - 1));
-  for (let i = 0; i < colorList.length - 1; i++) {
-    const startColor = colorList[i];
-    const endColor = colorList[i + 1];
+  for (let i4 = 0; i4 < colorList.length - 1; i4++) {
+    const startColor = colorList[i4];
+    const endColor = colorList[i4 + 1];
     hexRgbList.push(startColor);
     const startR = parseInt(startColor.substring(1, 3), 16);
     const startG = parseInt(startColor.substring(3, 5), 16);
@@ -30510,10 +30655,10 @@ function generateGradient(colorList, samples) {
     const endR = parseInt(endColor.substring(1, 3), 16);
     const endG = parseInt(endColor.substring(3, 5), 16);
     const endB = parseInt(endColor.substring(5, 7), 16);
-    for (let j = 1; j < samplesPerPair + 1; j++) {
-      const interR = Math.round(startR + (endR - startR) / (samplesPerPair + 1) * j).toString(16).padStart(2, "0");
-      const interG = Math.round(startG + (endG - startG) / (samplesPerPair + 1) * j).toString(16).padStart(2, "0");
-      const interB = Math.round(startB + (endB - startB) / (samplesPerPair + 1) * j).toString(16).padStart(2, "0");
+    for (let j2 = 1; j2 < samplesPerPair + 1; j2++) {
+      const interR = Math.round(startR + (endR - startR) / (samplesPerPair + 1) * j2).toString(16).padStart(2, "0");
+      const interG = Math.round(startG + (endG - startG) / (samplesPerPair + 1) * j2).toString(16).padStart(2, "0");
+      const interB = Math.round(startB + (endB - startB) / (samplesPerPair + 1) * j2).toString(16).padStart(2, "0");
       hexRgbList.push(`#${interR}${interG}${interB}`);
     }
   }
@@ -30638,16 +30783,16 @@ var Layer = class extends EventEmitter {
   }
   render(context, mode, uniforms, index = 0) {
     const offset = index * -3;
-    if (mode === RenderMode.HIGH) {
-      this.renderLabels(context, RenderMode.HIGH_PASS_1, uniforms[1], offset - 2, true);
-      this.renderNodes(context, RenderMode.HIGH_PASS_1, uniforms[1], offset - 1, true);
-      this.renderEdges(context, RenderMode.HIGH_PASS_1, uniforms[1], offset, true);
-      this.renderEdges(context, RenderMode.HIGH_PASS_1, uniforms[1], offset, false);
-      this.renderEdges(context, RenderMode.HIGH_PASS_2, uniforms[2], offset, false);
-      this.renderNodes(context, RenderMode.HIGH_PASS_1, uniforms[1], offset - 1, false);
-      this.renderNodes(context, RenderMode.HIGH_PASS_2, uniforms[2], offset - 1, false);
-      this.renderLabels(context, RenderMode.HIGH_PASS_1, uniforms[1], offset - 2, false);
-      this.renderLabels(context, RenderMode.HIGH_PASS_2, uniforms[2], offset - 2, false);
+    if (mode === 2 /* HIGH */) {
+      this.renderLabels(context, 3 /* HIGH_PASS_1 */, uniforms[1], offset - 2, true);
+      this.renderNodes(context, 3 /* HIGH_PASS_1 */, uniforms[1], offset - 1, true);
+      this.renderEdges(context, 3 /* HIGH_PASS_1 */, uniforms[1], offset, true);
+      this.renderEdges(context, 3 /* HIGH_PASS_1 */, uniforms[1], offset, false);
+      this.renderEdges(context, 4 /* HIGH_PASS_2 */, uniforms[2], offset, false);
+      this.renderNodes(context, 3 /* HIGH_PASS_1 */, uniforms[1], offset - 1, false);
+      this.renderNodes(context, 4 /* HIGH_PASS_2 */, uniforms[2], offset - 1, false);
+      this.renderLabels(context, 3 /* HIGH_PASS_1 */, uniforms[1], offset - 2, false);
+      this.renderLabels(context, 4 /* HIGH_PASS_2 */, uniforms[2], offset - 2, false);
     } else {
       this.renderLabels(context, mode, uniforms[0], offset - 2, true);
       this.renderNodes(context, mode, uniforms[0], offset - 1, true);
@@ -30658,19 +30803,19 @@ var Layer = class extends EventEmitter {
     }
   }
   renderNodes(context, mode, uniforms, offset, opaque) {
-    if (this._nodes && this._nodes.enabled && (this._nodes.opaque === opaque || mode === RenderMode.HIGH_PASS_2)) {
+    if (this._nodes && this._nodes.enabled && (this._nodes.opaque === opaque || mode === 4 /* HIGH_PASS_2 */)) {
       context.polygonOffset(0, offset);
       this._nodes.render(context, mode, uniforms);
     }
   }
   renderEdges(context, mode, uniforms, offset, opaque) {
-    if (this._edges && this._edges.enabled && (this._edges.opaque === opaque || mode === RenderMode.HIGH_PASS_2)) {
+    if (this._edges && this._edges.enabled && (this._edges.opaque === opaque || mode === 4 /* HIGH_PASS_2 */)) {
       context.polygonOffset(0, offset);
       this._edges.render(context, mode, uniforms);
     }
   }
   renderLabels(context, mode, uniforms, offset, opaque) {
-    if (this._labels && this._labels.enabled && (this._labels.opaque === opaque || mode === RenderMode.HIGH_PASS_2)) {
+    if (this._labels && this._labels.enabled && (this._labels.opaque === opaque || mode === 4 /* HIGH_PASS_2 */)) {
       context.polygonOffset(0, offset);
       this._labels.render(context, mode, uniforms);
     }
@@ -30734,18 +30879,6 @@ var kDefaultOptions3 = {
   loadTexturesAsync: false
 };
 var GraferController = class extends EventEmitter {
-  get viewport() {
-    return this._viewport;
-  }
-  get context() {
-    return this.viewport.context;
-  }
-  get hasColors() {
-    return this._hasColors;
-  }
-  get interactionModules() {
-    return this._interactionModules;
-  }
   constructor(canvas, data, options) {
     super();
     const opts = Object.assign({}, kDefaultOptions3, options);
@@ -30753,7 +30886,7 @@ var GraferController = class extends EventEmitter {
     this._loadTexturesAsync = Boolean(opts.loadTexturesAsync);
     this._generateIdPrev = 0;
     this._interactionModules = {};
-    if (this._viewport.camera.mode === CameraMode["2D"]) {
+    if (this._viewport.camera.mode === 0 /* 2D */) {
       this._interactionModules.translate = new DragTranslate(this._viewport);
       this._interactionModules.translate.enabled = true;
       this._interactionModules.scale = new ScrollScale(this._viewport);
@@ -30775,6 +30908,18 @@ var GraferController = class extends EventEmitter {
       this.loadData(data);
     }
   }
+  get viewport() {
+    return this._viewport;
+  }
+  get context() {
+    return this.viewport.context;
+  }
+  get hasColors() {
+    return this._hasColors;
+  }
+  get interactionModules() {
+    return this._interactionModules;
+  }
   generateId() {
     return this._generateIdPrev++;
   }
@@ -30787,7 +30932,7 @@ var GraferController = class extends EventEmitter {
     if (this._viewport.graph) {
       const bbCenter = this._viewport.graph.bbCenter;
       const bbDiagonal = this._viewport.graph.bbDiagonal;
-      if (this._viewport.camera.mode === CameraMode["2D"]) {
+      if (this._viewport.camera.mode === 0 /* 2D */) {
         const bb = this._viewport.graph.bb;
         const bbWidth = Math.abs(bb.min[0]) + Math.abs(bb.max[0]);
         const bbHeight = Math.abs(bb.min[1]) + Math.abs(bb.max[1]);
@@ -30811,11 +30956,11 @@ var GraferController = class extends EventEmitter {
     }
   }
   concatenateNodesFromLayers(data) {
-    var _a2, _b, _c;
+    var _a6, _b2, _c;
     const nodes = [];
     const layers = data.layers;
-    for (let i = 0, n = layers.length; i < n; ++i) {
-      const data2 = (_c = (_a2 = layers[i].nodes) == null ? void 0 : _a2.data) != null ? _c : (_b = layers[i].labels) == null ? void 0 : _b.data;
+    for (let i4 = 0, n5 = layers.length; i4 < n5; ++i4) {
+      const data2 = (_c = (_a6 = layers[i4].nodes) == null ? void 0 : _a6.data) != null ? _c : (_b2 = layers[i4].labels) == null ? void 0 : _b2.data;
       for (let ii = 0, nn = data2.length; ii < nn; ++ii) {
         data2[ii].point = this.generateId();
       }
@@ -30832,9 +30977,9 @@ var GraferController = class extends EventEmitter {
         this._viewport.graph = Graph.createGraphFromNodes(this.context, nodes, pointsRadiusMapping);
         this._viewport.graph.picking = new PickingManager(this._viewport.context, this._viewport.mouseHandler);
       }
-      for (let i = 0, n = layers.length; i < n; ++i) {
-        const name = layers[i].name || `Layer_${i}`;
-        this.addLayer(layers[i], name, this.hasColors);
+      for (let i4 = 0, n5 = layers.length; i4 < n5; ++i4) {
+        const name = layers[i4].name || `Layer_${i4}`;
+        this.addLayer(layers[i4], name, this.hasColors);
       }
     }
   }
@@ -30855,7 +31000,7 @@ var GraferController = class extends EventEmitter {
     const labelsData = layerData.labels;
     const labels = this.addLabels(labelsData, useColors);
     const layerName = name || `Layer_${index || graph.layers.length}`;
-    if (graph.layers.filter((l) => l.name === layerName).length > 0) {
+    if (graph.layers.filter((l3) => l3.name === layerName).length > 0) {
       throw new Error("A layer of this name already exists, remove existing layer first or change the name of this one!");
     }
     if (nodes || edges || labels) {
@@ -30882,11 +31027,11 @@ var GraferController = class extends EventEmitter {
   }
   removeLayerByName(name) {
     const { layers } = this._viewport.graph;
-    for (let i = 0; i < layers.length; i++) {
-      const layer = layers[i];
+    for (let i4 = 0; i4 < layers.length; i4++) {
+      const layer = layers[i4];
       if (layer.name === name) {
-        this.removeLayerByIndex(i);
-        i--;
+        this.removeLayerByIndex(i4);
+        i4--;
       }
     }
   }
@@ -30897,7 +31042,7 @@ var GraferController = class extends EventEmitter {
     }
   }
   addLabels(labelsData, hasColors) {
-    var _a2, _b, _c;
+    var _a6, _b2, _c;
     const pickingManager = this._viewport.graph.picking;
     const context = this.context;
     const graph = this._viewport.graph;
@@ -30905,18 +31050,31 @@ var GraferController = class extends EventEmitter {
     if (labelsData) {
       const labelsType = labelsData.type ? labelsData.type : "PointLabel";
       const LabelsClass = mod_exports6.types[labelsType] || mod_exports6.PointLabel;
-      const labelsMappings = Object.assign({}, LabelsClass.defaultMappings, labelsData.mappings);
+      const labelsMappings = Object.assign(
+        {},
+        LabelsClass.defaultMappings,
+        labelsData.mappings
+      );
       if (!hasColors) {
         const colorMapping = labelsMappings.color;
-        labelsMappings.color = (entry, i) => {
-          const value = colorMapping(entry, i);
+        labelsMappings.color = (entry, i4) => {
+          const value = colorMapping(entry, i4);
           if (typeof value !== "number") {
             return this._viewport.colorRegistry.registerColor(value);
           }
           return value;
         };
       }
-      labels = new LabelsClass(context, graph, labelsData.data, labelsMappings, pickingManager, (_a2 = labelsData.options) == null ? void 0 : _a2.font, (_b = labelsData.options) == null ? void 0 : _b.bold, (_c = labelsData.options) == null ? void 0 : _c.halo);
+      labels = new LabelsClass(
+        context,
+        graph,
+        labelsData.data,
+        labelsMappings,
+        pickingManager,
+        (_a6 = labelsData.options) == null ? void 0 : _a6.font,
+        (_b2 = labelsData.options) == null ? void 0 : _b2.bold,
+        (_c = labelsData.options) == null ? void 0 : _c.halo
+      );
       if ("options" in labelsData) {
         const options = labelsData.options;
         const keys = Object.keys(options);
@@ -30941,26 +31099,26 @@ var GraferController = class extends EventEmitter {
       const edgesMappings = Object.assign({}, EdgesClass.defaultMappings, edgesData.mappings);
       if (!hasPoints) {
         const sourceMapping = edgesMappings.source;
-        edgesMappings.source = (entry, i) => {
-          return nodes.getEntryPointID(sourceMapping(entry, i));
+        edgesMappings.source = (entry, i4) => {
+          return nodes.getEntryPointID(sourceMapping(entry, i4));
         };
         const targetMapping = edgesMappings.target;
-        edgesMappings.target = (entry, i) => {
-          return nodes.getEntryPointID(targetMapping(entry, i));
+        edgesMappings.target = (entry, i4) => {
+          return nodes.getEntryPointID(targetMapping(entry, i4));
         };
       }
       if (!hasColors) {
         const sourceColorMapping = edgesMappings.sourceColor;
-        edgesMappings.sourceColor = (entry, i) => {
-          const value = sourceColorMapping(entry, i);
+        edgesMappings.sourceColor = (entry, i4) => {
+          const value = sourceColorMapping(entry, i4);
           if (typeof value !== "number") {
             return this._viewport.colorRegistry.registerColor(value);
           }
           return value;
         };
         const targetColorMapping = edgesMappings.targetColor;
-        edgesMappings.targetColor = (entry, i) => {
-          const value = targetColorMapping(entry, i);
+        edgesMappings.targetColor = (entry, i4) => {
+          const value = targetColorMapping(entry, i4);
           if (typeof value !== "number") {
             return this._viewport.colorRegistry.registerColor(value);
           }
@@ -30988,11 +31146,15 @@ var GraferController = class extends EventEmitter {
     if (nodesData) {
       const nodesType = nodesData.type ? nodesData.type : "Circle";
       const NodesClass = mod_exports4.types[nodesType] || mod_exports4.Circle;
-      const nodesMappings = Object.assign({}, NodesClass.defaultMappings, nodesData.mappings);
+      const nodesMappings = Object.assign(
+        {},
+        NodesClass.defaultMappings,
+        nodesData.mappings
+      );
       if (!hasColors) {
         const colorMapping = nodesMappings.color;
-        nodesMappings.color = (entry, i) => {
-          const value = colorMapping(entry, i);
+        nodesMappings.color = (entry, i4) => {
+          const value = colorMapping(entry, i4);
           if (typeof value !== "number") {
             return this._viewport.colorRegistry.registerColor(value);
           }
@@ -31023,8 +31185,8 @@ var GraferController = class extends EventEmitter {
     if (data.colors) {
       const colors2 = data.colors;
       const colorRegistry = this._viewport.colorRegistry;
-      for (let i = 0, n = colors2.length; i < n; ++i) {
-        colorRegistry.registerColor(colors2[i]);
+      for (let i4 = 0, n5 = colors2.length; i4 < n5; ++i4) {
+        colorRegistry.registerColor(colors2[i4]);
       }
     } else {
       this._viewport.colorRegistry.registerColor("#d8dee9");
@@ -31035,13 +31197,13 @@ var GraferController = class extends EventEmitter {
       const textures = data.textures;
       const textureRegistry = this._viewport.textureRegistry;
       if (this._loadTexturesAsync) {
-        for (let i = 0, n = textures.length; i < n; ++i) {
-          textureRegistry.registerTexture(textures[i]).then(() => this._viewport.render());
+        for (let i4 = 0, n5 = textures.length; i4 < n5; ++i4) {
+          textureRegistry.registerTexture(textures[i4]).then(() => this._viewport.render());
         }
       } else {
         const promiseList = [];
-        for (let i = 0, n = textures.length; i < n; ++i) {
-          promiseList.push(textureRegistry.registerTexture(textures[i]));
+        for (let i4 = 0, n5 = textures.length; i4 < n5; ++i4) {
+          promiseList.push(textureRegistry.registerTexture(textures[i4]));
         }
         return Promise.all(promiseList);
       }
@@ -31108,8 +31270,8 @@ var colorsRgbToArr = (colors2) => colors2.map((val) => Object.values(val));
 function createColorsSelector(folder, colors2) {
   const dummy = { preset: 0 };
   const presetOptions = {};
-  for (let i = 0, n = kColorPresets.length; i < n; ++i) {
-    presetOptions[kColorPresets[i].name] = i;
+  for (let i4 = 0, n5 = kColorPresets.length; i4 < n5; ++i4) {
+    presetOptions[kColorPresets[i4].name] = i4;
   }
   const preset = folder.addInput(dummy, "preset", { options: presetOptions });
   const remove = folder.addButton({ title: "remove color" });
@@ -31121,14 +31283,14 @@ function createColorsSelector(folder, colors2) {
       while (items.length > 3) {
         items[items.length - 3].viewModel.dispose();
       }
-      for (let i = 0, n = colors2.length; i < n; ++i) {
-        folder.addInput(colors2, `${i}`, { index: i + 1 });
+      for (let i4 = 0, n5 = colors2.length; i4 < n5; ++i4) {
+        folder.addInput(colors2, `${i4}`, { index: i4 + 1 });
       }
       remove.hidden = colors2.length <= 1;
     }
   });
-  for (let i = 0, n = colors2.length; i < n; ++i) {
-    folder.addInput(colors2, `${i}`, { index: i + 1 });
+  for (let i4 = 0, n5 = colors2.length; i4 < n5; ++i4) {
+    folder.addInput(colors2, `${i4}`, { index: i4 + 1 });
   }
   remove.hidden = colors2.length <= 1;
   remove.on("click", () => {
@@ -31229,9 +31391,9 @@ function createFilesSelector(pane, layers, updateLoadBtn) {
   const misc = folder.addFolder({ title: "misc", expanded: false });
   misc.addMonitor(result, "ready");
   misc.addButton({ title: "remove layer" }).on("click", () => {
-    const i = layers.indexOf(result);
-    if (i !== -1) {
-      layers.splice(i, 1);
+    const i4 = layers.indexOf(result);
+    if (i4 !== -1) {
+      layers.splice(i4, 1);
       folder.dispose();
       updateLoadBtn();
     }
@@ -31241,20 +31403,20 @@ function createFilesSelector(pane, layers, updateLoadBtn) {
 }
 async function loadLayers(layers) {
   const loadedLayers = [];
-  for (let i = 0, n = layers.length; i < n; ++i) {
+  for (let i4 = 0, n5 = layers.length; i4 < n5; ++i4) {
     loadedLayers.push({
-      nodes: await LocalJSONL.loadNodes(layers[i].nodesFile, []),
+      nodes: await LocalJSONL.loadNodes(layers[i4].nodesFile, []),
       edges: null,
       meta: null
     });
   }
   const stats = mod_exports8.normalizeNodeLayers(loadedLayers.map((layer) => layer.nodes));
-  for (let i = 0, n = layers.length; i < n; ++i) {
-    if (layers[i].edgesFile) {
-      loadedLayers[i].edges = await LocalJSONL.loadEdges(layers[i].edgesFile, loadedLayers[i].nodes);
+  for (let i4 = 0, n5 = layers.length; i4 < n5; ++i4) {
+    if (layers[i4].edgesFile) {
+      loadedLayers[i4].edges = await LocalJSONL.loadEdges(layers[i4].edgesFile, loadedLayers[i4].nodes);
     }
-    if (layers[i].metaFile) {
-      loadedLayers[i].meta = await LocalJSONL.loadMeta(layers[i].metaFile);
+    if (layers[i4].metaFile) {
+      loadedLayers[i4].meta = await LocalJSONL.loadMeta(layers[i4].metaFile);
     }
   }
   return {
@@ -31263,7 +31425,7 @@ async function loadLayers(layers) {
   };
 }
 async function playground(container) {
-  render(html`<div id="menu" class="start_menu"></div>`, container);
+  j(x`<div id="menu" class="start_menu"></div>`, container);
   const menu = new import_tweakpane2.default({
     title: "Grafer Loader",
     container: document.querySelector("#menu")
@@ -31273,8 +31435,8 @@ async function playground(container) {
   const loadBtn = menu.addButton({ title: "load" });
   const updateLoadBtn = () => {
     if (layersFile.length) {
-      for (let i = 0, n = layersFile.length; i < n; ++i) {
-        if (!layersFile[i].ready) {
+      for (let i4 = 0, n5 = layersFile.length; i4 < n5; ++i4) {
+        if (!layersFile[i4].ready) {
           loadBtn.hidden = true;
           return;
         }
@@ -31296,13 +31458,13 @@ async function playground(container) {
       container: document.querySelector("#menu")
     });
     try {
-      render(html`<canvas class="grafer_container"></canvas><mouse-interactions></mouse-interactions>`, container);
+      j(x`<canvas class="grafer_container"></canvas><mouse-interactions></mouse-interactions>`, container);
       const canvas = document.querySelector(".grafer_container");
       const loaded = await loadLayers(layersFile);
       const layers = [];
       const colorsArr = [];
       const pointsData = [];
-      const pointsMap = new Map();
+      const pointsMap = /* @__PURE__ */ new Map();
       loaded.layers.map((layer, layerInd) => {
         const { nodesMapping, edgesMapping, colors: colors2 } = layersFile[layerInd];
         layers.push({
@@ -31344,9 +31506,9 @@ async function playground(container) {
       debug.registerUX(truck);
       debug.registerUX(rotation);
       debug.registerUX(pan);
-    } catch (e) {
-      loading.addMonitor({ error: e.toString() }, "error");
-      throw e;
+    } catch (e5) {
+      loading.addMonitor({ error: e5.toString() }, "error");
+      throw e5;
     }
     loading.dispose();
   });
@@ -31366,7 +31528,7 @@ __export(mod_exports15, {
 
 // examples/src/basic/minimal.ts
 async function minimal(container) {
-  render(html`<canvas class="grafer_container"></canvas><mouse-interactions></mouse-interactions>`, container);
+  j(x`<canvas class="grafer_container"></canvas><mouse-interactions></mouse-interactions>`, container);
   const canvas = document.querySelector(".grafer_container");
   const nodes = {
     data: [
@@ -31394,7 +31556,7 @@ async function minimal(container) {
 
 // examples/src/basic/minimal3D.ts
 async function minimal3D(container) {
-  render(html`<canvas class="grafer_container"></canvas><mouse-interactions></mouse-interactions>`, container);
+  j(x`<canvas class="grafer_container"></canvas><mouse-interactions></mouse-interactions>`, container);
   const canvas = document.querySelector(".grafer_container");
   const nodes = {
     data: [
@@ -31425,7 +31587,7 @@ async function minimal3D(container) {
   new GraferController(canvas, { layers }, {
     viewport: {
       camera: {
-        mode: CameraMode["3D"]
+        mode: 1 /* 3D */
       }
     }
   });
@@ -31433,7 +31595,7 @@ async function minimal3D(container) {
 
 // examples/src/basic/nodeColors.ts
 async function nodeColors(container) {
-  render(html`<canvas class="grafer_container"></canvas><mouse-interactions></mouse-interactions>`, container);
+  j(x`<canvas class="grafer_container"></canvas><mouse-interactions></mouse-interactions>`, container);
   const canvas = document.querySelector(".grafer_container");
   const nodes = {
     data: [
@@ -31464,7 +31626,7 @@ async function nodeColors(container) {
   new GraferController(canvas, { layers }, {
     viewport: {
       camera: {
-        mode: CameraMode["3D"]
+        mode: 1 /* 3D */
       }
     }
   });
@@ -31472,7 +31634,7 @@ async function nodeColors(container) {
 
 // examples/src/basic/edgeColors.ts
 async function edgeColors(container) {
-  render(html`<canvas class="grafer_container"></canvas><mouse-interactions></mouse-interactions>`, container);
+  j(x`<canvas class="grafer_container"></canvas><mouse-interactions></mouse-interactions>`, container);
   const canvas = document.querySelector(".grafer_container");
   const nodes = {
     data: [
@@ -31500,7 +31662,7 @@ async function edgeColors(container) {
 
 // examples/src/basic/nodeRadius.ts
 async function nodeRadius(container) {
-  render(html`<canvas class="grafer_container"></canvas><mouse-interactions></mouse-interactions>`, container);
+  j(x`<canvas class="grafer_container"></canvas><mouse-interactions></mouse-interactions>`, container);
   const canvas = document.querySelector(".grafer_container");
   const nodes = {
     data: [
@@ -31528,7 +31690,7 @@ async function nodeRadius(container) {
 
 // examples/src/basic/nodeID.ts
 async function nodeID(container) {
-  render(html`<canvas class="grafer_container"></canvas><mouse-interactions></mouse-interactions>`, container);
+  j(x`<canvas class="grafer_container"></canvas><mouse-interactions></mouse-interactions>`, container);
   const canvas = document.querySelector(".grafer_container");
   const nodes = {
     data: [
@@ -31556,7 +31718,7 @@ async function nodeID(container) {
 
 // examples/src/basic/glow.ts
 async function glow(container) {
-  render(html`<canvas class="grafer_container"></canvas><mouse-interactions></mouse-interactions>`, container);
+  j(x`<canvas class="grafer_container"></canvas><mouse-interactions></mouse-interactions>`, container);
   const canvas = document.querySelector(".grafer_container");
   const points2 = {
     data: [
@@ -31656,7 +31818,7 @@ async function points(container) {
   const layers = [
     { nodes, edges }
   ];
-  render(html`<canvas class="grafer_container"></canvas><mouse-interactions></mouse-interactions>`, container);
+  j(x`<canvas class="grafer_container"></canvas><mouse-interactions></mouse-interactions>`, container);
   const canvas = document.querySelector(".grafer_container");
   new GraferController(canvas, { points: points2, layers });
 }
@@ -31664,9 +31826,9 @@ async function points(container) {
 // examples/src/data/addPoints.ts
 function generateRandomPointData(startIndex, count) {
   const data = [];
-  for (let i = 0; i < count; ++i) {
+  for (let i4 = 0; i4 < count; ++i4) {
     data.push({
-      id: `p_${startIndex + i}`,
+      id: `p_${startIndex + i4}`,
       x: Math.random() * 200 - 100,
       y: Math.random() * 200 - 100,
       radius: 1
@@ -31678,7 +31840,7 @@ var gPointCount = 0;
 function addNewPoints(controller) {
   const data = generateRandomPointData(gPointCount, 50);
   controller.viewport.graph.addPoints(data);
-  const nodeData = data.map((p) => ({ point: p.id }));
+  const nodeData = data.map((p3) => ({ point: p3.id }));
   const layer = {
     nodes: {
       data: nodeData
@@ -31716,7 +31878,7 @@ async function addPoints(container) {
   const layers = [
     { nodes, edges }
   ];
-  render(html`<canvas class="grafer_container"></canvas><mouse-interactions></mouse-interactions>`, container);
+  j(x`<canvas class="grafer_container"></canvas><mouse-interactions></mouse-interactions>`, container);
   const canvas = document.querySelector(".grafer_container");
   const controller = new GraferController(canvas, { points: points2, layers });
   addNewPoints(controller);
@@ -31727,7 +31889,7 @@ async function addPoints(container) {
 function getRandomColor() {
   const letters = "0123456789ABCDEF";
   let color = "#";
-  for (let i = 0; i < 6; i++) {
+  for (let i4 = 0; i4 < 6; i4++) {
     color += letters[Math.floor(Math.random() * 16)];
   }
   return color;
@@ -31764,7 +31926,7 @@ async function colorRegistryIndexed(container) {
     "green",
     "red"
   ];
-  render(html`<canvas class="grafer_container"></canvas><mouse-interactions></mouse-interactions>`, container);
+  j(x`<canvas class="grafer_container"></canvas><mouse-interactions></mouse-interactions>`, container);
   const canvas = document.querySelector(".grafer_container");
   const controllerOptions = {
     viewport: {
@@ -31814,7 +31976,7 @@ async function separateNodesEdges(container) {
     { nodes },
     { edges }
   ];
-  render(html`<canvas class="grafer_container"></canvas><mouse-interactions></mouse-interactions>`, container);
+  j(x`<canvas class="grafer_container"></canvas><mouse-interactions></mouse-interactions>`, container);
   const canvas = document.querySelector(".grafer_container");
   new GraferController(canvas, { points: points2, layers });
 }
@@ -31856,7 +32018,7 @@ async function colors(container) {
   const layers = [
     { nodes, edges }
   ];
-  render(html`<canvas class="grafer_container"></canvas><mouse-interactions></mouse-interactions>`, container);
+  j(x`<canvas class="grafer_container"></canvas><mouse-interactions></mouse-interactions>`, container);
   const canvas = document.querySelector(".grafer_container");
   new GraferController(canvas, { colors: colors2, points: points2, layers });
 }
@@ -31906,7 +32068,7 @@ async function mappings(container) {
   const layers = [
     { nodes, edges }
   ];
-  render(html`<canvas class="grafer_container"></canvas><mouse-interactions></mouse-interactions>`, container);
+  j(x`<canvas class="grafer_container"></canvas><mouse-interactions></mouse-interactions>`, container);
   const canvas = document.querySelector(".grafer_container");
   new GraferController(canvas, { colors: colors2, points: points2, layers });
 }
@@ -31931,11 +32093,11 @@ function createNodePoints(count, radius = 10) {
   const PI2 = Math.PI * 2;
   const degStep = PI2 / count;
   const result = [];
-  for (let angle3 = 0, i = 0; angle3 < PI2; angle3 += degStep, ++i) {
+  for (let angle3 = 0, i4 = 0; angle3 < PI2; angle3 += degStep, ++i4) {
     const pX = Math.cos(angle3) * radius;
     const pY = Math.sin(angle3) * radius;
     result.push({
-      id: `p${i}-${radius}`,
+      id: `p${i4}-${radius}`,
       x: pX,
       y: pY
     });
@@ -31953,7 +32115,7 @@ async function circle(container) {
   const layers = [
     { nodes }
   ];
-  render(html`<canvas class="grafer_container"></canvas><mouse-interactions></mouse-interactions>`, container);
+  j(x`<canvas class="grafer_container"></canvas><mouse-interactions></mouse-interactions>`, container);
   const canvas = document.querySelector(".grafer_container");
   new GraferController(canvas, { layers });
 }
@@ -31963,11 +32125,11 @@ function createNodePoints2(count, radius = 10) {
   const PI2 = Math.PI * 2;
   const degStep = PI2 / count;
   const result = [];
-  for (let angle3 = 0, i = 0; angle3 < PI2; angle3 += degStep, ++i) {
+  for (let angle3 = 0, i4 = 0; angle3 < PI2; angle3 += degStep, ++i4) {
     const pX = Math.cos(angle3) * radius;
     const pY = Math.sin(angle3) * radius;
     result.push({
-      id: `p${i}-${radius}`,
+      id: `p${i4}-${radius}`,
       x: pX,
       y: pY
     });
@@ -31985,7 +32147,7 @@ async function ring(container) {
   const layers = [
     { nodes }
   ];
-  render(html`<canvas class="grafer_container"></canvas><mouse-interactions></mouse-interactions>`, container);
+  j(x`<canvas class="grafer_container"></canvas><mouse-interactions></mouse-interactions>`, container);
   const canvas = document.querySelector(".grafer_container");
   new GraferController(canvas, { layers });
 }
@@ -31995,11 +32157,11 @@ function createNodePoints3(count, radius = 10) {
   const PI2 = Math.PI * 2;
   const degStep = PI2 / count;
   const result = [];
-  for (let angle3 = 0, i = 0; angle3 < PI2; angle3 += degStep, ++i) {
+  for (let angle3 = 0, i4 = 0; angle3 < PI2; angle3 += degStep, ++i4) {
     const pX = Math.cos(angle3) * radius;
     const pY = Math.sin(angle3) * radius;
     result.push({
-      id: `p${i}-${radius}`,
+      id: `p${i4}-${radius}`,
       x: pX,
       y: pY
     });
@@ -32017,7 +32179,7 @@ async function triangle(container) {
   const layers = [
     { nodes }
   ];
-  render(html`<canvas class="grafer_container"></canvas><mouse-interactions></mouse-interactions>`, container);
+  j(x`<canvas class="grafer_container"></canvas><mouse-interactions></mouse-interactions>`, container);
   const canvas = document.querySelector(".grafer_container");
   new GraferController(canvas, { layers });
 }
@@ -32027,11 +32189,11 @@ function createNodePoints4(count, radius = 10) {
   const PI2 = Math.PI * 2;
   const degStep = PI2 / count;
   const result = [];
-  for (let angle3 = 0, i = 0; angle3 < PI2; angle3 += degStep, ++i) {
+  for (let angle3 = 0, i4 = 0; angle3 < PI2; angle3 += degStep, ++i4) {
     const pX = Math.cos(angle3) * radius;
     const pY = Math.sin(angle3) * radius;
     result.push({
-      id: `p${i}-${radius}`,
+      id: `p${i4}-${radius}`,
       x: pX,
       y: pY
     });
@@ -32049,7 +32211,7 @@ async function pentagon(container) {
   const layers = [
     { nodes }
   ];
-  render(html`<canvas class="grafer_container"></canvas><mouse-interactions></mouse-interactions>`, container);
+  j(x`<canvas class="grafer_container"></canvas><mouse-interactions></mouse-interactions>`, container);
   const canvas = document.querySelector(".grafer_container");
   new GraferController(canvas, { layers });
 }
@@ -32059,11 +32221,11 @@ function createNodePoints5(count, radius = 10) {
   const PI2 = Math.PI * 2;
   const degStep = PI2 / count;
   const result = [];
-  for (let angle3 = 0, i = 0; angle3 < PI2; angle3 += degStep, ++i) {
+  for (let angle3 = 0, i4 = 0; angle3 < PI2; angle3 += degStep, ++i4) {
     const pX = Math.cos(angle3) * radius;
     const pY = Math.sin(angle3) * radius;
     result.push({
-      id: `p${i}-${radius}`,
+      id: `p${i4}-${radius}`,
       x: pX,
       y: pY
     });
@@ -32081,7 +32243,7 @@ async function octagon(container) {
   const layers = [
     { nodes }
   ];
-  render(html`<canvas class="grafer_container"></canvas><mouse-interactions></mouse-interactions>`, container);
+  j(x`<canvas class="grafer_container"></canvas><mouse-interactions></mouse-interactions>`, container);
   const canvas = document.querySelector(".grafer_container");
   new GraferController(canvas, { layers });
 }
@@ -32091,11 +32253,11 @@ function createNodePoints6(count, radius = 10) {
   const PI2 = Math.PI * 2;
   const degStep = PI2 / count;
   const result = [];
-  for (let angle3 = 0, i = 0; angle3 < PI2; angle3 += degStep, ++i) {
+  for (let angle3 = 0, i4 = 0; angle3 < PI2; angle3 += degStep, ++i4) {
     const pX = Math.cos(angle3) * radius;
     const pY = Math.sin(angle3) * radius;
     result.push({
-      id: `p${i}-${radius}`,
+      id: `p${i4}-${radius}`,
       x: pX,
       y: pY
     });
@@ -32119,7 +32281,7 @@ async function star(container) {
     { nodes: nodesStar5 },
     { nodes: nodesStar10 }
   ];
-  render(html`<canvas class="grafer_container"></canvas><mouse-interactions></mouse-interactions>`, container);
+  j(x`<canvas class="grafer_container"></canvas><mouse-interactions></mouse-interactions>`, container);
   const canvas = document.querySelector(".grafer_container");
   new GraferController(canvas, { layers });
 }
@@ -32129,11 +32291,11 @@ function createNodePoints7(count, radius = 10) {
   const PI2 = Math.PI * 2;
   const degStep = PI2 / count;
   const result = [];
-  for (let angle3 = 0, i = 0; angle3 < PI2; angle3 += degStep, ++i) {
+  for (let angle3 = 0, i4 = 0; angle3 < PI2; angle3 += degStep, ++i4) {
     const pX = Math.cos(angle3) * radius;
     const pY = Math.sin(angle3) * radius;
     result.push({
-      id: `p${i}-${radius}`,
+      id: `p${i4}-${radius}`,
       x: pX,
       y: pY
     });
@@ -32151,7 +32313,7 @@ async function cross4(container) {
   const layers = [
     { nodes }
   ];
-  render(html`<canvas class="grafer_container"></canvas><mouse-interactions></mouse-interactions>`, container);
+  j(x`<canvas class="grafer_container"></canvas><mouse-interactions></mouse-interactions>`, container);
   const canvas = document.querySelector(".grafer_container");
   new GraferController(canvas, { layers });
 }
@@ -32161,11 +32323,11 @@ function createNodePoints8(count, radius = 10) {
   const PI2 = Math.PI * 2;
   const degStep = PI2 / count;
   const result = [];
-  for (let angle3 = 0, i = 0; angle3 < PI2; angle3 += degStep, ++i) {
+  for (let angle3 = 0, i4 = 0; angle3 < PI2; angle3 += degStep, ++i4) {
     const pX = Math.cos(angle3) * radius;
     const pY = Math.sin(angle3) * radius;
     result.push({
-      id: `p${i}-${radius}`,
+      id: `p${i4}-${radius}`,
       x: pX,
       y: pY
     });
@@ -32183,7 +32345,7 @@ async function plus(container) {
   const layers = [
     { nodes }
   ];
-  render(html`<canvas class="grafer_container"></canvas><mouse-interactions></mouse-interactions>`, container);
+  j(x`<canvas class="grafer_container"></canvas><mouse-interactions></mouse-interactions>`, container);
   const canvas = document.querySelector(".grafer_container");
   new GraferController(canvas, { layers });
 }
@@ -32193,11 +32355,11 @@ function createNodePoints9(count, radius = 10) {
   const PI2 = Math.PI * 2;
   const degStep = PI2 / count;
   const result = [];
-  for (let angle3 = 0, i = 0; angle3 < PI2; angle3 += degStep, ++i) {
+  for (let angle3 = 0, i4 = 0; angle3 < PI2; angle3 += degStep, ++i4) {
     const pX = Math.cos(angle3) * radius;
     const pY = Math.sin(angle3) * radius;
     result.push({
-      id: `p${i}-${radius}`,
+      id: `p${i4}-${radius}`,
       x: pX,
       y: pY
     });
@@ -32215,7 +32377,7 @@ async function box(container) {
   const layers = [
     { nodes }
   ];
-  render(html`<canvas class="grafer_container"></canvas><mouse-interactions></mouse-interactions>`, container);
+  j(x`<canvas class="grafer_container"></canvas><mouse-interactions></mouse-interactions>`, container);
   const canvas = document.querySelector(".grafer_container");
   new GraferController(canvas, { layers });
 }
@@ -32225,11 +32387,11 @@ function createNodePoints10(count, radius = 10) {
   const PI2 = Math.PI * 2;
   const degStep = PI2 / count;
   const result = [];
-  for (let angle3 = 0, i = 0; angle3 < PI2; angle3 += degStep, ++i) {
+  for (let angle3 = 0, i4 = 0; angle3 < PI2; angle3 += degStep, ++i4) {
     const pX = Math.cos(angle3) * radius;
     const pY = Math.sin(angle3) * radius;
     result.push({
-      id: `p${i}-${radius}`,
+      id: `p${i4}-${radius}`,
       x: pX,
       y: pY,
       texture: Math.random() > 0.5 ? 1 : 0,
@@ -32261,7 +32423,7 @@ async function custom(container) {
     "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2e/Tokugawa_family_crest.svg/1920px-Tokugawa_family_crest.svg.png",
     "https://upload.wikimedia.org/wikipedia/commons/thumb/d/da/Take_ni_Suzume.svg/2560px-Take_ni_Suzume.svg.png"
   ];
-  render(html`<canvas class="grafer_container"></canvas><mouse-interactions></mouse-interactions>`, container);
+  j(x`<canvas class="grafer_container"></canvas><mouse-interactions></mouse-interactions>`, container);
   const canvas = document.querySelector(".grafer_container");
   new GraferController(canvas, { textures, colors: colors2, layers });
 }
@@ -32300,7 +32462,7 @@ async function dashed(container) {
   const layers = [
     { nodes, edges }
   ];
-  render(html`<canvas class="grafer_container"></canvas><mouse-interactions></mouse-interactions>`, container);
+  j(x`<canvas class="grafer_container"></canvas><mouse-interactions></mouse-interactions>`, container);
   const canvas = document.querySelector(".grafer_container");
   new GraferController(canvas, { layers });
 }
@@ -32350,7 +32512,7 @@ async function curvedPaths(container) {
     { nodes, edges },
     { edges: edgesDashed }
   ];
-  render(html`<canvas class="grafer_container"></canvas><mouse-interactions></mouse-interactions>`, container);
+  j(x`<canvas class="grafer_container"></canvas><mouse-interactions></mouse-interactions>`, container);
   const canvas = document.querySelector(".grafer_container");
   new GraferController(canvas, { colors: colors2, points: points2, layers });
 }
@@ -32391,8 +32553,8 @@ async function straightPaths(container) {
     }
   };
   const controls = [];
-  for (let i = 0; i < 12; ++i) {
-    controls.push(`p${i}`);
+  for (let i4 = 0; i4 < 12; ++i4) {
+    controls.push(`p${i4}`);
   }
   const edges = {
     type: "StraightPath",
@@ -32403,7 +32565,7 @@ async function straightPaths(container) {
   const layers = [
     { nodes, edges }
   ];
-  render(html`<canvas class="grafer_container"></canvas><mouse-interactions></mouse-interactions>`, container);
+  j(x`<canvas class="grafer_container"></canvas><mouse-interactions></mouse-interactions>`, container);
   const canvas = document.querySelector(".grafer_container");
   new GraferController(canvas, { colors: colors2, points: points2, layers });
 }
@@ -32456,38 +32618,38 @@ async function circuitBoard(container) {
   const layers = [
     { nodes, edges }
   ];
-  render(html`<canvas class="grafer_container"></canvas><mouse-interactions></mouse-interactions>`, container);
+  j(x`<canvas class="grafer_container"></canvas><mouse-interactions></mouse-interactions>`, container);
   const canvas = document.querySelector(".grafer_container");
   new GraferController(canvas, { colors: colors2, points: points2, layers });
 }
 
 // examples/src/edges/bundling.ts
-function createClusterNodePoints(cluster, x, y, r, count) {
+function createClusterNodePoints(cluster, x2, y3, r5, count) {
   const PI2 = Math.PI * 2;
   const degStep = PI2 / count;
-  const radius = r - 7;
+  const radius = r5 - 7;
   const result = [];
-  for (let angle3 = 0, i = 0; angle3 < PI2; angle3 += degStep, ++i) {
+  for (let angle3 = 0, i4 = 0; angle3 < PI2; angle3 += degStep, ++i4) {
     const pX = Math.cos(angle3) * (Math.random() * radius + 5);
     const pY = Math.sin(angle3) * (Math.random() * radius + 5);
     result.push({
-      id: `${cluster}-p${i}`,
-      x: x + pX,
-      y: y + pY
+      id: `${cluster}-p${i4}`,
+      x: x2 + pX,
+      y: y3 + pY
     });
   }
   return result;
 }
 function createInnerEdges(cluster) {
   const result = [];
-  for (let i = 0, n = cluster.length; i < n; ++i) {
-    const n1 = cluster[i];
-    for (let ii = i + 1, nn = cluster.length; ii < nn; ++ii) {
+  for (let i4 = 0, n5 = cluster.length; i4 < n5; ++i4) {
+    const n1 = cluster[i4];
+    for (let ii = i4 + 1, nn = cluster.length; ii < nn; ++ii) {
       if (Math.random() > 0.75) {
-        const n2 = cluster[ii];
+        const n22 = cluster[ii];
         result.push({
           source: n1.id,
-          target: n2.id,
+          target: n22.id,
           sourceColor: 2,
           targetColor: 2
         });
@@ -32503,9 +32665,9 @@ async function bundling(container) {
     "#ebcb8b"
   ];
   const pointsC1 = createClusterNodePoints("c1", -30, 0, 20, 12);
-  const nodesC1 = pointsC1.map((p) => ({ point: p.id }));
+  const nodesC1 = pointsC1.map((p3) => ({ point: p3.id }));
   const pointsC2 = createClusterNodePoints("c2", 40, 0, 25, 14);
-  const nodesC2 = pointsC2.map((p) => ({ point: p.id }));
+  const nodesC2 = pointsC2.map((p3) => ({ point: p3.id }));
   const points2 = {
     data: [
       { id: "c1", x: -30, y: 0 },
@@ -32538,8 +32700,8 @@ async function bundling(container) {
     }
   };
   const clusterEdgesData = [];
-  for (let i = 0, n = pointsC1.length; i < n; ++i) {
-    const pointA = pointsC1[i];
+  for (let i4 = 0, n5 = pointsC1.length; i4 < n5; ++i4) {
+    const pointA = pointsC1[i4];
     for (let ii = 0, nn = pointsC2.length; ii < nn; ++ii) {
       if (Math.random() > 0.5) {
         const pointB = pointsC2[ii];
@@ -32575,7 +32737,7 @@ async function bundling(container) {
     { nodes: clusters, edges: clusterEdges },
     { nodes, edges: nodesEdges }
   ];
-  render(html`<canvas class="grafer_container"></canvas><mouse-interactions></mouse-interactions>`, container);
+  j(x`<canvas class="grafer_container"></canvas><mouse-interactions></mouse-interactions>`, container);
   const canvas = document.querySelector(".grafer_container");
   new GraferController(canvas, { colors: colors2, points: points2, layers });
 }
@@ -32593,15 +32755,15 @@ function createNodePoints11(count, radius = 10) {
   const PI2 = Math.PI * 2;
   const degStep = PI2 / count;
   const result = [];
-  for (let angle3 = 0, i = 0; angle3 < PI2; angle3 += degStep, ++i) {
+  for (let angle3 = 0, i4 = 0; angle3 < PI2; angle3 += degStep, ++i4) {
     const pX = Math.cos(angle3) * radius;
     const pY = Math.sin(angle3) * radius;
     result.push({
-      id: `p${i}-${radius}`,
+      id: `p${i4}-${radius}`,
       x: pX,
       y: pY,
       radius: 2,
-      label: `Node p${i}-r${radius}`,
+      label: `Node p${i4}-r${radius}`,
       color: Math.round(Math.random() * 4),
       fontSize: 16
     });
@@ -32636,7 +32798,7 @@ async function pointLabel(container) {
     "#a3be8c",
     "#b48ead"
   ];
-  render(html`<canvas class="grafer_container"></canvas><mouse-interactions></mouse-interactions>`, container);
+  j(x`<canvas class="grafer_container"></canvas><mouse-interactions></mouse-interactions>`, container);
   const canvas = document.querySelector(".grafer_container");
   new GraferController(canvas, { colors: colors2, layers });
 }
@@ -32646,15 +32808,15 @@ function createNodePoints12(count, radius = 10) {
   const PI2 = Math.PI * 2;
   const degStep = PI2 / count;
   const result = [];
-  for (let angle3 = 0, i = 0; angle3 < PI2; angle3 += degStep, ++i) {
+  for (let angle3 = 0, i4 = 0; angle3 < PI2; angle3 += degStep, ++i4) {
     const pX = Math.cos(angle3) * radius;
     const pY = Math.sin(angle3) * radius;
     result.push({
-      id: `p${i}-${radius}`,
+      id: `p${i4}-${radius}`,
       x: pX,
       y: pY,
       radius: 2,
-      label: `NODE P${i}-R${radius}`,
+      label: `NODE P${i4}-R${radius}`,
       color: Math.round(Math.random() * 4) + 1,
       background: true,
       fontSize: 16
@@ -32694,7 +32856,7 @@ async function circularLabel(container) {
     "#a3be8c",
     "#b48ead"
   ];
-  render(html`<canvas class="grafer_container"></canvas><mouse-interactions></mouse-interactions>`, container);
+  j(x`<canvas class="grafer_container"></canvas><mouse-interactions></mouse-interactions>`, container);
   const canvas = document.querySelector(".grafer_container");
   new GraferController(canvas, { colors: colors2, layers });
 }
@@ -32704,15 +32866,15 @@ function createNodePoints13(count, radius = 10) {
   const PI2 = Math.PI * 2;
   const degStep = PI2 / count;
   const result = [];
-  for (let angle3 = 0, i = 0; angle3 < PI2; angle3 += degStep, ++i) {
+  for (let angle3 = 0, i4 = 0; angle3 < PI2; angle3 += degStep, ++i4) {
     const pX = Math.cos(angle3) * radius;
     const pY = Math.sin(angle3) * radius;
     result.push({
-      id: `p${i}-${radius}`,
+      id: `p${i4}-${radius}`,
       x: pX,
       y: pY,
       radius: 2,
-      label: `NODE P${i}-R${radius}`,
+      label: `NODE P${i4}-R${radius}`,
       color: Math.round(Math.random() * 4) + 1,
       background: false,
       fontSize: 12,
@@ -32749,7 +32911,7 @@ async function ringLabel(container) {
     "#a3be8c",
     "#b48ead"
   ];
-  render(html`<canvas class="grafer_container"></canvas><mouse-interactions></mouse-interactions>`, container);
+  j(x`<canvas class="grafer_container"></canvas><mouse-interactions></mouse-interactions>`, container);
   const canvas = document.querySelector(".grafer_container");
   new GraferController(canvas, { colors: colors2, layers });
 }
@@ -32767,7 +32929,7 @@ __export(mod_exports20, {
 
 // examples/src/UX/picking.ts
 async function picking(container) {
-  render(html`<canvas class="grafer_container"></canvas><mouse-interactions></mouse-interactions>`, container);
+  j(x`<canvas class="grafer_container"></canvas><mouse-interactions></mouse-interactions>`, container);
   const canvas = document.querySelector(".grafer_container");
   const nodes = {
     data: [
@@ -32808,12 +32970,13 @@ function worldToPixel(controller, position) {
   const projected = vec4_exports.set(vec4_exports.create(), position[0], position[1], position[2], 1);
   vec4_exports.transformMat4(projected, projected, renderMatrix);
   const { size } = controller.viewport;
-  const x = projected[0] / projected[3] * size[0] * 0.5 + size[0] * 0.5;
-  const y = projected[1] / projected[3] * size[1] * 0.5 + size[1] * 0.5;
-  return vec2_exports.set(vec2_exports.create(), x, y);
+  const x2 = projected[0] / projected[3] * size[0] * 0.5 + size[0] * 0.5;
+  const y3 = projected[1] / projected[3] * size[1] * 0.5 + size[1] * 0.5;
+  return vec2_exports.set(vec2_exports.create(), x2, y3);
 }
 async function embedded(container) {
-  render(html`
+  j(
+    x`
         <style>
             .overlay_container {
                 width: 100%;
@@ -32887,7 +33050,9 @@ async function embedded(container) {
             <aside></aside>
             <footer></footer>
         </div>
-        `, container);
+        `,
+    container
+  );
   const canvas = document.querySelector(".grafer_container");
   const nodes = {
     data: [
@@ -32966,7 +33131,8 @@ var onHoverOffEventFactory = (tooltipCtx) => {
   };
 };
 async function overlay(container) {
-  render(html`
+  j(
+    x`
         <style>
             .overlay_container {
                 width: 100%;
@@ -33041,7 +33207,9 @@ async function overlay(container) {
             <aside></aside>
             <footer></footer>
         </div>
-        `, container);
+        `,
+    container
+  );
   const canvas = document.querySelector(".grafer_container");
   const nodes = {
     data: [
@@ -33094,7 +33262,8 @@ var onHoverOffEvent = () => {
   tooltipEl.style.visibility = "hidden";
 };
 async function tooltips(container) {
-  render(html`
+  j(
+    x`
         <style>
             .wrapper {
                 display: grid;
@@ -33178,7 +33347,9 @@ async function tooltips(container) {
             <aside></aside>
             <footer></footer>
         </div>
-        `, container);
+        `,
+    container
+  );
   const canvas = document.querySelector(".grafer_container");
   const nodes = {
     data: [
@@ -33229,7 +33400,7 @@ function animate(controller, manager, point) {
   manager.animate(...args);
 }
 async function animation(container) {
-  render(html`<canvas class="grafer_container"></canvas><mouse-interactions></mouse-interactions>`, container);
+  j(x`<canvas class="grafer_container"></canvas><mouse-interactions></mouse-interactions>`, container);
   const canvas = document.querySelector(".grafer_container");
   const nodes = {
     data: [
@@ -33262,7 +33433,7 @@ async function animation(container) {
 
 // examples/src/UX/drag.ts
 async function drag(container) {
-  render(html`<canvas class="grafer_container"></canvas><mouse-interactions></mouse-interactions>`, container);
+  j(x`<canvas class="grafer_container"></canvas><mouse-interactions></mouse-interactions>`, container);
   const canvas = document.querySelector(".grafer_container");
   let hoveredNodeIndex = 0;
   let selectedNodeIndex = 0;
@@ -33298,7 +33469,7 @@ async function drag(container) {
   const controller = new GraferController(canvas, { points: points2, layers });
   controller.on(mod_exports13.picking.PickingManager.events.hoverOn, onHoverEvent);
   controller.on(mod_exports13.picking.PickingManager.events.hoverOff, onHoverOffEvent2);
-  function onHoverEvent(_, detail) {
+  function onHoverEvent(_2, detail) {
     if (detail.type === "node") {
       hoveredNodeIndex = detail.id;
       document.addEventListener("mousedown", mousedownEvent);
@@ -33307,18 +33478,24 @@ async function drag(container) {
   function onHoverOffEvent2() {
     document.removeEventListener("mousedown", mousedownEvent);
   }
-  function mousemoveEvent(e) {
-    const rect = e.target.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = rect.height - e.clientY + rect.top;
-    const newPointCoords = mod_exports13.coordinate.Coordinate.relativePixelCoordinateToWorldPoint(controller, [x * devicePixelRatio, y * devicePixelRatio]);
+  function mousemoveEvent(e5) {
+    const rect = e5.target.getBoundingClientRect();
+    const x2 = e5.clientX - rect.left;
+    const y3 = rect.height - e5.clientY + rect.top;
+    const newPointCoords = mod_exports13.coordinate.Coordinate.relativePixelCoordinateToWorldPoint(
+      controller,
+      [x2 * devicePixelRatio, y3 * devicePixelRatio]
+    );
     const point = controller.viewport.graph.getPointByIndex(selectedNodeIndex);
-    controller.viewport.graph.setPointByIndex(selectedNodeIndex, {
-      x: newPointCoords[0],
-      y: newPointCoords[1],
-      z: 0,
-      radius: point[3]
-    });
+    controller.viewport.graph.setPointByIndex(
+      selectedNodeIndex,
+      {
+        x: newPointCoords[0],
+        y: newPointCoords[1],
+        z: 0,
+        radius: point[3]
+      }
+    );
     controller.viewport.graph.update();
     controller.render();
   }
@@ -33976,7 +34153,7 @@ var edges_default = [
 
 // examples/src/quickstart/quickstart-1.ts
 async function quickstart1(container) {
-  render(html`<canvas class="grafer_container"></canvas>`, container);
+  j(x`<canvas class="grafer_container"></canvas>`, container);
   const canvas = document.querySelector(".grafer_container");
   const nodes = {
     data: nodes_default
@@ -34006,7 +34183,7 @@ async function quickstart1(container) {
 
 // examples/src/quickstart/quickstart-2.ts
 async function quickstart2(container) {
-  render(html`<canvas class="grafer_container"></canvas>`, container);
+  j(x`<canvas class="grafer_container"></canvas>`, container);
   const canvas = document.querySelector(".grafer_container");
   const points2 = {
     data: nodes_default,
@@ -34046,7 +34223,7 @@ async function quickstart2(container) {
 
 // examples/src/quickstart/quickstart-3.ts
 async function quickstart3(container) {
-  render(html`<canvas class="grafer_container"></canvas>`, container);
+  j(x`<canvas class="grafer_container"></canvas>`, container);
   const canvas = document.querySelector(".grafer_container");
   const points2 = {
     data: nodes_default,
@@ -34107,7 +34284,7 @@ async function quickstart3(container) {
 
 // examples/src/quickstart/quickstart-4.ts
 async function quickstart4(container) {
-  render(html`<canvas class="grafer_container"></canvas>`, container);
+  j(x`<canvas class="grafer_container"></canvas>`, container);
   const canvas = document.querySelector(".grafer_container");
   const points2 = {
     data: nodes_default,
@@ -34191,11 +34368,11 @@ function createNodePoints14(count, radius = 10) {
   const PI2 = Math.PI * 2;
   const degStep = PI2 / count;
   const result = [];
-  for (let angle3 = 0, i = 0; angle3 < PI2; angle3 += degStep, ++i) {
+  for (let angle3 = 0, i4 = 0; angle3 < PI2; angle3 += degStep, ++i4) {
     const pX = Math.cos(angle3) * radius;
     const pY = Math.sin(angle3) * radius;
     result.push({
-      id: `p${i}-${radius}`,
+      id: `p${i4}-${radius}`,
       x: pX,
       y: pY,
       radius: 2,
@@ -34225,7 +34402,12 @@ async function benchmarkNode(container) {
   let nodesToCreate = numNodes;
   let nodesPerRing = startingNodes;
   while (nodesToCreate > 0) {
-    data = data.concat(createNodePoints14(nodesToCreate - nodesPerRing >= 0 ? nodesPerRing : nodesToCreate, nodesPerRing));
+    data = data.concat(
+      createNodePoints14(
+        nodesToCreate - nodesPerRing >= 0 ? nodesPerRing : nodesToCreate,
+        nodesPerRing
+      )
+    );
     nodesToCreate -= nodesPerRing;
     nodesPerRing += addedNodesPerRing;
   }
@@ -34243,7 +34425,7 @@ async function benchmarkNode(container) {
     "#a3be8c",
     "#b48ead"
   ];
-  render(html`<canvas class="grafer_container"></canvas><div class="log_output"></div><mouse-interactions></mouse-interactions>`, container);
+  j(x`<canvas class="grafer_container"></canvas><div class="log_output"></div><mouse-interactions></mouse-interactions>`, container);
   const canvas = document.querySelector(".grafer_container");
   const controller = new GraferController(canvas, { colors: colors2, layers });
   const gl = document.createElement("canvas").getContext("webgl");
@@ -34289,18 +34471,23 @@ async function benchmarkEdge(container) {
   let nodesToCreate = numNodes2;
   let nodesPerRing = startingNodes;
   while (nodesToCreate > 0) {
-    data = data.concat(createNodePoints14(nodesToCreate - nodesPerRing >= 0 ? nodesPerRing : nodesToCreate, nodesPerRing));
+    data = data.concat(
+      createNodePoints14(
+        nodesToCreate - nodesPerRing >= 0 ? nodesPerRing : nodesToCreate,
+        nodesPerRing
+      )
+    );
     nodesToCreate -= nodesPerRing;
     nodesPerRing += addedNodesPerRing;
   }
   const edges = {
     data: []
   };
-  for (let i = 0; i < data.length; i++) {
+  for (let i4 = 0; i4 < data.length; i4++) {
     edges.data.push({
-      source: data[i ? i - 1 : data.length - 1].id,
+      source: data[i4 ? i4 - 1 : data.length - 1].id,
       sourceColor: Math.round(Math.random() * 4),
-      target: data[i].id,
+      target: data[i4].id,
       targetColor: Math.round(Math.random() * 4)
     });
   }
@@ -34317,7 +34504,7 @@ async function benchmarkEdge(container) {
     "#a3be8c",
     "#b48ead"
   ];
-  render(html`<canvas class="grafer_container"></canvas><div class="log_output"></div><mouse-interactions></mouse-interactions>`, container);
+  j(x`<canvas class="grafer_container"></canvas><div class="log_output"></div><mouse-interactions></mouse-interactions>`, container);
   const canvas = document.querySelector(".grafer_container");
   const controller = new GraferController(canvas, { points: points2, colors: colors2, layers });
   const gl = document.createElement("canvas").getContext("webgl");
@@ -34363,7 +34550,12 @@ async function benchmarkLabel(container) {
   let nodesToCreate = numNodes3;
   let nodesPerRing = startingNodes;
   while (nodesToCreate > 0) {
-    data = data.concat(createNodePoints14(nodesToCreate - nodesPerRing >= 0 ? nodesPerRing : nodesToCreate, nodesPerRing));
+    data = data.concat(
+      createNodePoints14(
+        nodesToCreate - nodesPerRing >= 0 ? nodesPerRing : nodesToCreate,
+        nodesPerRing
+      )
+    );
     nodesToCreate -= nodesPerRing;
     nodesPerRing += addedNodesPerRing;
   }
@@ -34387,7 +34579,7 @@ async function benchmarkLabel(container) {
     "#a3be8c",
     "#b48ead"
   ];
-  render(html`<canvas class="grafer_container"></canvas><div class="log_output"></div><mouse-interactions></mouse-interactions>`, container);
+  j(x`<canvas class="grafer_container"></canvas><div class="log_output"></div><mouse-interactions></mouse-interactions>`, container);
   const canvas = document.querySelector(".grafer_container");
   const controller = new GraferController(canvas, { colors: colors2, layers });
   const gl = document.createElement("canvas").getContext("webgl");
@@ -34432,7 +34624,7 @@ __export(mod_exports23, {
 });
 
 // examples/src/aske/bundledEdgesLoader.ts
-var import_tweakpane3 = __toModule(require_tweakpane());
+var import_tweakpane3 = __toESM(require_tweakpane(), 1);
 async function parseJSONL2(input, cb) {
   const file = await DataFile.fromLocalSource(input);
   const sizeOf16MB = 16 * 1024 * 1024;
@@ -34444,10 +34636,10 @@ async function parseJSONL2(input, cb) {
     const chunk = await file.loadData(offset, chunkEnd);
     const view = new DataView(chunk);
     let start = 0;
-    for (let i = 0, n = chunk.byteLength; i < n; ++i) {
-      if (view.getUint8(i) === lineBreak || offset + i === byteLength) {
-        const statementBuffer = new Uint8Array(chunk, start, i - start);
-        start = i + 1;
+    for (let i4 = 0, n5 = chunk.byteLength; i4 < n5; ++i4) {
+      if (view.getUint8(i4) === lineBreak || offset + i4 === byteLength) {
+        const statementBuffer = new Uint8Array(chunk, start, i4 - start);
+        start = i4 + 1;
         const str6 = decoder.decode(statementBuffer);
         const json = JSON.parse(str6);
         cb(json);
@@ -34466,7 +34658,7 @@ function createFileInput2(cb) {
   return input;
 }
 function renderMenu2(container, cb) {
-  render(html`<div id="menu" class="start_menu"></div>`, container);
+  j(x`<div id="menu" class="start_menu"></div>`, container);
   const result = {
     points: "No file selected.",
     pointsFile: null,
@@ -34555,7 +34747,7 @@ function renderMenu2(container, cb) {
 }
 async function loadGraph(container, info) {
   if (info.pointsFile) {
-    render(html`<canvas class="grafer_container"></canvas>`, container);
+    j(x`<canvas class="grafer_container"></canvas>`, container);
     const canvas = document.querySelector(".grafer_container");
     const layers = [];
     const points2 = {
@@ -34700,7 +34892,7 @@ async function bundledEdgesLoader(container) {
 }
 
 // examples/src/aske/knowledeViewLoader.ts
-var import_tweakpane4 = __toModule(require_tweakpane());
+var import_tweakpane4 = __toESM(require_tweakpane(), 1);
 
 // examples/src/aske/convertDataToGraferV4.ts
 import alphaShape from "https://cdn.skypack.dev/alpha-shape";
@@ -34715,10 +34907,10 @@ async function parseJSONL3(input, cb) {
     const chunk = await file.loadData(offset, chunkEnd);
     const view = new DataView(chunk);
     let start = 0;
-    for (let i = 0, n = chunk.byteLength; i < n; ++i) {
-      if (view.getUint8(i) === lineBreak || offset + i === byteLength) {
-        const statementBuffer = new Uint8Array(chunk, start, i - start);
-        start = i + 1;
+    for (let i4 = 0, n5 = chunk.byteLength; i4 < n5; ++i4) {
+      if (view.getUint8(i4) === lineBreak || offset + i4 === byteLength) {
+        const statementBuffer = new Uint8Array(chunk, start, i4 - start);
+        start = i4 + 1;
         const str6 = decoder.decode(statementBuffer);
         const json = JSON.parse(str6);
         cb(json);
@@ -34733,7 +34925,7 @@ async function convertDataToGraferV4(info) {
   let lineNumber;
   let colorIndex = 0;
   console.log("Loading points...");
-  const points2 = new Map();
+  const points2 = /* @__PURE__ */ new Map();
   lineNumber = 0;
   await parseJSONL3(info.nodeLayoutFile, (json) => {
     if (lineNumber++) {
@@ -34748,8 +34940,8 @@ async function convertDataToGraferV4(info) {
   });
   console.log("Loading groups...");
   const groupLevels = [];
-  const centroids = new Map();
-  const groups = new Map();
+  const centroids = /* @__PURE__ */ new Map();
+  const groups = /* @__PURE__ */ new Map();
   lineNumber = 0;
   await parseJSONL3(info.groupsFile, (json) => {
     if (lineNumber++) {
@@ -34771,7 +34963,7 @@ async function convertDataToGraferV4(info) {
   });
   console.log("Loading node attributes...");
   const noiseNodes = [];
-  const nodeLevelMap = new Map();
+  const nodeLevelMap = /* @__PURE__ */ new Map();
   lineNumber = 0;
   await parseJSONL3(info.nodeAttsFile, (json) => {
     if (lineNumber++) {
@@ -34792,12 +34984,12 @@ async function convertDataToGraferV4(info) {
     }
   });
   console.log(`Sorting group levels: ${groupLevels.length}`);
-  for (let i = 0, n = groupLevels.length; i < n; ++i) {
-    console.log(`Level ${i}: ${groupLevels[i].length}`);
-    groupLevels[i].sort((a, b) => b.computedChildren.length - a.computedChildren.length);
-    const l = [];
-    for (const group of groupLevels[i]) {
-      l.push(group.computedChildren.length);
+  for (let i4 = 0, n5 = groupLevels.length; i4 < n5; ++i4) {
+    console.log(`Level ${i4}: ${groupLevels[i4].length}`);
+    groupLevels[i4].sort((a3, b3) => b3.computedChildren.length - a3.computedChildren.length);
+    const l3 = [];
+    for (const group of groupLevels[i4]) {
+      l3.push(group.computedChildren.length);
       if (group.computedChildren.length > info.topGroupThreshold) {
         centroids.get(group.id).top = true;
         group.top = true;
@@ -34805,23 +34997,23 @@ async function convertDataToGraferV4(info) {
         group.top = false;
       }
     }
-    console.log(l);
+    console.log(l3);
   }
   console.log("Computing color indices...");
-  const nodeColors2 = new Map();
-  const groupColors = new Map();
+  const nodeColors2 = /* @__PURE__ */ new Map();
+  const groupColors = /* @__PURE__ */ new Map();
   for (const id of noiseNodes) {
     nodeColors2.set(id, colorIndex);
   }
-  for (let i = groupLevels.length - 1; i >= 0; --i) {
-    for (const group of groupLevels[i]) {
+  for (let i4 = groupLevels.length - 1; i4 >= 0; --i4) {
+    for (const group of groupLevels[i4]) {
       let colors2 = groupColors.get(group.id);
       if (!colors2) {
         colors2 = {
           id: group.id,
-          level: i,
+          level: i4,
           primary: ++colorIndex,
-          inherited: new Set(),
+          inherited: /* @__PURE__ */ new Set(),
           top: group.top
         };
         groupColors.set(group.id, colors2);
@@ -34840,7 +35032,7 @@ async function convertDataToGraferV4(info) {
   }
   console.log("Loading nodes...");
   const nodes = [];
-  const nodeMap = new Map();
+  const nodeMap = /* @__PURE__ */ new Map();
   lineNumber = 0;
   await parseJSONL3(info.nodesFile, (json) => {
     if (lineNumber++) {
@@ -34861,11 +35053,11 @@ async function convertDataToGraferV4(info) {
   }
   console.log("Computing alpha shapes...");
   const shapes = [];
-  for (let i = 0, n = groupLevels.length; i < n; ++i) {
-    console.log(`Level ${i}...`);
+  for (let i4 = 0, n5 = groupLevels.length; i4 < n5; ++i4) {
+    console.log(`Level ${i4}...`);
     console.log("0%");
-    for (let ii = 0, nn = groupLevels[i].length; ii < nn; ++ii) {
-      const group = groupLevels[i][ii];
+    for (let ii = 0, nn = groupLevels[i4].length; ii < nn; ++ii) {
+      const group = groupLevels[i4][ii];
       const coors = [];
       for (const node of group.computedChildren) {
         const point = points2.get(node);
@@ -34874,12 +35066,12 @@ async function convertDataToGraferV4(info) {
       const cells = alphaShape(info.alpha, coors);
       for (const cell of cells) {
         const cellPoints = [];
-        for (let i2 = 0, n2 = cell.length; i2 < n2; ++i2) {
-          const id = `s_${points2.size}_${n2}`;
+        for (let i5 = 0, n6 = cell.length; i5 < n6; ++i5) {
+          const id = `s_${points2.size}_${n6}`;
           points2.set(id, {
             id,
-            x: coors[cell[i2]][0] * info.positionScale,
-            y: coors[cell[i2]][1] * info.positionScale,
+            x: coors[cell[i5]][0] * info.positionScale,
+            y: coors[cell[i5]][1] * info.positionScale,
             z: 0,
             radius: 1
           });
@@ -34895,7 +35087,7 @@ async function convertDataToGraferV4(info) {
             sourceColor: nodeColors2.get(group.node_id_centroid),
             targetColor: nodeColors2.get(group.node_id_centroid),
             group: group.node_id_centroid,
-            level: i
+            level: i4
           });
         }
       }
@@ -34914,7 +35106,7 @@ async function convertDataToGraferV4(info) {
 }
 
 // examples/src/aske/knowledeViewLoader.ts
-var import_chroma_js3 = __toModule(require_chroma());
+var import_chroma_js3 = __toESM(require_chroma(), 1);
 function createFileInput3(cb) {
   const input = document.createElement("input");
   input.type = "file";
@@ -34936,7 +35128,7 @@ function createFileMenu(menu, result, key2) {
   menu.addButton({ title: "browse..." }).on("click", () => input.click());
 }
 function renderMenu3(container, cb) {
-  render(html`<div id="menu" class="start_menu"></div>`, container);
+  j(x`<div id="menu" class="start_menu"></div>`, container);
   const result = {
     nodes: "No file selected.",
     nodesFile: null,
@@ -35022,11 +35214,11 @@ function getBasicLayer(name, nodeType, visibilityThreshold, pixelSizing = true) 
 function makeCentroidLayers(layers, data, levels = 4) {
   const centroidLayersTop = [];
   const centroidLayers = [];
-  for (let i = 0; i < levels; ++i) {
-    centroidLayersTop.push(getBasicLayer(`Centroids_top_${i}`, "Ring", 0.01));
-    centroidLayers.push(getBasicLayer(`Centroids_${i}`, "Ring", 0.1));
+  for (let i4 = 0; i4 < levels; ++i4) {
+    centroidLayersTop.push(getBasicLayer(`Centroids_top_${i4}`, "Ring", 0.01));
+    centroidLayers.push(getBasicLayer(`Centroids_${i4}`, "Ring", 0.1));
   }
-  const centroidMap = new Map();
+  const centroidMap = /* @__PURE__ */ new Map();
   for (const centroid of data) {
     const nodes = centroid.top ? centroidLayersTop[centroid.level].nodes : centroidLayers[centroid.level].nodes;
     nodes.data.push(centroid);
@@ -35039,9 +35231,9 @@ function computeColors(colors2, colorMap, colorLevels, centroidMap, levelNumber 
   const level = colorLevels.get(levelNumber);
   const topStep = Math.floor(360 / level.top.length);
   const lowStep = Math.floor(topStep / Math.ceil(level.low.length / level.top.length + 1));
-  for (let i = 0, n = level.top.length; i < n; ++i) {
-    const info = level.top[i];
-    const color = import_chroma_js3.default.hsl(topStep * i, 1, 0.5).hex();
+  for (let i4 = 0, n5 = level.top.length; i4 < n5; ++i4) {
+    const info = level.top[i4];
+    const color = import_chroma_js3.default.hsl(topStep * i4, 1, 0.5).hex();
     const centroid = centroidMap.get(info.id);
     colors2[centroid.color] = color;
     colors2[info.primary] = color;
@@ -35049,9 +35241,9 @@ function computeColors(colors2, colorMap, colorLevels, centroidMap, levelNumber 
       colors2[childID] = color;
     }
   }
-  for (let i = 0, n = level.low.length; i < n; ++i) {
-    const info = level.low[i];
-    const color = import_chroma_js3.default.hsl(lowStep * (i + 1), 1, 0.5).hex();
+  for (let i4 = 0, n5 = level.low.length; i4 < n5; ++i4) {
+    const info = level.low[i4];
+    const color = import_chroma_js3.default.hsl(lowStep * (i4 + 1), 1, 0.5).hex();
     const centroid = centroidMap.get(info.id);
     colors2[centroid.color] = color;
     colors2[info.primary] = color;
@@ -35060,14 +35252,14 @@ function computeColors(colors2, colorMap, colorLevels, centroidMap, levelNumber 
     }
   }
   const gray = "#a0a0a0";
-  for (let i = 0, n = colors2.length; i < n; ++i) {
-    if (colors2[i] === null) {
-      colors2[i] = gray;
+  for (let i4 = 0, n5 = colors2.length; i4 < n5; ++i4) {
+    if (colors2[i4] === null) {
+      colors2[i4] = gray;
     }
   }
 }
 function loadLevelLayers(nodes, shapes) {
-  const levelMap = new Map();
+  const levelMap = /* @__PURE__ */ new Map();
   for (const node of nodes) {
     if (!levelMap.has(node.level)) {
       levelMap.set(node.level, {
@@ -35119,15 +35311,15 @@ async function loadGraph2(container, info) {
     return;
   }
   const data = await convertDataToGraferV4(info);
-  render(html`<canvas class="grafer_container"></canvas>`, container);
+  j(x`<canvas class="grafer_container"></canvas>`, container);
   const canvas = document.querySelector(".grafer_container");
   const layers = [];
   const colors2 = [];
-  const colorMap = new Map();
-  const colorLevels = new Map();
+  const colorMap = /* @__PURE__ */ new Map();
+  const colorLevels = /* @__PURE__ */ new Map();
   for (const color of data.colors) {
     if (colors2.length <= color.primary) {
-      for (let i = colors2.length; i <= color.primary; ++i) {
+      for (let i4 = colors2.length; i4 <= color.primary; ++i4) {
         colors2.push(null);
       }
     }
@@ -35178,657 +35370,17 @@ async function knowledgeViewLoader(container) {
   });
 }
 
-// node_modules/lit-html/lib/modify-template.js
-var walkerNodeFilter = 133;
-function removeNodesFromTemplate(template, nodesToRemove) {
-  const { element: { content }, parts: parts2 } = template;
-  const walker = document.createTreeWalker(content, walkerNodeFilter, null, false);
-  let partIndex = nextActiveIndexInTemplateParts(parts2);
-  let part = parts2[partIndex];
-  let nodeIndex = -1;
-  let removeCount = 0;
-  const nodesToRemoveInTemplate = [];
-  let currentRemovingNode = null;
-  while (walker.nextNode()) {
-    nodeIndex++;
-    const node = walker.currentNode;
-    if (node.previousSibling === currentRemovingNode) {
-      currentRemovingNode = null;
-    }
-    if (nodesToRemove.has(node)) {
-      nodesToRemoveInTemplate.push(node);
-      if (currentRemovingNode === null) {
-        currentRemovingNode = node;
-      }
-    }
-    if (currentRemovingNode !== null) {
-      removeCount++;
-    }
-    while (part !== void 0 && part.index === nodeIndex) {
-      part.index = currentRemovingNode !== null ? -1 : part.index - removeCount;
-      partIndex = nextActiveIndexInTemplateParts(parts2, partIndex);
-      part = parts2[partIndex];
-    }
-  }
-  nodesToRemoveInTemplate.forEach((n) => n.parentNode.removeChild(n));
-}
-var countNodes = (node) => {
-  let count = node.nodeType === 11 ? 0 : 1;
-  const walker = document.createTreeWalker(node, walkerNodeFilter, null, false);
-  while (walker.nextNode()) {
-    count++;
-  }
-  return count;
+// node_modules/@lit/reactive-element/decorators/custom-element.js
+var t3 = (t4) => (e5, o4) => {
+  void 0 !== o4 ? o4.addInitializer(() => {
+    customElements.define(t4, e5);
+  }) : customElements.define(t4, e5);
 };
-var nextActiveIndexInTemplateParts = (parts2, startIndex = -1) => {
-  for (let i = startIndex + 1; i < parts2.length; i++) {
-    const part = parts2[i];
-    if (isTemplatePartActive(part)) {
-      return i;
-    }
-  }
-  return -1;
-};
-function insertNodeIntoTemplate(template, node, refNode = null) {
-  const { element: { content }, parts: parts2 } = template;
-  if (refNode === null || refNode === void 0) {
-    content.appendChild(node);
-    return;
-  }
-  const walker = document.createTreeWalker(content, walkerNodeFilter, null, false);
-  let partIndex = nextActiveIndexInTemplateParts(parts2);
-  let insertCount = 0;
-  let walkerIndex = -1;
-  while (walker.nextNode()) {
-    walkerIndex++;
-    const walkerNode = walker.currentNode;
-    if (walkerNode === refNode) {
-      insertCount = countNodes(node);
-      refNode.parentNode.insertBefore(node, refNode);
-    }
-    while (partIndex !== -1 && parts2[partIndex].index === walkerIndex) {
-      if (insertCount > 0) {
-        while (partIndex !== -1) {
-          parts2[partIndex].index += insertCount;
-          partIndex = nextActiveIndexInTemplateParts(parts2, partIndex);
-        }
-        return;
-      }
-      partIndex = nextActiveIndexInTemplateParts(parts2, partIndex);
-    }
-  }
-}
-
-// node_modules/lit-html/lib/shady-render.js
-var getTemplateCacheKey = (type, scopeName) => `${type}--${scopeName}`;
-var compatibleShadyCSSVersion = true;
-if (typeof window.ShadyCSS === "undefined") {
-  compatibleShadyCSSVersion = false;
-} else if (typeof window.ShadyCSS.prepareTemplateDom === "undefined") {
-  console.warn(`Incompatible ShadyCSS version detected. Please update to at least @webcomponents/webcomponentsjs@2.0.2 and @webcomponents/shadycss@1.3.1.`);
-  compatibleShadyCSSVersion = false;
-}
-var shadyTemplateFactory = (scopeName) => (result) => {
-  const cacheKey = getTemplateCacheKey(result.type, scopeName);
-  let templateCache = templateCaches.get(cacheKey);
-  if (templateCache === void 0) {
-    templateCache = {
-      stringsArray: new WeakMap(),
-      keyString: new Map()
-    };
-    templateCaches.set(cacheKey, templateCache);
-  }
-  let template = templateCache.stringsArray.get(result.strings);
-  if (template !== void 0) {
-    return template;
-  }
-  const key2 = result.strings.join(marker);
-  template = templateCache.keyString.get(key2);
-  if (template === void 0) {
-    const element = result.getTemplateElement();
-    if (compatibleShadyCSSVersion) {
-      window.ShadyCSS.prepareTemplateDom(element, scopeName);
-    }
-    template = new Template(result, element);
-    templateCache.keyString.set(key2, template);
-  }
-  templateCache.stringsArray.set(result.strings, template);
-  return template;
-};
-var TEMPLATE_TYPES = ["html", "svg"];
-var removeStylesFromLitTemplates = (scopeName) => {
-  TEMPLATE_TYPES.forEach((type) => {
-    const templates = templateCaches.get(getTemplateCacheKey(type, scopeName));
-    if (templates !== void 0) {
-      templates.keyString.forEach((template) => {
-        const { element: { content } } = template;
-        const styles = new Set();
-        Array.from(content.querySelectorAll("style")).forEach((s) => {
-          styles.add(s);
-        });
-        removeNodesFromTemplate(template, styles);
-      });
-    }
-  });
-};
-var shadyRenderSet = new Set();
-var prepareTemplateStyles = (scopeName, renderedDOM, template) => {
-  shadyRenderSet.add(scopeName);
-  const templateElement = !!template ? template.element : document.createElement("template");
-  const styles = renderedDOM.querySelectorAll("style");
-  const { length: length5 } = styles;
-  if (length5 === 0) {
-    window.ShadyCSS.prepareTemplateStyles(templateElement, scopeName);
-    return;
-  }
-  const condensedStyle = document.createElement("style");
-  for (let i = 0; i < length5; i++) {
-    const style2 = styles[i];
-    style2.parentNode.removeChild(style2);
-    condensedStyle.textContent += style2.textContent;
-  }
-  removeStylesFromLitTemplates(scopeName);
-  const content = templateElement.content;
-  if (!!template) {
-    insertNodeIntoTemplate(template, condensedStyle, content.firstChild);
-  } else {
-    content.insertBefore(condensedStyle, content.firstChild);
-  }
-  window.ShadyCSS.prepareTemplateStyles(templateElement, scopeName);
-  const style = content.querySelector("style");
-  if (window.ShadyCSS.nativeShadow && style !== null) {
-    renderedDOM.insertBefore(style.cloneNode(true), renderedDOM.firstChild);
-  } else if (!!template) {
-    content.insertBefore(condensedStyle, content.firstChild);
-    const removes = new Set();
-    removes.add(condensedStyle);
-    removeNodesFromTemplate(template, removes);
-  }
-};
-var render2 = (result, container, options) => {
-  if (!options || typeof options !== "object" || !options.scopeName) {
-    throw new Error("The `scopeName` option is required.");
-  }
-  const scopeName = options.scopeName;
-  const hasRendered = parts.has(container);
-  const needsScoping = compatibleShadyCSSVersion && container.nodeType === 11 && !!container.host;
-  const firstScopeRender = needsScoping && !shadyRenderSet.has(scopeName);
-  const renderContainer = firstScopeRender ? document.createDocumentFragment() : container;
-  render(result, renderContainer, Object.assign({ templateFactory: shadyTemplateFactory(scopeName) }, options));
-  if (firstScopeRender) {
-    const part = parts.get(renderContainer);
-    parts.delete(renderContainer);
-    const template = part.value instanceof TemplateInstance ? part.value.template : void 0;
-    prepareTemplateStyles(scopeName, renderContainer, template);
-    removeNodes(container, container.firstChild);
-    container.appendChild(renderContainer);
-    parts.set(container, part);
-  }
-  if (!hasRendered && needsScoping) {
-    window.ShadyCSS.styleElement(container.host);
-  }
-};
-
-// node_modules/lit-element/lib/updating-element.js
-var _a;
-window.JSCompiler_renameProperty = (prop, _obj) => prop;
-var defaultConverter = {
-  toAttribute(value, type) {
-    switch (type) {
-      case Boolean:
-        return value ? "" : null;
-      case Object:
-      case Array:
-        return value == null ? value : JSON.stringify(value);
-    }
-    return value;
-  },
-  fromAttribute(value, type) {
-    switch (type) {
-      case Boolean:
-        return value !== null;
-      case Number:
-        return value === null ? null : Number(value);
-      case Object:
-      case Array:
-        return JSON.parse(value);
-    }
-    return value;
-  }
-};
-var notEqual = (value, old) => {
-  return old !== value && (old === old || value === value);
-};
-var defaultPropertyDeclaration = {
-  attribute: true,
-  type: String,
-  converter: defaultConverter,
-  reflect: false,
-  hasChanged: notEqual
-};
-var STATE_HAS_UPDATED = 1;
-var STATE_UPDATE_REQUESTED = 1 << 2;
-var STATE_IS_REFLECTING_TO_ATTRIBUTE = 1 << 3;
-var STATE_IS_REFLECTING_TO_PROPERTY = 1 << 4;
-var finalized = "finalized";
-var UpdatingElement = class extends HTMLElement {
-  constructor() {
-    super();
-    this.initialize();
-  }
-  static get observedAttributes() {
-    this.finalize();
-    const attributes = [];
-    this._classProperties.forEach((v, p) => {
-      const attr = this._attributeNameForProperty(p, v);
-      if (attr !== void 0) {
-        this._attributeToPropertyMap.set(attr, p);
-        attributes.push(attr);
-      }
-    });
-    return attributes;
-  }
-  static _ensureClassProperties() {
-    if (!this.hasOwnProperty(JSCompiler_renameProperty("_classProperties", this))) {
-      this._classProperties = new Map();
-      const superProperties = Object.getPrototypeOf(this)._classProperties;
-      if (superProperties !== void 0) {
-        superProperties.forEach((v, k) => this._classProperties.set(k, v));
-      }
-    }
-  }
-  static createProperty(name, options = defaultPropertyDeclaration) {
-    this._ensureClassProperties();
-    this._classProperties.set(name, options);
-    if (options.noAccessor || this.prototype.hasOwnProperty(name)) {
-      return;
-    }
-    const key2 = typeof name === "symbol" ? Symbol() : `__${name}`;
-    const descriptor = this.getPropertyDescriptor(name, key2, options);
-    if (descriptor !== void 0) {
-      Object.defineProperty(this.prototype, name, descriptor);
-    }
-  }
-  static getPropertyDescriptor(name, key2, options) {
-    return {
-      get() {
-        return this[key2];
-      },
-      set(value) {
-        const oldValue = this[name];
-        this[key2] = value;
-        this.requestUpdateInternal(name, oldValue, options);
-      },
-      configurable: true,
-      enumerable: true
-    };
-  }
-  static getPropertyOptions(name) {
-    return this._classProperties && this._classProperties.get(name) || defaultPropertyDeclaration;
-  }
-  static finalize() {
-    const superCtor = Object.getPrototypeOf(this);
-    if (!superCtor.hasOwnProperty(finalized)) {
-      superCtor.finalize();
-    }
-    this[finalized] = true;
-    this._ensureClassProperties();
-    this._attributeToPropertyMap = new Map();
-    if (this.hasOwnProperty(JSCompiler_renameProperty("properties", this))) {
-      const props = this.properties;
-      const propKeys = [
-        ...Object.getOwnPropertyNames(props),
-        ...typeof Object.getOwnPropertySymbols === "function" ? Object.getOwnPropertySymbols(props) : []
-      ];
-      for (const p of propKeys) {
-        this.createProperty(p, props[p]);
-      }
-    }
-  }
-  static _attributeNameForProperty(name, options) {
-    const attribute = options.attribute;
-    return attribute === false ? void 0 : typeof attribute === "string" ? attribute : typeof name === "string" ? name.toLowerCase() : void 0;
-  }
-  static _valueHasChanged(value, old, hasChanged = notEqual) {
-    return hasChanged(value, old);
-  }
-  static _propertyValueFromAttribute(value, options) {
-    const type = options.type;
-    const converter = options.converter || defaultConverter;
-    const fromAttribute = typeof converter === "function" ? converter : converter.fromAttribute;
-    return fromAttribute ? fromAttribute(value, type) : value;
-  }
-  static _propertyValueToAttribute(value, options) {
-    if (options.reflect === void 0) {
-      return;
-    }
-    const type = options.type;
-    const converter = options.converter;
-    const toAttribute = converter && converter.toAttribute || defaultConverter.toAttribute;
-    return toAttribute(value, type);
-  }
-  initialize() {
-    this._updateState = 0;
-    this._updatePromise = new Promise((res) => this._enableUpdatingResolver = res);
-    this._changedProperties = new Map();
-    this._saveInstanceProperties();
-    this.requestUpdateInternal();
-  }
-  _saveInstanceProperties() {
-    this.constructor._classProperties.forEach((_v, p) => {
-      if (this.hasOwnProperty(p)) {
-        const value = this[p];
-        delete this[p];
-        if (!this._instanceProperties) {
-          this._instanceProperties = new Map();
-        }
-        this._instanceProperties.set(p, value);
-      }
-    });
-  }
-  _applyInstanceProperties() {
-    this._instanceProperties.forEach((v, p) => this[p] = v);
-    this._instanceProperties = void 0;
-  }
-  connectedCallback() {
-    this.enableUpdating();
-  }
-  enableUpdating() {
-    if (this._enableUpdatingResolver !== void 0) {
-      this._enableUpdatingResolver();
-      this._enableUpdatingResolver = void 0;
-    }
-  }
-  disconnectedCallback() {
-  }
-  attributeChangedCallback(name, old, value) {
-    if (old !== value) {
-      this._attributeToProperty(name, value);
-    }
-  }
-  _propertyToAttribute(name, value, options = defaultPropertyDeclaration) {
-    const ctor = this.constructor;
-    const attr = ctor._attributeNameForProperty(name, options);
-    if (attr !== void 0) {
-      const attrValue = ctor._propertyValueToAttribute(value, options);
-      if (attrValue === void 0) {
-        return;
-      }
-      this._updateState = this._updateState | STATE_IS_REFLECTING_TO_ATTRIBUTE;
-      if (attrValue == null) {
-        this.removeAttribute(attr);
-      } else {
-        this.setAttribute(attr, attrValue);
-      }
-      this._updateState = this._updateState & ~STATE_IS_REFLECTING_TO_ATTRIBUTE;
-    }
-  }
-  _attributeToProperty(name, value) {
-    if (this._updateState & STATE_IS_REFLECTING_TO_ATTRIBUTE) {
-      return;
-    }
-    const ctor = this.constructor;
-    const propName = ctor._attributeToPropertyMap.get(name);
-    if (propName !== void 0) {
-      const options = ctor.getPropertyOptions(propName);
-      this._updateState = this._updateState | STATE_IS_REFLECTING_TO_PROPERTY;
-      this[propName] = ctor._propertyValueFromAttribute(value, options);
-      this._updateState = this._updateState & ~STATE_IS_REFLECTING_TO_PROPERTY;
-    }
-  }
-  requestUpdateInternal(name, oldValue, options) {
-    let shouldRequestUpdate = true;
-    if (name !== void 0) {
-      const ctor = this.constructor;
-      options = options || ctor.getPropertyOptions(name);
-      if (ctor._valueHasChanged(this[name], oldValue, options.hasChanged)) {
-        if (!this._changedProperties.has(name)) {
-          this._changedProperties.set(name, oldValue);
-        }
-        if (options.reflect === true && !(this._updateState & STATE_IS_REFLECTING_TO_PROPERTY)) {
-          if (this._reflectingProperties === void 0) {
-            this._reflectingProperties = new Map();
-          }
-          this._reflectingProperties.set(name, options);
-        }
-      } else {
-        shouldRequestUpdate = false;
-      }
-    }
-    if (!this._hasRequestedUpdate && shouldRequestUpdate) {
-      this._updatePromise = this._enqueueUpdate();
-    }
-  }
-  requestUpdate(name, oldValue) {
-    this.requestUpdateInternal(name, oldValue);
-    return this.updateComplete;
-  }
-  async _enqueueUpdate() {
-    this._updateState = this._updateState | STATE_UPDATE_REQUESTED;
-    try {
-      await this._updatePromise;
-    } catch (e) {
-    }
-    const result = this.performUpdate();
-    if (result != null) {
-      await result;
-    }
-    return !this._hasRequestedUpdate;
-  }
-  get _hasRequestedUpdate() {
-    return this._updateState & STATE_UPDATE_REQUESTED;
-  }
-  get hasUpdated() {
-    return this._updateState & STATE_HAS_UPDATED;
-  }
-  performUpdate() {
-    if (!this._hasRequestedUpdate) {
-      return;
-    }
-    if (this._instanceProperties) {
-      this._applyInstanceProperties();
-    }
-    let shouldUpdate = false;
-    const changedProperties = this._changedProperties;
-    try {
-      shouldUpdate = this.shouldUpdate(changedProperties);
-      if (shouldUpdate) {
-        this.update(changedProperties);
-      } else {
-        this._markUpdated();
-      }
-    } catch (e) {
-      shouldUpdate = false;
-      this._markUpdated();
-      throw e;
-    }
-    if (shouldUpdate) {
-      if (!(this._updateState & STATE_HAS_UPDATED)) {
-        this._updateState = this._updateState | STATE_HAS_UPDATED;
-        this.firstUpdated(changedProperties);
-      }
-      this.updated(changedProperties);
-    }
-  }
-  _markUpdated() {
-    this._changedProperties = new Map();
-    this._updateState = this._updateState & ~STATE_UPDATE_REQUESTED;
-  }
-  get updateComplete() {
-    return this._getUpdateComplete();
-  }
-  _getUpdateComplete() {
-    return this.getUpdateComplete();
-  }
-  getUpdateComplete() {
-    return this._updatePromise;
-  }
-  shouldUpdate(_changedProperties) {
-    return true;
-  }
-  update(_changedProperties) {
-    if (this._reflectingProperties !== void 0 && this._reflectingProperties.size > 0) {
-      this._reflectingProperties.forEach((v, k) => this._propertyToAttribute(k, this[k], v));
-      this._reflectingProperties = void 0;
-    }
-    this._markUpdated();
-  }
-  updated(_changedProperties) {
-  }
-  firstUpdated(_changedProperties) {
-  }
-};
-_a = finalized;
-UpdatingElement[_a] = true;
-
-// node_modules/lit-element/lib/decorators.js
-var legacyCustomElement = (tagName, clazz) => {
-  window.customElements.define(tagName, clazz);
-  return clazz;
-};
-var standardCustomElement = (tagName, descriptor) => {
-  const { kind, elements } = descriptor;
-  return {
-    kind,
-    elements,
-    finisher(clazz) {
-      window.customElements.define(tagName, clazz);
-    }
-  };
-};
-var customElement = (tagName) => (classOrDescriptor) => typeof classOrDescriptor === "function" ? legacyCustomElement(tagName, classOrDescriptor) : standardCustomElement(tagName, classOrDescriptor);
-var ElementProto = Element.prototype;
-var legacyMatches = ElementProto.msMatchesSelector || ElementProto.webkitMatchesSelector;
-
-// node_modules/lit-element/lib/css-tag.js
-var supportsAdoptingStyleSheets = window.ShadowRoot && (window.ShadyCSS === void 0 || window.ShadyCSS.nativeShadow) && "adoptedStyleSheets" in Document.prototype && "replace" in CSSStyleSheet.prototype;
-var constructionToken = Symbol();
-var CSSResult = class {
-  constructor(cssText, safeToken) {
-    if (safeToken !== constructionToken) {
-      throw new Error("CSSResult is not constructable. Use `unsafeCSS` or `css` instead.");
-    }
-    this.cssText = cssText;
-  }
-  get styleSheet() {
-    if (this._styleSheet === void 0) {
-      if (supportsAdoptingStyleSheets) {
-        this._styleSheet = new CSSStyleSheet();
-        this._styleSheet.replaceSync(this.cssText);
-      } else {
-        this._styleSheet = null;
-      }
-    }
-    return this._styleSheet;
-  }
-  toString() {
-    return this.cssText;
-  }
-};
-var unsafeCSS = (value) => {
-  return new CSSResult(String(value), constructionToken);
-};
-var textFromCSSResult = (value) => {
-  if (value instanceof CSSResult) {
-    return value.cssText;
-  } else if (typeof value === "number") {
-    return value;
-  } else {
-    throw new Error(`Value passed to 'css' function must be a 'css' function result: ${value}. Use 'unsafeCSS' to pass non-literal values, but
-            take care to ensure page security.`);
-  }
-};
-var css = (strings, ...values) => {
-  const cssText = values.reduce((acc, v, idx) => acc + textFromCSSResult(v) + strings[idx + 1], strings[0]);
-  return new CSSResult(cssText, constructionToken);
-};
-
-// node_modules/lit-element/lit-element.js
-(window["litElementVersions"] || (window["litElementVersions"] = [])).push("2.5.1");
-var renderNotImplemented = {};
-var LitElement = class extends UpdatingElement {
-  static getStyles() {
-    return this.styles;
-  }
-  static _getUniqueStyles() {
-    if (this.hasOwnProperty(JSCompiler_renameProperty("_styles", this))) {
-      return;
-    }
-    const userStyles = this.getStyles();
-    if (Array.isArray(userStyles)) {
-      const addStyles = (styles2, set7) => styles2.reduceRight((set8, s) => Array.isArray(s) ? addStyles(s, set8) : (set8.add(s), set8), set7);
-      const set6 = addStyles(userStyles, new Set());
-      const styles = [];
-      set6.forEach((v) => styles.unshift(v));
-      this._styles = styles;
-    } else {
-      this._styles = userStyles === void 0 ? [] : [userStyles];
-    }
-    this._styles = this._styles.map((s) => {
-      if (s instanceof CSSStyleSheet && !supportsAdoptingStyleSheets) {
-        const cssText = Array.prototype.slice.call(s.cssRules).reduce((css2, rule) => css2 + rule.cssText, "");
-        return unsafeCSS(cssText);
-      }
-      return s;
-    });
-  }
-  initialize() {
-    super.initialize();
-    this.constructor._getUniqueStyles();
-    this.renderRoot = this.createRenderRoot();
-    if (window.ShadowRoot && this.renderRoot instanceof window.ShadowRoot) {
-      this.adoptStyles();
-    }
-  }
-  createRenderRoot() {
-    return this.attachShadow(this.constructor.shadowRootOptions);
-  }
-  adoptStyles() {
-    const styles = this.constructor._styles;
-    if (styles.length === 0) {
-      return;
-    }
-    if (window.ShadyCSS !== void 0 && !window.ShadyCSS.nativeShadow) {
-      window.ShadyCSS.ScopingShim.prepareAdoptedCssText(styles.map((s) => s.cssText), this.localName);
-    } else if (supportsAdoptingStyleSheets) {
-      this.renderRoot.adoptedStyleSheets = styles.map((s) => s instanceof CSSStyleSheet ? s : s.styleSheet);
-    } else {
-      this._needsShimAdoptedStyleSheets = true;
-    }
-  }
-  connectedCallback() {
-    super.connectedCallback();
-    if (this.hasUpdated && window.ShadyCSS !== void 0) {
-      window.ShadyCSS.styleElement(this);
-    }
-  }
-  update(changedProperties) {
-    const templateResult = this.render();
-    super.update(changedProperties);
-    if (templateResult !== renderNotImplemented) {
-      this.constructor.render(templateResult, this.renderRoot, { scopeName: this.localName, eventContext: this });
-    }
-    if (this._needsShimAdoptedStyleSheets) {
-      this._needsShimAdoptedStyleSheets = false;
-      this.constructor._styles.forEach((s) => {
-        const style = document.createElement("style");
-        style.textContent = s.cssText;
-        this.renderRoot.appendChild(style);
-      });
-    }
-  }
-  render() {
-    return renderNotImplemented;
-  }
-};
-LitElement["finalized"] = true;
-LitElement.render = render2;
-LitElement.shadowRootOptions = { mode: "open" };
 
 // examples/src/HelpElements.ts
-var MouseInteractions = class extends LitElement {
+var MouseInteractions = class extends s3 {
   static get styles() {
-    return css`
+    return i`
             :host {
                 position: absolute;
                 top: 0;
@@ -35844,7 +35396,7 @@ var MouseInteractions = class extends LitElement {
         `;
   }
   render() {
-    return html`<div class="container">
+    return x`<div class="container">
             <div><strong>LEFT DRAG:</strong> TRUCK</div>
             <div><strong>RIGHT DRAG:</strong> ROTATE</div>
             <div><strong>MIDDLE DRAG:</strong> PAN</div>
@@ -35853,7 +35405,7 @@ var MouseInteractions = class extends LitElement {
   }
 };
 MouseInteractions = __decorateClass([
-  customElement("mouse-interactions")
+  t3("mouse-interactions")
 ], MouseInteractions);
 
 // examples/src/mod.ts
@@ -35871,9 +35423,9 @@ var examples = {
 };
 function getExample(examples2, path) {
   let obj = examples2;
-  for (let i = 0, n = path.length; i < n; ++i) {
-    if (Object.prototype.hasOwnProperty.call(obj, path[i])) {
-      obj = obj[path[i]];
+  for (let i4 = 0, n5 = path.length; i4 < n5; ++i4) {
+    if (Object.prototype.hasOwnProperty.call(obj, path[i4])) {
+      obj = obj[path[i4]];
     } else {
       return null;
     }
@@ -35885,7 +35437,7 @@ function getExample(examples2, path) {
 }
 async function main() {
   const pathName = window.location.pathname;
-  const pathComponents = pathName.split("/").filter((v) => Boolean(v));
+  const pathComponents = pathName.split("/").filter((v2) => Boolean(v2));
   let basePath = "";
   if (window.location.hostname.indexOf("github.io") !== -1) {
     basePath = `/${pathComponents.shift()}`;
@@ -35900,29 +35452,23 @@ async function main() {
 main();
 /**
  * @license
- * Copyright (c) 2017 The Polymer Project Authors. All rights reserved.
- * This code may only be used under the BSD style license found at
- * http://polymer.github.io/LICENSE.txt
- * The complete set of authors may be found at
- * http://polymer.github.io/AUTHORS.txt
- * The complete set of contributors may be found at
- * http://polymer.github.io/CONTRIBUTORS.txt
- * Code distributed by Google as part of the polymer project is also
- * subject to an additional IP rights grant found at
- * http://polymer.github.io/PATENTS.txt
+ * Copyright 2017 Google LLC
+ * SPDX-License-Identifier: BSD-3-Clause
  */
 /**
  * @license
- * Copyright (c) 2018 The Polymer Project Authors. All rights reserved.
- * This code may only be used under the BSD style license found at
- * http://polymer.github.io/LICENSE.txt
- * The complete set of authors may be found at
- * http://polymer.github.io/AUTHORS.txt
- * The complete set of contributors may be found at
- * http://polymer.github.io/CONTRIBUTORS.txt
- * Code distributed by Google as part of the polymer project is also
- * subject to an additional IP rights grant found at
- * http://polymer.github.io/PATENTS.txt
+ * Copyright 2019 Google LLC
+ * SPDX-License-Identifier: BSD-3-Clause
+ */
+/**
+ * @license
+ * Copyright 2021 Google LLC
+ * SPDX-License-Identifier: BSD-3-Clause
+ */
+/**
+ * @license
+ * Copyright 2022 Google LLC
+ * SPDX-License-Identifier: BSD-3-Clause
  */
 /**
  * chroma.js - JavaScript library for color conversions
@@ -35980,14 +35526,4 @@ main();
  *
  * @preserve
  */
-/**
-@license
-Copyright (c) 2019 The Polymer Project Authors. All rights reserved.
-This code may only be used under the BSD style license found at
-http://polymer.github.io/LICENSE.txt The complete set of authors may be found at
-http://polymer.github.io/AUTHORS.txt The complete set of contributors may be
-found at http://polymer.github.io/CONTRIBUTORS.txt Code distributed by Google as
-part of the polymer project is also subject to an additional IP rights grant
-found at http://polymer.github.io/PATENTS.txt
-*/
 //# sourceMappingURL=mod.js.map
