@@ -18053,16 +18053,14 @@ var MouseHandler = class extends EventEmitter.mixin(UXModule) {
   }
   handleWheelEvent(e5, state) {
     this.setMouseState(state);
-    let delta;
-    if ("wheelDeltaY" in e5) {
-      delta = -e5.wheelDeltaY / 120;
-    } else {
-      delta = e5.deltaY < 1 ? -1 : 1;
+    if (e5.deltaY) {
+      const sign = e5.deltaY / Math.abs(e5.deltaY);
+      const delta = sign * Math.min(Math.abs(e5.deltaY), 10) / 10;
+      this.emitEvents([{
+        event: kEvents.wheel,
+        args: [delta]
+      }]);
     }
-    this.emitEvents([{
-      event: kEvents.wheel,
-      args: [delta]
-    }]);
   }
   handleMouseEvent(e5) {
     const client = this.newState.clientCoords;
