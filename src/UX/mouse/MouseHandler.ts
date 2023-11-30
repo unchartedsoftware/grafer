@@ -246,17 +246,16 @@ export class MouseHandler extends EventEmitter.mixin(UXModule) {
     private handleWheelEvent(e: WheelEvent, state: MouseState): void {
         this.setMouseState(state);
 
-        let delta;
-        if ('wheelDeltaY' in e) {
-            delta = -(e as any).wheelDeltaY / 120;
-        } else {
-            delta = (e.deltaY < 1) ? -1 : 1;
-        }
+        if (e.deltaY) {
+            const sign = e.deltaY / Math.abs(e.deltaY);
 
-        this.emitEvents([{
-            event: kEvents.wheel,
-            args: [delta],
-        }]);
+            const delta = sign * Math.min(Math.abs(e.deltaY), 10) / 10;
+
+            this.emitEvents([{
+                event: kEvents.wheel,
+                args: [delta],
+            }]);
+        }
     }
 
     private handleMouseEvent(e: MouseEvent): void {
