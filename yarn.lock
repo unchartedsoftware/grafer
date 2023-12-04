@@ -671,7 +671,7 @@ __metadata:
     potpack: 1.0.1
     rimraf: 5.0.5
     tslib: 2.6.2
-    tweakpane: 1.5.8
+    tweakpane: 4.0.1
     typescript: 5.2.2
     yargs: 17.7.2
   languageName: unknown
@@ -7557,10 +7557,10 @@ send@latest:
   languageName: node
   linkType: hard
 
-"tweakpane@npm:1.5.8":
-  version: 1.5.8
-  resolution: "tweakpane@npm:1.5.8"
-  checksum: 2f58403a4f56e3a3c09e4e08d8994323e570e18c800b1be44ac703e2260d7c22593439ff5583e12493003dbcb4ffddc756fb6390f60d86e104cf2f4d4e1cb7b8
+"tweakpane@npm:4.0.1":
+  version: 4.0.1
+  resolution: "tweakpane@npm:4.0.1"
+  checksum: 589fda218d844145afa26e975c21b707a24b7455d075fc7ff792f8d67079e63d545c02e72cc39d946e4519336417eb6a6d6c208a19cf4c307006fa92331325cc
   languageName: node
   linkType: hard
 
