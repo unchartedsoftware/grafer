@@ -16,23 +16,13 @@ in vec2 vFromCenter;
 out vec4 fragColor;
 
 void main() {
-    float thickness = max(fPixelLength, min(0.1, fPixelLength * uOutline * uPixelRatio));
-    float antialias = min(thickness, fPixelLength * 1.5);
-    float radius = 1.0 - thickness;
-    float ring = opOnion(sdCircle(vFromCenter, radius), thickness);
-    float modeDistance = uRenderMode == MODE_HIGH_PASS_1 ? -antialias : -antialias * 0.5;
-    float distance = uRenderMode == MODE_HIGH_PASS_2 ? 0.0 : modeDistance;
+    float thickness = uOutline / 2.0;
+    float innerRadius = 1.0 - thickness;
+    float ring = opOnion(sdCircle(vFromCenter, innerRadius), thickness);
 
-    if (ring > distance) {
+    if (ring > 0.0) {
         discard;
     }
 
-    if (uRenderMode == MODE_HIGH_PASS_2) {
-        if (ring < -antialias) {
-            discard;
-        }
-        fragColor = outputColor(vec4(fColor.rgb, smoothstep(0.0, antialias, abs(ring))));
-    } else {
-        fragColor = outputColor(vec4(fColor.rgb, 1.0));
-    }
+    fragColor = outputColor(vec4(fColor.rgb, 1.0));
 }
