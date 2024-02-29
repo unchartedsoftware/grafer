@@ -18249,7 +18249,7 @@ var ColorRegistryMapped = class extends ColorRegistry {
   }
 };
 
-// node_modules/potpack/index.mjs
+// node_modules/potpack/index.js
 function potpack(boxes) {
   let area = 0;
   let maxWidth = 0;
