@@ -10331,17 +10331,17 @@ var b = class extends HTMLElement {
   }
   _$Ev() {
     var _a6;
-    this._$Eg = new Promise((t4) => this.enableUpdating = t4), this._$AL = /* @__PURE__ */ new Map(), this._$ES(), this.requestUpdate(), (_a6 = this.constructor.l) == null ? void 0 : _a6.forEach((t4) => t4(this));
+    this._$ES = new Promise((t4) => this.enableUpdating = t4), this._$AL = /* @__PURE__ */ new Map(), this._$E_(), this.requestUpdate(), (_a6 = this.constructor.l) == null ? void 0 : _a6.forEach((t4) => t4(this));
   }
   addController(t4) {
     var _a6, _b3;
-    ((_a6 = this._$E_) != null ? _a6 : this._$E_ = /* @__PURE__ */ new Set()).add(t4), void 0 !== this.renderRoot && this.isConnected && ((_b3 = t4.hostConnected) == null ? void 0 : _b3.call(t4));
+    ((_a6 = this._$EO) != null ? _a6 : this._$EO = /* @__PURE__ */ new Set()).add(t4), void 0 !== this.renderRoot && this.isConnected && ((_b3 = t4.hostConnected) == null ? void 0 : _b3.call(t4));
   }
   removeController(t4) {
     var _a6;
-    (_a6 = this._$E_) == null ? void 0 : _a6.delete(t4);
+    (_a6 = this._$EO) == null ? void 0 : _a6.delete(t4);
   }
-  _$ES() {
+  _$E_() {
     const t4 = /* @__PURE__ */ new Map(), s4 = this.constructor.elementProperties;
     for (const i4 of s4.keys())
       this.hasOwnProperty(i4) && (t4.set(i4, this[i4]), delete this[i4]);
@@ -10354,7 +10354,7 @@ var b = class extends HTMLElement {
   }
   connectedCallback() {
     var _a6, _b3;
-    (_a6 = this.renderRoot) != null ? _a6 : this.renderRoot = this.createRenderRoot(), this.enableUpdating(true), (_b3 = this._$E_) == null ? void 0 : _b3.forEach((t4) => {
+    (_a6 = this.renderRoot) != null ? _a6 : this.renderRoot = this.createRenderRoot(), this.enableUpdating(true), (_b3 = this._$EO) == null ? void 0 : _b3.forEach((t4) => {
       var _a7;
       return (_a7 = t4.hostConnected) == null ? void 0 : _a7.call(t4);
     });
@@ -10363,7 +10363,7 @@ var b = class extends HTMLElement {
   }
   disconnectedCallback() {
     var _a6;
-    (_a6 = this._$E_) == null ? void 0 : _a6.forEach((t4) => {
+    (_a6 = this._$EO) == null ? void 0 : _a6.forEach((t4) => {
       var _a7;
       return (_a7 = t4.hostDisconnected) == null ? void 0 : _a7.call(t4);
     });
@@ -10371,7 +10371,7 @@ var b = class extends HTMLElement {
   attributeChangedCallback(t4, s4, i4) {
     this._$AK(t4, i4);
   }
-  _$EO(t4, s4) {
+  _$EC(t4, s4) {
     var _a6;
     const i4 = this.constructor.elementProperties.get(t4), e5 = this.constructor._$Eu(t4, i4);
     if (void 0 !== e5 && true === i4.reflect) {
@@ -10387,23 +10387,23 @@ var b = class extends HTMLElement {
       this._$Em = e5, this[e5] = r5.fromAttribute(s4, t5.type), this._$Em = null;
     }
   }
-  requestUpdate(t4, s4, i4, e5 = false, r5) {
+  requestUpdate(t4, s4, i4) {
     var _a6;
     if (void 0 !== t4) {
-      if (i4 != null ? i4 : i4 = this.constructor.getPropertyOptions(t4), !((_a6 = i4.hasChanged) != null ? _a6 : f)(e5 ? r5 : this[t4], s4))
+      if (i4 != null ? i4 : i4 = this.constructor.getPropertyOptions(t4), !((_a6 = i4.hasChanged) != null ? _a6 : f)(this[t4], s4))
         return;
-      this.C(t4, s4, i4);
+      this.P(t4, s4, i4);
     }
-    false === this.isUpdatePending && (this._$Eg = this._$EP());
+    false === this.isUpdatePending && (this._$ES = this._$ET());
   }
-  C(t4, s4, i4) {
+  P(t4, s4, i4) {
     var _a6;
     this._$AL.has(t4) || this._$AL.set(t4, s4), true === i4.reflect && this._$Em !== t4 && ((_a6 = this._$Ej) != null ? _a6 : this._$Ej = /* @__PURE__ */ new Set()).add(t4);
   }
-  async _$EP() {
+  async _$ET() {
     this.isUpdatePending = true;
     try {
-      await this._$Eg;
+      await this._$ES;
     } catch (t5) {
       Promise.reject(t5);
     }
@@ -10426,17 +10426,17 @@ var b = class extends HTMLElement {
       const t5 = this.constructor.elementProperties;
       if (t5.size > 0)
         for (const [s5, i4] of t5)
-          true !== i4.wrapped || this._$AL.has(s5) || void 0 === this[s5] || this.C(s5, this[s5], i4);
+          true !== i4.wrapped || this._$AL.has(s5) || void 0 === this[s5] || this.P(s5, this[s5], i4);
     }
     let t4 = false;
     const s4 = this._$AL;
     try {
-      t4 = this.shouldUpdate(s4), t4 ? (this.willUpdate(s4), (_b3 = this._$E_) == null ? void 0 : _b3.forEach((t5) => {
+      t4 = this.shouldUpdate(s4), t4 ? (this.willUpdate(s4), (_b3 = this._$EO) == null ? void 0 : _b3.forEach((t5) => {
         var _a7;
         return (_a7 = t5.hostUpdate) == null ? void 0 : _a7.call(t5);
-      }), this.update(s4)) : this._$ET();
+      }), this.update(s4)) : this._$EU();
     } catch (s5) {
-      throw t4 = false, this._$ET(), s5;
+      throw t4 = false, this._$EU(), s5;
     }
     t4 && this._$AE(s4);
   }
@@ -10444,25 +10444,25 @@ var b = class extends HTMLElement {
   }
   _$AE(t4) {
     var _a6;
-    (_a6 = this._$E_) == null ? void 0 : _a6.forEach((t5) => {
+    (_a6 = this._$EO) == null ? void 0 : _a6.forEach((t5) => {
       var _a7;
       return (_a7 = t5.hostUpdated) == null ? void 0 : _a7.call(t5);
     }), this.hasUpdated || (this.hasUpdated = true, this.firstUpdated(t4)), this.updated(t4);
   }
-  _$ET() {
+  _$EU() {
     this._$AL = /* @__PURE__ */ new Map(), this.isUpdatePending = false;
   }
   get updateComplete() {
     return this.getUpdateComplete();
   }
   getUpdateComplete() {
-    return this._$Eg;
+    return this._$ES;
   }
   shouldUpdate(t4) {
     return true;
   }
   update(t4) {
-    this._$Ej && (this._$Ej = this._$Ej.forEach((t5) => this._$EO(t5, this[t5]))), this._$ET();
+    this._$Ej && (this._$Ej = this._$Ej.forEach((t5) => this._$EC(t5, this[t5]))), this._$EU();
   }
   updated(t4) {
   }
@@ -10470,7 +10470,7 @@ var b = class extends HTMLElement {
   }
 };
 var _a2;
-b.elementStyles = [], b.shadowRootOptions = { mode: "open" }, b[d("elementProperties")] = /* @__PURE__ */ new Map(), b[d("finalized")] = /* @__PURE__ */ new Map(), p == null ? void 0 : p({ ReactiveElement: b }), ((_a2 = a.reactiveElementVersions) != null ? _a2 : a.reactiveElementVersions = []).push("2.0.2");
+b.elementStyles = [], b.shadowRootOptions = { mode: "open" }, b[d("elementProperties")] = /* @__PURE__ */ new Map(), b[d("finalized")] = /* @__PURE__ */ new Map(), p == null ? void 0 : p({ ReactiveElement: b }), ((_a2 = a.reactiveElementVersions) != null ? _a2 : a.reactiveElementVersions = []).push("2.0.4");
 
 // node_modules/lit-html/lit-html.js
 var t2 = globalThis;
@@ -10622,37 +10622,37 @@ var M = class {
     return this._$AB;
   }
   _$AI(t4, i4 = this) {
-    t4 = N(this, t4, i4), c3(t4) ? t4 === T || null == t4 || "" === t4 ? (this._$AH !== T && this._$AR(), this._$AH = T) : t4 !== this._$AH && t4 !== w && this._(t4) : void 0 !== t4._$litType$ ? this.g(t4) : void 0 !== t4.nodeType ? this.$(t4) : u2(t4) ? this.T(t4) : this._(t4);
+    t4 = N(this, t4, i4), c3(t4) ? t4 === T || null == t4 || "" === t4 ? (this._$AH !== T && this._$AR(), this._$AH = T) : t4 !== this._$AH && t4 !== w && this._(t4) : void 0 !== t4._$litType$ ? this.$(t4) : void 0 !== t4.nodeType ? this.T(t4) : u2(t4) ? this.k(t4) : this._(t4);
   }
-  k(t4) {
+  S(t4) {
     return this._$AA.parentNode.insertBefore(t4, this._$AB);
   }
-  $(t4) {
-    this._$AH !== t4 && (this._$AR(), this._$AH = this.k(t4));
+  T(t4) {
+    this._$AH !== t4 && (this._$AR(), this._$AH = this.S(t4));
   }
   _(t4) {
-    this._$AH !== T && c3(this._$AH) ? this._$AA.nextSibling.data = t4 : this.$(r3.createTextNode(t4)), this._$AH = t4;
+    this._$AH !== T && c3(this._$AH) ? this._$AA.nextSibling.data = t4 : this.T(r3.createTextNode(t4)), this._$AH = t4;
   }
-  g(t4) {
+  $(t4) {
     var _a6;
     const { values: i4, _$litType$: s4 } = t4, e5 = "number" == typeof s4 ? this._$AC(t4) : (void 0 === s4.el && (s4.el = V.createElement(C(s4.h, s4.h[0]), this.options)), s4);
     if (((_a6 = this._$AH) == null ? void 0 : _a6._$AD) === e5)
       this._$AH.p(i4);
     else {
       const t5 = new S2(e5, this), s5 = t5.u(this.options);
-      t5.p(i4), this.$(s5), this._$AH = t5;
+      t5.p(i4), this.T(s5), this._$AH = t5;
     }
   }
   _$AC(t4) {
     let i4 = A.get(t4.strings);
     return void 0 === i4 && A.set(t4.strings, i4 = new V(t4)), i4;
   }
-  T(t4) {
+  k(t4) {
     a2(this._$AH) || (this._$AH = [], this._$AR());
     const i4 = this._$AH;
     let s4, e5 = 0;
     for (const h3 of t4)
-      e5 === i4.length ? i4.push(s4 = new M(this.k(l2()), this.k(l2()), this, this.options)) : s4 = i4[e5], s4._$AI(h3), e5++;
+      e5 === i4.length ? i4.push(s4 = new M(this.S(l2()), this.S(l2()), this, this.options)) : s4 = i4[e5], s4._$AI(h3), e5++;
     e5 < i4.length && (this._$AR(s4 && s4._$AB.nextSibling, e5), i4.length = e5);
   }
   _$AR(t4 = this._$AA.nextSibling, i4) {
@@ -10688,9 +10688,9 @@ var R = class {
       for (t4 = h3[0], n5 = 0; n5 < h3.length - 1; n5++)
         r5 = N(this, e6[s4 + n5], i4, n5), r5 === w && (r5 = this._$AH[n5]), o4 || (o4 = !c3(r5) || r5 !== this._$AH[n5]), r5 === T ? t4 = T : t4 !== T && (t4 += (r5 != null ? r5 : "") + h3[n5 + 1]), this._$AH[n5] = r5;
     }
-    o4 && !e5 && this.O(t4);
+    o4 && !e5 && this.j(t4);
   }
-  O(t4) {
+  j(t4) {
     t4 === T ? this.element.removeAttribute(this.name) : this.element.setAttribute(this.name, t4 != null ? t4 : "");
   }
 };
@@ -10698,7 +10698,7 @@ var k = class extends R {
   constructor() {
     super(...arguments), this.type = 3;
   }
-  O(t4) {
+  j(t4) {
     this.element[this.name] = t4 === T ? void 0 : t4;
   }
 };
@@ -10706,7 +10706,7 @@ var H = class extends R {
   constructor() {
     super(...arguments), this.type = 4;
   }
-  O(t4) {
+  j(t4) {
     this.element.toggleAttribute(this.name, !!t4 && t4 !== T);
   }
 };
@@ -10739,7 +10739,7 @@ var L = class {
 };
 var Z = t2.litHtmlPolyfillSupport;
 var _a3;
-Z == null ? void 0 : Z(V, M), ((_a3 = t2.litHtmlVersions) != null ? _a3 : t2.litHtmlVersions = []).push("3.1.0");
+Z == null ? void 0 : Z(V, M), ((_a3 = t2.litHtmlVersions) != null ? _a3 : t2.litHtmlVersions = []).push("3.1.2");
 var j = (t4, i4, s4) => {
   var _a6, _b2;
   const e5 = (_a6 = s4 == null ? void 0 : s4.renderBefore) != null ? _a6 : i4;
@@ -10782,7 +10782,7 @@ s3._$litElement$ = true, s3["finalized", "finalized"] = true, (_a4 = globalThis.
 var r4 = globalThis.litElementPolyfillSupport;
 r4 == null ? void 0 : r4({ LitElement: s3 });
 var _a5;
-((_a5 = globalThis.litElementVersions) != null ? _a5 : globalThis.litElementVersions = []).push("4.0.2");
+((_a5 = globalThis.litElementVersions) != null ? _a5 : globalThis.litElementVersions = []).push("4.0.4");
 
 // examples/src/playground.ts
 var import_tweakpane2 = __toESM(require_tweakpane(), 1);
