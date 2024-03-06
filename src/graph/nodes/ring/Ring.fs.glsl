@@ -19,10 +19,18 @@ void main() {
     float thickness = uOutline / 2.0;
     float innerRadius = 1.0 - thickness;
     float ring = opOnion(sdCircle(vFromCenter, innerRadius), thickness);
+    float antialias = fPixelLength * 1.5;
 
     if (ring > 0.0) {
         discard;
     }
 
-    fragColor = outputColor(vec4(fColor.rgb, 1.0));
+    if (uRenderMode == MODE_HIGH_PASS_2) {
+        if (ring < -antialias) {
+            discard;
+        }
+        fragColor = outputColor(vec4(fColor.rgb, smoothstep(0.0, antialias, abs(ring))));
+    } else {
+        fragColor = outputColor(vec4(fColor.rgb, 1.0));
+    }
 }
