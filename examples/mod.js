@@ -18839,11 +18839,20 @@ var Graph = class extends EventEmitter.mixin(GraphPoints) {
   set translation(value) {
     vec3_exports.set(this._translation, value[0], value[1], value[2]);
   }
+  setTranslationByRef(other) {
+    this._translation = other;
+  }
   get scale() {
     return this._scale[0];
   }
   set scale(value) {
     vec3_exports.set(this._scale, value, value, value);
+  }
+  get scaleVec3() {
+    return this._scale;
+  }
+  setScaleByRef(other) {
+    this._scale = other;
   }
   render(context, mode, uniforms) {
     var _a6;
