@@ -46,7 +46,7 @@ export class Graph extends EventEmitter.mixin(GraphPoints) implements Renderable
         return this._rotation;
     }
 
-    private readonly _translation: vec3;
+    private _translation: vec3;
     public get translation(): vec3 {
         return this._translation;
     }
@@ -54,12 +54,24 @@ export class Graph extends EventEmitter.mixin(GraphPoints) implements Renderable
         vec3.set(this._translation, value[0], value[1], value[2]);
     }
 
-    private readonly _scale: vec3;
+    public setTranslationByRef(other: vec3): void {
+        this._translation = other;
+    }
+
+    private _scale: vec3;
     public get scale(): number {
         return this._scale[0];
     }
     public set scale(value: number) {
         vec3.set(this._scale, value, value, value);
+    }
+
+    public get scaleVec3() : vec3 {
+        return this._scale;
+    }
+
+    public setScaleByRef(other: vec3): void {
+        this._scale = other;
     }
 
     constructor(context: App, data: PointData[]);
