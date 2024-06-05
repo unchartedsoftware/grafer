@@ -17578,6 +17578,9 @@ var GraphPoints = class extends DataTexture {
       this._dataView.getFloat32(index * 16 + 12, true)
     ];
   }
+  hasPoint(id) {
+    return this.map.has(id);
+  }
   getPointByID(id) {
     return this.getPointByIndex(this.getPointIndex(id));
   }
