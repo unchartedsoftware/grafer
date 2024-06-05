@@ -120,6 +120,10 @@ export class GraphPoints extends DataTexture {
         ];
     }
 
+    public hasPoint(id: number | string): boolean {
+        return this.map.has(id);
+    }
+
     public getPointByID(id: number | string): [number, number, number, number] {
         return this.getPointByIndex(this.getPointIndex(id));
     }
