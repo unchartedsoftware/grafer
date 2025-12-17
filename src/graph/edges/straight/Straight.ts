@@ -81,7 +81,9 @@ export class Straight extends Edges<BasicEdgeData, GLStraightEdgeTypes> {
     }
 
     public destroy(): void {
-        // TODO: Implement destroy method
+        this.pickingManager.off(PickingManager.events.hoverOn, this.pickingHandler);
+        this.pickingManager.off(PickingManager.events.hoverOff, this.pickingHandler);
+        this.pickingManager.off(PickingManager.events.click, this.pickingHandler);
     }
 
     public render(context:App, mode: RenderMode, uniforms: RenderUniforms): void {

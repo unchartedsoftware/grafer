@@ -277,6 +277,9 @@ export class GraferController extends EventEmitter {
     public removeLayerByIndex(index: number): void {
         const {layers} = this._viewport.graph;
         if (index >= 0 && index < layers.length) {
+            if (layers[index]) {
+                layers[index].destroy();
+            }
             layers.splice(index, 1);
         }
     }

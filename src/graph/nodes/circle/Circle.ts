@@ -100,7 +100,12 @@ export class Circle extends Nodes<BasicNodeData, GLCircleNodeTypes> {
     }
 
     public destroy(): void {
-        // TODO: Implement destroy method
+        this.pickingManager.off(PickingManager.events.hoverOn, this.pickingHandler);
+        this.pickingManager.off(PickingManager.events.hoverOff, this.pickingHandler);
+        this.pickingManager.off(PickingManager.events.click, this.pickingHandler);
+
+        this.pickingHandler = null;
+        this.pickingColors = null;
     }
 
     public render(context:App, mode: RenderMode, uniforms: RenderUniforms): void {

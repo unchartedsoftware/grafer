@@ -130,5 +130,4 @@ export abstract class LayerRenderable<T_SRC, T_TGT> extends PointsReaderEmitter<
         }
     }
 
-    public abstract destroy(): void;
 }

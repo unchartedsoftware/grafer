@@ -25,10 +25,11 @@ export class PixelRatioObserver {
             this.devicePixelRatio = pixelRatio;
             callback(pixelRatio);
         };
-        subscriberSet.add(callback);
+        subscriberSet.add(this.callback);
     }
 
     public disconnect(): void {
         subscriberSet.delete(this.callback);
+        this.callback = null;
     }
 }

@@ -57,6 +57,14 @@ export abstract class PointsReader<T_SRC, T_TGT> {
         configureVAO(this.sourceVAO, this.sourceVBO, types, typesInfo);
     }
 
+    public destroy(): void {
+        this.dataView = null;
+        this.dataBuffer = null;
+        if (this.dataDrawCall) {
+            this.dataDrawCall = null;
+        }
+    }
+
     protected initializeTargetBuffers(context: App, dataLength: number): void {
         const targetTypes = this.getGLTargetTypes();
         const stride = glDataTypesInfo(targetTypes).stride;

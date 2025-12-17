@@ -65,6 +65,17 @@ export abstract class Nodes<T_SRC extends BasicNodeData, T_TGT> extends LayerRen
         });
     }
 
+    public destroy(): void {
+        if (this.map) {
+            this.map.clear();
+            this.map = null;
+        }
+
+        if (this.idArray) {
+            this.idArray = null;
+        }
+    }
+
     protected computeMappings(mappings: Partial<DataMappings<T_SRC>>): DataMappings<T_SRC> {
         const nodesMappings = Object.assign({}, kBasicNodeMappings, mappings);
 

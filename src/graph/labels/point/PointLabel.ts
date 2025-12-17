@@ -70,6 +70,7 @@ export class PointLabel extends Nodes<LabelNodeData, GLLabelNodeTypes> {
     protected labelAtlas: LabelAtlas;
 
     protected _labelPlacement: unknown = PointLabelPlacement.CENTER;
+    private _pixelRatio: PixelRatioObserver;
 
     public get labelPlacement(): PointLabelPlacement | unknown {
         return this._labelPlacement;
@@ -157,7 +158,7 @@ export class PointLabel extends Nodes<LabelNodeData, GLLabelNodeTypes> {
             this.labelAtlas = labelAtlas;
         } else {
             this.labelAtlas = new LabelAtlas(context, data, mappings as Partial<DataMappings<LabelData>>, font, bold, charSpacing);
-            new PixelRatioObserver(() => {
+            this._pixelRatio = new PixelRatioObserver(() => {
                 this.labelAtlas = new LabelAtlas(context, data, mappings as Partial<DataMappings<LabelData>>, font, bold, charSpacing);
                 super.initialize(context, points, data, mappings, pickingManager);
 
@@ -221,7 +222,20 @@ export class PointLabel extends Nodes<LabelNodeData, GLLabelNodeTypes> {
     }
 
     public destroy(): void {
-        //
+        super.destroy();
+        this.pickingManager.off(PickingManager.events.hoverOn, this.pickingHandler);
+        this.pickingManager.off(PickingManager.events.hoverOff, this.pickingHandler);
+        this.pickingManager.off(PickingManager.events.click, this.pickingHandler);
+
+        if (this._pixelRatio) {
+            this._pixelRatio.disconnect();
+        }
+        this.labelAtlas = null;
+        this._pixelRatio = null;
+        this.pickingColors = null;
+        this.pickingHandler = null;
+        this.drawCall = null;
+        this.pickingDrawCall = null;
     }
 
     public render(context: App, mode: RenderMode, uniforms: RenderUniforms): void {

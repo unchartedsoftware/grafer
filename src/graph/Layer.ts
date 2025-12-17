@@ -140,6 +140,18 @@ export class Layer extends EventEmitter implements GraphRenderable {
         }
     }
 
+    public destroy(): void {
+        if (this._nodes) {
+            this._nodes.destroy();
+        }
+        if (this._edges) {
+            this._edges.destroy();
+        }
+        if (this._labels) {
+            this._labels.destroy();
+        }
+    }
+
     public render(context: App, mode: RenderMode, uniforms: RenderUniforms | RenderUniforms[], index: number = 0): void {
         const offset = index * -3;
 

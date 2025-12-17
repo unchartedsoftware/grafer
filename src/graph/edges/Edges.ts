@@ -96,4 +96,10 @@ export abstract class Edges<T_SRC extends BasicEdgeData, T_TGT> extends LayerRen
             this.idArray.push(entry.id);
         };
     }
+
+    public destroy(): void {
+        if (this.idArray) {
+            this.idArray = null;
+        }
+    }
 }
